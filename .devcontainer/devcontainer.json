@@ -5,7 +5,7 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/workspace",
+	"workspaceFolder": "/factoche",
 	"initializeCommand": "echo 'Factoche Development Container Initialization'",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
@@ -28,7 +28,7 @@
 			}
 		}
 	},
-	"postStartCommand": "sudo chown -R vscode:vscode /workspace",
+	"postStartCommand": "sudo chown -R vscode:vscode /factoche",
 	// Install additional packages and configure zsh
 	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y zsh-autosuggestions zsh-syntax-highlighting && echo 'source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nsource /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >> ~/.zshrc"
 }
