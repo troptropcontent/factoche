@@ -1,0 +1,10 @@
+{
+    "go.testEnvVars": {
+        "FACTOCHE_APP_ENV": "test",
+        "FACTOCHE_APP_PORT": "8080",
+        "FACTOCHE_DB_URL": "postgres://postgres:postgres@localhost:5432/factoche_test",
+    },
+    "go.testFlags": [
+        "-v"
+    ]
+}
