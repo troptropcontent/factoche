@@ -25,7 +25,11 @@
 		"vscode": {
 			"settings": {
 				"terminal.integrated.defaultProfile.linux": "zsh"
-			}
+			},
+			"extensions": [
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-pg"
+			]
 		}
 	},
 	"postStartCommand": "sudo chown -R vscode:vscode /factoche",

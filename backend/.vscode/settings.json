@@ -2,9 +2,33 @@
     "go.testEnvVars": {
         "FACTOCHE_APP_ENV": "test",
         "FACTOCHE_APP_PORT": "8080",
-        "FACTOCHE_DB_URL": "postgres://postgres:postgres@localhost:5432/factoche_test",
+        "FACTOCHE_DB_HOST": "db",
+        "FACTOCHE_DB_PORT": "5432",
+        "FACTOCHE_DB_NAME": "factoche_test",
+        "FACTOCHE_DB_USER": "postgres",
+        "FACTOCHE_DB_PASSWORD": "postgres"
     },
     "go.testFlags": [
         "-v"
+    ],
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "db",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "factoche development",
+            "database": "factoche_development",
+            "username": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "db",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "factoche test",
+            "database": "factoche_test",
+            "username": "postgres"
+        }
     ]
 }
