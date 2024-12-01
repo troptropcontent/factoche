@@ -6,7 +6,11 @@ type AppConfig interface {
 }
 
 type DBConfig interface {
-	URL() string
+	Host() string
+	Port() string
+	Name() string
+	User() string
+	Password() string
 }
 
 type Config interface {

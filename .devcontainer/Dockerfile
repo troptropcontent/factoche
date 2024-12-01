@@ -6,6 +6,7 @@ RUN apt-get update \
     curl \
     git \
     build-essential \
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /factoche
