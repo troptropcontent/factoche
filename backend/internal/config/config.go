@@ -10,22 +10,23 @@ type appConfig struct {
 	port string
 }
 
-func (c *appConfig) Env() string {
-	return c.env
-}
-
-func (c *appConfig) Port() string {
-	return c.port
-}
+func (c *appConfig) Env() string  { return c.env }
+func (c *appConfig) Port() string { return c.port }
 
 // DBConfig is the configuration for the database
 type dbConfig struct {
-	url string
+	host     string
+	user     string
+	password string
+	name     string
+	port     string
 }
 
-func (c *dbConfig) URL() string {
-	return c.url
-}
+func (c *dbConfig) Host() string     { return c.host }
+func (c *dbConfig) Port() string     { return c.port }
+func (c *dbConfig) Name() string     { return c.name }
+func (c *dbConfig) User() string     { return c.user }
+func (c *dbConfig) Password() string { return c.password }
 
 // Config wraps all sub-configurations (app and db)
 type config struct {
@@ -33,13 +34,8 @@ type config struct {
 	db  DBConfig
 }
 
-func (c *config) App() AppConfig {
-	return c.app
-}
-
-func (c *config) DB() DBConfig {
-	return c.db
-}
+func (c *config) App() AppConfig { return c.app }
+func (c *config) DB() DBConfig   { return c.db }
 
 // NewConfig creates a new configuration by loading environment variables
 // It will panic if any of the environment variables are not set
@@ -51,7 +47,11 @@ func NewConfig() Config {
 			port: env.MustGet("APP_PORT"),
 		},
 		db: &dbConfig{
-			url: env.MustGet("DB_URL"),
+			host:     env.MustGet("DB_HOST"),
+			port:     env.MustGet("DB_PORT"),
+			name:     env.MustGet("DB_NAME"),
+			user:     env.MustGet("DB_USER"),
+			password: env.MustGet("DB_PASSWORD"),
 		},
 	}
 }

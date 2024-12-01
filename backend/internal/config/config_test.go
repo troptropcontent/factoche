@@ -19,7 +19,11 @@ func TestNewConfig(t *testing.T) {
 			config := NewConfig()
 			assert.Equal(t, "test", config.App().Env())
 			assert.Equal(t, "8080", config.App().Port())
-			assert.Equal(t, "postgres://postgres:postgres@localhost:5432/factoche_test", config.DB().URL())
+			assert.Equal(t, "db", config.DB().Host())
+			assert.Equal(t, "5432", config.DB().Port())
+			assert.Equal(t, "factoche_test", config.DB().Name())
+			assert.Equal(t, "postgres", config.DB().User())
+			assert.Equal(t, "postgres", config.DB().Password())
 		})
 	})
 
