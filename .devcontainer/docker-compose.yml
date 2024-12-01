@@ -10,6 +10,7 @@ services:
     command: sleep infinity
     env_file:
       - ../.env
+      - ../backend/.env
     networks:
       - development
     depends_on:
