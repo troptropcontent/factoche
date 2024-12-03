@@ -1,11 +1,11 @@
-package models
+package auth_models
 
 import (
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/troptropcontent/factoche/internal/domain/entity"
+	auth_entity "github.com/troptropcontent/factoche/internal/domain/entity/auth"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +19,7 @@ func TestUser_ToEntity(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    User
-		expected entity.User
+		expected auth_entity.User
 	}{
 		{
 			name: "standard case with all fields",
@@ -36,7 +36,7 @@ func TestUser_ToEntity(t *testing.T) {
 				Email:    userEmail,
 				Password: userPassword,
 			},
-			expected: entity.User{
+			expected: auth_entity.User{
 				ID:        1,
 				Email:     userEmail,
 				Password:  userPassword,
@@ -51,7 +51,7 @@ func TestUser_ToEntity(t *testing.T) {
 				Model: gorm.Model{},
 				Email: "",
 			},
-			expected: entity.User{
+			expected: auth_entity.User{
 				ID:        0,
 				Email:     "",
 				Password:  "",
@@ -66,7 +66,7 @@ func TestUser_ToEntity(t *testing.T) {
 				Model: gorm.Model{ID: 1},
 				Email: "test+special@example.com!#$%&'*+-/=?^_`{|}~",
 			},
-			expected: entity.User{
+			expected: auth_entity.User{
 				ID:    1,
 				Email: "test+special@example.com!#$%&'*+-/=?^_`{|}~",
 			},
@@ -78,7 +78,7 @@ func TestUser_ToEntity(t *testing.T) {
 				Email:    string(make([]byte, 255)),  // Max length email
 				Password: string(make([]byte, 1024)), // Very long password
 			},
-			expected: entity.User{
+			expected: auth_entity.User{
 				ID:       1,
 				Email:    string(make([]byte, 255)),
 				Password: string(make([]byte, 1024)),
@@ -91,7 +91,7 @@ func TestUser_ToEntity(t *testing.T) {
 					DeletedAt: gorm.DeletedAt{Valid: false},
 				},
 			},
-			expected: entity.User{
+			expected: auth_entity.User{
 				DeletedAt: time.Time{},
 			},
 		},
@@ -120,12 +120,12 @@ func TestUser_FromEntity(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		input    entity.User
+		input    auth_entity.User
 		expected User
 	}{
 		{
 			name: "standard case with all fields",
-			input: entity.User{
+			input: auth_entity.User{
 				ID:        userID,
 				Email:     userEmail,
 				Password:  userPassword,
@@ -143,7 +143,7 @@ func TestUser_FromEntity(t *testing.T) {
 		},
 		{
 			name:  "zero values",
-			input: entity.User{},
+			input: auth_entity.User{},
 			expected: User{
 				Model:    gorm.Model{},
 				Email:    "",
@@ -152,7 +152,7 @@ func TestUser_FromEntity(t *testing.T) {
 		},
 		{
 			name: "special characters in email",
-			input: entity.User{
+			input: auth_entity.User{
 				ID:    1,
 				Email: "test+special@example.com!#$%&'*+-/=?^_`{|}~",
 			},
@@ -163,7 +163,7 @@ func TestUser_FromEntity(t *testing.T) {
 		},
 		{
 			name: "very long strings",
-			input: entity.User{
+			input: auth_entity.User{
 				ID:       1,
 				Email:    string(make([]byte, 255)),  // Max length email
 				Password: string(make([]byte, 1024)), // Very long password

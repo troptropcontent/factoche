@@ -1,7 +1,7 @@
-package models
+package auth_models
 
 import (
-	"github.com/troptropcontent/factoche/internal/domain/entity"
+	auth_entity "github.com/troptropcontent/factoche/internal/domain/entity/auth"
 	"gorm.io/gorm"
 )
 
@@ -12,8 +12,8 @@ type User struct {
 }
 
 // ToEntity converts the GORM model to a domain entity
-func (u *User) ToEntity() *entity.User {
-	return &entity.User{
+func (u *User) ToEntity() *auth_entity.User {
+	return &auth_entity.User{
 		ID:        u.ID,
 		Email:     u.Email,
 		Password:  u.Password,
@@ -24,7 +24,7 @@ func (u *User) ToEntity() *entity.User {
 }
 
 // FromEntity converts a domain entity to a GORM model
-func (u *User) FromEntity(user *entity.User) {
+func (u *User) FromEntity(user *auth_entity.User) {
 	u.ID = user.ID
 	u.Email = user.Email
 	u.Password = user.Password

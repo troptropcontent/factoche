@@ -1,4 +1,4 @@
-package repositories
+package auth_repositories
 
 import (
 	"context"
@@ -6,22 +6,22 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/troptropcontent/factoche/internal/config"
-	"github.com/troptropcontent/factoche/internal/domain/entity"
+	auth_entity "github.com/troptropcontent/factoche/internal/domain/entity/auth"
 	"github.com/troptropcontent/factoche/internal/infrastructure/database/postgres"
-	"github.com/troptropcontent/factoche/internal/infrastructure/database/postgres/models"
+	auth_models "github.com/troptropcontent/factoche/internal/infrastructure/database/postgres/models/auth"
 	"gorm.io/gorm"
 )
 
 func TestUserRepository_Create(t *testing.T) {
 	tests := []struct {
 		name    string
-		user    *entity.User
+		user    *auth_entity.User
 		before  func(*gorm.DB)
 		wantErr bool
 	}{
 		{
 			name: "successful creation",
-			user: &entity.User{
+			user: &auth_entity.User{
 				Email:    "test@example.com",
 				Password: "hashedpassword",
 			},
@@ -29,13 +29,13 @@ func TestUserRepository_Create(t *testing.T) {
 		},
 		{
 			name: "duplicate email error",
-			user: &entity.User{
+			user: &auth_entity.User{
 				Email:    "existing@example.com",
 				Password: "hashedpassword",
 			},
 			before: func(db *gorm.DB) {
 				repo := NewUserRepository(db)
-				repo.Create(context.Background(), &entity.User{
+				repo.Create(context.Background(), &auth_entity.User{
 					Email:    "existing@example.com",
 					Password: "hashedpassword",
 				})
@@ -61,7 +61,7 @@ func TestUserRepository_Create(t *testing.T) {
 					assert.NotZero(t, tt.user.ID) // Verify ID was set
 
 					// Verify user was actually created in database
-					var savedUser models.User
+					var savedUser auth_models.User
 					result := transaction.First(&savedUser, tt.user.ID)
 					assert.NoError(t, result.Error)
 					assert.Equal(t, tt.user.Email, savedUser.Email)
