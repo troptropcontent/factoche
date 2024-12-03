@@ -28,11 +28,12 @@
 			},
 			"extensions": [
 				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg"
+				"mtxr.sqltools-driver-pg",
+				"GitHub.vscode-pull-request-github"
 			]
 		}
 	},
-	"postStartCommand": "sudo chown -R vscode:vscode /factoche",
+	"postStartCommand": "sudo chown -R vscode:vscode /factoche && sudo chown -R vscode:vscode /home/vscode/.ssh",
 	// Install additional packages and configure zsh
 	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y zsh-autosuggestions zsh-syntax-highlighting && echo 'source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nsource /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >> ~/.zshrc"
 }

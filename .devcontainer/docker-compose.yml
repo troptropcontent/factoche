@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ..:/factoche:cached
+      - ${HOME}/.ssh:/home/vscode/.ssh:cached
     command: sleep infinity
     env_file:
       - ../.env
