@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/troptropcontent/factoche/internal/config"
 	auth_entity "github.com/troptropcontent/factoche/internal/domain/entity/auth"
+	auth_repository "github.com/troptropcontent/factoche/internal/domain/repository/auth"
 	"github.com/troptropcontent/factoche/internal/infrastructure/database/postgres"
 	auth_models "github.com/troptropcontent/factoche/internal/infrastructure/database/postgres/models/auth"
 	"gorm.io/gorm"
@@ -17,7 +18,7 @@ func TestUserRepository_Create(t *testing.T) {
 		name    string
 		user    *auth_entity.User
 		before  func(*gorm.DB)
-		wantErr bool
+		wantErr error
 	}{
 		{
 			name: "successful creation",
@@ -25,7 +26,7 @@ func TestUserRepository_Create(t *testing.T) {
 				Email:    "test@example.com",
 				Password: "hashedpassword",
 			},
-			wantErr: false,
+			wantErr: nil,
 		},
 		{
 			name: "duplicate email error",
@@ -40,7 +41,7 @@ func TestUserRepository_Create(t *testing.T) {
 					Password: "hashedpassword",
 				})
 			},
-			wantErr: true,
+			wantErr: auth_repository.ErrUserAlreadyExists,
 		},
 	}
 
@@ -54,8 +55,8 @@ func TestUserRepository_Create(t *testing.T) {
 				repo := NewUserRepository(transaction)
 				err := repo.Create(context.Background(), tt.user)
 
-				if tt.wantErr {
-					assert.Error(t, err)
+				if tt.wantErr != nil {
+					assert.ErrorIs(t, err, tt.wantErr)
 				} else {
 					assert.NoError(t, err)
 					assert.NotZero(t, tt.user.ID) // Verify ID was set
@@ -65,6 +66,66 @@ func TestUserRepository_Create(t *testing.T) {
 					result := transaction.First(&savedUser, tt.user.ID)
 					assert.NoError(t, result.Error)
 					assert.Equal(t, tt.user.Email, savedUser.Email)
+				}
+			})
+		})
+	}
+}
+
+func TestUserRepository_GetByEmail(t *testing.T) {
+
+	tests := []struct {
+		name          string
+		before        func(*gorm.DB)
+		email         string
+		expectedUser  *auth_entity.User
+		expectedError error
+	}{
+		{
+			name: "successful retrieval",
+			before: func(transaction *gorm.DB) {
+				repo := NewUserRepository(transaction)
+				repo.Create(context.Background(), &auth_entity.User{
+					Email:    "existing@example.com",
+					Password: "hashedpassword",
+				})
+			},
+			email: "existing@example.com",
+			expectedUser: &auth_entity.User{
+				Email:    "existing@example.com",
+				Password: "hashedpassword",
+			},
+			expectedError: nil,
+		},
+		{
+			name:          "user not found",
+			email:         "nonexistent@example.com",
+			expectedUser:  nil,
+			expectedError: auth_repository.ErrUserNotFound,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			withTransaction(t, func(transaction *gorm.DB) {
+				if tt.before != nil {
+					tt.before(transaction)
+				}
+
+				repo := NewUserRepository(transaction)
+
+				// Execute
+				user, err := repo.GetByEmail(context.Background(), tt.email)
+
+				// Assert
+				if tt.expectedError != nil {
+					assert.ErrorIs(t, err, tt.expectedError)
+					assert.Nil(t, user)
+				} else {
+					assert.NoError(t, err)
+					assert.NotNil(t, user)
+					assert.Equal(t, tt.expectedUser.Email, user.Email)
+					assert.Equal(t, tt.expectedUser.Password, user.Password)
 				}
 			})
 		})
