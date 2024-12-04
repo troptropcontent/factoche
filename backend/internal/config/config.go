@@ -28,14 +28,23 @@ func (c *dbConfig) Name() string     { return c.name }
 func (c *dbConfig) User() string     { return c.user }
 func (c *dbConfig) Password() string { return c.password }
 
+// JWTConfig is the configuration for the JWT
+type jwtConfig struct {
+	secretKey string
+}
+
+func (c *jwtConfig) SecretKey() string { return c.secretKey }
+
 // Config wraps all sub-configurations (app and db)
 type config struct {
 	app AppConfig
 	db  DBConfig
+	jwt JWTConfig
 }
 
 func (c *config) App() AppConfig { return c.app }
 func (c *config) DB() DBConfig   { return c.db }
+func (c *config) JWT() JWTConfig { return c.jwt }
 
 // NewConfig creates a new configuration by loading environment variables
 // It will panic if any of the environment variables are not set
@@ -52,6 +61,9 @@ func NewConfig() Config {
 			name:     env.MustGet("DB_NAME"),
 			user:     env.MustGet("DB_USER"),
 			password: env.MustGet("DB_PASSWORD"),
+		},
+		jwt: &jwtConfig{
+			secretKey: env.MustGet("FACTOCHE_JWT_SECRET_KEY"),
 		},
 	}
 }

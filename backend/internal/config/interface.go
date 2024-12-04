@@ -13,7 +13,12 @@ type DBConfig interface {
 	Password() string
 }
 
+type JWTConfig interface {
+	SecretKey() string
+}
+
 type Config interface {
 	App() AppConfig
 	DB() DBConfig
+	JWT() JWTConfig
 }
