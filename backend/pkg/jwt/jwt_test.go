@@ -1,11 +1,13 @@
 package jwt
 
 import (
+	"encoding/base64"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJWT_GenerateToken(t *testing.T) {
@@ -252,4 +254,61 @@ func TestJWT_DifferentSecretKeys(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGenerateJWTSecret(t *testing.T) {
+	t.Run("DefaultLength", func(t *testing.T) {
+		secret, err := GenerateJWTSecret()
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+
+		decoded, err := base64.StdEncoding.DecodeString(secret)
+		if err != nil {
+			t.Fatalf("expected valid base64 string, got error: %v", err)
+		}
+
+		if len(decoded) != DEFAULT_JWT_SECRET_LENGTH {
+			t.Errorf("expected length %d, got %d", DEFAULT_JWT_SECRET_LENGTH, len(decoded))
+		}
+	})
+
+	t.Run("CustomLength", func(t *testing.T) {
+		customLength := 64
+		secret, err := GenerateJWTSecret(customLength)
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+
+		decoded, err := base64.StdEncoding.DecodeString(secret)
+		if err != nil {
+			t.Fatalf("expected valid base64 string, got error: %v", err)
+		}
+
+		if len(decoded) != customLength {
+			t.Errorf("expected length %d, got %d", customLength, len(decoded))
+		}
+	})
+
+	t.Run("InvalidLength", func(t *testing.T) {
+		_, err := GenerateJWTSecret(-1)
+		assert.Error(t, err)
+	})
+
+	t.Run("VeryLongLength", func(t *testing.T) {
+		veryLongLength := 1024 * 1024 // 1MB
+		secret, err := GenerateJWTSecret(veryLongLength)
+		if err != nil {
+			t.Fatalf("expected no error for large length, got %v", err)
+		}
+
+		decoded, err := base64.StdEncoding.DecodeString(secret)
+		if err != nil {
+			t.Fatalf("expected valid base64 string, got error: %v", err)
+		}
+
+		if len(decoded) != veryLongLength {
+			t.Errorf("expected length %d, got %d", veryLongLength, len(decoded))
+		}
+	})
 }
