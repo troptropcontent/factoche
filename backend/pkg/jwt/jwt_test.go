@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestJWT_GenerateToken(t *testing.T) {
+func Test_JWT_GenerateToken(t *testing.T) {
 	// Test setup
 	jwt := NewJWT("test-secret-key")
 
@@ -114,7 +114,7 @@ func TestJWT_GenerateToken(t *testing.T) {
 	})
 }
 
-func TestJWT_VerifyToken(t *testing.T) {
+func Test_JWT_VerifyToken(t *testing.T) {
 	// Test setup
 	jwt := NewJWT("test-secret-key")
 	wrongJWT := NewJWT("wrong-secret-key")
@@ -223,7 +223,7 @@ func TestJWT_VerifyToken(t *testing.T) {
 	}
 }
 
-func TestJWT_DifferentSecretKeys(t *testing.T) {
+func Test_JWT_DifferentSecretKeys(t *testing.T) {
 	// Test different secret key lengths and characters
 	secrets := []string{
 		"short",
@@ -256,7 +256,7 @@ func TestJWT_DifferentSecretKeys(t *testing.T) {
 	}
 }
 
-func TestGenerateJWTSecret(t *testing.T) {
+func Test_GenerateJWTSecret(t *testing.T) {
 	t.Run("DefaultLength", func(t *testing.T) {
 		secret, err := GenerateJWTSecret()
 		if err != nil {
