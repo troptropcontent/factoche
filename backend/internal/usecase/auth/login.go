@@ -2,18 +2,54 @@ package auth_usecase
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"time"
 
-	auth_entity "github.com/troptropcontent/factoche/internal/domain/entity/auth"
+	auth_repository "github.com/troptropcontent/factoche/internal/domain/repository/auth"
+	"github.com/troptropcontent/factoche/pkg/jwt"
+	"github.com/troptropcontent/factoche/pkg/passhash"
 )
 
+const ACCESS_TOKEN_DURATION = time.Hour * 24
+const REFRESH_TOKEN_DURATION = time.Hour * 24 * 30
+
+// LoginUseCase is the usecase for logging in
+// For valid credentials, it returns the access and refresh tokens
+// To avoid leaking information, it returns the same error for any credential failure
 type LoginUseCase interface {
-	Execute(ctx context.Context, email, password string) (*auth_entity.Token, error)
+	Execute(ctx context.Context, email, password string) (accessToken, refreshToken string, err error)
 }
 
-// Domain errors
-var (
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrUserNotFound       = errors.New("user not found")
-	ErrUserInactive       = errors.New("user is inactive")
-)
+type loginUseCase struct {
+	userRepo auth_repository.UserRepository
+	jwt      jwt.JWT
+}
+
+// Returns a new LoginUseCase instance with the given dependencies
+func NewLoginUseCase(userRepo auth_repository.UserRepository, jwt jwt.JWT) LoginUseCase {
+	return &loginUseCase{userRepo: userRepo, jwt: jwt}
+}
+
+// Implements LoginUseCase logic
+func (uc *loginUseCase) Execute(ctx context.Context, email, password string) (accessToken, refreshToken string, err error) {
+	// 1. Get user by email
+	user, err := uc.userRepo.GetByEmail(ctx, email)
+	if err != nil {
+		return "", "", auth_repository.ErrUserNotFound
+	}
+
+	// 2. Verify password matches
+	if !passhash.VerifyPassword(password, user.Password) {
+		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
+	}
+
+	// 3. Generate JWT token
+	accessToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, ACCESS_TOKEN_DURATION)
+	refreshToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, REFRESH_TOKEN_DURATION)
+
+	if accessToken == "" || refreshToken == "" {
+		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
+	}
+
+	return accessToken, refreshToken, nil
+}
