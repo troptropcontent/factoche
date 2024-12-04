@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func TestJWT_GenerateToken(t *testing.T) {
@@ -76,6 +78,38 @@ func TestJWT_GenerateToken(t *testing.T) {
 			}
 		})
 	}
+
+	// Test UUID uniqueness
+	t.Run("unique token IDs", func(t *testing.T) {
+		// Generate multiple tokens with same inputs
+		tokenCount := 5
+		tokenIDs := make(map[string]bool)
+
+		for i := 0; i < tokenCount; i++ {
+			token, err := jwt.GenerateToken("123", "test@example.com", time.Hour)
+			if err != nil {
+				t.Fatalf("GenerateToken() error = %v", err)
+			}
+
+			// Parse token to extract claims
+			claims, err := jwt.VerifyToken(token)
+			if err != nil {
+				t.Fatalf("Failed to parse token: %v", err)
+			}
+
+			// Check if ID already exists
+			if tokenIDs[claims.ID] {
+				t.Errorf("Duplicate token ID generated: %s", claims.ID)
+			}
+			tokenIDs[claims.ID] = true
+
+			// Verify ID is valid UUID
+			_, err = uuid.Parse(claims.ID)
+			if err != nil {
+				t.Errorf("Invalid UUID generated: %s", claims.ID)
+			}
+		}
+	})
 }
 
 func TestJWT_VerifyToken(t *testing.T) {
