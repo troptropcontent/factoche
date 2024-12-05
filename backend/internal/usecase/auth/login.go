@@ -39,10 +39,9 @@ func (uc *loginUseCase) Execute(ctx context.Context, email, password string) (ac
 	}
 
 	// 2. Verify password matches
-	if !passhash.VerifyPassword(password, user.Password) {
+	if !passhash.VerifyPassword(user.Password, password) {
 		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
 	}
-
 	// 3. Generate JWT token
 	accessToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, ACCESS_TOKEN_DURATION)
 	refreshToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, REFRESH_TOKEN_DURATION)
