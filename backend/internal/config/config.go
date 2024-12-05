@@ -63,7 +63,7 @@ func NewConfig() Config {
 			password: env.MustGet("DB_PASSWORD"),
 		},
 		jwt: &jwtConfig{
-			secretKey: env.MustGet("FACTOCHE_JWT_SECRET_KEY"),
+			secretKey: env.MustGet("JWT_SECRET_KEY"),
 		},
 	}
 }
