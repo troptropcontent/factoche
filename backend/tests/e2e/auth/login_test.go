@@ -45,7 +45,8 @@ func TestLoginEndpoint(t *testing.T) {
 				assert.Contains(t, body, "refreshToken")
 			},
 			beforeTest: func(trans *gorm.DB) {
-				uc := auth_usecase.NewUserUseCase(auth_repositories.NewUserRepository(trans))
+				hasher := passhash.NewPasshash()
+				uc := auth_usecase.NewUserUseCase(auth_repositories.NewUserRepository(trans), hasher)
 				_, err := uc.CreateUser(context.Background(), "validUser@example.com", "validPassword")
 				require.NoError(t, err)
 			},
