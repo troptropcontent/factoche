@@ -16,6 +16,7 @@ import (
 	auth_repositories "github.com/troptropcontent/factoche/internal/infrastructure/database/repositories/auth"
 	auth_usecase "github.com/troptropcontent/factoche/internal/usecase/auth"
 	"github.com/troptropcontent/factoche/pkg/jwt"
+	"github.com/troptropcontent/factoche/pkg/passhash"
 	"gorm.io/gorm"
 )
 
@@ -70,7 +71,8 @@ func TestLoginEndpoint(t *testing.T) {
 
 			userRepo := auth_repositories.NewUserRepository(trans)
 			jwtService := jwt.NewJWT(config.JWT().SecretKey())
-			loginUseCase := auth_usecase.NewLoginUseCase(userRepo, *jwtService)
+			hasher := passhash.NewPasshash()
+			loginUseCase := auth_usecase.NewLoginUseCase(userRepo, jwtService, hasher)
 			loginHandler := auth_handler.NewLoginHandler(loginUseCase)
 
 			auth := e.Group("auth")
