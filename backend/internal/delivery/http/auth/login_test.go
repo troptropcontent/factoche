@@ -60,7 +60,7 @@ func Test_LoginHandler_Handle(t *testing.T) {
 			},
 			expectedStatus: http.StatusUnauthorized,
 			expectedBody: map[string]string{
-				"message": "Invalid credentials",
+				"message": "invalid credentials",
 			},
 		},
 	}

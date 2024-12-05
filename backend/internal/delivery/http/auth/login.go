@@ -35,12 +35,12 @@ func (lh *loginHandler) Handle(c echo.Context) error {
 	loginRequest := LoginRequest{}
 
 	if err := c.Bind(&loginRequest); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request format")
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request format")
 	}
 
 	accessToken, refreshToken, err := lh.loginUseCase.Execute(c.Request().Context(), loginRequest.Email, loginRequest.Password)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 	}
 
 	loginResponse := LoginResponse{
