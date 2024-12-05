@@ -5,7 +5,7 @@ import (
 
 	auth_entity "github.com/troptropcontent/factoche/internal/domain/entity/auth"
 	auth_repository "github.com/troptropcontent/factoche/internal/domain/repository/auth"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/troptropcontent/factoche/pkg/passhash"
 )
 
 type UserUseCase interface {
@@ -14,15 +14,16 @@ type UserUseCase interface {
 
 type userUseCase struct {
 	userRepo auth_repository.UserRepository
+	hasher   passhash.Passhash
 }
 
-func NewUserUseCase(userRepo auth_repository.UserRepository) UserUseCase {
-	return &userUseCase{userRepo: userRepo}
+func NewUserUseCase(userRepo auth_repository.UserRepository, hasher passhash.Passhash) UserUseCase {
+	return &userUseCase{userRepo: userRepo, hasher: hasher}
 }
 
 func (uc *userUseCase) CreateUser(ctx context.Context, email, password string) (*auth_entity.User, error) {
 	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := uc.hasher.HashPassword(password)
 	if err != nil {
 		return nil, err
 	}

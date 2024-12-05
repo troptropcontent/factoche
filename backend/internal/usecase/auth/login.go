@@ -23,11 +23,12 @@ type LoginUseCase interface {
 type loginUseCase struct {
 	userRepo auth_repository.UserRepository
 	jwt      jwt.JWT
+	hasher   passhash.Passhash
 }
 
 // Returns a new LoginUseCase instance with the given dependencies
-func NewLoginUseCase(userRepo auth_repository.UserRepository, jwt jwt.JWT) LoginUseCase {
-	return &loginUseCase{userRepo: userRepo, jwt: jwt}
+func NewLoginUseCase(userRepo auth_repository.UserRepository, jwt jwt.JWT, hasher passhash.Passhash) LoginUseCase {
+	return &loginUseCase{userRepo: userRepo, jwt: jwt, hasher: hasher}
 }
 
 // Implements LoginUseCase logic
@@ -39,10 +40,10 @@ func (uc *loginUseCase) Execute(ctx context.Context, email, password string) (ac
 	}
 
 	// 2. Verify password matches
-	if !passhash.VerifyPassword(password, user.Password) {
+	fmt.Printf("Verify password result: %v\n", uc.hasher.VerifyPassword(user.Password, password))
+	if !uc.hasher.VerifyPassword(user.Password, password) {
 		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
 	}
-
 	// 3. Generate JWT token
 	accessToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, ACCESS_TOKEN_DURATION)
 	refreshToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, REFRESH_TOKEN_DURATION)
