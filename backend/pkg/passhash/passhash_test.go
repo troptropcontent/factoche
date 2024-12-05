@@ -37,7 +37,8 @@ func TestHashPassword(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hash, err := HashPassword(tt.password)
+			passhash := NewPasshash()
+			hash, err := passhash.HashPassword(tt.password)
 
 			if tt.shouldError {
 				assert.Error(t, err)
@@ -55,44 +56,47 @@ func TestHashPassword(t *testing.T) {
 func TestVerifyPassword(t *testing.T) {
 	t.Run("Valid password verification", func(t *testing.T) {
 		password := "MySecurePass123!"
-		hash, err := HashPassword(password)
+		passhash := NewPasshash()
+		hash, err := passhash.HashPassword(password)
 		assert.NoError(t, err)
 
-		assert.True(t, VerifyPassword(hash, password))
+		assert.True(t, passhash.VerifyPassword(hash, password))
 	})
 
 	t.Run("Invalid password verification", func(t *testing.T) {
 		password := "MySecurePass123!"
 		wrongPassword := "WrongPass123!"
-		hash, err := HashPassword(password)
+		passhash := NewPasshash()
+		hash, err := passhash.HashPassword(password)
 		assert.NoError(t, err)
 
-		assert.False(t, VerifyPassword(hash, wrongPassword))
+		assert.False(t, passhash.VerifyPassword(hash, wrongPassword))
 	})
 }
 
 func TestHashUniqueness(t *testing.T) {
 	t.Run("Same password produces different hashes", func(t *testing.T) {
 		password := "MySecurePass123!"
-
-		hash1, err := HashPassword(password)
+		passhash := NewPasshash()
+		hash1, err := passhash.HashPassword(password)
 		assert.NoError(t, err)
 
-		hash2, err := HashPassword(password)
+		hash2, err := passhash.HashPassword(password)
 		assert.NoError(t, err)
 
 		assert.NotEqual(t, hash1, hash2)
 
-		assert.True(t, VerifyPassword(hash1, password))
-		assert.True(t, VerifyPassword(hash2, password))
+		assert.True(t, passhash.VerifyPassword(hash1, password))
+		assert.True(t, passhash.VerifyPassword(hash2, password))
 	})
 }
 
 func TestPerformance(t *testing.T) {
 	t.Run("Hash performance", func(t *testing.T) {
 		password := "MySecurePass123!"
+		passhash := NewPasshash()
 
-		hash, err := HashPassword(password)
+		hash, err := passhash.HashPassword(password)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, hash)
 	})
@@ -100,9 +104,9 @@ func TestPerformance(t *testing.T) {
 
 func BenchmarkHashPassword(b *testing.B) {
 	password := "MySecurePass123!"
-
+	passhash := NewPasshash()
 	for i := 0; i < b.N; i++ {
-		_, err := HashPassword(password)
+		_, err := passhash.HashPassword(password)
 		if err != nil {
 			b.Fatal(err)
 		}
@@ -111,13 +115,14 @@ func BenchmarkHashPassword(b *testing.B) {
 
 func BenchmarkVerifyPassword(b *testing.B) {
 	password := "MySecurePass123!"
-	hash, err := HashPassword(password)
+	passhash := NewPasshash()
+	hash, err := passhash.HashPassword(password)
 	if err != nil {
 		b.Fatal(err)
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		VerifyPassword(hash, password)
+		passhash.VerifyPassword(hash, password)
 	}
 }
