@@ -127,6 +127,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 		setup   func() string
 		jwt     *JWT
 		wantErr bool
+		expect  *Claims
 	}{
 		{
 			name: "valid token",
@@ -136,6 +137,10 @@ func Test_JWT_VerifyToken(t *testing.T) {
 			},
 			jwt:     &jwt,
 			wantErr: false,
+			expect: &Claims{
+				UserID: userID,
+				Email:  email,
+			},
 		},
 		{
 			name: "invalid token format",
@@ -201,13 +206,14 @@ func Test_JWT_VerifyToken(t *testing.T) {
 				return
 			}
 
-			if !tt.wantErr && claims != nil {
+			if !tt.wantErr && tt.expect != nil {
+
 				// Verify claims content
-				if claims.UserID == "" {
-					t.Error("VerifyToken() UserID is empty")
+				if claims.UserID != tt.expect.UserID {
+					t.Errorf("VerifyToken() UserID = %s, want %s", claims.UserID, tt.expect.UserID)
 				}
-				if claims.Email == "" {
-					t.Error("VerifyToken() Email is empty")
+				if claims.Email != tt.expect.Email {
+					t.Errorf("VerifyToken() Email = %s, want %s", claims.Email, tt.expect.Email)
 				}
 
 				// Verify expiration time
