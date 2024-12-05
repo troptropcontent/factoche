@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/troptropcontent/factoche/internal/config"
-	auth_handler "github.com/troptropcontent/factoche/internal/delivery/http/auth"
+	auth_handler "github.com/troptropcontent/factoche/internal/delivery/http/handlers/auth"
 	"github.com/troptropcontent/factoche/internal/infrastructure/database/postgres"
 	auth_repositories "github.com/troptropcontent/factoche/internal/infrastructure/database/repositories/auth"
 	auth_usecase "github.com/troptropcontent/factoche/internal/usecase/auth"
