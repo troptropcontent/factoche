@@ -12,7 +12,12 @@ import (
 
 const DEFAULT_JWT_SECRET_LENGTH = 32
 
-type JWT struct {
+type JWT interface {
+	GenerateToken(userID, email string, duration time.Duration) (string, error)
+	VerifyToken(token string) (*Claims, error)
+}
+
+type jwt struct {
 	secretKey string
 }
 
@@ -22,11 +27,11 @@ type Claims struct {
 	golang_jwt.RegisteredClaims
 }
 
-func NewJWT(secretKey string) *JWT {
-	return &JWT{secretKey: secretKey}
+func NewJWT(secretKey string) JWT {
+	return &jwt{secretKey: secretKey}
 }
 
-func (j *JWT) GenerateToken(userID, email string, duration time.Duration) (string, error) {
+func (j *jwt) GenerateToken(userID, email string, duration time.Duration) (string, error) {
 	claims := &Claims{
 		UserID: userID,
 		Email:  email,
@@ -48,7 +53,7 @@ func (j *JWT) GenerateToken(userID, email string, duration time.Duration) (strin
 	return signedToken, nil
 }
 
-func (j *JWT) VerifyToken(token string) (*Claims, error) {
+func (j *jwt) VerifyToken(token string) (*Claims, error) {
 	claims := &Claims{}
 	parsedToken, err := golang_jwt.ParseWithClaims(token, claims, func(token *golang_jwt.Token) (interface{}, error) {
 		return []byte(j.secretKey), nil

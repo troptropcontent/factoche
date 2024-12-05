@@ -134,7 +134,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 				token, _ := jwt.GenerateToken(userID, email, duration)
 				return token
 			},
-			jwt:     jwt,
+			jwt:     &jwt,
 			wantErr: false,
 		},
 		{
@@ -142,7 +142,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 			setup: func() string {
 				return "invalid.token.string"
 			},
-			jwt:     jwt,
+			jwt:     &jwt,
 			wantErr: true,
 		},
 		{
@@ -151,7 +151,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 				token, _ := jwt.GenerateToken(userID, email, -time.Hour)
 				return token
 			},
-			jwt:     jwt,
+			jwt:     &jwt,
 			wantErr: true,
 		},
 		{
@@ -159,7 +159,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 			setup: func() string {
 				return "header.payload" // missing signature part
 			},
-			jwt:     jwt,
+			jwt:     &jwt,
 			wantErr: true,
 		},
 		{
@@ -167,7 +167,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 			setup: func() string {
 				return ""
 			},
-			jwt:     jwt,
+			jwt:     &jwt,
 			wantErr: true,
 		},
 		{
@@ -176,7 +176,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 				token, _ := jwt.GenerateToken(userID, email, duration)
 				return token
 			},
-			jwt:     wrongJWT,
+			jwt:     &wrongJWT,
 			wantErr: true,
 		},
 		{
@@ -185,7 +185,7 @@ func Test_JWT_VerifyToken(t *testing.T) {
 				token, _ := jwt.GenerateToken("123!@#$%^&*()", "test+special@example.com", duration)
 				return token
 			},
-			jwt:     jwt,
+			jwt:     &jwt,
 			wantErr: false,
 		},
 	}
@@ -193,7 +193,8 @@ func Test_JWT_VerifyToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			token := tt.setup()
-			claims, err := tt.jwt.VerifyToken(token)
+			jwtService := *tt.jwt
+			claims, err := jwtService.VerifyToken(token)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("VerifyToken() error = %v, wantErr %v", err, tt.wantErr)
