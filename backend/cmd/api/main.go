@@ -36,20 +36,21 @@ func main() {
 	userRepo := auth_repositories.NewUserRepository(db)
 
 	// Initialize services
-	jwtService := jwt.NewJWT(config.JWT().SecretKey())
+	accessTokenJwtService := jwt.NewJWT(config.JWT().AccessTokenSecretKey())
+	refreshTokenJwtService := jwt.NewJWT(config.JWT().RefreshTokenSecretKey())
 
 	// Initialize hasher
 	hasher := passhash.NewPasshash()
 
 	// Initialize use_cases
-	loginUseCase := auth_usecase.NewLoginUseCase(userRepo, jwtService, hasher)
+	loginUseCase := auth_usecase.NewLoginUseCase(userRepo, accessTokenJwtService, refreshTokenJwtService, hasher)
 
 	// Initialize handlers
 	loginHandler := auth_handler.NewLoginHandler(loginUseCase)
 
 	// Initialize jwt midleware
 	jwtMidleware := auth_midlewares.JWTAuth(auth_midlewares.JWTConfig{
-		JWTService:   jwtService,
+		JWTService:   accessTokenJwtService,
 		PublicRoutes: publicRoutes,
 	})
 
