@@ -1,2 +1,5 @@
 .env
 .env.*
+backend/cmd/playground/main.go
+
+backend/cmd/playground/main.go
