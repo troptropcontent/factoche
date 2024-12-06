@@ -14,7 +14,8 @@ type DBConfig interface {
 }
 
 type JWTConfig interface {
-	SecretKey() string
+	AccessTokenSecretKey() string
+	RefreshTokenSecretKey() string
 }
 
 type Config interface {
