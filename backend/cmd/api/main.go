@@ -22,6 +22,7 @@ import (
 // As the midleware is set globally, we need to define all the public routes here
 var publicRoutes = []string{
 	"POST:/auth/login",
+	"POST:/auth/refresh",
 }
 
 func main() {
@@ -44,9 +45,11 @@ func main() {
 
 	// Initialize use_cases
 	loginUseCase := auth_usecase.NewLoginUseCase(userRepo, accessTokenJwtService, refreshTokenJwtService, hasher)
+	refreshUseCase := auth_usecase.NewRefreshUseCase(accessTokenJwtService, refreshTokenJwtService)
 
 	// Initialize handlers
 	loginHandler := auth_handler.NewLoginHandler(loginUseCase)
+	refreshHandler := auth_handler.NewRefreshHandler(refreshUseCase)
 
 	// Initialize jwt midleware
 	jwtMidleware := auth_midlewares.JWTAuth(auth_midlewares.JWTConfig{
@@ -64,6 +67,7 @@ func main() {
 	// Routes
 	auth := e.Group("auth")
 	auth.POST("/login", loginHandler.Handle)
+	auth.POST("/refresh", refreshHandler.Handle)
 
 	// Start server
 	if err := e.Start(fmt.Sprintf(":%s", config.App().Port())); err != nil {
