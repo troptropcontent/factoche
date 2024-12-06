@@ -49,6 +49,12 @@ func TestRefreshHandler_Handle(t *testing.T) {
 			expectedErrorMessage: "invalid request format",
 		},
 		{
+			name:                 "Empty body",
+			requestBody:          ``,
+			expectedStatus:       http.StatusBadRequest,
+			expectedErrorMessage: "invalid request format",
+		},
+		{
 			name:        "Invalid Refresh Token",
 			requestBody: `{"refresh_token": "invalid_token"}`,
 			setupMockRefreshUseCase: func(m *MockRefreshUseCase) {

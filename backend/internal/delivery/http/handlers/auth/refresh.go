@@ -32,7 +32,7 @@ type refreshResponse struct {
 func (rh *refreshHandler) Handle(c echo.Context) error {
 	req := refreshRequest{}
 
-	if err := c.Bind(&req); err != nil {
+	if err := c.Bind(&req); err != nil || req.RefreshToken == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request format")
 	}
 
