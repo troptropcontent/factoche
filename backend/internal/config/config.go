@@ -30,10 +30,12 @@ func (c *dbConfig) Password() string { return c.password }
 
 // JWTConfig is the configuration for the JWT
 type jwtConfig struct {
-	secretKey string
+	accessTokenSecretKey  string
+	refreshTokenSecretKey string
 }
 
-func (c *jwtConfig) SecretKey() string { return c.secretKey }
+func (c *jwtConfig) AccessTokenSecretKey() string  { return c.accessTokenSecretKey }
+func (c *jwtConfig) RefreshTokenSecretKey() string { return c.refreshTokenSecretKey }
 
 // Config wraps all sub-configurations (app and db)
 type config struct {
@@ -63,7 +65,8 @@ func NewConfig() Config {
 			password: env.MustGet("DB_PASSWORD"),
 		},
 		jwt: &jwtConfig{
-			secretKey: env.MustGet("JWT_SECRET_KEY"),
+			accessTokenSecretKey:  env.MustGet("JWT_ACCESS_TOKEN_SECRET_KEY"),
+			refreshTokenSecretKey: env.MustGet("JWT_REFRESH_TOKEN_SECRET_KEY"),
 		},
 	}
 }
