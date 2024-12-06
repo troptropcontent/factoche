@@ -21,14 +21,15 @@ type LoginUseCase interface {
 }
 
 type loginUseCase struct {
-	userRepo auth_repository.UserRepository
-	jwt      jwt.JWT
-	hasher   passhash.Passhash
+	userRepo               auth_repository.UserRepository
+	refreshTokenJwtService jwt.JWT
+	accessTokenJwtService  jwt.JWT
+	hasher                 passhash.Passhash
 }
 
 // Returns a new LoginUseCase instance with the given dependencies
-func NewLoginUseCase(userRepo auth_repository.UserRepository, jwt jwt.JWT, hasher passhash.Passhash) LoginUseCase {
-	return &loginUseCase{userRepo: userRepo, jwt: jwt, hasher: hasher}
+func NewLoginUseCase(userRepo auth_repository.UserRepository, accessTokenJwtService jwt.JWT, refreshTokenJwtService jwt.JWT, hasher passhash.Passhash) LoginUseCase {
+	return &loginUseCase{userRepo: userRepo, accessTokenJwtService: accessTokenJwtService, refreshTokenJwtService: refreshTokenJwtService, hasher: hasher}
 }
 
 // Implements LoginUseCase logic
@@ -45,8 +46,8 @@ func (uc *loginUseCase) Execute(ctx context.Context, email, password string) (ac
 		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
 	}
 	// 3. Generate JWT token
-	accessToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, ACCESS_TOKEN_DURATION)
-	refreshToken, _ = uc.jwt.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, REFRESH_TOKEN_DURATION)
+	accessToken, _ = uc.accessTokenJwtService.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, ACCESS_TOKEN_DURATION)
+	refreshToken, _ = uc.refreshTokenJwtService.GenerateToken(fmt.Sprintf("%d", user.ID), user.Email, REFRESH_TOKEN_DURATION)
 
 	if accessToken == "" || refreshToken == "" {
 		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
