@@ -71,9 +71,10 @@ func TestLoginEndpoint(t *testing.T) {
 			}
 
 			userRepo := auth_repositories.NewUserRepository(trans)
-			jwtService := jwt.NewJWT(config.JWT().SecretKey())
+			accessTokenJwtService := jwt.NewJWT(config.JWT().AccessTokenSecretKey())
+			refreshTokenJwtService := jwt.NewJWT(config.JWT().RefreshTokenSecretKey())
 			hasher := passhash.NewPasshash()
-			loginUseCase := auth_usecase.NewLoginUseCase(userRepo, jwtService, hasher)
+			loginUseCase := auth_usecase.NewLoginUseCase(userRepo, accessTokenJwtService, refreshTokenJwtService, hasher)
 			loginHandler := auth_handler.NewLoginHandler(loginUseCase)
 
 			auth := e.Group("auth")

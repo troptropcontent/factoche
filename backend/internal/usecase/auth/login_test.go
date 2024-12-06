@@ -59,19 +59,20 @@ func (m *MockPasshash) VerifyPassword(passwordHash string, password string) bool
 	return args.Bool(0)
 }
 
-func setupUseCase() (LoginUseCase, *MockUserRepository, *MockJWT, *MockPasshash) {
+func setupUseCase() (LoginUseCase, *MockUserRepository, *MockJWT, *MockJWT, *MockPasshash) {
 	mockUserRepo := new(MockUserRepository)
-	mockJWT := new(MockJWT)
+	mockAccessTokenJWT := new(MockJWT)
+	mockRefreshTokenJWT := new(MockJWT)
 	mockPasshash := new(MockPasshash)
 
-	return NewLoginUseCase(mockUserRepo, mockJWT, mockPasshash), mockUserRepo, mockJWT, mockPasshash
+	return NewLoginUseCase(mockUserRepo, mockAccessTokenJWT, mockRefreshTokenJWT, mockPasshash), mockUserRepo, mockAccessTokenJWT, mockRefreshTokenJWT, mockPasshash
 }
 
 type testCase struct {
 	name          string
 	email         string
 	password      string
-	mockSetup     func(*MockUserRepository, *MockJWT, *MockPasshash, *auth_entity.User)
+	mockSetup     func(*MockUserRepository, *MockJWT, *MockJWT, *MockPasshash, *auth_entity.User)
 	expectedError error
 }
 
@@ -91,9 +92,10 @@ func TestLoginUseCase_Execute(t *testing.T) {
 			name:     "Successful Login",
 			email:    user.Email,
 			password: password,
-			mockSetup: func(ur *MockUserRepository, j *MockJWT, ph *MockPasshash, u *auth_entity.User) {
+			mockSetup: func(ur *MockUserRepository, aJwt *MockJWT, rJwt *MockJWT, ph *MockPasshash, u *auth_entity.User) {
 				ur.On("GetByEmail", ctx, u.Email).Return(u, nil)
-				j.On("GenerateToken", mock.Anything, u.Email, mock.Anything).Return("accessToken", nil).Twice()
+				aJwt.On("GenerateToken", mock.Anything, u.Email, mock.Anything).Return("accessToken", nil)
+				rJwt.On("GenerateToken", mock.Anything, u.Email, mock.Anything).Return("refreshToken", nil)
 				ph.On("VerifyPassword", u.Password, password).Return(true)
 			},
 			expectedError: nil,
@@ -102,7 +104,7 @@ func TestLoginUseCase_Execute(t *testing.T) {
 			name:     "User Not Found",
 			email:    user.Email,
 			password: password,
-			mockSetup: func(ur *MockUserRepository, j *MockJWT, ph *MockPasshash, u *auth_entity.User) {
+			mockSetup: func(ur *MockUserRepository, aJwt *MockJWT, rJwt *MockJWT, ph *MockPasshash, u *auth_entity.User) {
 				ur.On("GetByEmail", ctx, u.Email).Return(&auth_entity.User{}, errors.New("user not found"))
 			},
 			expectedError: auth_repository.ErrUserNotFound,
@@ -111,7 +113,7 @@ func TestLoginUseCase_Execute(t *testing.T) {
 			name:     "Incorrect Password",
 			email:    user.Email,
 			password: "wrongpassword",
-			mockSetup: func(ur *MockUserRepository, j *MockJWT, ph *MockPasshash, u *auth_entity.User) {
+			mockSetup: func(ur *MockUserRepository, aJwt *MockJWT, rJwt *MockJWT, ph *MockPasshash, u *auth_entity.User) {
 				ur.On("GetByEmail", ctx, u.Email).Return(u, nil)
 				ph.On("VerifyPassword", u.Password, "wrongpassword").Return(false)
 			},
@@ -121,10 +123,11 @@ func TestLoginUseCase_Execute(t *testing.T) {
 			name:     "Token Generation Failure",
 			email:    user.Email,
 			password: password,
-			mockSetup: func(ur *MockUserRepository, j *MockJWT, ph *MockPasshash, u *auth_entity.User) {
+			mockSetup: func(ur *MockUserRepository, aJwt *MockJWT, rJwt *MockJWT, ph *MockPasshash, u *auth_entity.User) {
 				ur.On("GetByEmail", ctx, u.Email).Return(u, nil)
 				ph.On("VerifyPassword", u.Password, password).Return(true)
-				j.On("GenerateToken", mock.Anything, u.Email, mock.Anything).Return("", errors.New("token generation failed"))
+				aJwt.On("GenerateToken", mock.Anything, u.Email, mock.Anything).Return("", errors.New("token generation failed"))
+				rJwt.On("GenerateToken", mock.Anything, u.Email, mock.Anything).Return("", errors.New("token generation failed"))
 			},
 			expectedError: auth_repository.ErrUserNotFound,
 		},
@@ -132,8 +135,8 @@ func TestLoginUseCase_Execute(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			useCase, mockUserRepo, mockJWT, mockPasshash := setupUseCase()
-			tc.mockSetup(mockUserRepo, mockJWT, mockPasshash, user)
+			useCase, mockUserRepo, mockAccessJwt, mockRefreshJwt, mockPasshash := setupUseCase()
+			tc.mockSetup(mockUserRepo, mockAccessJwt, mockRefreshJwt, mockPasshash, user)
 
 			accessToken, refreshToken, err := useCase.Execute(ctx, tc.email, tc.password)
 
@@ -145,11 +148,12 @@ func TestLoginUseCase_Execute(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, "accessToken", accessToken)
-				assert.Equal(t, "accessToken", refreshToken)
+				assert.Equal(t, "refreshToken", refreshToken)
 			}
 
 			mockUserRepo.AssertExpectations(t)
-			mockJWT.AssertExpectations(t)
+			mockAccessJwt.AssertExpectations(t)
+			mockRefreshJwt.AssertExpectations(t)
 			mockPasshash.AssertExpectations(t)
 		})
 	}

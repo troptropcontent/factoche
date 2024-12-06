@@ -1,3 +1,4 @@
 .env
 .env.*
 .pnpm-store
+backend/cmd/playground/main.go
