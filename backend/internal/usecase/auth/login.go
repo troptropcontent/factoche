@@ -3,15 +3,11 @@ package auth_usecase
 import (
 	"context"
 	"fmt"
-	"time"
 
 	auth_repository "github.com/troptropcontent/factoche/internal/domain/repository/auth"
 	"github.com/troptropcontent/factoche/pkg/jwt"
 	"github.com/troptropcontent/factoche/pkg/passhash"
 )
-
-const ACCESS_TOKEN_DURATION = time.Hour * 24
-const REFRESH_TOKEN_DURATION = time.Hour * 24 * 30
 
 // LoginUseCase is the usecase for logging in
 // For valid credentials, it returns the access and refresh tokens
@@ -41,7 +37,6 @@ func (uc *loginUseCase) Execute(ctx context.Context, email, password string) (ac
 	}
 
 	// 2. Verify password matches
-	fmt.Printf("Verify password result: %v\n", uc.hasher.VerifyPassword(user.Password, password))
 	if !uc.hasher.VerifyPassword(user.Password, password) {
 		return "", "", auth_repository.ErrUserNotFound // Using same error to not leak info
 	}
