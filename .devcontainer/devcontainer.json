@@ -19,7 +19,6 @@
 		}
 	},
 	"remoteUser": "vscode",
-	
 	// Add customizations for VS Code
 	"customizations": {
 		"vscode": {
@@ -36,5 +35,5 @@
 	},
 	"postStartCommand": "sudo chown -R vscode:vscode /factoche && sudo chown -R vscode:vscode /home/vscode/.ssh",
 	// Install additional packages and configure zsh
-	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y zsh-autosuggestions zsh-syntax-highlighting && echo 'source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nsource /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >> ~/.zshrc"
+	"postCreateCommand": "sudo usermod -u 1001 vscode && sudo groupmod -g 1001 vscode && sudo apt-get update && sudo apt-get install -y zsh-autosuggestions zsh-syntax-highlighting && echo 'source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh\nsource /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' >> ~/.zshrc"
 }
