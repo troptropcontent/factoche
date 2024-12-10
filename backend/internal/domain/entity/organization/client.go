@@ -8,8 +8,8 @@ import (
 )
 
 type Client struct {
-	ID                 int
-	CompanyID          int `validate:"required"`
+	ID                 uint
+	CompanyID          uint `validate:"required"`
 	Address            shared_entity.Address
 	Email              string `validate:"required,email"`
 	Phone              string `validate:"required,e164"` // https://en.wikipedia.org/wiki/E.164
