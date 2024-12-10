@@ -3,6 +3,8 @@ package organization_entity
 import (
 	"testing"
 	"time"
+
+	shared_entity "github.com/troptropcontent/factoche/internal/domain/entity/shared"
 )
 
 func TestCompany_Validate(t *testing.T) {
@@ -14,12 +16,14 @@ func TestCompany_Validate(t *testing.T) {
 		{
 			name: "valid company",
 			company: Company{
-				Name:               "Test Company",
-				Email:              "test@company.com",
-				Phone:              "+1234567890",
-				AddressStreet:      "123 Test Street",
-				AddressCity:        "Test City",
-				AddressZipCode:     "12345",
+				Name:  "Test Company",
+				Email: "test@company.com",
+				Phone: "+1234567890",
+				Address: shared_entity.Address{
+					Street:  "123 Test Street",
+					City:    "Test City",
+					Zipcode: "12345",
+				},
 				RegistrationNumber: "REG123456",
 				VatNumber:          "VAT123456", // Optional field
 				CreatedAt:          time.Now(),
@@ -30,11 +34,13 @@ func TestCompany_Validate(t *testing.T) {
 		{
 			name: "invalid company - missing name",
 			company: Company{
-				Email:              "test@company.com",
-				Phone:              "+1234567890",
-				AddressStreet:      "123 Test Street",
-				AddressCity:        "Test City",
-				AddressZipCode:     "12345",
+				Email: "test@company.com",
+				Phone: "+1234567890",
+				Address: shared_entity.Address{
+					Street:  "123 Test Street",
+					City:    "Test City",
+					Zipcode: "12345",
+				},
 				RegistrationNumber: "REG123456",
 			},
 			expectedErrorMess: "Key: 'Company.Name' Error:Field validation for 'Name' failed on the 'required' tag",
@@ -42,12 +48,14 @@ func TestCompany_Validate(t *testing.T) {
 		{
 			name: "invalid company - invalid email",
 			company: Company{
-				Name:               "Test Company",
-				Email:              "invalid-email",
-				Phone:              "+1234567890",
-				AddressStreet:      "123 Test Street",
-				AddressCity:        "Test City",
-				AddressZipCode:     "12345",
+				Name:  "Test Company",
+				Email: "invalid-email",
+				Phone: "+1234567890",
+				Address: shared_entity.Address{
+					Street:  "123 Test Street",
+					City:    "Test City",
+					Zipcode: "12345",
+				},
 				RegistrationNumber: "REG123456",
 			},
 			expectedErrorMess: "Key: 'Company.Email' Error:Field validation for 'Email' failed on the 'email' tag",
@@ -58,7 +66,7 @@ func TestCompany_Validate(t *testing.T) {
 				Name:  "Test Company",
 				Email: "test@company.com",
 			},
-			expectedErrorMess: "Key: 'Company.Phone' Error:Field validation for 'Phone' failed on the 'required' tag\nKey: 'Company.AddressStreet' Error:Field validation for 'AddressStreet' failed on the 'required' tag\nKey: 'Company.AddressCity' Error:Field validation for 'AddressCity' failed on the 'required' tag\nKey: 'Company.AddressZipCode' Error:Field validation for 'AddressZipCode' failed on the 'required' tag\nKey: 'Company.RegistrationNumber' Error:Field validation for 'RegistrationNumber' failed on the 'required' tag",
+			expectedErrorMess: "Key: 'Company.Phone' Error:Field validation for 'Phone' failed on the 'required' tag\nKey: 'Company.Address.Street' Error:Field validation for 'Street' failed on the 'required' tag\nKey: 'Company.Address.City' Error:Field validation for 'City' failed on the 'required' tag\nKey: 'Company.Address.Zipcode' Error:Field validation for 'Zipcode' failed on the 'required' tag\nKey: 'Company.RegistrationNumber' Error:Field validation for 'RegistrationNumber' failed on the 'required' tag",
 		},
 	}
 

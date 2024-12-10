@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	shared_entity "github.com/troptropcontent/factoche/internal/domain/entity/shared"
 )
 
 type Company struct {
@@ -11,9 +12,7 @@ type Company struct {
 	Name               string `validate:"required"`
 	Email              string `validate:"required,email"`
 	Phone              string `validate:"required"`
-	AddressStreet      string `validate:"required"`
-	AddressCity        string `validate:"required"`
-	AddressZipCode     string `validate:"required"`
+	Address            shared_entity.Address
 	RegistrationNumber string `validate:"required"`
 	VatNumber          string
 	CreatedAt          time.Time

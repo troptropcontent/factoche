@@ -2,6 +2,7 @@ package organization_model
 
 import (
 	organization_entity "github.com/troptropcontent/factoche/internal/domain/entity/organization"
+	shared_entity "github.com/troptropcontent/factoche/internal/domain/entity/shared"
 	"gorm.io/gorm"
 )
 
@@ -19,13 +20,15 @@ type Company struct {
 
 func (c *Company) ToEntity() *organization_entity.Company {
 	return &organization_entity.Company{
-		ID:                 c.ID,
-		Name:               c.Name,
-		Email:              c.Email,
-		Phone:              c.Phone,
-		AddressStreet:      c.AddressStreet,
-		AddressCity:        c.AddressCity,
-		AddressZipCode:     c.AddressZipCode,
+		ID:    c.ID,
+		Name:  c.Name,
+		Email: c.Email,
+		Phone: c.Phone,
+		Address: shared_entity.Address{
+			Street:  c.AddressStreet,
+			City:    c.AddressCity,
+			Zipcode: c.AddressZipCode,
+		},
 		RegistrationNumber: c.RegistrationNumber,
 		VatNumber:          c.VatNumber,
 		CreatedAt:          c.CreatedAt,
@@ -39,9 +42,9 @@ func (c *Company) FromEntity(company *organization_entity.Company) {
 	c.Name = company.Name
 	c.Email = company.Email
 	c.Phone = company.Phone
-	c.AddressStreet = company.AddressStreet
-	c.AddressCity = company.AddressCity
-	c.AddressZipCode = company.AddressZipCode
+	c.AddressStreet = company.Address.Street
+	c.AddressCity = company.Address.City
+	c.AddressZipCode = company.Address.Zipcode
 	c.RegistrationNumber = company.RegistrationNumber
 	c.VatNumber = company.VatNumber
 	c.CreatedAt = company.CreatedAt
