@@ -28,4 +28,7 @@ func (u *User) FromEntity(user *auth_entity.User) {
 	u.ID = user.ID
 	u.Email = user.Email
 	u.Password = user.Password
+	u.CreatedAt = user.CreatedAt
+	u.UpdatedAt = user.UpdatedAt
+	u.DeletedAt = gorm.DeletedAt{Time: user.DeletedAt}
 }
