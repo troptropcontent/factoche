@@ -7,19 +7,18 @@ import (
 	shared_entity "github.com/troptropcontent/factoche/internal/domain/entity/shared"
 )
 
-type Company struct {
+type Client struct {
 	ID                 uint
-	Name               string `validate:"required"`
-	Email              string `validate:"required,email"`
-	Phone              string `validate:"required"`
+	CompanyID          uint `validate:"required"`
 	Address            shared_entity.Address
+	Email              string `validate:"required,email"`
+	Phone              string `validate:"required,e164"` // https://en.wikipedia.org/wiki/E.164
 	RegistrationNumber string `validate:"required"`
-	VatNumber          string
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 	DeletedAt          time.Time
 }
 
-func (c *Company) Validate() error {
+func (c *Client) Validate() error {
 	return validator.New().Struct(c)
 }

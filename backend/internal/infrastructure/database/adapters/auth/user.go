@@ -1,4 +1,4 @@
-package auth_repositories
+package auth_adapters
 
 import (
 	"context"
@@ -11,19 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type userRepository struct {
+type userAdapter struct {
 	db *gorm.DB
 }
 
 func NewUserRepository(db *gorm.DB) auth_repository.UserRepository {
-	return &userRepository{db: db}
+	return &userAdapter{db: db}
 }
 
-func (r *userRepository) Create(ctx context.Context, user *auth_entity.User) error {
+func (a *userAdapter) Create(ctx context.Context, user *auth_entity.User) error {
 	model := &auth_models.User{}
 	model.FromEntity(user)
 
-	result := r.db.WithContext(ctx).Create(model)
+	result := a.db.WithContext(ctx).Create(model)
 	if result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
 			return auth_repository.ErrUserAlreadyExists
@@ -35,10 +35,10 @@ func (r *userRepository) Create(ctx context.Context, user *auth_entity.User) err
 	return nil
 }
 
-func (r *userRepository) GetByEmail(ctx context.Context, email string) (user *auth_entity.User, err error) {
+func (a *userAdapter) GetByEmail(ctx context.Context, email string) (user *auth_entity.User, err error) {
 	model := &auth_models.User{}
 
-	result := r.db.WithContext(ctx).First(model)
+	result := a.db.WithContext(ctx).First(model)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, auth_repository.ErrUserNotFound

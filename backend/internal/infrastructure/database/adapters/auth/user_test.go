@@ -1,4 +1,4 @@
-package auth_repositories
+package auth_adapters
 
 import (
 	"context"
