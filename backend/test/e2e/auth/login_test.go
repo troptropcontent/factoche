@@ -12,8 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/troptropcontent/factoche/internal/config"
 	auth_handler "github.com/troptropcontent/factoche/internal/delivery/http/handlers/auth"
+	auth_adapters "github.com/troptropcontent/factoche/internal/infrastructure/database/adapters/auth"
 	"github.com/troptropcontent/factoche/internal/infrastructure/database/postgres"
-	auth_repositories "github.com/troptropcontent/factoche/internal/infrastructure/database/repositories/auth"
+
 	auth_usecase "github.com/troptropcontent/factoche/internal/usecase/auth"
 	"github.com/troptropcontent/factoche/pkg/jwt"
 	"github.com/troptropcontent/factoche/pkg/passhash"
@@ -46,7 +47,7 @@ func TestLoginEndpoint(t *testing.T) {
 			},
 			beforeTest: func(trans *gorm.DB) {
 				hasher := passhash.NewPasshash()
-				uc := auth_usecase.NewUserUseCase(auth_repositories.NewUserRepository(trans), hasher)
+				uc := auth_usecase.NewUserUseCase(auth_adapters.NewUserRepository(trans), hasher)
 				_, err := uc.CreateUser(context.Background(), "validUser@example.com", "validPassword")
 				require.NoError(t, err)
 			},
@@ -70,7 +71,7 @@ func TestLoginEndpoint(t *testing.T) {
 				tc.beforeTest(trans)
 			}
 
-			userRepo := auth_repositories.NewUserRepository(trans)
+			userRepo := auth_adapters.NewUserRepository(trans)
 			accessTokenJwtService := jwt.NewJWT(config.JWT().AccessTokenSecretKey())
 			refreshTokenJwtService := jwt.NewJWT(config.JWT().RefreshTokenSecretKey())
 			hasher := passhash.NewPasshash()
