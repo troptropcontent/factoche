@@ -10,8 +10,9 @@ import (
 
 	auth_handler "github.com/troptropcontent/factoche/internal/delivery/http/handlers/auth"
 	auth_midlewares "github.com/troptropcontent/factoche/internal/delivery/http/midlewares/auth"
+	auth_adapters "github.com/troptropcontent/factoche/internal/infrastructure/database/adapters/auth"
 	"github.com/troptropcontent/factoche/internal/infrastructure/database/postgres"
-	auth_repositories "github.com/troptropcontent/factoche/internal/infrastructure/database/repositories/auth"
+
 	auth_usecase "github.com/troptropcontent/factoche/internal/usecase/auth"
 	"github.com/troptropcontent/factoche/pkg/jwt"
 	"github.com/troptropcontent/factoche/pkg/passhash"
@@ -34,7 +35,7 @@ func main() {
 	}
 
 	// Initialize repositories
-	userRepo := auth_repositories.NewUserRepository(db)
+	userRepo := auth_adapters.NewUserRepository(db)
 
 	// Initialize services
 	accessTokenJwtService := jwt.NewJWT(config.JWT().AccessTokenSecretKey())
