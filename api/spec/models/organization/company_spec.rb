@@ -33,5 +33,9 @@ RSpec.describe Organization::Company, type: :model do
       it { is_expected.to validate_presence_of(:address_city) }
       it { is_expected.to validate_presence_of(:address_zipcode) }
     end
+    context 'registration number' do
+      subject { described_class.new }
+      it { is_expected.to validate_presence_of(:registration_number) }
+    end
   end
 end

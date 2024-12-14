@@ -9,3 +9,12 @@
 #   end
 
 User.create!(email: 'test@example.com', password: 'password123')
+Organization::Company.create!({
+  name: "Company Test",
+  email: 'contact@testcompany.fr',
+  phone: '+33623456789',
+  address_street: "12 rue des mouettes",
+  registration_number: "123456789",
+  address_city: "Biarritz",
+  address_zipcode: "64200"
+})
