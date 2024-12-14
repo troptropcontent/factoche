@@ -175,6 +175,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.5.9)
+    phonelib (0.10.1)
     psych (5.2.1)
       date
       stringio
@@ -284,6 +285,8 @@ GEM
       rubocop-rails
     ruby-progressbar (1.13.0)
     securerandom (0.4.0)
+    shoulda-matchers (6.4.0)
+      activesupport (>= 5.2.0)
     solid_cable (3.0.4)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -338,6 +341,7 @@ DEPENDENCIES
   jwt
   kamal
   pg (~> 1.1)
+  phonelib (~> 0.10.1)
   puma (>= 5.0)
   rails (~> 8.0.0, >= 8.0.0.1)
   rspec-rails
@@ -345,6 +349,7 @@ DEPENDENCIES
   rswag-specs
   rswag-ui
   rubocop-rails-omakase
+  shoulda-matchers
   solid_cable
   solid_cache
   solid_queue
