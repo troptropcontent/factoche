@@ -1,5 +1,6 @@
 class Organization::Company < ApplicationRecord
   has_many :members, dependent: :destroy, class_name: "Organization::Member"
+  has_many :clients, dependent: :destroy, class_name: "Organization::Client"
   has_many :users,
            through: :members,
            class_name: "User"

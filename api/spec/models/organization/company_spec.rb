@@ -41,5 +41,6 @@ RSpec.describe Organization::Company, type: :model do
   describe 'associations' do
     it { should have_many(:members).dependent(:destroy) }
     it { should have_many(:users).through(:members) }
+    it { should have_many(:clients).dependent(:destroy) }
   end
 end
