@@ -56,3 +56,9 @@ group :development, :test do
   gem "rswag-ui"
   gem "rswag-specs"
 end
+
+group :test do
+  gem "shoulda-matchers"
+end
+
+gem "phonelib", "~> 0.10.1"
