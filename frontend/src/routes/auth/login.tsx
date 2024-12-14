@@ -29,22 +29,22 @@ function Login() {
             onSubmit={async (e) => {
               e.preventDefault();
               const formData = new FormData(e.currentTarget);
-              const username = formData.get("username") as string;
+              const email = formData.get("email") as string;
               const password = formData.get("password") as string;
               
-              loginMutation.mutate({username, password}, {onSuccess: ({accessToken, refreshToken}) => {
-                login(accessToken, refreshToken)
+              loginMutation.mutate({email, password}, {onSuccess: ({access_toke, refresh_token}) => {
+                login(access_toke, refresh_token)
                 navigate({to: search.redirect})
               }})
             }}
           >
             <div>
-              <label htmlFor="username">
+              <label htmlFor="email">
                 Username
               </label>
               <input
-                id="username"
-                name="username"
+                id="email"
+                name="email"
                 type="text"
                 required
               />
