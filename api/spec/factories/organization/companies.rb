@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :organization_company, class: 'Organization::Company' do
+  factory :company, class: 'Organization::Company' do
     name { "My company" }
     registration_number { "123456789" }
     email { "mycompany@example.com" }
