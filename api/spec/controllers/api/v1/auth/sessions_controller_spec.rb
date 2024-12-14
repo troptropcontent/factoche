@@ -50,4 +50,52 @@ RSpec.describe 'Auth API', type: :request do
       end
     end
   end
+
+  path '/api/v1/auth/refresh' do
+    post 'Refresh the access token' do
+      tags 'Authentication'
+      consumes 'application/json'
+      produces 'application/json'
+      security [ bearer_auth: [] ]
+
+      response '200', 'access token refreshed' do
+        schema type: :object,
+          properties: {
+            access_token: { type: :string }
+          },
+          required: [ 'access_token' ]
+
+        let(:user) { FactoryBot.create(:user, email: 'test@example.com', password: 'password123') }
+        let(:refresh_token) { JwtAuth.generate_refresh_token(user.id) }
+        let(:Authorization) { "Bearer #{refresh_token}" }
+
+        run_test!
+      end
+
+      response '401', 'invalid token' do
+        schema type: :object,
+          properties: {
+            error: { type: :string }
+          },
+          required: [ 'error' ]
+
+        let(:Authorization) { "Bearer invalid" }
+        run_test!
+      end
+
+      response '401', 'expired token' do
+        schema type: :object,
+          properties: {
+            error: { type: :string }
+          },
+          required: [ 'error' ]
+
+        let(:user) { FactoryBot.create(:user, email: 'test@example.com', password: 'password123') }
+        let(:token) { travel_to 1.day.before { JwtAuth.generate_refresh_token(user.id) } }
+        let(:Authorization) { "Bearer #{token}" }
+
+        run_test!
+      end
+    end
+  end
 end
