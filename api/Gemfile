@@ -50,4 +50,9 @@ group :development, :test do
   # RSpec, have to be in development group for generation of test files
   gem "rspec-rails"
   gem "factory_bot_rails"
+
+  # Rswag
+  gem "rswag-api"
+  gem "rswag-ui"
+  gem "rswag-specs"
 end
