@@ -1,23 +1,34 @@
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
-FROM ubuntu:latest
+ARG RUBY_VERSION=3.3.6
+ENV RBENV_ROOT="/usr/local/rbenv"
+ENV PATH="${RBENV_ROOT}/bin:${RBENV_ROOT}/shims:${PATH}"
 
-ARG GO_VERSION=1.23.3
 RUN apt-get update \
     && apt-get install -y \
+    autoconf \
+    bison \
+    rustc \
+    libyaml-dev \
+    libreadline6-dev \
+    zlib1g-dev \
+    libncurses5-dev \
+    libffi-dev \
+    libpq-dev \
     curl \
     git \
     build-essential \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Go
-RUN curl -fsSL https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz | tar -C /usr/local -xz
-# Add Go to PATH
-ENV PATH="/usr/local/go/bin:${PATH}"
-ENV GOPATH="/go"
-ENV PATH="${GOPATH}/bin:${PATH}"
+RUN git clone https://github.com/rbenv/rbenv.git ${RBENV_ROOT} \
+    && git clone https://github.com/rbenv/ruby-build.git ${RBENV_ROOT}/plugins/ruby-build 
 
-# Install migrate
-RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+# Install Ruby and initialize rbenv
+RUN eval "$(rbenv init -)" \
+    && rbenv install ${RUBY_VERSION} \
+    && rbenv global ${RUBY_VERSION}
+
+RUN gem install ruby-lsp
 
 WORKDIR /factoche

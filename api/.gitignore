@@ -1,0 +1,6 @@
+tmp
+vendor
+.kamal/secrets
+config/master.key
+
+log
