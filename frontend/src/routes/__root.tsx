@@ -15,7 +15,7 @@ const TanStackRouterDevtools =
 
 const Root = () => {
   const { isAuthed } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthed() && location.pathname !== "/auth/login") {
@@ -24,10 +24,10 @@ const Root = () => {
   }, [isAuthed, navigate]);
 
   return (
-    <div>
+    <>
       <Outlet />
       <TanStackRouterDevtools />
-    </div>
+    </>
   );
 };
 

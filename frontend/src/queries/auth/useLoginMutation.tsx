@@ -6,7 +6,7 @@ const useLoginMutation = () => {
     const apiClient = useApiClient()
     const loginFn = login(apiClient)
     return useMutation({
-        mutationFn: (data: {username: string, password: string}) => loginFn(data),
+        mutationFn: (data: {email: string, password: string}) => loginFn(data),
     })
 }
 
