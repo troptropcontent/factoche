@@ -1,4 +1,3 @@
-# spec/requests/api/v1/auth/sessions_spec.rb
 require "rails_helper"
 require "swagger_helper"
 

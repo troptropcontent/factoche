@@ -13,6 +13,9 @@ Rails.application.routes.draw do
         post "login", to: "sessions#create"
         post "refresh", to: "sessions#refresh"
       end
+      namespace :organization do
+        resources :companies, only: [ :index ]
+      end
     end
   end
 
