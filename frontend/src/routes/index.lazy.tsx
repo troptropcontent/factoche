@@ -8,7 +8,7 @@ export const Route = createLazyFileRoute('/')({
 function Index() {
   const {logout} = useAuth()
   return (
-    <div ><h1>Hello from Home!</h1><button onClick={() => {
+    <div ><h1 className='text-sky-700'>Hello from Home!</h1><button onClick={() => {
       logout()
     }}>Logout</button></div>
   )
