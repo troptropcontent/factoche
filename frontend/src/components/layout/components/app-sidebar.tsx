@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Calendar, Cuboid, Handshake, Home, Inbox, ReceiptText, Search, Settings } from "lucide-react";
+import { Cuboid, Handshake, ReceiptText, Settings } from "lucide-react";
 
 export function AppSidebar() {
   const items = [
