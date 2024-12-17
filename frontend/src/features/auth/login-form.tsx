@@ -36,7 +36,7 @@ export default function LoginForm({ redirect }: { redirect: string }) {
         onError: () => {
           setError("Credentials seems not to be correct");
         },
-      }
+      },
     );
   };
 

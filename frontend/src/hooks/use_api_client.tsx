@@ -25,7 +25,7 @@ const useAuthentifiedAxiosInstance = () => {
         `${baseAxiosConfig.baseURL}/auth/refresh`,
         {
           refreshToken: getRefreshToken(),
-        }
+        },
       );
 
       const { accessToken } = response.data;
@@ -53,7 +53,7 @@ const useAuthentifiedAxiosInstance = () => {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 
   return instance;

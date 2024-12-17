@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { getAccessToken } from './auth-service';
+import axios from "axios";
+import { getAccessToken } from "./auth-service";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -7,9 +7,8 @@ const apiClient = axios.create({
 
 // Add a request interceptor to add the auth token
 apiClient.interceptors.request.use((config) => {
-  
-  const accessToken = getAccessToken()
-  console.log({accessToken})
+  const accessToken = getAccessToken();
+
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }

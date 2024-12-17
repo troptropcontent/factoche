@@ -8,111 +8,151 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as AuthLoginImport } from './routes/auth/login'
-import { Route as AuthUsersUserIdImport } from './routes/auth/users/$userId'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as IndexImport } from "./routes/index";
+import { Route as AuthLoginImport } from "./routes/auth/login";
+import { Route as AuthUsersUserIdImport } from "./routes/auth/users/$userId";
 
 // Create Virtual Routes
 
-const IndexLazyImport = createFileRoute('/')()
+const OrganizationOrganisationIdClientsIndexLazyImport = createFileRoute(
+  "/organization/$organisationId/clients/",
+)();
 
 // Create/Update Routes
 
-const IndexLazyRoute = IndexLazyImport.update({
-  id: '/',
-  path: '/',
+const IndexRoute = IndexImport.update({
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any);
 
 const AuthLoginRoute = AuthLoginImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
+  id: "/auth/login",
+  path: "/auth/login",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const AuthUsersUserIdRoute = AuthUsersUserIdImport.update({
-  id: '/auth/users/$userId',
-  path: '/auth/users/$userId',
+  id: "/auth/users/$userId",
+  path: "/auth/users/$userId",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
+
+const OrganizationOrganisationIdClientsIndexLazyRoute =
+  OrganizationOrganisationIdClientsIndexLazyImport.update({
+    id: "/organization/$organisationId/clients/",
+    path: "/organization/$organisationId/clients/",
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import("./routes/organization/$organisationId/clients/index.lazy").then(
+      (d) => d.Route,
+    ),
+  );
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/users/$userId': {
-      id: '/auth/users/$userId'
-      path: '/auth/users/$userId'
-      fullPath: '/auth/users/$userId'
-      preLoaderRoute: typeof AuthUsersUserIdImport
-      parentRoute: typeof rootRoute
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/auth/login": {
+      id: "/auth/login";
+      path: "/auth/login";
+      fullPath: "/auth/login";
+      preLoaderRoute: typeof AuthLoginImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/auth/users/$userId": {
+      id: "/auth/users/$userId";
+      path: "/auth/users/$userId";
+      fullPath: "/auth/users/$userId";
+      preLoaderRoute: typeof AuthUsersUserIdImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/organization/$organisationId/clients/": {
+      id: "/organization/$organisationId/clients/";
+      path: "/organization/$organisationId/clients";
+      fullPath: "/organization/$organisationId/clients";
+      preLoaderRoute: typeof OrganizationOrganisationIdClientsIndexLazyImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/users/$userId': typeof AuthUsersUserIdRoute
+  "/": typeof IndexRoute;
+  "/auth/login": typeof AuthLoginRoute;
+  "/auth/users/$userId": typeof AuthUsersUserIdRoute;
+  "/organization/$organisationId/clients": typeof OrganizationOrganisationIdClientsIndexLazyRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/users/$userId': typeof AuthUsersUserIdRoute
+  "/": typeof IndexRoute;
+  "/auth/login": typeof AuthLoginRoute;
+  "/auth/users/$userId": typeof AuthUsersUserIdRoute;
+  "/organization/$organisationId/clients": typeof OrganizationOrganisationIdClientsIndexLazyRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/users/$userId': typeof AuthUsersUserIdRoute
+  __root__: typeof rootRoute;
+  "/": typeof IndexRoute;
+  "/auth/login": typeof AuthLoginRoute;
+  "/auth/users/$userId": typeof AuthUsersUserIdRoute;
+  "/organization/$organisationId/clients/": typeof OrganizationOrganisationIdClientsIndexLazyRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/auth/users/$userId'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/users/$userId'
-  id: '__root__' | '/' | '/auth/login' | '/auth/users/$userId'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/auth/login"
+    | "/auth/users/$userId"
+    | "/organization/$organisationId/clients";
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | "/"
+    | "/auth/login"
+    | "/auth/users/$userId"
+    | "/organization/$organisationId/clients";
+  id:
+    | "__root__"
+    | "/"
+    | "/auth/login"
+    | "/auth/users/$userId"
+    | "/organization/$organisationId/clients/";
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthUsersUserIdRoute: typeof AuthUsersUserIdRoute
+  IndexRoute: typeof IndexRoute;
+  AuthLoginRoute: typeof AuthLoginRoute;
+  AuthUsersUserIdRoute: typeof AuthUsersUserIdRoute;
+  OrganizationOrganisationIdClientsIndexLazyRoute: typeof OrganizationOrganisationIdClientsIndexLazyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
+  IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthUsersUserIdRoute: AuthUsersUserIdRoute,
-}
+  OrganizationOrganisationIdClientsIndexLazyRoute:
+    OrganizationOrganisationIdClientsIndexLazyRoute,
+};
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
@@ -122,17 +162,21 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/auth/login",
-        "/auth/users/$userId"
+        "/auth/users/$userId",
+        "/organization/$organisationId/clients/"
       ]
     },
     "/": {
-      "filePath": "index.lazy.tsx"
+      "filePath": "index.tsx"
     },
     "/auth/login": {
       "filePath": "auth/login.tsx"
     },
     "/auth/users/$userId": {
       "filePath": "auth/users/$userId.tsx"
+    },
+    "/organization/$organisationId/clients/": {
+      "filePath": "organization/$organisationId/clients/index.lazy.tsx"
     }
   }
 }
