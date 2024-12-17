@@ -8,10 +8,13 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
       security [ bearer_auth: [] ]
       produces 'application/json'
 
-      response '200', 'company found' do
+      response '200', 'successfully lists user\'s companies' do
         let(:user) { FactoryBot.create(:user) }
         let(:company) { FactoryBot.create(:company) }
         let!(:member) { FactoryBot.create(:member, user:, company:) }
+        let(:another_user) { FactoryBot.create(:user) }
+        let(:another_company) { FactoryBot.create(:company) }
+        let!(:another_member) { FactoryBot.create(:member, user: another_user, company: another_company) }
         let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
         schema type: :array,
@@ -33,6 +36,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data.dig(0, "id")).to eq(company.id)
+          expect(data.length).to eq(1)
         end
       end
 
