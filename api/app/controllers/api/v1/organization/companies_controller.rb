@@ -1,4 +1,4 @@
-class Api::V1::Organization::CompaniesController < ApplicationController
+class Api::V1::Organization::CompaniesController < Api::V1::ApiV1Controller
   # GET /api/v1/organization/companies
   def index
     if company = current_user.companies.first

@@ -10,7 +10,7 @@ class Api::V1::ApiV1Controller < ApplicationController
   def check_pundit_authorization_performed!
     authorization_performed = pundit_policy_authorized? || pundit_policy_scoped?
 
-    raise Error::Custom, "Unauthorized endpoint" unless authorization_performed
+    raise Error::Custom.new(message: "Unauthorized endpoint") unless authorization_performed
   end
 
   def current_user
