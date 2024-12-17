@@ -15,7 +15,7 @@ type AuthContextProviderProps = {
 
 const Provider = ({ children }: AuthContextProviderProps) => {
   const { getAuthStatus } = useAuth();
-  console.log({ authStatus: getAuthStatus() });
+ 
   const [isAuthed, setIsAuthed] = useState<boolean>(getAuthStatus());
 
   return (

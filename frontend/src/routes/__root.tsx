@@ -10,6 +10,7 @@ import { QueryClient } from "@tanstack/react-query";
 
 interface RouterContext {
   queryClient: QueryClient;
+  companyId: string | null
 }
 
 const TanStackRouterDevtools =

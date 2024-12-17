@@ -8,8 +8,8 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-User.create!(email: 'test@example.com', password: 'password123')
-Organization::Company.create!({
+user = User.create!(email: 'test@example.com', password: 'password123')
+company = Organization::Company.create!({
   name: "Company Test",
   email: 'contact@testcompany.fr',
   phone: '+33623456789',
@@ -18,3 +18,4 @@ Organization::Company.create!({
   address_city: "Biarritz",
   address_zipcode: "64200"
 })
+Organization::Member.create({ user_id: user.id, company_id: company.id })

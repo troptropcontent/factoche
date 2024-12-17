@@ -1,10 +1,10 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children, companyId }: { children: React.ReactNode, companyId: string }) => {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar companyId={companyId}/>
       <main>
         <SidebarTrigger />
         {children}

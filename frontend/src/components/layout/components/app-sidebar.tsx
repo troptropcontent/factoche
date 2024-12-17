@@ -10,26 +10,26 @@ import {
 } from "@/components/ui/sidebar";
 import { Cuboid, Handshake, ReceiptText, Settings } from "lucide-react";
 
-export function AppSidebar() {
+export function AppSidebar({companyId}:{companyId: string}) {
   const items = [
     {
       title: "Projets",
-      url: "#",
+      url: `/organization/companies/${companyId}/projects`,
       icon: Cuboid,
     },
     {
       title: "Factures",
-      url: "#",
+      url: `/organization/companies/${companyId}/invoices`,
       icon: ReceiptText,
     },
     {
       title: "Clients",
-      url: "#",
+      url: `/organization/companies/${companyId}/clients`,
       icon: Handshake,
     },
     {
       title: "Settings",
-      url: "#",
+      url: `/organization/companies/${companyId}/settings`,
       icon: Settings,
     },
   ];

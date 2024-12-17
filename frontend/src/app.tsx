@@ -14,6 +14,7 @@ const router = createRouter({
   routeTree,
   context: {
     queryClient,
+    companyId: null
   },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
@@ -31,7 +32,7 @@ const App = () => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
-          <RouterProvider router={router} />
+          <RouterProvider router={router}/>
         </AuthContextProvider>
       </QueryClientProvider>
     </StrictMode>
