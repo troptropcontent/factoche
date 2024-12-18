@@ -8,21 +8,15 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
 import { Route as AuthLoginImport } from './routes/auth/login'
-
-// Create Virtual Routes
-
-const AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyImport =
-  createFileRoute(
-    '/_authenticated/organization/companies/$companyId/clients/',
-  )()
+import { Route as AuthenticatedCompaniesCompanyIdImport } from './routes/_authenticated/companies/$companyId'
+import { Route as AuthenticatedCompaniesCompanyIdIndexImport } from './routes/_authenticated/companies/$companyId/index'
+import { Route as AuthenticatedCompaniesCompanyIdClientsIndexImport } from './routes/_authenticated/companies/$companyId/clients/index'
 
 // Create/Update Routes
 
@@ -43,16 +37,26 @@ const AuthLoginRoute = AuthLoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute =
-  AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyImport.update({
-    id: '/organization/companies/$companyId/clients/',
-    path: '/organization/companies/$companyId/clients/',
+const AuthenticatedCompaniesCompanyIdRoute =
+  AuthenticatedCompaniesCompanyIdImport.update({
+    id: '/companies/$companyId',
+    path: '/companies/$companyId',
     getParentRoute: () => AuthenticatedRoute,
-  } as any).lazy(() =>
-    import(
-      './routes/_authenticated/organization/companies/$companyId/clients/index.lazy'
-    ).then((d) => d.Route),
-  )
+  } as any)
+
+const AuthenticatedCompaniesCompanyIdIndexRoute =
+  AuthenticatedCompaniesCompanyIdIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+  } as any)
+
+const AuthenticatedCompaniesCompanyIdClientsIndexRoute =
+  AuthenticatedCompaniesCompanyIdClientsIndexImport.update({
+    id: '/clients/',
+    path: '/clients/',
+    getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -79,27 +83,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexImport
       parentRoute: typeof AuthenticatedImport
     }
-    '/_authenticated/organization/companies/$companyId/clients/': {
-      id: '/_authenticated/organization/companies/$companyId/clients/'
-      path: '/organization/companies/$companyId/clients'
-      fullPath: '/organization/companies/$companyId/clients'
-      preLoaderRoute: typeof AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyImport
+    '/_authenticated/companies/$companyId': {
+      id: '/_authenticated/companies/$companyId'
+      path: '/companies/$companyId'
+      fullPath: '/companies/$companyId'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdImport
       parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/companies/$companyId/': {
+      id: '/_authenticated/companies/$companyId/'
+      path: '/'
+      fullPath: '/companies/$companyId/'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdIndexImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
+    }
+    '/_authenticated/companies/$companyId/clients/': {
+      id: '/_authenticated/companies/$companyId/clients/'
+      path: '/clients'
+      fullPath: '/companies/$companyId/clients'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdClientsIndexImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthenticatedCompaniesCompanyIdRouteChildren {
+  AuthenticatedCompaniesCompanyIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdIndexRoute
+  AuthenticatedCompaniesCompanyIdClientsIndexRoute: typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
+}
+
+const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompanyIdRouteChildren =
+  {
+    AuthenticatedCompaniesCompanyIdIndexRoute:
+      AuthenticatedCompaniesCompanyIdIndexRoute,
+    AuthenticatedCompaniesCompanyIdClientsIndexRoute:
+      AuthenticatedCompaniesCompanyIdClientsIndexRoute,
+  }
+
+const AuthenticatedCompaniesCompanyIdRouteWithChildren =
+  AuthenticatedCompaniesCompanyIdRoute._addFileChildren(
+    AuthenticatedCompaniesCompanyIdRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute: typeof AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute
+  AuthenticatedCompaniesCompanyIdRoute: typeof AuthenticatedCompaniesCompanyIdRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute:
-    AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute,
+  AuthenticatedCompaniesCompanyIdRoute:
+    AuthenticatedCompaniesCompanyIdRouteWithChildren,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -110,13 +146,16 @@ export interface FileRoutesByFullPath {
   '': typeof AuthenticatedRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/': typeof AuthenticatedIndexRoute
-  '/organization/companies/$companyId/clients': typeof AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute
+  '/companies/$companyId': typeof AuthenticatedCompaniesCompanyIdRouteWithChildren
+  '/companies/$companyId/': typeof AuthenticatedCompaniesCompanyIdIndexRoute
+  '/companies/$companyId/clients': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof AuthenticatedIndexRoute
-  '/organization/companies/$companyId/clients': typeof AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute
+  '/companies/$companyId': typeof AuthenticatedCompaniesCompanyIdIndexRoute
+  '/companies/$companyId/clients': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -124,7 +163,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/organization/companies/$companyId/clients/': typeof AuthenticatedOrganizationCompaniesCompanyIdClientsIndexLazyRoute
+  '/_authenticated/companies/$companyId': typeof AuthenticatedCompaniesCompanyIdRouteWithChildren
+  '/_authenticated/companies/$companyId/': typeof AuthenticatedCompaniesCompanyIdIndexRoute
+  '/_authenticated/companies/$companyId/clients/': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -133,15 +174,23 @@ export interface FileRouteTypes {
     | ''
     | '/auth/login'
     | '/'
-    | '/organization/companies/$companyId/clients'
+    | '/companies/$companyId'
+    | '/companies/$companyId/'
+    | '/companies/$companyId/clients'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth/login' | '/' | '/organization/companies/$companyId/clients'
+  to:
+    | '/auth/login'
+    | '/'
+    | '/companies/$companyId'
+    | '/companies/$companyId/clients'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth/login'
     | '/_authenticated/'
-    | '/_authenticated/organization/companies/$companyId/clients/'
+    | '/_authenticated/companies/$companyId'
+    | '/_authenticated/companies/$companyId/'
+    | '/_authenticated/companies/$companyId/clients/'
   fileRoutesById: FileRoutesById
 }
 
@@ -173,7 +222,7 @@ export const routeTree = rootRoute
       "filePath": "_authenticated.tsx",
       "children": [
         "/_authenticated/",
-        "/_authenticated/organization/companies/$companyId/clients/"
+        "/_authenticated/companies/$companyId"
       ]
     },
     "/auth/login": {
@@ -183,9 +232,21 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/index.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/organization/companies/$companyId/clients/": {
-      "filePath": "_authenticated/organization/companies/$companyId/clients/index.lazy.tsx",
-      "parent": "/_authenticated"
+    "/_authenticated/companies/$companyId": {
+      "filePath": "_authenticated/companies/$companyId.tsx",
+      "parent": "/_authenticated",
+      "children": [
+        "/_authenticated/companies/$companyId/",
+        "/_authenticated/companies/$companyId/clients/"
+      ]
+    },
+    "/_authenticated/companies/$companyId/": {
+      "filePath": "_authenticated/companies/$companyId/index.tsx",
+      "parent": "/_authenticated/companies/$companyId"
+    },
+    "/_authenticated/companies/$companyId/clients/": {
+      "filePath": "_authenticated/companies/$companyId/clients/index.tsx",
+      "parent": "/_authenticated/companies/$companyId"
     }
   }
 }

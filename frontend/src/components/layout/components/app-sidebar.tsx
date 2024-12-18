@@ -12,31 +12,42 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use_auth";
 import { Link, useRouter } from "@tanstack/react-router";
-import { Cuboid, Handshake, ReceiptText, Settings } from "lucide-react";
+import {
+  Cuboid,
+  Handshake,
+  LayoutDashboard,
+  ReceiptText,
+  Settings,
+} from "lucide-react";
 
-export function AppSidebar({ companyId }: { companyId: string }) {
+export function AppSidebar() {
   const { logout } = useAuth();
   const router = useRouter();
 
   const items = [
     {
+      title: "Dashboard",
+      url: ``,
+      icon: LayoutDashboard,
+    },
+    {
       title: "Projets",
-      url: `/organization/companies/${companyId}/projects`,
+      url: `projects`,
       icon: Cuboid,
     },
     {
       title: "Factures",
-      url: `/organization/companies/${companyId}/invoices`,
+      url: `invoices`,
       icon: ReceiptText,
     },
     {
       title: "Clients",
-      url: `/organization/companies/${companyId}/clients`,
+      url: `clients`,
       icon: Handshake,
     },
     {
       title: "Settings",
-      url: `/organization/companies/${companyId}/settings`,
+      url: `settings`,
       icon: Settings,
     },
   ];

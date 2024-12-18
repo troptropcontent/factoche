@@ -1,16 +1,17 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 
-const Layout = ({ children, companyId }: { children: React.ReactNode, companyId: string }) => {
+const CompanyLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
-      <AppSidebar companyId={companyId}/>
+      <AppSidebar />
       <main>
-        <SidebarTrigger />
+        {/* TODO: Find a better place for the sidebar trigger */}
+        {/* <SidebarTrigger /> */}
         {children}
       </main>
     </SidebarProvider>
   );
 };
 
-export { Layout };
+export { CompanyLayout };
