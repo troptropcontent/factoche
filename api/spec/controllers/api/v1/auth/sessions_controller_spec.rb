@@ -1,4 +1,3 @@
-# spec/requests/api/v1/auth/sessions_spec.rb
 require "rails_helper"
 require "swagger_helper"
 
@@ -38,11 +37,7 @@ RSpec.describe 'Auth API', type: :request do
       end
 
       response '401', 'invalid credentials' do
-        schema type: :object,
-          properties: {
-            error: { type: :string }
-          },
-          required: [ 'error' ]
+        schema ApiError.schema
 
         let(:session) { { session: { email: 'wrong@example.com', password: 'wrong' } } }
 
@@ -73,22 +68,14 @@ RSpec.describe 'Auth API', type: :request do
       end
 
       response '401', 'invalid token' do
-        schema type: :object,
-          properties: {
-            error: { type: :string }
-          },
-          required: [ 'error' ]
+        schema ApiError.schema
 
         let(:Authorization) { "Bearer invalid" }
         run_test!
       end
 
       response '401', 'expired token' do
-        schema type: :object,
-          properties: {
-            error: { type: :string }
-          },
-          required: [ 'error' ]
+        schema ApiError.schema
 
         let(:user) { FactoryBot.create(:user, email: 'test@example.com', password: 'password123') }
         let(:token) { travel_to 1.day.before { JwtAuth.generate_refresh_token(user.id) } }

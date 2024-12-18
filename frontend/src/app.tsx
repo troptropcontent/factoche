@@ -5,10 +5,20 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthContextProvider } from "./contexts/auth_context";
-import "./app.css"
+import "./app.css";
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const queryClient = new QueryClient();
+
+const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+    companyId: null,
+  },
+  defaultPreload: "intent",
+  defaultPreloadStaleTime: 0,
+});
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -16,8 +26,6 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
-
-const queryClient = new QueryClient();
 
 const App = () => {
   return (

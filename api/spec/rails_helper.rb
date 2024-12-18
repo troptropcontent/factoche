@@ -8,6 +8,9 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
 require 'rspec/rails'
+require_relative 'controllers/api/v1/helpers'
+
+
 
 include ActiveSupport::Testing::TimeHelpers
 

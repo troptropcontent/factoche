@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -8,28 +10,44 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Cuboid, Handshake, ReceiptText, Settings } from "lucide-react";
+import { useAuth } from "@/hooks/use_auth";
+import { Link, useRouter } from "@tanstack/react-router";
+import {
+  Cuboid,
+  Handshake,
+  LayoutDashboard,
+  ReceiptText,
+  Settings,
+} from "lucide-react";
 
 export function AppSidebar() {
+  const { logout } = useAuth();
+  const router = useRouter();
+
   const items = [
     {
+      title: "Dashboard",
+      url: ``,
+      icon: LayoutDashboard,
+    },
+    {
       title: "Projets",
-      url: "#",
+      url: `projects`,
       icon: Cuboid,
     },
     {
       title: "Factures",
-      url: "#",
+      url: `invoices`,
       icon: ReceiptText,
     },
     {
       title: "Clients",
-      url: "#",
+      url: `clients`,
       icon: Handshake,
     },
     {
       title: "Settings",
-      url: "#",
+      url: `settings`,
       icon: Settings,
     },
   ];
@@ -44,10 +62,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -55,6 +73,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button
+          onClick={() => {
+            logout();
+            router.invalidate();
+          }}
+        >
+          Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }

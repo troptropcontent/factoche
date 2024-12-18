@@ -30,7 +30,8 @@
 				"GitHub.vscode-pull-request-github",
 				"Postman.postman-for-vscode",
 				"golang.Go",
-				"Shopify.ruby-lsp"
+				"Shopify.ruby-lsp",
+				"ezforo.copy-relative-path-and-line-numbers"
 			]
 		}
 	},

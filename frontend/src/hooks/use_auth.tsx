@@ -5,14 +5,13 @@ import { AuthContext } from "../contexts/auth_context";
 
 const useAuth = () => {
   const authContext = useContext(AuthContext);
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   if (queryClient === null) {
     throw new Error("useAuth must be used within an QueryClient");
   }
 
   const getAccessToken = () => localStorage.getItem("accessToken");
   const getRefreshToken = () => localStorage.getItem("refreshToken");
-
 
   const login = (accessToken: string, refreshToken?: string) => {
     if (authContext === null) {
@@ -31,7 +30,7 @@ const useAuth = () => {
     }
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    queryClient.clear()
+    queryClient.clear();
     authContext.setIsAuthed(false);
   };
 
@@ -61,7 +60,9 @@ const useAuth = () => {
 
   const handleStorageChange = (e: StorageEvent) => {
     if (authContext === null) {
-      throw new Error("useAuth#handleStorageChange must be used within an AuthContext");
+      throw new Error(
+        "useAuth#handleStorageChange must be used within an AuthContext",
+      );
     }
     if (e.key === "accessToken" && isTokenValid(e.newValue)) {
       authContext.setIsAuthed(true);
@@ -78,7 +79,16 @@ const useAuth = () => {
     window.removeEventListener("storage", handleStorageChange);
   };
 
-  return { isAuthed, getAccessToken, getRefreshToken, login, logout, getAuthStatus, setLocalStorageEventHandler, clearLocalStorageEventHandler };
+  return {
+    isAuthed,
+    getAccessToken,
+    getRefreshToken,
+    login,
+    logout,
+    getAuthStatus,
+    setLocalStorageEventHandler,
+    clearLocalStorageEventHandler,
+  };
 };
 
 export { useAuth };
