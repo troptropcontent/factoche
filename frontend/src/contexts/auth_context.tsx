@@ -1,6 +1,10 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
 import { useAuth } from "../hooks/use_auth";
-import { setGetAccessToken, setGetRefreshToken } from "@/lib/auth-service";
+import {
+  setGetAccessToken,
+  setGetRefreshToken,
+  setIsAuthed,
+} from "@/lib/auth-service";
 
 type AuthContextType = {
   isAuthed: boolean;
@@ -15,7 +19,7 @@ type AuthContextProviderProps = {
 
 const Provider = ({ children }: AuthContextProviderProps) => {
   const { getAuthStatus } = useAuth();
- 
+
   const [isAuthed, setIsAuthed] = useState<boolean>(getAuthStatus());
 
   return (
@@ -31,8 +35,10 @@ const Consumer = ({ children }: { children: ReactNode }) => {
     clearLocalStorageEventHandler,
     getAccessToken,
     getRefreshToken,
+    isAuthed,
   } = useAuth();
   useEffect(() => {
+    setIsAuthed(isAuthed);
     setGetAccessToken(getAccessToken);
     setGetRefreshToken(getRefreshToken);
     setLocalStorageEventHandler();
@@ -42,6 +48,7 @@ const Consumer = ({ children }: { children: ReactNode }) => {
     clearLocalStorageEventHandler,
     getAccessToken,
     getRefreshToken,
+    isAuthed,
   ]);
 
   return <>{children}</>;

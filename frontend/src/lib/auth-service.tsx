@@ -1,3 +1,9 @@
+let isAuthed: () => boolean | null = () => null;
+
+const setIsAuthed = (isAuthedFn: () => boolean | null) => {
+  isAuthed = isAuthedFn;
+};
+
 let getAccessToken: () => string | null = () => null;
 
 const setGetAccessToken = (tokenFn: () => string | null) => {
@@ -15,4 +21,6 @@ export {
   setGetAccessToken,
   getRefreshToken,
   setGetRefreshToken,
+  isAuthed,
+  setIsAuthed
 };
