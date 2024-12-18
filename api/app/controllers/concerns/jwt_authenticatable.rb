@@ -9,10 +9,10 @@ module JwtAuthenticatable
       @current_user = User.find(decoded["sub"])
     rescue JWT::ExpiredSignature
       skip_authorization
-      raise Error::Custom.new(code: 401, status: :unauthorized, message: "Expired token")
+      raise Error::UnauthorizedError, "Expired token"
     rescue JWT::DecodeError
       skip_authorization
-      raise Error::Custom.new(code: 401, status: :unauthorized, message: "Invalid token")
+      raise Error::UnauthorizedError, "Invalid token"
     end
   end
 end

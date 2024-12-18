@@ -11,7 +11,7 @@ class Api::V1::Auth::SessionsController < Api::V1::ApiV1Controller
     if user && user.authenticate(session_params[:password])
       render json: { access_token: JwtAuth.generate_access_token(user.id), refresh_token: JwtAuth.generate_refresh_token(user.id) }
     else
-      raise Error::Custom.new(code: 401, status: :unauthorized, message: "Invalid credentials")
+      raise Error::UnauthorizedError, "Invalid credentials"
     end
   end
 
@@ -25,9 +25,9 @@ class Api::V1::Auth::SessionsController < Api::V1::ApiV1Controller
       claims = JwtAuth.decode_refresh_token(token)
       render json: { access_token: JwtAuth.generate_access_token(claims["sub"]) }
     rescue JWT::ExpiredSignature
-      raise Error::Custom.new(code: 401, status: :unauthorized, message: "Token has expired")
+      raise Error::UnauthorizedError, "Token has expired"
     rescue JWT::DecodeError
-      raise Error::Custom.new(code: 401, status: :unauthorized, message: "Invalid token")
+      raise Error::UnauthorizedError, "Invalid token"
     end
   end
 
