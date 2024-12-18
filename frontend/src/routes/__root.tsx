@@ -1,16 +1,11 @@
-import {
-  createRootRouteWithContext,
-  Outlet,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 
-import React, { useEffect } from "react";
-import { useAuth } from "../hooks/use_auth";
+import React from "react";
 import { QueryClient } from "@tanstack/react-query";
 
 interface RouterContext {
   queryClient: QueryClient;
-  companyId: string | null
+  companyId: string | null;
 }
 
 const TanStackRouterDevtools =
@@ -19,19 +14,10 @@ const TanStackRouterDevtools =
     : React.lazy(() =>
         import("@tanstack/router-devtools").then((res) => ({
           default: res.TanStackRouterDevtools,
-        })),
+        }))
       );
 
 const Root = () => {
-  const { isAuthed } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isAuthed() && location.pathname !== "/auth/login") {
-      navigate({ to: "/auth/login", search: { redirect: location.pathname } });
-    }
-  }, [isAuthed, navigate]);
-
   return (
     <>
       <Outlet />

@@ -11,10 +11,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use_auth";
+import { Link, useRouter } from "@tanstack/react-router";
 import { Cuboid, Handshake, ReceiptText, Settings } from "lucide-react";
 
 export function AppSidebar({ companyId }: { companyId: string }) {
   const { logout } = useAuth();
+  const router = useRouter();
+
   const items = [
     {
       title: "Projets",
@@ -48,10 +51,10 @@ export function AppSidebar({ companyId }: { companyId: string }) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -63,6 +66,7 @@ export function AppSidebar({ companyId }: { companyId: string }) {
         <Button
           onClick={() => {
             logout();
+            router.invalidate();
           }}
         >
           Logout

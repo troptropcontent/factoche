@@ -1,11 +1,11 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 
 export const Route = createLazyFileRoute(
-  '/organization/companies/$companyId/clients/',
+  '/_authenticated/organization/companies/$companyId/clients/',
 )({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return  <h1>Hello from the list of all clients</h1>
+  return <h1>Hello from the list of all clients</h1>
 }
