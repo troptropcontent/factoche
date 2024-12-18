@@ -5,11 +5,7 @@ const CompanyLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
-        {/* TODO: Find a better place for the sidebar trigger */}
-        {/* <SidebarTrigger /> */}
-        {children}
-      </main>
+      <main className="flex-grow">{children}</main>
     </SidebarProvider>
   );
 };

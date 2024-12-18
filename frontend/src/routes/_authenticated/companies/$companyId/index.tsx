@@ -1,3 +1,5 @@
+import { Header } from "@/features/companies/header";
+import { MainSection } from "@/features/companies/main-section";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/companies/$companyId/")({
@@ -6,5 +8,14 @@ export const Route = createFileRoute("/_authenticated/companies/$companyId/")({
 
 function RouteComponent() {
   const { companyId } = Route.useParams();
-  return <h1>Dashboard of company {companyId}</h1>;
+  return (
+    <>
+      <Header>
+        <h1>Mon dashboard</h1>
+      </Header>
+      <MainSection>
+        <p>Dashboard de la company {companyId}</p>
+      </MainSection>
+    </>
+  );
 }

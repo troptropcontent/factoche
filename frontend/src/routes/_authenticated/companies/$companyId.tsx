@@ -1,4 +1,4 @@
-import { CompanyLayout } from "@/components/layout/layout";
+import { CompanyLayout } from "@/components/layout/company-layout";
 import { getCompanyQueryOptions } from "@/queries/organization/companies/getCompanyQueryOptions";
 import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 

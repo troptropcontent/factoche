@@ -1,3 +1,5 @@
+import { Header } from "@/features/companies/header";
+import { MainSection } from "@/features/companies/main-section";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
@@ -9,5 +11,14 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { companyId } = Route.useParams();
 
-  return <h1>Hello from the list of company {companyId} clients</h1>;
+  return (
+    <>
+      <Header>
+        <h1>Mes clients</h1>
+      </Header>
+      <MainSection>
+        <p>Liste des clients de la company {companyId}</p>
+      </MainSection>
+    </>
+  );
 }
