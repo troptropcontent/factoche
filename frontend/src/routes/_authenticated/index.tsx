@@ -4,7 +4,7 @@ import { createFileRoute, Navigate } from "@tanstack/react-router";
 export const Route = createFileRoute("/_authenticated/")({
   component: Index,
   loader: ({ context: { queryClient } }) => {
-    return queryClient.ensureQueryData(getCompaniesQueryOptions);
+    return queryClient.ensureQueryData(getCompaniesQueryOptions());
   },
 });
 
