@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -8,9 +10,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/use_auth";
 import { Cuboid, Handshake, ReceiptText, Settings } from "lucide-react";
 
-export function AppSidebar({companyId}:{companyId: string}) {
+export function AppSidebar({ companyId }: { companyId: string }) {
+  const { logout } = useAuth();
   const items = [
     {
       title: "Projets",
@@ -55,6 +59,15 @@ export function AppSidebar({companyId}:{companyId: string}) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button
+          onClick={() => {
+            logout();
+          }}
+        >
+          Logout
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
