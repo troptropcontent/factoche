@@ -1,5 +1,5 @@
-import { Header } from "@/features/companies/header";
-import { MainSection } from "@/features/companies/main-section";
+import { Header } from "@/components/pages/companies/header";
+import { MainSection } from "@/components/pages/companies/main-section";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from 'react-i18next';
 

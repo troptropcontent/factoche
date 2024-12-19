@@ -1,6 +1,26 @@
-import { Header } from "@/features/companies/header";
-import { MainSection } from "@/features/companies/main-section";
+import { Header } from "@/components/pages/companies/header";
+import { MainSection } from "@/components/pages/companies/main-section";
 import { createFileRoute } from "@tanstack/react-router";
+import { PlusCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+
+// Mock data for demonstration
+const clients = [
+  { id: 1, name: "Acme Corp", email: "contact@acme.com", phone: "123-456-7890" },
+  { id: 2, name: "Globex Co", email: "info@globex.com", phone: "098-765-4321" },
+  { id: 3, name: "Initech", email: "support@initech.com", phone: "555-123-4567" },
+];
 
 export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/clients/"
@@ -10,14 +30,67 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { companyId } = Route.useParams();
+  const {t} = useTranslation()
 
   return (
     <>
       <Header>
-        <h1>Mes clients</h1>
+          <div className="flex flex-grow justify-between items-center">
+            <h1 className="text-3xl font-bold">{t("pages.companies.clients.index.title")}</h1>
+            <Button asChild>
+              <Link to={`/_authenticated/companies/${companyId}/clients/create`}>
+                <PlusCircle className="mr-2 h-4 w-4" />{t("pages.companies.clients.index.add_client")}
+              </Link>
+            </Button>
+          </div>
       </Header>
       <MainSection>
-        <p>Liste des clients de la company {companyId}</p>
+        <div className="container mx-auto">
+          <div className="flex justify-between items-center mb-4">
+            {/* TODO: Implement search and sort functionality */}
+            <Input
+              placeholder={t("pages.companies.clients.index.search.placeholder")}
+              className="max-w-sm"
+            />
+            {/* <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">{t("pages.companies.clients.index.sort_by.label")}</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>{t("pages.companies.clients.index.sort_by.options.name")}</DropdownMenuItem>
+                <DropdownMenuItem>{t("pages.companies.clients.index.sort_by.options.name_desc")}</DropdownMenuItem>
+                <DropdownMenuItem>{t("pages.companies.clients.index.sort_by.options.email")}</DropdownMenuItem>
+                <DropdownMenuItem>{t("pages.companies.clients.index.sort_by.options.email_desc")}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu> */}
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("pages.companies.clients.index.table.name")}</TableHead>
+                <TableHead>{t("pages.companies.clients.index.table.email")}</TableHead>
+                <TableHead>{t("pages.companies.clients.index.table.phone")}</TableHead>
+                <TableHead className="text-right">{t("pages.companies.clients.index.table.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {clients.map((client) => (
+                <TableRow key={client.id}>
+                  <TableCell className="font-medium">{client.name}</TableCell>
+                  <TableCell>{client.email}</TableCell>
+                  <TableCell>{client.phone}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to={`/_authenticated/companies/${companyId}/clients/${client.id}`}>
+                        View
+                      </Link>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </MainSection>
     </>
   );
