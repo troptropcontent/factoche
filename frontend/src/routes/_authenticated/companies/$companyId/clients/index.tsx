@@ -1,7 +1,5 @@
-import { Header } from "@/components/pages/companies/header";
-import { MainSection } from "@/components/pages/companies/main-section";
 import { createFileRoute } from "@tanstack/react-router";
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,12 +12,23 @@ import {
 } from "@/components/ui/table";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { Layout } from "@/components/pages/companies/layout";
 
 // Mock data for demonstration
 const clients = [
-  { id: 1, name: "Acme Corp", email: "contact@acme.com", phone: "123-456-7890" },
+  {
+    id: 1,
+    name: "Acme Corp",
+    email: "contact@acme.com",
+    phone: "123-456-7890",
+  },
   { id: 2, name: "Globex Co", email: "info@globex.com", phone: "098-765-4321" },
-  { id: 3, name: "Initech", email: "support@initech.com", phone: "555-123-4567" },
+  {
+    id: 3,
+    name: "Initech",
+    email: "support@initech.com",
+    phone: "555-123-4567",
+  },
 ];
 
 export const Route = createFileRoute(
@@ -30,26 +39,34 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { companyId } = Route.useParams();
-  const {t} = useTranslation()
+  const { t } = useTranslation();
 
   return (
-    <>
-      <Header>
-          <div className="flex flex-grow justify-between items-center">
-            <h1 className="text-3xl font-bold">{t("pages.companies.clients.index.title")}</h1>
-            <Button asChild>
-              <Link to={`/_authenticated/companies/${companyId}/clients/create`}>
-                <PlusCircle className="mr-2 h-4 w-4" />{t("pages.companies.clients.index.add_client")}
-              </Link>
-            </Button>
-          </div>
-      </Header>
-      <MainSection>
+    <Layout.Root>
+      <Layout.Header>
+        <div className="flex flex-grow justify-between items-center">
+          <h1 className="text-3xl font-bold">
+            {t("pages.companies.clients.index.title")}
+          </h1>
+          <Button asChild>
+            <Link
+              to={`/companies/$companyId/clients/new`}
+              params={{ companyId }}
+            >
+              <PlusCircle className="mr-2 h-4 w-4" />
+              {t("pages.companies.clients.index.add_client")}
+            </Link>
+          </Button>
+        </div>
+      </Layout.Header>
+      <Layout.Content>
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-4">
             {/* TODO: Implement search and sort functionality */}
             <Input
-              placeholder={t("pages.companies.clients.index.search.placeholder")}
+              placeholder={t(
+                "pages.companies.clients.index.search.placeholder"
+              )}
               className="max-w-sm"
             />
             {/* <DropdownMenu>
@@ -67,10 +84,18 @@ function RouteComponent() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t("pages.companies.clients.index.table.name")}</TableHead>
-                <TableHead>{t("pages.companies.clients.index.table.email")}</TableHead>
-                <TableHead>{t("pages.companies.clients.index.table.phone")}</TableHead>
-                <TableHead className="text-right">{t("pages.companies.clients.index.table.actions")}</TableHead>
+                <TableHead>
+                  {t("pages.companies.clients.index.table.name")}
+                </TableHead>
+                <TableHead>
+                  {t("pages.companies.clients.index.table.email")}
+                </TableHead>
+                <TableHead>
+                  {t("pages.companies.clients.index.table.phone")}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t("pages.companies.clients.index.table.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -81,9 +106,7 @@ function RouteComponent() {
                   <TableCell>{client.phone}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm" asChild>
-                      <Link to={`/_authenticated/companies/${companyId}/clients/${client.id}`}>
-                        View
-                      </Link>
+                      <Link to={`/${client.id}`}>View</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -91,7 +114,7 @@ function RouteComponent() {
             </TableBody>
           </Table>
         </div>
-      </MainSection>
-    </>
+      </Layout.Content>
+    </Layout.Root>
   );
 }

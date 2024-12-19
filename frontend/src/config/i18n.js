@@ -40,6 +40,9 @@ i18n
                                     "search": {
                                         "placeholder": "Rechercher un client ..."
                                     }
+                                },
+                                "new": {
+                                    "title": "Nouveau client"
                                 }
                             }
                         }
