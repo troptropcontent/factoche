@@ -4,7 +4,6 @@ import { initReactI18next } from 'react-i18next';
 i18n
     .use(initReactI18next)
     .init({
-        debug: true,
         fallbackLng: 'fr',
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
@@ -12,6 +11,15 @@ i18n
         resources: {
             fr: {
                 translation: {
+                    "form": {
+                        "validation": {
+                            "required": "Ce champ est requis",
+                            "invalid": "Ce champ est invalide",
+                            "min": "Ce champ doit contenir au moins {{min}} caractères",
+                            "max": "Ce champ doit contenir au plus {{max}} caractères",
+                            "email": "Ce champ doit être un email valide",
+                        }
+                    },
                     "pages": {
                         "companies": {
                             "show": {
@@ -43,6 +51,23 @@ i18n
                                 },
                                 "new": {
                                     "title": "Nouveau client"
+                                },
+                                "form": {
+                                    "name": "Nom",
+                                    "name_placeholder": "Nom du client",
+                                    "registration_number": "Numéro Siret",
+                                    "registration_number_placeholder": "Numéro Siret du client",
+                                    "email": "Email",
+                                    "email_placeholder": "Email du client",
+                                    "phone": "Téléphone",
+                                    "phone_placeholder": "Téléphone du client",
+                                    "address_street": "Adresse",
+                                    "address_street_placeholder": "Adresse du client",
+                                    "address_city": "Ville",
+                                    "address_city_placeholder": "Ville du client",
+                                    "address_zipcode": "Code postal",
+                                    "address_zipcode_placeholder": "Code postal du client",
+                                    "submit": "Ajouter"
                                 }
                             }
                         }

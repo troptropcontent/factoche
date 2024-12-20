@@ -1,3 +1,4 @@
+import { ClientForm } from "@/components/pages/companies/clients/client-form";
 import { Layout } from "@/components/pages/companies/layout";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -17,7 +18,9 @@ function RouteComponent() {
           {t("pages.companies.clients.new.title")}
         </h1>
       </Layout.Header>
-      <Layout.Content>Login Form</Layout.Content>
+      <Layout.Content>
+        <ClientForm />
+      </Layout.Content>
     </Layout.Root>
   );
 }
