@@ -6,7 +6,7 @@ class Api::V1::Organization::CompaniesController < Api::V1::ApiV1Controller
     render json: Organization::CompanySerializer.render(companies)
   end
 
-  # GET /api/v1/organization/:id
+  # GET /api/v1/organization/companies/:id
   def show
     company = policy_scope(Organization::Company).find_by(id: params[:id])
     raise Error::NotFoundError unless company

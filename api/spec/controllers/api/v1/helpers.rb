@@ -3,15 +3,17 @@ module ApiError
   def self.schema
     {
       type: :object,
+      additionalProperties: false,
       properties: {
         error: {
           type: :object,
           properties: {
             status: { type: :string },
             code: { type: :integer },
-            message: { type: :string }
+            message: { type: :string },
+            details: { type: :object, nullable: true }
           },
-          required: [ 'status', 'code', 'message' ]
+          required: [ 'status', 'code', 'message', 'details' ]
         }
       },
       required: [ 'error' ]
