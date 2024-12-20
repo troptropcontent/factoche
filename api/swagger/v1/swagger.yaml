@@ -1,0 +1,452 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/auth/login":
+    post:
+      summary: Creates a session
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '200':
+          description: session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                required:
+                - access_token
+                - refresh_token
+        '401':
+          description: invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      example: user@example.com
+                    password:
+                      type: string
+                      example: password123
+                  required:
+                  - email
+                  - password
+  "/api/v1/auth/refresh":
+    post:
+      summary: Refresh the access token
+      tags:
+      - Authentication
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: access token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                required:
+                - access_token
+        '401':
+          description: expired token
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+  "/api/v1/organization/companies/{company_id}/clients":
+    post:
+      summary: Creates a client for a company
+      tags:
+      - Clients
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: client created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  registration_number:
+                    type: string
+                  email:
+                    type: string
+                  phone:
+                    type: string
+                  address_city:
+                    type: string
+                  address_street:
+                    type: string
+                  address_zipcode:
+                    type: string
+                required:
+                - id
+                - name
+                - registration_number
+                - email
+                - phone
+                - address_city
+                - address_street
+                - address_zipcode
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '404':
+          description: company not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '422':
+          description: client is invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                registration_number:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                address_street:
+                  type: string
+                address_city:
+                  type: string
+                address_zipcode:
+                  type: string
+              required:
+              - name
+              - registration_number
+              - email
+              - phone
+              - address_street
+              - address_city
+              - address_zipcode
+  "/api/v1/organization/companies":
+    get:
+      summary: Lists user companies
+      tags:
+      - Companies
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: successfully lists user's companies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    registration_number:
+                      type: string
+                    email:
+                      type: string
+                    phone:
+                      type: string
+                    address_city:
+                      type: string
+                    address_street:
+                      type: string
+                    address_zipcode:
+                      type: string
+                  required:
+                  - id
+                  - name
+                  - registration_number
+                  - email
+                  - phone
+                  - address_city
+                  - address_street
+                  - address_zipcode
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+  "/api/v1/organization/companies/{id}":
+    get:
+      summary: Shows a specific company
+      tags:
+      - Companies
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successfully shows the company
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  registration_number:
+                    type: string
+                  email:
+                    type: string
+                  phone:
+                    type: string
+                  address_city:
+                    type: string
+                  address_street:
+                    type: string
+                  address_zipcode:
+                    type: string
+                required:
+                - id
+                - name
+                - registration_number
+                - email
+                - phone
+                - address_city
+                - address_street
+                - address_zipcode
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com
