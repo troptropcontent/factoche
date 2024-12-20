@@ -13,12 +13,12 @@ import { z } from "zod";
 const clientFormSchema = (t: TFunction<"translation">) =>
   z.object({
     name: z.string().min(1, t("form.validation.required")),
-    registration_number: z.string().min(1),
-    email: z.string().min(1).email(),
-    phone: z.string().min(1),
-    address_street: z.string().min(1),
-    address_city: z.string().min(1),
-    address_zipcode: z.string().min(1),
+    registration_number: z.string().min(1, t("form.validation.required")),
+    email: z.string().min(1, t("form.validation.required")).email(),
+    phone: z.string().min(1, t("form.validation.required")),
+    address_street: z.string().min(1, t("form.validation.required")),
+    address_city: z.string().min(1, t("form.validation.required")),
+    address_zipcode: z.string().min(1, t("form.validation.required")),
   });
 
 type ClientFormType = z.infer<ReturnType<typeof clientFormSchema>>;
