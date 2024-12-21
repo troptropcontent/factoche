@@ -271,6 +271,7 @@ paths:
               - address_street
               - address_city
               - address_zipcode
+        required: true
   "/api/v1/organization/companies":
     get:
       summary: Lists user companies

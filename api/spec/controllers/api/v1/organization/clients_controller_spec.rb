@@ -9,7 +9,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request, focus: 
       consumes 'application/json'
       produces 'application/json'
       parameter name: :company_id, in: :path, type: :integer
-      parameter name: :client, in: :body, schema: {
+      parameter name: :client, in: :body, required: true, schema: {
         type: :object,
         properties: {
           name: { type: :string },
