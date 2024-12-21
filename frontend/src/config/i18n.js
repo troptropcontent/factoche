@@ -18,7 +18,8 @@ i18n
                             "min": "Ce champ doit contenir au moins {{min}} caractères",
                             "max": "Ce champ doit contenir au plus {{max}} caractères",
                             "email": "Ce champ doit être un email valide",
-                        }
+                        },
+                        "submitError": "Une erreur est survenue lors de la soumission du formulaire"
                     },
                     "pages": {
                         "companies": {

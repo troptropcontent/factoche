@@ -11,6 +11,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { t } = useTranslation();
+  const { companyId } = Route.useParams();
   return (
     <Layout.Root>
       <Layout.Header>
@@ -19,7 +20,7 @@ function RouteComponent() {
         </h1>
       </Layout.Header>
       <Layout.Content>
-        <ClientForm />
+        <ClientForm companyId={companyId} />
       </Layout.Content>
     </Layout.Root>
   );

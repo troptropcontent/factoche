@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/")({
 });
 
 function Index() {
-  const companies = Route.useLoaderData();
+  const { data: companies } = Route.useLoaderData();
   const companyId = companies[0]?.id;
   if (companyId == undefined) {
     throw new Error("No company found. Please set up a company first.");

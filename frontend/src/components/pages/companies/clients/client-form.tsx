@@ -4,7 +4,10 @@ import { FormControl } from "@/components/ui/form";
 import { FormItem, FormLabel } from "@/components/ui/form";
 import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { createClientMutationOptions } from "@/queries/organization/clients/postCompanyQueryOptions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { redirect, useNavigate } from "@tanstack/react-router";
 import { TFunction } from "i18next";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -33,11 +36,17 @@ const DefaultValues: ClientFormType = {
   address_zipcode: "",
 };
 
+// TODO: Consider refactoring error handling logic into a shared utility
+// Current error handling includes field-level validation errors and form submission errors
+// Could be extracted to be reused across other forms
 const ClientForm = ({
   initialValues,
+  companyId,
 }: {
   initialValues?: Partial<ClientFormType>;
+  companyId: string;
 }) => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const i18nFormSchema = clientFormSchema(t);
   const form = useForm<ClientFormType>({
@@ -47,9 +56,36 @@ const ClientForm = ({
       ...initialValues,
     },
   });
+  const createClientMutation = useMutation(
+    createClientMutationOptions(parseInt(companyId))
+  );
+
+  const setFieldErrors = (details) => {
+    Object.entries(details).forEach(([field, issues]) => {
+      issues.forEach((issue) =>
+        form.setError(field, { message: t(`form.validation.${issue.type}`) })
+      );
+    });
+  };
+
+  const handleError = (e) => {
+    if (typeof e.response.data == "object") {
+      setFieldErrors(e.response.data.details);
+    } else {
+      form.setError("root", { message: t("form.submitError") });
+    }
+  };
 
   const onSubmit = (values: ClientFormType) => {
-    console.log(values);
+    createClientMutation.mutate(values, {
+      onError: handleError,
+      onSuccess: () => {
+        navigate({
+          to: "/companies/$companyId/clients",
+          params: { companyId },
+        });
+      },
+    });
   };
 
   return (
@@ -192,6 +228,9 @@ const ClientForm = ({
             </FormItem>
           )}
         />
+        {form.formState.errors.root && (
+          <FormMessage>{form.formState.errors.root.message}</FormMessage>
+        )}
         <Button type="submit">
           {t("pages.companies.clients.form.submit")}
         </Button>
