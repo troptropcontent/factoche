@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       end
       namespace :organization do
         resources :companies, only: [ :index, :show ] do
-          resources :clients, only: [ :create ]
+          resources :clients, only: [ :create, :index ]
         end
       end
     end

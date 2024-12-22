@@ -7,6 +7,7 @@ module ApiError
       properties: {
         error: {
           type: :object,
+          additionalProperties: false,
           properties: {
             status: { type: :string },
             code: { type: :integer },
