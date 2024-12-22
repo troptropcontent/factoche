@@ -1,7 +1,7 @@
 FactoryBot.define do
-  factory :organization_client, class: 'Organization::Client' do
+  factory :client, class: 'Organization::Client' do
     name { "Super Client" }
-    registration_number { "123456" }
+    sequence(:registration_number) { |n| "REG#{n.to_s.rjust(9, '0')}" }
     email { "super@client.com" }
     phone { "+33612345645" }
     address_street { "15 rue des mouettes" }

@@ -6,7 +6,7 @@ RSpec.describe Organization::Client, type: :model do
   end
 
   describe "validations" do
-    subject { FactoryBot.build(:organization_client) }
+    subject { FactoryBot.build(:client) }
 
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:registration_number) }
