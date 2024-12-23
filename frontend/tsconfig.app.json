@@ -8,6 +8,8 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    // https://github.com/openapi-ts/openapi-typescript/tree/main/packages/openapi-typescript#setup
+    "noUncheckedIndexedAccess": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

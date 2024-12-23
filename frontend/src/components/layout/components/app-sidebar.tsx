@@ -79,6 +79,7 @@ export function AppSidebar() {
             logout();
             router.invalidate();
           }}
+          variant="outline"
         >
           Logout
         </Button>

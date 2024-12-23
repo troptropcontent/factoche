@@ -23,6 +23,40 @@ RSpec.configure do |config|
       },
       paths: {},
       components: {
+        schemas: {
+          client: {
+            type: :object,
+               properties: {
+                 id: { type: :integer },
+                 name: { type: :string },
+                 registration_number: { type: :string },
+                 email: { type: :string },
+                 phone: { type: :string },
+                 address_city: { type: :string },
+                 address_street: { type: :string },
+                 address_zipcode: { type: :string }
+               },
+               required: [ 'id', 'name', 'registration_number', 'email', 'phone', 'address_city', 'address_street', 'address_zipcode' ]
+          },
+          error: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              error: {
+                type: :object,
+                additionalProperties: false,
+                properties: {
+                  status: { type: :string },
+                  code: { type: :integer },
+                  message: { type: :string },
+                  details: { type: :object, nullable: true }
+                },
+                required: [ 'status', 'code', 'message', 'details' ]
+              }
+            },
+            required: [ 'error' ]
+          }
+        },
         securitySchemes: {
           bearer_auth: {
             type: :http,

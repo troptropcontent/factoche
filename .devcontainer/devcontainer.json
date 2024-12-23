@@ -31,7 +31,9 @@
 				"Postman.postman-for-vscode",
 				"golang.Go",
 				"Shopify.ruby-lsp",
-				"ezforo.copy-relative-path-and-line-numbers"
+				"ezforo.copy-relative-path-and-line-numbers",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss"
 			]
 		}
 	},
