@@ -13,6 +13,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/pages/companies/layout";
+import { Api } from "@/services/api/client";
 
 // Mock data for demonstration
 const clients = [
@@ -35,6 +36,10 @@ export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/clients/"
 )({
   component: RouteComponent,
+  loader: ({ params: { companyId } }) =>
+    Api.GET("/api/v1/organization/companies/{company_id}/clients", {
+      path: { company_id: parseInt(companyId) },
+    }),
 });
 
 function RouteComponent() {
