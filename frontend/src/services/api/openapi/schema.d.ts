@@ -131,7 +131,49 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Lists clients for a company */
+        get: {
+            parameters: {
+                query?: never;
+                header: {
+                    Authorization: string;
+                };
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description clients found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["client"][];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description company not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
         put?: never;
         /** Creates a client for a company */
         post: {
@@ -163,16 +205,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            id: number;
-                            name: string;
-                            registration_number: string;
-                            email: string;
-                            phone: string;
-                            address_city: string;
-                            address_street: string;
-                            address_zipcode: string;
-                        };
+                        "application/json": components["schemas"]["client"];
                     };
                 };
                 /** @description unauthorized */
@@ -181,14 +214,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            error: {
-                                status: string;
-                                code: number;
-                                message: string;
-                                details: Record<string, never>;
-                            };
-                        };
+                        "application/json": components["schemas"]["error"];
                     };
                 };
                 /** @description company not found */
@@ -197,14 +223,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            error: {
-                                status: string;
-                                code: number;
-                                message: string;
-                                details: Record<string, never>;
-                            };
-                        };
+                        "application/json": components["schemas"]["error"];
                     };
                 };
                 /** @description client is invalid */
@@ -213,14 +232,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            error: {
-                                status: string;
-                                code: number;
-                                message: string;
-                                details: Record<string, never>;
-                            };
-                        };
+                        "application/json": components["schemas"]["error"];
                     };
                 };
             };
@@ -374,7 +386,26 @@ export interface paths {
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
+    schemas: {
+        client: {
+            id: number;
+            name: string;
+            registration_number: string;
+            email: string;
+            phone: string;
+            address_city: string;
+            address_street: string;
+            address_zipcode: string;
+        };
+        error: {
+            error: {
+                status: string;
+                code: number;
+                message: string;
+                details: Record<string, never>;
+            };
+        };
+    };
     responses: never;
     parameters: never;
     requestBodies: never;

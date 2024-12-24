@@ -35,6 +35,7 @@ paths:
                 properties:
                   error:
                     type: object
+                    additionalProperties: false
                     properties:
                       status:
                         type: string
@@ -99,6 +100,7 @@ paths:
                 properties:
                   error:
                     type: object
+                    additionalProperties: false
                     properties:
                       status:
                         type: string
@@ -135,114 +137,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  registration_number:
-                    type: string
-                  email:
-                    type: string
-                  phone:
-                    type: string
-                  address_city:
-                    type: string
-                  address_street:
-                    type: string
-                  address_zipcode:
-                    type: string
-                required:
-                - id
-                - name
-                - registration_number
-                - email
-                - phone
-                - address_city
-                - address_street
-                - address_zipcode
+                "$ref": "#/components/schemas/client"
         '401':
           description: unauthorized
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: false
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                      code:
-                        type: integer
-                      message:
-                        type: string
-                      details:
-                        type: object
-                        nullable: true
-                    required:
-                    - status
-                    - code
-                    - message
-                    - details
-                required:
-                - error
+                "$ref": "#/components/schemas/error"
         '404':
           description: company not found
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: false
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                      code:
-                        type: integer
-                      message:
-                        type: string
-                      details:
-                        type: object
-                        nullable: true
-                    required:
-                    - status
-                    - code
-                    - message
-                    - details
-                required:
-                - error
+                "$ref": "#/components/schemas/error"
         '422':
           description: client is invalid
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: false
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                      code:
-                        type: integer
-                      message:
-                        type: string
-                      details:
-                        type: object
-                        nullable: true
-                    required:
-                    - status
-                    - code
-                    - message
-                    - details
-                required:
-                - error
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:
@@ -272,6 +185,42 @@ paths:
               - address_city
               - address_zipcode
         required: true
+    get:
+      summary: Lists clients for a company
+      tags:
+      - Clients
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: clients found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/client"
+        '404':
+          description: company not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
   "/api/v1/organization/companies":
     get:
       summary: Lists user companies
@@ -324,6 +273,7 @@ paths:
                 properties:
                   error:
                     type: object
+                    additionalProperties: false
                     properties:
                       status:
                         type: string
@@ -397,6 +347,7 @@ paths:
                 properties:
                   error:
                     type: object
+                    additionalProperties: false
                     properties:
                       status:
                         type: string
@@ -424,6 +375,7 @@ paths:
                 properties:
                   error:
                     type: object
+                    additionalProperties: false
                     properties:
                       status:
                         type: string
@@ -442,6 +394,59 @@ paths:
                 required:
                 - error
 components:
+  schemas:
+    client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        registration_number:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address_city:
+          type: string
+        address_street:
+          type: string
+        address_zipcode:
+          type: string
+      required:
+      - id
+      - name
+      - registration_number
+      - email
+      - phone
+      - address_city
+      - address_street
+      - address_zipcode
+    error:
+      type: object
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          properties:
+            status:
+              type: string
+            code:
+              type: integer
+            message:
+              type: string
+            details:
+              type: object
+              nullable: true
+          required:
+          - status
+          - code
+          - message
+          - details
+      required:
+      - error
   securitySchemes:
     bearer_auth:
       type: http

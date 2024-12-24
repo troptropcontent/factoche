@@ -35,7 +35,11 @@ i18n
                                         "name": "Nom",
                                         "email": "Email",
                                         "phone": "Téléphone",
-                                        "actions": "Actions"
+                                        "actions": "Actions",
+                                        "empty_state": {
+                                            "title": "Aucun client trouvé",
+                                            "description": "Ajouter un client pour commencer"
+                                        }
                                     },
                                     "sort_by": {
                                         "options": {
@@ -51,7 +55,7 @@ i18n
                                     }
                                 },
                                 "new": {
-                                    "title": "Nouveau client"
+                                    "title": "Nouveau client",
                                 },
                                 "form": {
                                     "name": "Nom",

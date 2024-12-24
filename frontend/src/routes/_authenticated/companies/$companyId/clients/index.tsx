@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, PlusCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,33 +13,22 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/pages/companies/layout";
-
-// Mock data for demonstration
-const clients = [
-  {
-    id: 1,
-    name: "Acme Corp",
-    email: "contact@acme.com",
-    phone: "123-456-7890",
-  },
-  { id: 2, name: "Globex Co", email: "info@globex.com", phone: "098-765-4321" },
-  {
-    id: 3,
-    name: "Initech",
-    email: "support@initech.com",
-    phone: "555-123-4567",
-  },
-];
+import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/clients/"
 )({
   component: RouteComponent,
+  loader: ({ context: { queryClient }, params: { companyId } }) =>
+    queryClient.ensureQueryData(getCompanyClientsQueryOptions(companyId)),
 });
 
 function RouteComponent() {
   const { companyId } = Route.useParams();
   const { t } = useTranslation();
+  const { data: clients } = Route.useLoaderData();
+  console.log({ clients });
 
   return (
     <Layout.Root>
@@ -99,6 +88,23 @@ function RouteComponent() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              <TableRow className="only:table-row hidden">
+                <TableCell colSpan={4}>
+                  <div className="flex flex-col items-center justify-center h-32 text-center">
+                    <PlusCircle className="w-10 h-10 text-gray-400 mb-2" />
+                    <h3 className="text-lg font-medium">
+                      {t(
+                        "pages.companies.clients.index.table.empty_state.title"
+                      )}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {t(
+                        "pages.companies.clients.index.table.empty_state.description"
+                      )}
+                    </p>
+                  </div>
+                </TableCell>
+              </TableRow>
               {clients.map((client) => (
                 <TableRow key={client.id}>
                   <TableCell className="font-medium">{client.name}</TableCell>

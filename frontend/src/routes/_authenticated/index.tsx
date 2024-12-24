@@ -1,10 +1,17 @@
 import { getCompaniesQueryOptions } from "@/queries/organization/companies/getCompaniesQueryOptions";
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: Index,
-  loader: ({ context: { queryClient } }) => {
-    return queryClient.ensureQueryData(getCompaniesQueryOptions());
+  loader: async ({ context: { queryClient } }) => {
+    try {
+      return await queryClient.ensureQueryData(getCompaniesQueryOptions());
+    } catch {
+      throw redirect({
+        to: "/auth/login",
+        search: { redirect: location.pathname },
+      });
+    }
   },
 });
 
