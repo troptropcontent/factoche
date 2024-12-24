@@ -13,38 +13,21 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/pages/companies/layout";
-import { Api } from "@/services/api/client";
-
-// Mock data for demonstration
-const clients = [
-  {
-    id: 1,
-    name: "Acme Corp",
-    email: "contact@acme.com",
-    phone: "123-456-7890",
-  },
-  { id: 2, name: "Globex Co", email: "info@globex.com", phone: "098-765-4321" },
-  {
-    id: 3,
-    name: "Initech",
-    email: "support@initech.com",
-    phone: "555-123-4567",
-  },
-];
+import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
 
 export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/clients/"
 )({
   component: RouteComponent,
-  loader: ({ params: { companyId } }) =>
-    Api.GET("/api/v1/organization/companies/{company_id}/clients", {
-      path: { company_id: parseInt(companyId) },
-    }),
+  loader: ({ context: { queryClient }, params: { companyId } }) =>
+    queryClient.ensureQueryData(getCompanyClientsQueryOptions(companyId)),
 });
 
 function RouteComponent() {
   const { companyId } = Route.useParams();
   const { t } = useTranslation();
+  const { data: clients } = Route.useLoaderData();
+  console.log({ clients });
 
   return (
     <Layout.Root>

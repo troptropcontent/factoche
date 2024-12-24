@@ -10,7 +10,7 @@
     "format": "prettier --write .",
     "preview": "vite preview",
     "backend": "(cd ../api && bundle exec rails s)",
-    "open-api": "pnpm exec openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/services/api/openapi/schema.d.ts"
+    "open-api": "(cd ../api && bundle exec bundle exec rails rswag:specs:swaggerize PATTERN='spec/controllers/**/*_spec.rb') && openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/services/api/openapi/schema.d.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
