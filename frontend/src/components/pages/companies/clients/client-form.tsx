@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { createClientMutationOptions } from "@/queries/organization/clients/postCompanyQueryOptions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { redirect, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { TFunction } from "i18next";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
