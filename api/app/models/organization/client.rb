@@ -7,5 +7,5 @@ class Organization::Client < ApplicationRecord
   validates :address_city, presence: true
   validates :address_zipcode, presence: true
   validates :address_street, presence: true
-  validates :registration_number, presence: true
+  validates :registration_number, presence: true, uniqueness: { scope: :company_id }
 end
