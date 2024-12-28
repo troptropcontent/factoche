@@ -13,9 +13,26 @@ company = Organization::Company.create!({
   name: "Company Test",
   email: 'contact@testcompany.fr',
   phone: '+33623456789',
-  address_street: "12 rue des mouettes",
   registration_number: "123456789",
+  address_street: "12 rue des mouettes",
   address_city: "Biarritz",
   address_zipcode: "64200"
 })
 Organization::Member.create({ user_id: user.id, company_id: company.id })
+client = Organization::Client.create!({
+  company: company,
+  name: "Reims Habitat",
+  email: 'reims-habitat@example.fr',
+  phone: '+33623456789',
+  registration_number: "123456789",
+  address_street: "12 rue des mouettes",
+  address_city: "Biarritz",
+  address_zipcode: "64200"
+})
+
+project = Organization::Project.create!({
+  name: "Hopital",
+  client: client
+})
+
+Organization::ProjectVersion.create(project: project)
