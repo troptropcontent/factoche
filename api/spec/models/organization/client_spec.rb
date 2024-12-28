@@ -21,7 +21,7 @@ RSpec.describe Organization::Client, type: :model do
 
     it { should allow_value("+33612345678").for(:phone) }
     it { should_not allow_value("invalid_phone").for(:phone) }
-    describe "uniqueness of registration_number scoped on company_id", focus: true do
+    describe "uniqueness of registration_number scoped on company_id" do
       let(:company) { FactoryBot.create(:company) }
       let!(:already_existing_client) { FactoryBot.create(:client, company:) }
       subject { FactoryBot.build(:client, registration_number: already_existing_client.registration_number, company:) }

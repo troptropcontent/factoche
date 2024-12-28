@@ -8,6 +8,15 @@
             "name": "psql",
             "database": "postgres",
             "username": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "db",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "dev",
+            "database": "factoche_development",
+            "username": "postgres"
         }
     ],
     "git.decorations.enabled": false
