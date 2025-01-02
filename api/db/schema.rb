@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_24_131326) do
+ActiveRecord::Schema[8.0].define(version: 2024_12_31_092818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,15 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_131326) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["registration_number"], name: "index_organization_companies_on_registration_number", unique: true
+  end
+
+  create_table "organization_item_groups", force: :cascade do |t|
+    t.bigint "project_version_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "project_version_id"], name: "index_organization_item_groups_on_name_and_project_version_id", unique: true
+    t.index ["project_version_id"], name: "index_organization_item_groups_on_project_version_id"
   end
 
   create_table "organization_members", force: :cascade do |t|
@@ -80,6 +89,7 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_24_131326) do
   end
 
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
+  add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_members", "organization_companies", column: "company_id"
   add_foreign_key "organization_members", "users"
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"
