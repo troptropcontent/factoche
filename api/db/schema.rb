@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_12_31_092818) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_02_090522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -49,6 +49,19 @@ ActiveRecord::Schema[8.0].define(version: 2024_12_31_092818) do
     t.datetime "updated_at", null: false
     t.index ["name", "project_version_id"], name: "index_organization_item_groups_on_name_and_project_version_id", unique: true
     t.index ["project_version_id"], name: "index_organization_item_groups_on_project_version_id"
+  end
+
+  create_table "organization_items", force: :cascade do |t|
+    t.string "holder_type", null: false
+    t.bigint "holder_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.integer "quantity", null: false
+    t.string "unit", null: false
+    t.integer "unit_price_cents", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["holder_type", "holder_id"], name: "index_organization_items_on_holder"
   end
 
   create_table "organization_members", force: :cascade do |t|
