@@ -7,6 +7,24 @@ RSpec.describe Organization::ProjectVersion, type: :model do
   let(:project) { FactoryBot.create(:project, client: client) }
   describe 'associations' do
     it { should belong_to(:project) }
+    it { should have_many(:items).class_name('Organization::Item') }
+    it { should have_many(:item_groups).class_name('Organization::ItemGroup') }
+  end
+
+  describe 'nested attributes' do
+    it { should accept_nested_attributes_for(:items) }
+    it { should accept_nested_attributes_for(:item_groups) }
+  end
+
+  describe '#next_available_number' do
+    context 'when project_id is not set' do
+      subject { FactoryBot.build(:project_version, project: nil) }
+
+      it 'raises an error' do
+        expect { subject.send(:next_available_number) }
+          .to raise_error(RuntimeError, "Project must be set to determine next version number")
+      end
+    end
   end
 
   describe 'validations' do

@@ -17,4 +17,13 @@ RSpec.describe Organization::Project, type: :model do
           .is_greater_than_or_equal_to(0)
           .is_less_than_or_equal_to(100) }
   end
+
+  describe 'associations' do
+    it { should belong_to(:client) }
+    it { should have_many(:project_versions) }
+  end
+
+  describe 'nested attributes' do
+    it { should accept_nested_attributes_for(:project_versions) }
+  end
 end

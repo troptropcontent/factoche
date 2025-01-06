@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_02_090522) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_06_095906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,8 +52,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_02_090522) do
   end
 
   create_table "organization_items", force: :cascade do |t|
-    t.string "holder_type", null: false
-    t.bigint "holder_id", null: false
     t.string "name", null: false
     t.string "description"
     t.integer "quantity", null: false
@@ -61,7 +59,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_02_090522) do
     t.integer "unit_price_cents", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["holder_type", "holder_id"], name: "index_organization_items_on_holder"
+    t.bigint "project_version_id", null: false
+    t.bigint "item_group_id"
+    t.index ["item_group_id"], name: "index_organization_items_on_item_group_id"
+    t.index ["project_version_id"], name: "index_organization_items_on_project_version_id"
   end
 
   create_table "organization_members", force: :cascade do |t|
@@ -103,6 +104,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_02_090522) do
 
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
+  add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
+  add_foreign_key "organization_items", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_members", "organization_companies", column: "company_id"
   add_foreign_key "organization_members", "users"
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"

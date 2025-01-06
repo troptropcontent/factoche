@@ -1,6 +1,12 @@
 class Organization::ProjectVersion < ApplicationRecord
   belongs_to :project
 
+  has_many :items, class_name: "Organization::Item"
+  accepts_nested_attributes_for :items
+
+  has_many :item_groups, class_name: "Organization::ItemGroup"
+  accepts_nested_attributes_for :item_groups
+
   validates :number, presence: true, uniqueness: { scope: :project_id }
   before_validation :set_number_to_next_available_number, on: :create
 
