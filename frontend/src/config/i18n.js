@@ -30,7 +30,22 @@ i18n
                             "projects": {
                                 "index": {
                                     "title": "Mes projets",
-                                    "add_project": "Ajouter un projet"
+                                    "add_project": "Ajouter un projet",
+                                },
+                                "new": {
+                                    "title": "Nouveau projet",
+                                },
+                                "form": {
+                                    "client_id": "Client",
+                                    "client_id_placeholder": "Sélectionner un client",
+                                    "retention_guarantee_rate": "Retenue de garantie (%)",
+                                    "name": "Nom",
+                                    "name_placeholder": "Nom du projet",
+                                    "description": "Description",
+                                    "description_placeholder": "Description du projet",
+                                    "basic_info": "Informations de base", 
+                                    "project_composition": "Composition du projet",
+                                    "project_confirmation": "Confirmation"
                                 }
                             },
                             "clients": {
