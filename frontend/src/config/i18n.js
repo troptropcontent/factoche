@@ -27,6 +27,12 @@ i18n
                                 "title": "Mon dashboard",
                                 "description": "Dashboard de la company {{companyId}}" // Fixed triple brackets to double
                             },
+                            "projects": {
+                                "index": {
+                                    "title": "Mes projets",
+                                    "add_project": "Ajouter un projet"
+                                }
+                            },
                             "clients": {
                                 "index": {
                                     "title": "Mes clients",
