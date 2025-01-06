@@ -5,7 +5,7 @@ const CompanyLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex-grow">{children}</main>
+      <main className="flex flex-col flex-grow">{children}</main>
     </SidebarProvider>
   );
 };
