@@ -4,13 +4,7 @@ import { useFormContext } from "react-hook-form";
 import { ProjectFormType } from "../project-form";
 import { Item } from "./item";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { findNextPosition } from "../utils/position-utils";
 import { newItem } from "../utils/new-item";
@@ -20,7 +14,7 @@ import { useTranslation } from "react-i18next";
 
 const ItemGroup = ({ index }: { index: number }) => {
   const { t } = useTranslation();
-  const { control, register, trigger } = useFormContext<ProjectFormType>();
+  const { control, register } = useFormContext<ProjectFormType>();
   const itemArrayFieldName =
     `project_version_attributes.item_groups_attributes.${index}.items_attributes` as const;
   const { append: addItemToGroup, fields: items } = useFieldArray({

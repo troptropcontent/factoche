@@ -4,12 +4,11 @@ import { CompositionStep } from "./composition-step";
 import { ConfirmationStep } from "./confirmation-step";
 import { z } from "zod";
 import { TFunction } from "i18next";
-import { FieldPath, FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-
-import { Progress } from "@/components/ui/progress";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProgress } from "./private/form-progress";
 
 const positionAttribute = (t: TFunction<"translation">) =>
   z.number().min(0, t("form.validation.required"));
@@ -71,6 +70,50 @@ const steps = [
   "project_confirmation",
 ] as const;
 
+const FormContent = ({
+  currentStep,
+  clients,
+}: {
+  currentStep: number;
+  clients: Array<{ id: number; name: string }>;
+}) => (
+  <div className="flex-grow px-6">
+    {currentStep === 0 && <BasicInfoStep clients={clients} />}
+    {currentStep === 1 && <CompositionStep />}
+    {currentStep === 2 && <ConfirmationStep />}
+  </div>
+);
+
+const FormFooter = ({
+  currentStep,
+  steps,
+  onNext,
+  onPrev,
+}: {
+  currentStep: number;
+  steps: readonly string[];
+  onNext: () => void;
+  onPrev: () => void;
+}) => (
+  <div className="flex justify-between">
+    <Button
+      type="button"
+      variant="outline"
+      onClick={onPrev}
+      disabled={currentStep === 0}
+    >
+      Previous
+    </Button>
+    {currentStep < steps.length - 1 ? (
+      <Button type="button" onClick={onNext}>
+        Next
+      </Button>
+    ) : (
+      <Button type="submit">Submit</Button>
+    )}
+  </div>
+);
+
 const ProjectForm = ({
   initialValues,
   clients,
@@ -94,7 +137,6 @@ const ProjectForm = ({
   };
 
   const nextStep = () => {
-    form.trigger();
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
 
@@ -108,50 +150,14 @@ const ProjectForm = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col flex-grow gap-4"
       >
-        <div className="px-6 py-2">
-          <div className="flex justify-between mb-2">
-            {steps.map((step, index) => (
-              <span
-                key={step}
-                className={`text-sm ${
-                  index === currentStep
-                    ? "font-medium text-primary"
-                    : index < currentStep
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                }`}
-              >
-                {t(`pages.companies.projects.form.${step}`)}
-              </span>
-            ))}
-          </div>
-          <Progress
-            value={((currentStep + 1) / steps.length) * 100}
-            className="w-full"
-          />
-        </div>
-        <div className="flex-grow px-6">
-          {currentStep === 0 && <BasicInfoStep clients={clients} />}
-          {currentStep === 1 && <CompositionStep />}
-          {currentStep === 2 && <ConfirmationStep />}
-        </div>
-        <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 0}
-          >
-            Previous
-          </Button>
-          {currentStep < steps.length - 1 ? (
-            <Button type="button" onClick={nextStep}>
-              Next
-            </Button>
-          ) : (
-            <Button type="submit">Submit</Button>
-          )}
-        </div>
+        <FormProgress steps={steps} currentStep={currentStep} />
+        <FormContent currentStep={currentStep} clients={clients} />
+        <FormFooter
+          steps={steps}
+          currentStep={currentStep}
+          onNext={nextStep}
+          onPrev={prevStep}
+        />
       </form>
     </FormProvider>
   );
