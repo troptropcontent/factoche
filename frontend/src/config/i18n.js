@@ -11,6 +11,10 @@ i18n
         resources: {
             fr: {
                 translation: {
+                    "common": {
+                        "total": "Total",
+                        "number_in_currency": "{{amount, currency(EUR)}}"
+                    },
                     "form": {
                         "validation": {
                             "required": "Ce champ est requis",
@@ -45,7 +49,21 @@ i18n
                                     "description_placeholder": "Description du projet",
                                     "basic_info": "Informations de base", 
                                     "project_composition": "Composition du projet",
-                                    "project_confirmation": "Confirmation"
+                                    "project_confirmation": "Confirmation",
+                                    "add_item": "Ajouter un élément",
+                                    "add_item_group": "Ajouter un groupe d'éléments",
+                                    "item_group_name_input_label": "Nom du groupe d'éléments",
+                                    "item_group_name_input_placeholder": "Nom du groupe d'éléments",
+                                    "item_group_add_item_button_label": "Ajouter un élément au groupe",
+                                    "item_name_input_label": "Nom de l'élément",
+                                    "item_name_input_placeholder": "Nom de l'élément",
+                                    "item_quantity_input_label": "Quantité",
+                                    "item_unit_input_label": "Unité",
+                                    "item_unit_input_placeholder": "Unité de l'élément",
+                                    "item_unit_price_input_label": "Prix unitaire",
+                                    "item_total_label": "Total",
+                                    "composition_empty_state_title": "Aucun élément trouvé",
+                                    "composition_empty_state_description": "Ajouter un élément ou un groupe d'éléments pour commencer"
                                 }
                             },
                             "clients": {

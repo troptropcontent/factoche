@@ -1,24 +1,38 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { BasicInfoStep } from "./basic-info-step";
 import { CompositionStep } from "./composition-step";
 import { ConfirmationStep } from "./confirmation-step";
 import { z } from "zod";
 import { TFunction } from "i18next";
-import { FormProvider, useForm } from "react-hook-form";
+import { FieldPath, FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { Separator } from "@/components/ui/separator";
+
 import { Progress } from "@/components/ui/progress";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+const positionAttribute = (t: TFunction<"translation">) =>
+  z.number().min(0, t("form.validation.required"));
 
 const itemsAttributes = (t: TFunction<"translation">) =>
   z.array(
     z.object({
       name: z.string().min(1, t("form.validation.required")),
+      position: positionAttribute(t),
       description: z.string(),
       unit: z.string(),
       quantity: z.number().min(0, t("form.validation.required")),
       unit_price: z.number().min(0, t("form.validation.required")),
+    })
+  );
+
+const itemGroupsAttributes = (t: TFunction<"translation">) =>
+  z.array(
+    z.object({
+      name: z.string().min(1, t("form.validation.required")),
+      position: positionAttribute(t),
+      description: z.string(),
+      items_attributes: itemsAttributes(t),
     })
   );
 
@@ -30,17 +44,15 @@ const projectFormSchema = (t: TFunction<"translation">) =>
     project_version_attributes: z.object({
       retention_guarantee_rate: z.number(),
       items_attributes: itemsAttributes(t),
-      item_groups_attributes: z.array(
-        z.object({
-          name: z.string().min(1, t("form.validation.required")),
-          description: z.string(),
-          items_attributes: itemsAttributes(t),
-        })
-      ),
+      item_groups_attributes: itemGroupsAttributes(t),
     }),
   });
 
 type ProjectFormType = z.infer<ReturnType<typeof projectFormSchema>>;
+type ProjectItemType = z.infer<ReturnType<typeof itemsAttributes>>[number];
+type ProjectItemGroupType = z.infer<
+  ReturnType<typeof itemGroupsAttributes>
+>[number];
 
 const DefaultValues: ProjectFormType = {
   name: "",
@@ -82,6 +94,7 @@ const ProjectForm = ({
   };
 
   const nextStep = () => {
+    form.trigger();
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
 
@@ -145,4 +158,4 @@ const ProjectForm = ({
 };
 
 export { ProjectForm };
-export type { ProjectFormType };
+export type { ProjectFormType, ProjectItemType, ProjectItemGroupType };
