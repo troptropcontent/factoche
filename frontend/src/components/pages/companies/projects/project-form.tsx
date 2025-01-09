@@ -64,12 +64,6 @@ const DefaultValues: ProjectFormType = {
   },
 };
 
-const steps = [
-  "basic_info",
-  "project_composition",
-  "project_confirmation",
-] as const;
-
 const FormContent = ({
   currentStep,
   clients,
@@ -145,12 +139,15 @@ const ProjectForm = ({
   };
 
   return (
+    <div>
+        <FormProgress steps={steps} currentStep={currentStep} />
+
+    </div>
     <FormProvider {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col flex-grow gap-4"
       >
-        <FormProgress steps={steps} currentStep={currentStep} />
         <FormContent currentStep={currentStep} clients={clients} />
         <FormFooter
           steps={steps}

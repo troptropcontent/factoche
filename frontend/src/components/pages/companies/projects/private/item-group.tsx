@@ -11,12 +11,16 @@ import { newItem } from "../utils/new-item";
 import { useMemo } from "react";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
+import { Step2FormType } from "../form-schemas";
+import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormControl } from "@/components/ui/form";
+import { FormDescription } from "@/components/ui/form";
+import { FormItem } from "@/components/ui/form";
 
 const ItemGroup = ({ index }: { index: number }) => {
   const { t } = useTranslation();
-  const { control, register } = useFormContext<ProjectFormType>();
-  const itemArrayFieldName =
-    `project_version_attributes.item_groups_attributes.${index}.items_attributes` as const;
+  const { control, register } = useFormContext<Step2FormType>();
+  const itemArrayFieldName = `items.${index}.items` as const;
   const { append: addItemToGroup, fields: items } = useFieldArray({
     control,
     name: itemArrayFieldName,
@@ -34,26 +38,38 @@ const ItemGroup = ({ index }: { index: number }) => {
   return (
     <Card className="mb-4">
       <CardContent className="pt-6">
-        <div className="mb-4">
-          <Label
-            htmlFor={`project_version_attributes.item_groups_attributes.${index}.name`}
-          >
-            {t("pages.companies.projects.form.item_group_name_input_label")}
-          </Label>
-          <Input
-            {...register(
-              `project_version_attributes.item_groups_attributes.${index}.name`
-            )}
-            placeholder={t(
-              "pages.companies.projects.form.item_group_name_input_placeholder"
-            )}
-          />
-        </div>
+        <FormField
+          control={control}
+          name={`items.${index}.name`}
+          render={({ field }) => (
+            <FormItem className="mb-4 only:mb-0">
+              <FormLabel>
+                {t(
+                  "pages.companies.projects.form.composition_step.item_group_name_input_label"
+                )}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "pages.companies.projects.form.composition_step.item_group_name_input_placeholder"
+                  )}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                {t(
+                  "pages.companies.projects.form.composition_step.item_group_name_input_description"
+                )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {positionnedItems.map((item, itemIndex) => (
           <Item
             key={item.id}
             index={itemIndex}
-            parentFieldName={`project_version_attributes.item_groups_attributes.${index}.items_attributes`}
+            parentFieldName={`items.${index}.items`}
           />
         ))}
       </CardContent>

@@ -1,5 +1,4 @@
 import { Layout } from "@/components/pages/companies/layout";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusCircle } from "lucide-react";

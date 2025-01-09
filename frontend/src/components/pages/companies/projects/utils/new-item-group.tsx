@@ -1,11 +1,10 @@
-import { ProjectItemGroupType } from "../project-form";
-
-const newItemGroup = (position: number): ProjectItemGroupType => {
+const newItemGroup = (position: number) => {
   return {
     name: "",
     description: "",
     position: position,
-    items_attributes: [],
+    type: "group" as const,
+    items: [],
   };
 };
 

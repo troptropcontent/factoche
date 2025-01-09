@@ -4,81 +4,158 @@ import { Label } from "@/components/ui/label";
 import { ProjectFormType } from "../project-form";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { FormField, FormLabel } from "@/components/ui/form";
+import { FormControl } from "@/components/ui/form";
+import { FormDescription } from "@/components/ui/form";
+import { FormMessage } from "@/components/ui/form";
+import { FormItem } from "@/components/ui/form";
+import { Step2FormType } from "../form-schemas";
 
 const Item = ({
   parentFieldName,
   index,
 }: {
   index: number;
-  parentFieldName:
-    | `project_version_attributes.item_groups_attributes.${number}.items_attributes`
-    | `project_version_attributes.items_attributes`;
+  parentFieldName: `items` | `items.${number}.items`;
 }) => {
   const fieldName = `${parentFieldName}.${index}` as const;
-  const { register, watch } = useFormContext<ProjectFormType>();
+  const { watch, control } = useFormContext<Step2FormType>();
   const quantityFieldName = `${fieldName}.quantity` as const;
-  const quantityInput = watch(quantityFieldName);
   const unitPriceFieldName = `${fieldName}.unit_price` as const;
+  const nameFieldDame = `${fieldName}.name` as const;
+  const unitFieldDame = `${fieldName}.unit` as const;
+  const quantityInput = watch(quantityFieldName);
   const unitPriceInput = watch(unitPriceFieldName);
   const { t } = useTranslation();
   return (
     <Card key={fieldName} className="mb-4 last:mb-0">
       <CardContent className="pt-6">
         <div className="grid grid-cols-4 gap-4">
-          <div className="col-span-full">
-            <Label htmlFor={`${fieldName}.name`}>
-              {t("pages.companies.projects.form.item_name_input_label")}
-            </Label>
-            <Input
-              id={`${fieldName}.name`}
-              {...register(`${fieldName}.name`)}
-              placeholder={t(
-                "pages.companies.projects.form.item_name_input_placeholder"
+          <FormField
+            control={control}
+            name={nameFieldDame}
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_name_input_label"
+                  )}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      "pages.companies.projects.form.composition_step.item_name_input_placeholder"
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_name_input_placeholder"
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name={quantityFieldName}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_quantity_input_label"
+                  )}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_quantity_input_description"
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name={unitFieldDame}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_unit_input_label"
+                  )}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      "pages.companies.projects.form.composition_step.item_unit_input_placeholder"
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_unit_input_description"
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name={unitPriceFieldName}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_unit_price_input_label"
+                  )}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    "pages.companies.projects.form.composition_step.item_unit_price_input_description"
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormItem>
+            <FormLabel>
+              {t("pages.companies.projects.form.item_total_label")}
+            </FormLabel>
+            <FormControl>
+              <Input
+                disabled
+                value={t("common.number_in_currency", {
+                  amount: unitPriceInput * quantityInput,
+                })}
+              />
+            </FormControl>
+            <FormDescription>
+              {t(
+                "pages.companies.projects.form.composition_step.item_total_description"
               )}
-            />
-          </div>
-          <div>
-            <Label htmlFor={quantityFieldName}>
-              {t("pages.companies.projects.form.item_quantity_input_label")}
-            </Label>
-            <Input
-              id={quantityFieldName}
-              type="number"
-              {...register(quantityFieldName, { valueAsNumber: true })}
-            />
-          </div>
-          <div>
-            <Label htmlFor={`${fieldName}.unit`}>
-              {t("pages.companies.projects.form.item_unit_input_label")}
-            </Label>
-            <Input
-              id={`${fieldName}.unit`}
-              placeholder={t(
-                "pages.companies.projects.form.item_unit_input_label"
-              )}
-              {...register(`${fieldName}.unit`)}
-            />
-          </div>
-          <div>
-            <Label htmlFor={`${fieldName}.price`}>
-              {t("pages.companies.projects.form.item_unit_price_input_label")}
-            </Label>
-            <Input
-              id={`${fieldName}.price`}
-              type="number"
-              step="0.01"
-              {...register(`${fieldName}.unit_price`, { valueAsNumber: true })}
-            />
-          </div>
-          <div>
-            <Label>{t("pages.companies.projects.form.item_total_label")}</Label>
-            <Input
-              disabled
-              value={t("common.number_in_currency", {
-                amount: unitPriceInput * quantityInput,
-              })}
-            />
-          </div>
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
         </div>
       </CardContent>
     </Card>
