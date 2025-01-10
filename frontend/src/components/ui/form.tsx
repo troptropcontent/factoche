@@ -149,7 +149,7 @@ const FormMessage = React.forwardRef<
   const { error, formMessageId } = useFormField();
   const { t } = useTranslation();
   const errorType = error?.type;
-  console.log({ errorType });
+
   const body = error
     ? t([`form.validation.${errorType}`, "form.validation.unexpected_error"])
     : children;

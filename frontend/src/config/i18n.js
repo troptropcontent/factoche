@@ -80,6 +80,8 @@ i18n
                                         "item_group_name_input_description": "Nom du groupe d'éléments, par exemple : \"Bâtiment\", \"Mécanique\", \"Électricité\", etc.",
                                         "item_group_add_item_button_label": "Ajouter un élément au groupe",
                                         "no_items_error": "Vous devez ajouter au moins un élément au projet",
+                                        "no_items_in_group_error": "Vous devez ajouter au moins un élément au groupe",
+                                        "items_total_label": "Total des différents éléments: {{total}}",
                                     },
                                     "confirmation_step": {
                                         "progress_bar_label": "Confirmation",

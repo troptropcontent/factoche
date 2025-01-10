@@ -1,6 +1,10 @@
-import { Input } from "@/components/ui/input";
-import { SubmitHandler, useForm } from "react-hook-form";
-
+import { projectFormMachine } from "./project-form.machine";
+import { type EventFromLogic } from "xstate";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { step1FormSchema } from "./project-form.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -10,56 +14,44 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
 import { Trans, useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
+  SelectContent,
   SelectValue,
+  SelectTrigger,
 } from "@/components/ui/select";
-import { z } from "zod";
-import { Step1FormDataSchema } from "./form-schemas";
-import { useQuery } from "@tanstack/react-query";
-import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
-import { Button } from "@/components/ui/button";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
-type Step1FormType = z.infer<typeof Step1FormDataSchema>;
-const BasicInfoStep = ({
+const Step1 = ({
+  send,
   companyId,
   initialValues,
 }: {
+  send: (e: EventFromLogic<typeof projectFormMachine>) => void;
   companyId: string;
-  initialValues?: Step1FormType;
+  initialValues?: z.infer<typeof step1FormSchema>;
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: clients = [] } = useQuery(
     getCompanyClientsQueryOptions(companyId)
   );
-  const form = useForm<Step1FormType>({
-    resolver: zodResolver(Step1FormDataSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      client_id: 0,
-      retention_guarantee_rate: 0,
-      ...initialValues,
-    },
+  const form = useForm<z.infer<typeof step1FormSchema>>({
+    resolver: zodResolver(step1FormSchema),
+    defaultValues: initialValues,
   });
 
-  const onSubmit: SubmitHandler<Step1FormType> = (data) => {
-    navigate({
-      to: "/companies/$companyId/projects/new",
-      params: { companyId },
-      search: {
-        step: 1,
-        previousStepFormData: data,
-      },
+  const onSubmit = (data: z.infer<typeof step1FormSchema>) => {
+    send({
+      type: "GO_FROM_STEP_1_TO_STEP_2",
+      formData: data,
     });
   };
+
   return (
     <Form {...form}>
       <form
@@ -215,4 +207,4 @@ const BasicInfoStep = ({
   );
 };
 
-export { BasicInfoStep };
+export { Step1 };

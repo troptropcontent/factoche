@@ -1,16 +1,16 @@
 import { z } from "zod";
 
-const Step1FormDataSchema = z.object({
+const step1FormSchema = z.object({
   name: z.string().min(1),
-  description: z.string(),
+  description: z.string().optional(),
   client_id: z.number().min(1),
-  retention_guarantee_rate: z.number().min(0),
+  retention_guarantee_rate: z.number(),
 });
 
 const baseItemSchema = z.object({
   name: z.string().min(1),
   position: z.number().min(0),
-  description: z.string(),
+  description: z.string().optional(),
 });
 
 const itemSchema = baseItemSchema.and(
@@ -29,12 +29,10 @@ const itemGroupSchema = baseItemSchema.and(
   })
 );
 
-const Step2FormDataSchema = z.object({
+const step2FormSchema = z.object({
   items: z.union([itemSchema, itemGroupSchema]).array().min(1),
 });
 
-type Step2FormType = z.infer<typeof Step2FormDataSchema>;
+const formSchema = step1FormSchema.and(step2FormSchema);
 
-export { Step1FormDataSchema, Step2FormDataSchema };
-
-export type { Step2FormType };
+export { formSchema, step1FormSchema, step2FormSchema };

@@ -1,0 +1,113 @@
+import { Button } from "@/components/ui/button";
+import { projectFormMachine } from "./project-form.machine";
+
+import { EventFromLogic } from "xstate";
+import { SubmitHandler, useFieldArray } from "react-hook-form";
+import { z } from "zod";
+import { step2FormSchema } from "./project-form.schema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { findNextPosition, newItem, newItemGroup } from "./project-form.utils";
+import { useMemo } from "react";
+import { Form } from "@/components/ui/form";
+import { useTranslation } from "react-i18next";
+import { ProjectFormItemsTotal } from "./private/project-form-items-total";
+import { ItemGroup } from "./private/item-group";
+import { Item } from "./private/item";
+
+const Step2 = ({
+  send,
+  initialValues,
+}: {
+  send: (e: EventFromLogic<typeof projectFormMachine>) => void;
+  initialValues: z.infer<typeof step2FormSchema>;
+}) => {
+  const { t } = useTranslation();
+  const form = useForm<z.infer<typeof step2FormSchema>>({
+    resolver: zodResolver(step2FormSchema),
+    defaultValues: initialValues,
+  });
+  const {
+    fields: items,
+    append: appendItems,
+    remove: removeItemWithIndex,
+  } = useFieldArray({
+    control: form.control,
+    name: "items",
+  });
+
+  const addNewItemToItems = () => {
+    appendItems(newItem(findNextPosition(items)));
+  };
+  const addNewItemGroupToItemGroups = () => {
+    appendItems(newItemGroup(findNextPosition(items)));
+  };
+
+  const positionnedItems = useMemo(
+    () => items.sort((a, b) => a.position - b.position),
+    [items]
+  );
+
+  const onSubmit: SubmitHandler<z.infer<typeof step2FormSchema>> = (data) => {
+    send({
+      type: "GO_FROM_STEP_2_TO_STEP_3",
+      formData: data,
+    });
+  };
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="px-6 flex flex-col flex-grow"
+      >
+        {positionnedItems.map((item, index) =>
+          item.type == "group" ? (
+            <ItemGroup
+              key={item.id}
+              index={index}
+              remove={() => removeItemWithIndex(index)}
+            />
+          ) : (
+            <Item
+              key={item.id}
+              index={index}
+              parentFieldName="items"
+              remove={() => removeItemWithIndex(index)}
+            />
+          )
+        )}
+        <div className="flex justify-between pb-4">
+          <Button variant="outline" type="button" onClick={addNewItemToItems}>
+            {t("pages.companies.projects.form.add_item")}
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={addNewItemGroupToItemGroups}
+          >
+            {t("pages.companies.projects.form.add_item_group")}
+          </Button>
+        </div>
+        <div className="flex justify-between mt-auto items-center">
+          <Button
+            onClick={() => {
+              send({
+                type: "GO_FROM_STEP_2_TO_STEP_1",
+                formData: form.getValues(),
+              });
+            }}
+          >
+            {t("pages.companies.projects.form.previous_button_label")}
+          </Button>
+          <ProjectFormItemsTotal />
+          <Button type="submit" disabled={items.length == 0}>
+            {t("pages.companies.projects.form.next_button_label")}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
+
+export { Step2 };
