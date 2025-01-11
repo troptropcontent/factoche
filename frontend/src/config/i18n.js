@@ -44,14 +44,15 @@ i18n
                                 "form": {
                                     "next_button_label": "Suivant", 
                                     "previous_button_label": "Précédent",
+                                    "submit_button_label": "Créer le projet",
                                     "basic_info_step": {
                                         "progress_bar_label": "Informations de base",
-                                        "client_id_input_label": "Client *",
+                                        "client_id_input_label": "Client",
                                         "client_id_input_placeholder": "Sélectionner un client",
                                         "client_id_input_description": "Vous pouvez ajouter un client dans votre section <a >clients</a>",
-                                        "retention_guarantee_rate_input_label": "Retenue de garantie (%) *",
+                                        "retention_guarantee_rate_input_label": "Retenue de garantie (%)",
                                         "retention_guarantee_rate_input_description": "Retenue de garantie (%) qui sera appliquée sur le projet.",
-                                        "name_input_label": "Nom *",
+                                        "name_input_label": "Nom",
                                         "name_input_placeholder": "Nom du projet",
                                         "name_input_description": "Nom que vous souhaitez donner à votre projet qui sera affiché dans l'application.",
                                         "description_input_label": "Description",
@@ -82,9 +83,17 @@ i18n
                                         "no_items_error": "Vous devez ajouter au moins un élément au projet",
                                         "no_items_in_group_error": "Vous devez ajouter au moins un élément au groupe",
                                         "items_total_label": "Total des différents éléments: {{total}}",
+                                        "empty_state": {
+                                            "title": "Aucun élément trouvé",
+                                            "description": "Ajouter un premier groupe d'éléments pour commencer",
+                                            "action_label": "Ajouter un groupe d'éléments"
+                                        }
                                     },
                                     "confirmation_step": {
                                         "progress_bar_label": "Confirmation",
+                                        "total_project_amount_label": "Total du projet: {{total}}",
+                                        "group_total_label": "Total du groupe: {{total}}",
+                                        "item": "Element",
                                     },
                                     "project_composition": "Composition du projet",
                                     "project_confirmation": "Confirmation",

@@ -56,7 +56,7 @@ const Step1 = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="px-6 flex flex-col flex-grow"
+        className="px-6 flex flex-col flex-grow gap-4"
       >
         <FormField
           control={form.control}

@@ -62,7 +62,19 @@ const ProjectForm = ({ companyId }: { companyId: string }) => {
           case "step2":
             return <Step2 send={send} initialValues={{ items }} />;
           case "completed":
-            return <Step3 send={send} />;
+            return (
+              <Step3
+                send={send}
+                companyId={companyId}
+                previousStepsData={{
+                  name,
+                  retention_guarantee_rate,
+                  client_id,
+                  description,
+                  items,
+                }}
+              />
+            );
           default:
             return null;
         }

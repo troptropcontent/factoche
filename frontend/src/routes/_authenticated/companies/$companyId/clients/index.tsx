@@ -26,7 +26,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { companyId } = Route.useParams();
   const { t } = useTranslation();
-  const { data: clients } = Route.useLoaderData();
+  const clients = Route.useLoaderData();
 
   return (
     <Layout.Root>

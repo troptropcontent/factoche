@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { step1FormSchema, step2FormSchema } from "./project-form.schema";
+
 const newItemGroup = (position: number) => {
   return {
     name: "",
@@ -45,4 +48,36 @@ const computeItemsTotal = (items: Array<SingleItem | ItemGroup>) => {
   }, 0);
 };
 
-export { newItem, newItemGroup, findNextPosition, computeItemsTotal };
+const buildApiRequestBody = (
+  multiStepFormData: z.infer<typeof step1FormSchema> &
+    z.infer<typeof step2FormSchema>
+) => {
+  return {
+    project: {
+      name: multiStepFormData.name,
+      description: multiStepFormData.description,
+      project_version_attributes: {
+        retention_guarantee_rate: multiStepFormData.retention_guarantee_rate,
+        items_attributes: multiStepFormData.items
+          .filter((item) => item.type === "item")
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          .map(({ type, ...item }) => item),
+        item_groups_attributes: multiStepFormData.items
+          .filter((item) => item.type === "group")
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          .map(({ type, items, ...group }) => ({
+            ...group,
+            items_attributes: items.map((item) => item),
+          })),
+      },
+    },
+  };
+};
+
+export {
+  newItem,
+  newItemGroup,
+  findNextPosition,
+  computeItemsTotal,
+  buildApiRequestBody,
+};

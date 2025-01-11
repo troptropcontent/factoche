@@ -74,7 +74,6 @@ const projectFormMachine = setup({
       },
     },
     completed: {
-      type: "final",
       on: {
         GO_FROM_STEP_3_TO_STEP_2: {
           target: "step2",

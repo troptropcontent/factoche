@@ -15,6 +15,7 @@ import { step2FormSchema } from "../project-form.schema";
 import { z } from "zod";
 import { findNextPosition } from "../project-form.utils";
 import { newItem } from "../project-form.utils";
+import { Plus } from "lucide-react";
 
 const ItemGroup = ({
   index,
@@ -90,6 +91,7 @@ const ItemGroup = ({
         </FormMessage>
       )}
       <Button variant="outline" type="button" onClick={addNewItemToGroup}>
+        <Plus />{" "}
         {t("pages.companies.projects.form.item_group_add_item_button_label")}
       </Button>
     </ItemCardLayout>

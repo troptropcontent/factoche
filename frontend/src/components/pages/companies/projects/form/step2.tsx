@@ -7,13 +7,15 @@ import { z } from "zod";
 import { step2FormSchema } from "./project-form.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { findNextPosition, newItem, newItemGroup } from "./project-form.utils";
+import { findNextPosition, newItemGroup } from "./project-form.utils";
 import { useMemo } from "react";
 import { Form } from "@/components/ui/form";
 import { useTranslation } from "react-i18next";
 import { ProjectFormItemsTotal } from "./private/project-form-items-total";
 import { ItemGroup } from "./private/item-group";
 import { Item } from "./private/item";
+import { FileDiff, Inbox, Plus } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const Step2 = ({
   send,
@@ -36,9 +38,6 @@ const Step2 = ({
     name: "items",
   });
 
-  const addNewItemToItems = () => {
-    appendItems(newItem(findNextPosition(items)));
-  };
   const addNewItemGroupToItemGroups = () => {
     appendItems(newItemGroup(findNextPosition(items)));
   };
@@ -61,35 +60,52 @@ const Step2 = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="px-6 flex flex-col flex-grow"
       >
-        {positionnedItems.map((item, index) =>
-          item.type == "group" ? (
-            <ItemGroup
-              key={item.id}
-              index={index}
-              remove={() => removeItemWithIndex(index)}
-            />
-          ) : (
-            <Item
-              key={item.id}
-              index={index}
-              parentFieldName="items"
-              remove={() => removeItemWithIndex(index)}
-            />
-          )
+        {}
+        {positionnedItems.length > 0 ? (
+          <>
+            {positionnedItems.map((item, index) =>
+              item.type == "group" ? (
+                <ItemGroup
+                  key={item.id}
+                  index={index}
+                  remove={() => removeItemWithIndex(index)}
+                />
+              ) : (
+                <Item
+                  key={item.id}
+                  index={index}
+                  parentFieldName="items"
+                  remove={() => removeItemWithIndex(index)}
+                />
+              )
+            )}
+            <div className="flex flex-row-reverse justify-between pb-4">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={addNewItemGroupToItemGroups}
+              >
+                <Plus /> {t("pages.companies.projects.form.add_item_group")}
+              </Button>
+            </div>
+          </>
+        ) : (
+          <EmptyState
+            icon={FileDiff}
+            title={t(
+              "pages.companies.projects.form.composition_step.empty_state.title"
+            )}
+            description={t(
+              "pages.companies.projects.form.composition_step.empty_state.description"
+            )}
+            actionLabel={t(
+              "pages.companies.projects.form.composition_step.empty_state.action_label"
+            )}
+            onAction={addNewItemGroupToItemGroups}
+            className="flex-grow mb-4"
+          />
         )}
-        <div className="flex justify-between pb-4">
-          <Button variant="outline" type="button" onClick={addNewItemToItems}>
-            {t("pages.companies.projects.form.add_item")}
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={addNewItemGroupToItemGroups}
-          >
-            {t("pages.companies.projects.form.add_item_group")}
-          </Button>
-        </div>
-        <div className="flex justify-between mt-auto items-center">
+        <div className="flex justify-between mt-auto">
           <Button
             onClick={() => {
               send({
