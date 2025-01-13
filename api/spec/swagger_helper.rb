@@ -38,6 +38,78 @@ RSpec.configure do |config|
                },
                required: [ 'id', 'name', 'registration_number', 'email', 'phone', 'address_city', 'address_street', 'address_zipcode' ]
           },
+          create_project_with_item_groups: {
+            type: :object,
+            properties: {
+              name: { type: :string },
+              description: { type: :string },
+              project_version_attributes: {
+                type: :object,
+                properties: {
+                  retention_guarantee_rate: { type: :integer },
+                  item_groups_attributes: {
+                    type: :array,
+                    items: {
+                      type: :object,
+                      properties: {
+                        name: { type: :string },
+                        description: { type: :string },
+                        position: { type: :integer },
+                        items_attributes: {
+                          type: :array,
+                          items: {
+                            type: :object,
+                            properties: {
+                              name: { type: :string },
+                              description: { type: :string },
+                              position: { type: :integer },
+                              quantity: { type: :integer },
+                              unit_price: { type: :integer },
+                              unit: { type: :string }
+                            },
+                            required: %w[name position quantity unit_price unit] # Fields required for each item
+                          }
+                        }
+                      },
+                      required: %w[name position items_attributes] # Fields required for each item group
+                    }
+                  }
+                },
+                required: %w[retention_guarantee_rate item_groups_attributes] # Fields required for project version attributes
+              }
+            },
+            required: %w[name project_version_attributes] # Fields required for the project
+          },
+          create_project_with_items: {
+            type: :object,
+            properties: {
+              name: { type: :string },
+              description: { type: :string },
+              project_version_attributes: {
+                type: :object,
+                properties: {
+                  retention_guarantee_rate: { type: :integer },
+                  items_attributes: {
+                    type: :array,
+                    items: {
+                      type: :object,
+                      properties: {
+                        name: { type: :string },
+                        description: { type: :string },
+                        position: { type: :integer },
+                        quantity: { type: :integer },
+                        unit_price: { type: :integer },
+                        unit: { type: :string }
+                      },
+                      required: %w[name position quantity unit_price unit] # Fields required for each item
+                    }
+                  }
+                },
+                required: %w[retention_guarantee_rate items_attributes] # Fields required for project version attributes
+              }
+            },
+            required: %w[name project_version_attributes] # Fields required for the project
+          },
           error: {
             type: :object,
             additionalProperties: false,

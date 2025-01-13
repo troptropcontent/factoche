@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Organization::Item, type: :model, focus: true do
+RSpec.describe Organization::Item, type: :model do
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company:) }
   let(:project) { FactoryBot.create(:project, client: client) }

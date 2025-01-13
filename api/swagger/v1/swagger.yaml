@@ -393,6 +393,29 @@ paths:
                     - details
                 required:
                 - error
+  "/api/v1/organization/companies/{company_id}/projects":
+    post:
+      summary: Creates a new project and its descendants
+      tags:
+      - Projects
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: project created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - "$ref": "#/components/schemas/create_project_with_item_groups"
+              - "$ref": "#/components/schemas/create_project_with_items"
 components:
   schemas:
     client:
@@ -423,6 +446,103 @@ components:
       - address_city
       - address_street
       - address_zipcode
+    create_project_with_item_groups:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        project_version_attributes:
+          type: object
+          properties:
+            retention_guarantee_rate:
+              type: integer
+            item_groups_attributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  position:
+                    type: integer
+                  items_attributes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        position:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: integer
+                        unit:
+                          type: string
+                      required:
+                      - name
+                      - position
+                      - quantity
+                      - unit_price
+                      - unit
+                required:
+                - name
+                - position
+                - items_attributes
+          required:
+          - retention_guarantee_rate
+          - item_groups_attributes
+      required:
+      - name
+      - project_version_attributes
+    create_project_with_items:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        project_version_attributes:
+          type: object
+          properties:
+            retention_guarantee_rate:
+              type: integer
+            items_attributes:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  position:
+                    type: integer
+                  quantity:
+                    type: integer
+                  unit_price:
+                    type: integer
+                  unit:
+                    type: string
+                required:
+                - name
+                - position
+                - quantity
+                - unit_price
+                - unit
+          required:
+          - retention_guarantee_rate
+          - items_attributes
+      required:
+      - name
+      - project_version_attributes
     error:
       type: object
       additionalProperties: false
