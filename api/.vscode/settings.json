@@ -1,23 +1,24 @@
 {
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "db",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "psql",
-            "database": "postgres",
-            "username": "postgres"
-        },
-        {
-            "previewLimit": 50,
-            "server": "db",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "dev",
-            "database": "factoche_development",
-            "username": "postgres"
-        }
-    ],
-    "git.decorations.enabled": false
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "psql",
+      "database": "postgres",
+      "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "dev",
+      "database": "factoche_development",
+      "username": "postgres"
+    }
+  ],
+  "git.decorations.enabled": false,
+  "editor.formatOnSave": true
 }
