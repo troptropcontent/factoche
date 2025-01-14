@@ -108,7 +108,7 @@ RSpec.describe OpenApiDto, focus: true do
 
     it 'registers schemas for subclasses' do
       expect(OpenApiDto.registered_dto_schemas).to have_key('TestDto')
-      expect(OpenApiDto.registered_dto_schemas['TestDto'].to_schema).to eq({
+      expect(OpenApiDto.registered_dto_schemas['TestDto']).to eq({
         type: :object,
         required: [ 'test_field', 'nested_dto' ],
         properties: {

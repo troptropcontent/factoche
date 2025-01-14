@@ -1,3 +1,4 @@
+# TODO : Refactor this a little
 class OpenApiDto
   ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object ].freeze
   @registered_dto_schemas = {}
@@ -94,7 +95,27 @@ class OpenApiDto
       unless value.is_a?(Array)
         raise ArgumentError, "Expected Array for #{name}, got #{value.class}"
       end
-      value.map! { |item| subtype.new(item) }
+      value.map! do |item|
+        subtype_instance = nil
+        if subtype.is_a?(Array)
+          subtype.each do |sub|
+            begin
+              subtype_instance = sub.new(item)
+              break
+            rescue ArgumentError
+              next
+            end
+          end
+        else
+          subtype_instance = subtype.new(item)
+        end
+
+        if subtype_instance.nil?
+          raise ArgumentError, "No valid subtype match found for #{name} in #{value}"
+        else
+          subtype_instance
+        end
+      end
     when :object
       unless value.is_a?(Hash)
         raise ArgumentError, "Expected Hash for #{name}, got #{value.class}"
