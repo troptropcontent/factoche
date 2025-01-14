@@ -2,6 +2,8 @@
 
 require 'rails_helper'
 
+Dir[Rails.root.join('app/dtos/**/*.rb')].each { |file| require file }
+
 RSpec.configure do |config|
   # Specify a root folder where Swagger JSON files are generated
   # NOTE: If you're using the rswag-api to serve API descriptions, you'll need
@@ -14,6 +16,7 @@ RSpec.configure do |config|
   # By default, the operations defined in spec files are added to the first
   # document below. You can override this behavior by adding a openapi_spec tag to the
   # the root example_group in your specs, e.g. describe '...', openapi_spec: 'v2/swagger.json'
+
   config.openapi_specs = {
     'v1/swagger.yaml' => {
       openapi: '3.0.1',
@@ -43,72 +46,80 @@ RSpec.configure do |config|
             properties: {
               name: { type: :string },
               description: { type: :string },
-              project_version_attributes: {
-                type: :object,
-                properties: {
-                  retention_guarantee_rate: { type: :integer },
-                  item_groups_attributes: {
-                    type: :array,
-                    items: {
-                      type: :object,
-                      properties: {
-                        name: { type: :string },
-                        description: { type: :string },
-                        position: { type: :integer },
-                        items_attributes: {
-                          type: :array,
-                          items: {
-                            type: :object,
-                            properties: {
-                              name: { type: :string },
-                              description: { type: :string },
-                              position: { type: :integer },
-                              quantity: { type: :integer },
-                              unit_price: { type: :integer },
-                              unit: { type: :string }
-                            },
-                            required: %w[name position quantity unit_price unit] # Fields required for each item
+              client_id: { type: :string },
+              project_versions_attributes: {
+                type: :array,
+                items: {
+                  type: :object,
+                  properties: {
+                    retention_guarantee_rate: { type: :integer },
+                    item_groups_attributes: {
+                      type: :array,
+                      items: {
+                        type: :object,
+                        properties: {
+                          name: { type: :string },
+                          description: { type: :string },
+                          position: { type: :integer },
+                          items_attributes: {
+                            type: :array,
+                            items: {
+                              type: :object,
+                              properties: {
+                                name: { type: :string },
+                                description: { type: :string },
+                                position: { type: :integer },
+                                quantity: { type: :integer },
+                                unit_price_cents: { type: :integer },
+                                unit: { type: :string }
+                              },
+                              required: %w[name position quantity unit_price_cents unit] # Fields required for each item
+                            }
                           }
-                        }
-                      },
-                      required: %w[name position items_attributes] # Fields required for each item group
+                        },
+                        required: %w[name position items_attributes] # Fields required for each item group
+                      }
                     }
-                  }
-                },
-                required: %w[retention_guarantee_rate item_groups_attributes] # Fields required for project version attributes
+                  },
+                  required: %w[retention_guarantee_rate item_groups_attributes] # Fields required for project version attributes
+                }
               }
             },
-            required: %w[name project_version_attributes] # Fields required for the project
+            required: %w[name project_versions_attributes] # Fields required for the project
           },
           create_project_with_items: {
             type: :object,
             properties: {
               name: { type: :string },
+              client_id: { type: :string },
               description: { type: :string },
-              project_version_attributes: {
-                type: :object,
-                properties: {
-                  retention_guarantee_rate: { type: :integer },
-                  items_attributes: {
-                    type: :array,
-                    items: {
-                      type: :object,
-                      properties: {
-                        name: { type: :string },
-                        description: { type: :string },
-                        position: { type: :integer },
-                        quantity: { type: :integer },
-                        unit_price: { type: :integer },
-                        unit: { type: :string }
-                      },
-                      required: %w[name position quantity unit_price unit] # Fields required for each item
+              project_versions_attributes: {
+                type: :array,
+                items: {
+                  type: :object,
+                  properties: {
+                    retention_guarantee_rate: { type: :integer },
+                    items_attributes: {
+                      type: :array,
+                      items: {
+                        type: :object,
+                        properties: {
+                          name: { type: :string },
+                          description: { type: :string },
+                          position: { type: :integer },
+                          quantity: { type: :integer },
+                          unit_price_cents: { type: :integer },
+                          unit: { type: :string }
+                        },
+                        required: %w[name position quantity unit_price_cents unit] # Fields required for each item
+                      }
                     }
-                  }
-                },
-                required: %w[retention_guarantee_rate items_attributes] # Fields required for project version attributes
+                  },
+                  required: %w[retention_guarantee_rate items_attributes] # Fields required for project version attributes
+                }
               }
             },
-            required: %w[name project_version_attributes] # Fields required for the project
+            required: %w[name project_versions_attributes] # Fields required for the project
           },
           error: {
             type: :object,
@@ -127,7 +138,8 @@ RSpec.configure do |config|
               }
             },
             required: [ 'error' ]
-          }
+          },
+          **OpenApiDto.registered_dto_schemas
         },
         securitySchemes: {
           bearer_auth: {
