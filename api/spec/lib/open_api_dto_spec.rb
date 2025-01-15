@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe OpenApiDto do
+RSpec.describe OpenApiDto, focus: true do
   class TestItemDto < OpenApiDto
     field name: :name, type: :string
     field name: :quantity, type: :integer
