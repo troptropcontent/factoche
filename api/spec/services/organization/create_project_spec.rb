@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe Organization::CreateProject, focus: true do
+RSpec.describe Organization::CreateProject do
   describe '.call' do
     let(:company) { FactoryBot.create(:company) }
     let(:client) { FactoryBot.create(:client, company: company) }
     let(:create_project_dto) do
-      Organization::ProjectDto.new(
+      Organization::CreateProjectDto.new(
         name: project_name,
         client_id: client.id,
         retention_guarantee_rate: retention_guarantee_rate,
@@ -44,7 +44,7 @@ RSpec.describe Organization::CreateProject, focus: true do
         expect(project.name).to eq('Test Project')
         expect(project.client_id).to eq(client.id)
 
-        version = project.project_versions.first
+        version = project.versions.first
         expect(version).to be_present
         expect(version.retention_guarantee_rate).to eq(1000)
 
@@ -82,7 +82,7 @@ RSpec.describe Organization::CreateProject, focus: true do
         expect(project).to be_persisted
         expect(project.name).to eq('Test Project with Groups')
 
-        version = project.project_versions.first
+        version = project.versions.first
         expect(version.item_groups.count).to eq(1)
 
         group = version.item_groups.first
