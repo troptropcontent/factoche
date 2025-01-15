@@ -16,7 +16,7 @@ class Organization::ProjectVersion < ApplicationRecord
 
   def next_available_number
     raise "Project must be set to determine next version number" unless project
-    project.project_versions.maximum(:number).to_i + 1
+    project.versions.maximum(:number).to_i + 1
   end
 
   def set_number_to_next_available_number
