@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_06_095906) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_15_092927) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_06_095906) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position", null: false
+    t.string "description"
     t.index ["name", "project_version_id"], name: "index_organization_item_groups_on_name_and_project_version_id", unique: true
     t.index ["project_version_id"], name: "index_organization_item_groups_on_project_version_id"
   end
@@ -61,6 +63,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_06_095906) do
     t.datetime "updated_at", null: false
     t.bigint "project_version_id", null: false
     t.bigint "item_group_id"
+    t.integer "position", null: false
     t.index ["item_group_id"], name: "index_organization_items_on_item_group_id"
     t.index ["project_version_id"], name: "index_organization_items_on_project_version_id"
   end
@@ -80,12 +83,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_06_095906) do
     t.integer "number", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "retention_guarantee_rate"
     t.index ["project_id"], name: "index_organization_project_versions_on_project_id"
   end
 
   create_table "organization_projects", force: :cascade do |t|
     t.bigint "client_id", null: false
-    t.integer "retention_guarantee_rate", default: 0, null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
