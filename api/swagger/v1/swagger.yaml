@@ -432,6 +432,16 @@ paths:
                     type: array
                     items:
                       "$ref": "#/components/schemas/Organization::ProjectDtoProjectVersionDto"
+        '404':
+          description: not found
+        '401':
+          description: not authorised
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
       requestBody:
         content:
           application/json:

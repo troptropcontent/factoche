@@ -1,17 +1,20 @@
 class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
-  before_action :load_company!
+  before_action :load_and_authorise_company!
 
   # POST /api/v1/organization/companies/:company_id/projects
   def create
+    raise Error::UnauthorizedError unless @company.clients.exists?({ id: project_params[:client_id] })
+
     project = Organization::CreateProject.call(create_project_dto)
     render json: serialize_project(project)
   end
 
   private
 
-  def load_company!
-    @company = policy_scope(Organization::Company).find_by(id: params[:company_id])
-    raise Error::NotFoundError unless @company
+  def load_and_authorise_company!
+    @company = Organization::Company.find(params[:company_id])
+
+    raise Error::UnauthorizedError unless policy_scope(Organization::Company).exists?({ id: @company.id })
   end
 
   def client_id_params
@@ -44,7 +47,7 @@ class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
   end
 
   def create_project_dto
-    Organization::CreateProjectDto.new(project_params)
+    @create_project_dto ||= Organization::CreateProjectDto.new(project_params)
   end
 
   def serialize_project(project)
