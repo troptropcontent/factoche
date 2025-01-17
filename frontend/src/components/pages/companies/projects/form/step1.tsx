@@ -26,6 +26,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { Link } from "@tanstack/react-router";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 const Step1 = ({
   send,
@@ -37,8 +38,10 @@ const Step1 = ({
   initialValues?: z.infer<typeof step1FormSchema>;
 }) => {
   const { t } = useTranslation();
-  const { data: clients = [] } = useQuery(
-    getCompanyClientsQueryOptions(companyId)
+  const { data: clients = [] } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/clients",
+    { params: { path: { company_id: Number(companyId) } } }
   );
   const form = useForm<z.infer<typeof step1FormSchema>>({
     resolver: zodResolver(step1FormSchema),

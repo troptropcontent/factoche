@@ -12,9 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import { useQuery } from "@tanstack/react-query";
-import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
 import { ItemSummary } from "./private/item-summary";
 import { ItemGroupSummary } from "./private/item-group-summary";
 import { Api } from "@/lib/openapi-fetch-query-client";
