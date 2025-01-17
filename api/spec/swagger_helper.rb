@@ -142,9 +142,10 @@ RSpec.configure do |config|
           **OpenApiDto.registered_dto_schemas
         },
         securitySchemes: {
-          bearer_auth: {
+          bearerAuth: {
             type: :http,
-            scheme: :bearer
+            scheme: :bearer,
+            bearerFormat: 'JWT'
           }
         }
       },

@@ -135,9 +135,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: never;
-                header: {
-                    Authorization: string;
-                };
+                header?: never;
                 path: {
                     company_id: number;
                 };

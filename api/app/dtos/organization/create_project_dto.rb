@@ -16,6 +16,7 @@ end
 
 class Organization::CreateProjectDto < OpenApiDto
   field name: :name, type: :string
+  field name: :description, type: :string, required: false
   field name: :client_id, type: :integer
   field name: :retention_guarantee_rate, type: :integer
   field name: :items, type: :array, subtype: [ [ Organization::CreateProjecItemDto ], [ Organization::CreateProjectItemGroupDto ] ]

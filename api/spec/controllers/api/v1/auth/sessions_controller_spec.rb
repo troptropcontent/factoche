@@ -51,7 +51,7 @@ RSpec.describe 'Auth API', type: :request do
       tags 'Authentication'
       consumes 'application/json'
       produces 'application/json'
-      security [ bearer_auth: [] ]
+      security [ bearerAuth: [] ]
 
       response '200', 'access token refreshed' do
         schema type: :object,

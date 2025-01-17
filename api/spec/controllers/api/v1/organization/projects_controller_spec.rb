@@ -1,11 +1,11 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe Api::V1::Organization::ProjectsController, type: :request, focus: true do
+RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
   path "/api/v1/organization/companies/{company_id}/projects" do
     post "Creates a new project and its descendants" do
       tags "Projects"
-      security [ bearer_auth: [] ]
+      security [ bearerAuth: [] ]
       consumes "application/json"
       produces "application/json"
       parameter name: :company_id, in: :path, type: :integer
@@ -50,7 +50,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request, focus:
           let!(:number_of_items_before) { Organization::Item.count }
           let!(:number_of_item_groups_before) { Organization::ItemGroup.count }
 
-          run_test! "create a new project with the relevant descendants" do
+          run_test! "create a new project with the relevant descendants", focus: true do
             expect(Organization::Project.count).to eq(number_of_project_before + 1)
             expect(Organization::ProjectVersion.count).to eq(number_of_project_version_before + 1)
             expect(Organization::Item.count).to eq(number_of_items_before + 2)

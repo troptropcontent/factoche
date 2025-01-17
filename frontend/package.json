@@ -10,7 +10,7 @@
     "format": "prettier --write .",
     "preview": "vite preview",
     "backend": "(cd ../api && bundle exec rails s)",
-    "open-api": "(cd ../api && bundle exec bundle exec rails rswag:specs:swaggerize PATTERN='spec/controllers/**/*_spec.rb') && openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/services/api/openapi/schema.d.ts"
+    "open-api": "(cd ../api && bundle exec bundle exec rails rswag:specs:swaggerize PATTERN='spec/controllers/**/*_spec.rb') && openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/lib/openapi-fetch-schemas.d.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -33,6 +33,7 @@
     "input": "^1.0.1",
     "lucide-react": "^0.468.0",
     "openapi-fetch": "^0.13.3",
+    "openapi-react-query": "^0.2.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.54.1",

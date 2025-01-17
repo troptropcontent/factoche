@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
 import { ItemSummary } from "./private/item-summary";
 import { ItemGroupSummary } from "./private/item-group-summary";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 const Step3 = ({
   send,
@@ -29,16 +30,31 @@ const Step3 = ({
     z.infer<typeof step2FormSchema>;
 }) => {
   const { t } = useTranslation();
-  const { data: clients = [] } = useQuery(
-    getCompanyClientsQueryOptions(companyId)
+  const { mutate } = Api.useMutation(
+    "post",
+    "/api/v1/organization/companies/{company_id}/projects"
   );
+
+  const { data: clients = [] } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/clients",
+    {
+      params: {
+        path: { company_id: Number(companyId) },
+      },
+    }
+  );
+
   const client = clients.find(
     (client) => client.id == previousStepsData.client_id
   );
 
   const createNewProject = () => {
     const apiRequestBody = buildApiRequestBody(previousStepsData);
-    console.log("about to send the following body: ", apiRequestBody);
+    mutate({
+      body: apiRequestBody,
+      params: { path: { company_id: Number(companyId) } },
+    });
   };
 
   return (

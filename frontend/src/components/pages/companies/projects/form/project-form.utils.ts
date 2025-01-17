@@ -48,29 +48,49 @@ const computeItemsTotal = (items: Array<SingleItem | ItemGroup>) => {
   }, 0);
 };
 
-const buildApiRequestBody = (
-  multiStepFormData: z.infer<typeof step1FormSchema> &
-    z.infer<typeof step2FormSchema>
-) => {
+const buildApiRequestBody = ({
+  name,
+  client_id,
+  items,
+  retention_guarantee_rate,
+  description,
+}: z.infer<typeof step1FormSchema> & z.infer<typeof step2FormSchema>) => {
+  const simpleItems = items
+    .filter((item) => item.type == "item")
+    .map(({ name, description, position, quantity, unit, unit_price }) => ({
+      name,
+      description,
+      position,
+      quantity,
+      unit,
+      unit_price_cents: Math.round(unit_price * 100),
+    }));
+  const groupItems = items
+    .filter((item) => item.type == "group")
+    .map(({ name, description, position, items }) => ({
+      name,
+      description,
+      position,
+      items: items.map(
+        ({ name, description, position, quantity, unit, unit_price }) => ({
+          name,
+          description,
+          position,
+          quantity,
+          unit,
+          unit_price_cents: Math.round(unit_price * 100),
+        })
+      ),
+    }));
+
+  const mappedItems = simpleItems.length > 1 ? simpleItems : groupItems;
+
   return {
-    project: {
-      name: multiStepFormData.name,
-      description: multiStepFormData.description,
-      project_version_attributes: {
-        retention_guarantee_rate: multiStepFormData.retention_guarantee_rate,
-        items_attributes: multiStepFormData.items
-          .filter((item) => item.type === "item")
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          .map(({ type, ...item }) => item),
-        item_groups_attributes: multiStepFormData.items
-          .filter((item) => item.type === "group")
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          .map(({ type, items, ...group }) => ({
-            ...group,
-            items_attributes: items.map((item) => item),
-          })),
-      },
-    },
+    name,
+    description,
+    retention_guarantee_rate: Math.round(retention_guarantee_rate * 100),
+    client_id,
+    items: mappedItems,
   };
 };
 
