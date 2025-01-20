@@ -1,7 +1,9 @@
 FactoryBot.define do
   factory :item, class: 'Organization::Item' do
-    holder { nil }
+    project_version { nil }
+    item_group { nil }
     name { "Garde corps" }
+    sequence(:position) { |n| n }
     description { "Trés beau garde coprs en galva" }
     quantity { 1 }
     unit { "unité" }

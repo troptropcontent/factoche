@@ -5,7 +5,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
   path '/api/v1/organization/companies' do
     get 'Lists user companies' do
       tags 'Companies'
-      security [ bearer_auth: [] ]
+      security [ bearerAuth: [] ]
       produces 'application/json'
 
       response '200', 'successfully lists user\'s companies' do
@@ -52,7 +52,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
   path '/api/v1/organization/companies/{id}' do
     get 'Shows a specific company' do
       tags 'Companies'
-      security [ bearer_auth: [] ]
+      security [ bearerAuth: [] ]
       produces 'application/json'
       parameter name: :id, in: :path, type: :integer
 

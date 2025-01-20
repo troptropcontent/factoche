@@ -1,5 +1,6 @@
 class Organization::Client < ApplicationRecord
   belongs_to :company, class_name: "Organization::Company"
+  has_many :projects, class_name: "Organization::Project"
 
   validates :name, presence: true
   validates :phone, phone: true, presence: true

@@ -7,7 +7,7 @@ const getCompanyClientsQueryOptions = (companyId: string) =>
     queryFn: async () =>
       Api.GET("/api/v1/organization/companies/{company_id}/clients", {
         path: { company_id: parseInt(companyId) },
-      }),
+      }).then((response) => response.data),
   });
 
 export { getCompanyClientsQueryOptions };

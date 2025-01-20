@@ -11,10 +11,14 @@ RSpec.describe Organization::Project, type: :model do
       subject { FactoryBot.build(:project, name: taken_name, client:) }
       it { should validate_uniqueness_of(:name).scoped_to(:client_id) }
     end
+  end
 
-    it { should validate_presence_of(:retention_guarantee_rate) }
-    it { should validate_numericality_of(:retention_guarantee_rate)
-          .is_greater_than_or_equal_to(0)
-          .is_less_than_or_equal_to(100) }
+  describe 'associations' do
+    it { should belong_to(:client) }
+    it { should have_many(:versions) }
+  end
+
+  describe 'nested attributes' do
+    it { should accept_nested_attributes_for(:versions) }
   end
 end

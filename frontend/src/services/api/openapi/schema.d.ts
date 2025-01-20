@@ -383,6 +383,82 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Creates a new project and its descendants */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        client_id: number;
+                        retention_guarantee_rate: number;
+                        items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description project created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            name: string;
+                            description?: string | null;
+                            client_id: number;
+                            versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -397,6 +473,43 @@ export interface components {
             address_street: string;
             address_zipcode: string;
         };
+        create_project_with_item_groups: {
+            name: string;
+            description?: string;
+            client_id?: string;
+            project_versions_attributes: {
+                retention_guarantee_rate: number;
+                item_groups_attributes: {
+                    name: string;
+                    description?: string;
+                    position: number;
+                    items_attributes: {
+                        name: string;
+                        description?: string;
+                        position: number;
+                        quantity: number;
+                        unit_price_cents: number;
+                        unit: string;
+                    }[];
+                }[];
+            }[];
+        };
+        create_project_with_items: {
+            name: string;
+            client_id?: string;
+            description?: string;
+            project_versions_attributes: {
+                retention_guarantee_rate: number;
+                items_attributes: {
+                    name: string;
+                    description?: string;
+                    position: number;
+                    quantity: number;
+                    unit_price_cents: number;
+                    unit: string;
+                }[];
+            }[];
+        };
         error: {
             error: {
                 status: string;
@@ -404,6 +517,55 @@ export interface components {
                 message: string;
                 details: Record<string, never>;
             };
+        };
+        "Organization::CreateProjecItemDto": {
+            name: string;
+            description?: string | null;
+            position: number;
+            unit: string;
+            unit_price_cents: number;
+            quantity: number;
+        };
+        "Organization::CreateProjectItemGroupDto": {
+            name: string;
+            description?: string | null;
+            position: number;
+            items: components["schemas"]["Organization::CreateProjecItemDto"][];
+        };
+        "Organization::CreateProjectDto": {
+            name: string;
+            client_id: number;
+            retention_guarantee_rate: number;
+            items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
+        };
+        "Organization::ProjectDtoItemDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            unit_price_cents: number;
+        };
+        "Organization::ProjectDtoItemGroupDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            position: number;
+            items: components["schemas"]["Organization::ProjectDtoItemDto"][];
+        };
+        "Organization::ProjectDtoProjectVersionDto": {
+            id: number;
+            retention_rate_guarantee: number;
+            number: number;
+            items: components["schemas"]["Organization::ProjectDtoItemDto"][] | components["schemas"]["Organization::ProjectDtoItemGroupDto"][];
+        };
+        "Organization::ProjectDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client_id: number;
+            versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
         };
     };
     responses: never;

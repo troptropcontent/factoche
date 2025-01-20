@@ -33,7 +33,10 @@
 				"Shopify.ruby-lsp",
 				"ezforo.copy-relative-path-and-line-numbers",
 				"esbenp.prettier-vscode",
-				"bradlc.vscode-tailwindcss"
+				"bradlc.vscode-tailwindcss",
+				"nidu.copy-json-path",
+				"rubocop.vscode-rubocop",
+				"Shopify.ruby-extensions-pack"
 			]
 		}
 	},

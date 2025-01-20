@@ -5,7 +5,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
   path '/api/v1/organization/companies/{company_id}/clients' do
     post 'Creates a client for a company' do
       tags 'Clients'
-      security [ bearer_auth: [] ]
+      security [ bearerAuth: [] ]
       consumes 'application/json'
       produces 'application/json'
       parameter name: :company_id, in: :path, type: :integer
@@ -120,9 +120,9 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
     end
     get 'Lists clients for a company' do
       tags 'Clients'
+      security [ bearerAuth: [] ]
       produces 'application/json'
       parameter name: :company_id, in: :path, type: :integer
-      parameter name: 'Authorization', in: :header, type: :string, required: true
 
       response '200', 'clients found' do
         let(:user) { FactoryBot.create(:user) }
