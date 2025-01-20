@@ -1,9 +1,10 @@
 require 'spec_helper'
 
-RSpec.describe OpenApiDto do
+RSpec.describe OpenApiDto, focus: true do
   class TestItemDto < OpenApiDto
     field name: :name, type: :string
     field name: :quantity, type: :integer
+    field name: :status, type: :enum, subtype: [ 'new', 'archived' ]
     field name: :unit, type: :string, required: false
   end
 
@@ -38,7 +39,7 @@ RSpec.describe OpenApiDto do
 
   describe '#initialize' do
     it 'assigns attributes correctly' do
-      item = TestItemDto.new(name: 'Bolt', quantity: 10)
+      item = TestItemDto.new(name: 'Bolt', status: 'new', quantity: 10)
       expect(item.name).to eq('Bolt')
       expect(item.quantity).to eq(10)
       expect(item.unit).to be_nil # Optional field
@@ -46,20 +47,26 @@ RSpec.describe OpenApiDto do
 
     it 'raises an error for unknown attributes' do
       expect {
-        TestItemDto.new(name: 'name', quantity: 0, unknown: 'value')
+        TestItemDto.new(name: 'name', quantity: 0, status: 'new', unknown: 'value')
       }.to raise_error(ArgumentError, /Unknown attribute/)
     end
 
     it 'raises an error for missing required fields' do
       expect {
-        TestItemDto.new(quantity: 10)
+        TestItemDto.new(quantity: 10, status: 'new',)
       }.to raise_error(ArgumentError, /Missing required fields: name/)
+    end
+
+    it 'raises an error for value with the wrong type' do
+      expect {
+        TestItemDto.new(name: 'name', quantity: 0, status: 'wrong_enum_value')
+      }.to raise_error(ArgumentError, /Expected an instance of String of one of the following values new, archived for status, got an instance of String/)
     end
   end
 
   describe 'nested DTOs' do
     it 'creates nested DTOs for arrays' do
-      project_dto = TestProjectDto.new(name: 'Test Project', items: [ { name: 'Screw', quantity: 5 } ])
+      project_dto = TestProjectDto.new(name: 'Test Project', items: [ { name: 'Screw', quantity: 5, status: 'new' } ])
       expect(project_dto.name).to eq('Test Project')
       expect(project_dto.items).to all(be_a(TestItemDto))
       expect(project_dto.items.first.name).to eq('Screw')
@@ -76,13 +83,13 @@ RSpec.describe OpenApiDto do
   describe 'custom validations' do
     it 'validates string fields' do
       expect {
-        TestItemDto.new(name: 123, quantity: 10)
+        TestItemDto.new(name: 123, quantity: 10, status: 'new',)
       }.to raise_error(ArgumentError, /Expected String for name, got Integer/)
     end
 
     it 'validates integer fields' do
       expect {
-        TestItemDto.new(name: 'Bolt', quantity: 'not an integer')
+        TestItemDto.new(name: 'Bolt', quantity: 'not an integer', status: 'new',)
       }.to raise_error(ArgumentError, /Expected Integer for quantity, got String/)
     end
 

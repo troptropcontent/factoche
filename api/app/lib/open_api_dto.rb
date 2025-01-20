@@ -1,6 +1,6 @@
 # TODO : Refactor this a little
 class OpenApiDto
-  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object ].freeze
+  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object, :enum ].freeze
   @registered_dto_schemas = {}
 
   class << self
@@ -17,10 +17,11 @@ class OpenApiDto
 
       validate_object_subtype!(name, type, subtype) if type == :object
 
+      validate_enum_subtype!(name, type, subtype) if type == :enum
+
       fields[name] = { type: type, subtype: subtype, required: required }
       attr_reader name
       define_setter(name, type, subtype)
-
 
       OpenApiDto.register_schema(self.name, self.to_schema())
     end
@@ -71,6 +72,13 @@ class OpenApiDto
       raise ArgumentError, "Subtype must be a class descendant of OpenApiDto or array of such classes for #{name}"
     end
 
+    def validate_enum_subtype!(name, type, subtype)
+      raise ArgumentError, "Subtype is required for enum" if subtype.nil?
+      return if subtype.is_a?(Array) && subtype.all? { |sub| sub.is_a?(String) }
+
+      raise ArgumentError, "Subtype must be an array of strings for #{name}"
+    end
+
     def define_setter(name, type, subtype)
       define_method("#{name}=") do |value|
         raise ArgumentError, "Nil value received for #{name} but it is required" if is_field_required?(name) && value.nil?
@@ -109,6 +117,8 @@ class OpenApiDto
       validated_value = validate_array_value!(value, name, subtype)
     when :object
       validated_value = validate_object_value!(value, name, subtype)
+    when :enum
+      validated_value = validate_enum_value!(value, name, subtype)
     else
       raise ArgumentError, "Unhandled field type: #{type} for #{name}"
     end
@@ -213,6 +223,15 @@ class OpenApiDto
       next
     end
     raise ArgumentError, "No matching type found for item"
+  end
+
+  def validate_enum_value!(value, field_name, subtype)
+    if is_field_required?(field_name)
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}" unless value.is_a?(String) && subtype.include?(value)
+    else
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} or nil for #{field_name}, got an instance of #{value.class}" unless (value.is_a?(String) && subtype.include?(value)) || value.nil?
+    end
+    value
   end
 
   def validated_object_value(value, field_name, subtype)
