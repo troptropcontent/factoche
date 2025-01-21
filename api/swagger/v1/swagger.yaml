@@ -452,6 +452,9 @@ paths:
               properties:
                 name:
                   type: string
+                description:
+                  type: string
+                  nullable: true
                 client_id:
                   type: integer
                 retention_guarantee_rate:
@@ -464,6 +467,36 @@ paths:
                   - type: array
                     items:
                       "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+    get:
+      summary: List all the company's project
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list company's projects
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectDto"
+        '401':
+          description: not authorised
+        '404':
+          description: not found
 components:
   schemas:
     client:
@@ -673,6 +706,9 @@ components:
       properties:
         name:
           type: string
+        description:
+          type: string
+          nullable: true
         client_id:
           type: integer
         retention_guarantee_rate:
@@ -774,6 +810,49 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ProjectDtoProjectVersionDto"
+    Organization::ProjectIndexResponseProjectClientDto:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Organization::ProjectIndexResponseProjectDto:
+      type: object
+      required:
+      - id
+      - name
+      - client
+      - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectClientDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::ProjectIndexResponseDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectDto"
   securitySchemes:
     bearerAuth:
       type: http

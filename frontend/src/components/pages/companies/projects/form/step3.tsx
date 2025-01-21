@@ -15,6 +15,7 @@ import {
 import { ItemSummary } from "./private/item-summary";
 import { ItemGroupSummary } from "./private/item-group-summary";
 import { Api } from "@/lib/openapi-fetch-query-client";
+import { useNavigate } from "@tanstack/react-router";
 
 const Step3 = ({
   send,
@@ -42,16 +43,27 @@ const Step3 = ({
     }
   );
 
+  const navigate = useNavigate();
+
   const client = clients.find(
     (client) => client.id == previousStepsData.client_id
   );
 
   const createNewProject = () => {
     const apiRequestBody = buildApiRequestBody(previousStepsData);
-    mutate({
-      body: apiRequestBody,
-      params: { path: { company_id: Number(companyId) } },
-    });
+    mutate(
+      {
+        body: apiRequestBody,
+        params: { path: { company_id: Number(companyId) } },
+      },
+      {
+        onSuccess: ({ id }) =>
+          navigate({
+            to: "/companies/$companyId/projects/$projectId",
+            params: { companyId: companyId, projectId: id.toString() },
+          }),
+      }
+    );
   };
 
   return (

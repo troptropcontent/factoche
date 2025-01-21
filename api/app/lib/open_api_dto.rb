@@ -1,6 +1,9 @@
-# TODO : Refactor this a little
+# TODO :
+# - Refactor
+# - Error handling
+# - For :array & :object handle when the type is not a DTO (or dto variant, like string)
 class OpenApiDto
-  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object ].freeze
+  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object, :enum ].freeze
   @registered_dto_schemas = {}
 
   class << self
@@ -10,17 +13,18 @@ class OpenApiDto
       @registered_dto_schemas[name] = schema
     end
 
-    def field(name:, type:, subtype: nil, required: true)
+    def field(name, type, subtype: nil, required: true)
       raise ArgumentError, "Invalid type: #{type}" unless ALLOWED_FIELD_TYPES.include?(type)
 
       validate_array_subtype!(name, type, subtype) if type == :array
 
       validate_object_subtype!(name, type, subtype) if type == :object
 
+      validate_enum_subtype!(name, type, subtype) if type == :enum
+
       fields[name] = { type: type, subtype: subtype, required: required }
       attr_reader name
       define_setter(name, type, subtype)
-
 
       OpenApiDto.register_schema(self.name, self.to_schema())
     end
@@ -39,6 +43,11 @@ class OpenApiDto
             array_field_schema(info)
           when :object
             info[:subtype].is_a?(Array) ? { oneOf: info[:subtype].map { |subtype| { '$ref': "#/components/schemas/#{subtype.name}" } } } : { '$ref': "#/components/schemas/#{info[:subtype].name}" }
+          when :enum
+            {
+              type: :string,
+              enum: info[:subtype]
+            }
           else
             { type: info[:type] }.merge(info[:required] ? {} : { nullable: true })
           end
@@ -71,48 +80,65 @@ class OpenApiDto
       raise ArgumentError, "Subtype must be a class descendant of OpenApiDto or array of such classes for #{name}"
     end
 
+    def validate_enum_subtype!(name, type, subtype)
+      raise ArgumentError, "Subtype is required for enum" if subtype.nil?
+      return if subtype.is_a?(Array) && subtype.all? { |sub| sub.is_a?(String) }
+
+      raise ArgumentError, "Subtype must be an array of strings for #{name}"
+    end
+
     def define_setter(name, type, subtype)
       define_method("#{name}=") do |value|
-        raise ArgumentError, "Nil value received for #{name} but it is required" if is_field_required?(name) && value.nil?
-        validated_value = validate_field(name, type, subtype, value)
-        instance_variable_set("@#{name}", validated_value)
+        if value.nil?
+          raise ArgumentError, "Nil value received for #{name} but it is required" if is_field_required?(name)
+          instance_variable_set("@#{name}", nil)
+        else
+          validated_value = validate_field_value!(name, type, subtype, value)
+          instance_variable_set("@#{name}", validated_value)
+        end
       end
     end
   end
 
-  def initialize(attributes = {})
-    check_required_fields!(attributes)
-
-    attributes.each do |key, value|
-      if self.class.fields.key?(key.to_sym)
-        send("#{key}=", value)
-      else
-        raise ArgumentError, "Unknown attribute #{key}"
+  def initialize(base_object)
+    if base_object.is_a?(Hash) || base_object.is_a?(ActionController::Parameters)
+      self.class.fields.each do |field_name, info|
+        value = base_object[field_name] || base_object[field_name.to_sym]
+        send("#{field_name}=", value)
       end
+    elsif base_object.class < ActiveRecord::Base || base_object.class < ActiveRecord::Relation
+      self.class.fields.each do |field_name, info|
+        value = base_object.send(field_name)
+        send("#{field_name}=", value)
+      end
+    else
+      raise ArgumentError, "Unhandled argument for initialization, handled types are hash or instance of ActiveRecord::Base"
     end
   end
 
   private
 
-  def validate_field(name, type, subtype, value)
-    validated_value = nil
-    case type
+  def validate_field_value!(field_name, field_type, field_subtype, field_value)
+    validated_field_value = nil
+    case field_type
     when :string
-      validated_value = validate_string_value!(value, name)
+      validated_field_value = validate_string_value!(field_value, field_name)
     when :integer
-      validated_value = validate_integer_value!(value, name)
+      validated_field_value = validate_integer_value!(field_value, field_name)
     when :float
-      validated_value = validate_float_value!(value, name)
+      validated_field_value = validate_float_value!(field_value, field_name)
     when :boolean
-      validated_value = validate_boolean_value!(value, name)
+      validated_field_value = validate_boolean_value!(field_value, field_name)
     when :array
-      validated_value = validate_array_value!(value, name, subtype)
+      validated_field_value = validate_array_value!(field_value, field_name, field_subtype)
     when :object
-      validated_value = validate_object_value!(value, name, subtype)
+      validated_field_value = validate_object_value!(field_value, field_name, field_subtype)
+    when :enum
+      validated_field_value = validate_enum_value!(field_value, field_name, field_subtype)
     else
-      raise ArgumentError, "Unhandled field type: #{type} for #{name}"
+      raise ArgumentError, "Unhandled field type: #{type} for #{field_name}"
     end
-    validated_value
+    validated_field_value
   end
 
   def check_required_fields!(attributes)
@@ -171,12 +197,7 @@ class OpenApiDto
   end
 
   def validate_array_type!(value, field_name)
-    if value.nil? && is_field_required?(field_name)
-      raise ArgumentError, "Expected Array for #{field_name}, got nil"
-    end
-    unless value.is_a?(Array)
-      raise ArgumentError, "Expected Array for #{field_name}, got #{value.class}"
-    end
+    raise ArgumentError, "Expected Array or an instance of ActiveRecord::Relatioon for #{field_name}, got an instance of #{value.class}" unless value.is_a?(Array) || value.class < ActiveRecord::Relation
   end
 
   def create_subtype_instance(item, field_name, subtype)
@@ -213,6 +234,20 @@ class OpenApiDto
       next
     end
     raise ArgumentError, "No matching type found for item"
+  end
+
+  def validate_enum_value!(value, field_name, subtype)
+    if is_field_required?(field_name)
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}" unless value.is_a?(String) && subtype.include?(value)
+    else
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} or nil for #{field_name}, got an instance of #{value.class}" unless (value.is_a?(String) && subtype.include?(value)) || value.nil?
+    end
+    value
+  end
+
+  def validate_object_value!(value, field_name, subtype)
+    raise ArgumentError, "Expected an Hash or a descendant of ActiveRecord::Base for #{field_name}, got an instance of #{value.class}" unless value.is_a?(Hash) || value.class < ActiveRecord::Base
+    subtype.new(value)
   end
 
   def validated_object_value(value, field_name, subtype)

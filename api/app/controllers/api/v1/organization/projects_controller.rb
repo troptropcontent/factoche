@@ -1,6 +1,12 @@
 class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
   before_action :load_and_authorise_company!
 
+  # GET /api/v1/organization/companies/:company_id/projects
+  def index
+    projects = policy_scope(Organization::Project)
+    render json: Organization::ProjectIndexResponseDto.new({ results: projects }).to_json
+  end
+
   # POST /api/v1/organization/companies/:company_id/projects
   def create
     raise Error::UnauthorizedError unless @company.clients.exists?({ id: project_params[:client_id] })

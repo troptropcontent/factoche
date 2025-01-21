@@ -4,4 +4,9 @@ class Organization::Project < ApplicationRecord
   accepts_nested_attributes_for :versions
 
   validates :name, presence: true, uniqueness: { scope: :client_id }
+
+  def status
+    # TODO : Implement the logic
+    "new"
+  end
 end

@@ -20,6 +20,7 @@ import { Route as AuthenticatedCompaniesCompanyIdProjectsIndexImport } from './r
 import { Route as AuthenticatedCompaniesCompanyIdClientsIndexImport } from './routes/_authenticated/companies/$companyId/clients/index'
 import { Route as AuthenticatedCompaniesCompanyIdProjectsNewImport } from './routes/_authenticated/companies/$companyId/projects/new'
 import { Route as AuthenticatedCompaniesCompanyIdClientsNewImport } from './routes/_authenticated/companies/$companyId/clients/new'
+import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/index'
 
 // Create/Update Routes
 
@@ -79,6 +80,13 @@ const AuthenticatedCompaniesCompanyIdClientsNewRoute =
   AuthenticatedCompaniesCompanyIdClientsNewImport.update({
     id: '/clients/new',
     path: '/clients/new',
+    getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+  } as any)
+
+const AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute =
+  AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexImport.update({
+    id: '/projects/$projectId/',
+    path: '/projects/$projectId/',
     getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
   } as any)
 
@@ -149,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdProjectsIndexImport
       parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
     }
+    '/_authenticated/companies/$companyId/projects/$projectId/': {
+      id: '/_authenticated/companies/$companyId/projects/$projectId/'
+      path: '/projects/$projectId'
+      fullPath: '/companies/$companyId/projects/$projectId'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
+    }
   }
 }
 
@@ -160,6 +175,7 @@ interface AuthenticatedCompaniesCompanyIdRouteChildren {
   AuthenticatedCompaniesCompanyIdProjectsNewRoute: typeof AuthenticatedCompaniesCompanyIdProjectsNewRoute
   AuthenticatedCompaniesCompanyIdClientsIndexRoute: typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   AuthenticatedCompaniesCompanyIdProjectsIndexRoute: typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
+  AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
 }
 
 const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompanyIdRouteChildren =
@@ -174,6 +190,8 @@ const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompan
       AuthenticatedCompaniesCompanyIdClientsIndexRoute,
     AuthenticatedCompaniesCompanyIdProjectsIndexRoute:
       AuthenticatedCompaniesCompanyIdProjectsIndexRoute,
+    AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute:
+      AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute,
   }
 
 const AuthenticatedCompaniesCompanyIdRouteWithChildren =
@@ -206,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/companies/$companyId/projects/new': typeof AuthenticatedCompaniesCompanyIdProjectsNewRoute
   '/companies/$companyId/clients': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   '/companies/$companyId/projects': typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
+  '/companies/$companyId/projects/$projectId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -216,6 +235,7 @@ export interface FileRoutesByTo {
   '/companies/$companyId/projects/new': typeof AuthenticatedCompaniesCompanyIdProjectsNewRoute
   '/companies/$companyId/clients': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   '/companies/$companyId/projects': typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
+  '/companies/$companyId/projects/$projectId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
 }
 
 export interface FileRoutesById {
@@ -229,6 +249,7 @@ export interface FileRoutesById {
   '/_authenticated/companies/$companyId/projects/new': typeof AuthenticatedCompaniesCompanyIdProjectsNewRoute
   '/_authenticated/companies/$companyId/clients/': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   '/_authenticated/companies/$companyId/projects/': typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
+  '/_authenticated/companies/$companyId/projects/$projectId/': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -243,6 +264,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/projects/new'
     | '/companies/$companyId/clients'
     | '/companies/$companyId/projects'
+    | '/companies/$companyId/projects/$projectId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth/login'
@@ -252,6 +274,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/projects/new'
     | '/companies/$companyId/clients'
     | '/companies/$companyId/projects'
+    | '/companies/$companyId/projects/$projectId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -263,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/companies/$companyId/projects/new'
     | '/_authenticated/companies/$companyId/clients/'
     | '/_authenticated/companies/$companyId/projects/'
+    | '/_authenticated/companies/$companyId/projects/$projectId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -312,7 +336,8 @@ export const routeTree = rootRoute
         "/_authenticated/companies/$companyId/clients/new",
         "/_authenticated/companies/$companyId/projects/new",
         "/_authenticated/companies/$companyId/clients/",
-        "/_authenticated/companies/$companyId/projects/"
+        "/_authenticated/companies/$companyId/projects/",
+        "/_authenticated/companies/$companyId/projects/$projectId/"
       ]
     },
     "/_authenticated/companies/$companyId/": {
@@ -333,6 +358,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/companies/$companyId/projects/": {
       "filePath": "_authenticated/companies/$companyId/projects/index.tsx",
+      "parent": "/_authenticated/companies/$companyId"
+    },
+    "/_authenticated/companies/$companyId/projects/$projectId/": {
+      "filePath": "_authenticated/companies/$companyId/projects/$projectId/index.tsx",
       "parent": "/_authenticated/companies/$companyId"
     }
   }

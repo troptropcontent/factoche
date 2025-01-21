@@ -50,7 +50,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
           let!(:number_of_items_before) { Organization::Item.count }
           let!(:number_of_item_groups_before) { Organization::ItemGroup.count }
 
-          run_test! "create a new project with the relevant descendants", focus: true do
+          run_test! "create a new project with the relevant descendants" do
             expect(Organization::Project.count).to eq(number_of_project_before + 1)
             expect(Organization::ProjectVersion.count).to eq(number_of_project_version_before + 1)
             expect(Organization::Item.count).to eq(number_of_items_before + 2)
@@ -215,6 +215,50 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
               }
             end
           end
+        end
+      end
+    end
+
+    get "List all the company's project" do
+      tags "Projects"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :company_id, in: :path, type: :integer
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let(:client) { FactoryBot.create(:client, company: company) }
+      let!(:company_project) { FactoryBot.create(:project, client: client,) }
+      let(:another_company) { FactoryBot.create(:company) }
+      let(:another_client) { FactoryBot.create(:client, company: another_company) }
+      let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:company_id) { company.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+      response "200", "list company's projects" do
+        schema Organization::ProjectIndexResponseDto.to_schema
+        run_test! {
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response["results"].length).to eq(1)
+          expect(parsed_response.dig("results", 0, "id")).to eq(company_project.id)
+        }
+      end
+
+      response "401", "not authorised" do
+        context "when the user is not a member of the company" do
+          let(:another_user) { FactoryBot.create(:user) }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+          run_test!
+        end
+      end
+
+      response "404", "not found" do
+        context "when the company does not exists" do
+          let(:company_id) { 123123123123123123123123 }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+          run_test!
         end
       end
     end
