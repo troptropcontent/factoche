@@ -1,7 +1,7 @@
 require "rails_helper"
 require "swagger_helper"
 
-RSpec.describe Api::V1::Organization::ProjectsController, type: :request, focus: true do
+RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
   path "/api/v1/organization/companies/{company_id}/projects" do
     post "Creates a new project and its descendants" do
       tags "Projects"
@@ -250,6 +250,14 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request, focus:
         context "when the user is not a member of the company" do
           let(:another_user) { FactoryBot.create(:user) }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+          run_test!
+        end
+      end
+
+      response "404", "not found" do
+        context "when the company does not exists" do
+          let(:company_id) { 123123123123123123123123 }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
           run_test!
         end
       end

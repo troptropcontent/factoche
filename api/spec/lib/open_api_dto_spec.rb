@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe OpenApiDto, focus: true do
+RSpec.describe OpenApiDto do
   describe "initialization" do
     describe "when the argument is an hash" do
       it "works" do
