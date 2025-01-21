@@ -1,32 +1,32 @@
 class Organization::ProjectDtoItemDto < OpenApiDto
-  field name: :id, type: :integer
-  field name: :position, type: :integer
-  field name: :name, type: :string
-  field name: :description, type: :string, required: false
-  field name: :quantity, type: :integer
-  field name: :unit, type: :string
-  field name: :unit_price_cents, type: :integer
+  field "id", :integer
+  field "position", :integer
+  field "name", :string
+  field "description", :string, required: false
+  field "quantity", :integer
+  field "unit", :string
+  field "unit_price_cents", :integer
 end
 
 class Organization::ProjectDtoItemGroupDto < OpenApiDto
-  field name: :id, type: :integer
-  field name: :name, type: :string
-  field name: :description, type: :string, required: false
-  field name: :position, type: :integer
-  field name: :items, type: :array, subtype: Organization::ProjectDtoItemDto
+  field "id", :integer
+  field "name", :string
+  field "description", :string, required: false
+  field "position", :integer
+  field "items", :array, subtype: Organization::ProjectDtoItemDto
 end
 
 class Organization::ProjectDtoProjectVersionDto < OpenApiDto
-  field name: :id, type: :integer
-  field name: :retention_rate_guarantee, type: :integer
-  field name: :number, type: :integer
-  field name: :items, type: :array, subtype: [ [ Organization::ProjectDtoItemDto ],  [ Organization::ProjectDtoItemGroupDto ] ]
+  field "id", :integer
+  field "retention_rate_guarantee", :integer
+  field "number", :integer
+  field "items", :array, subtype: [ [ Organization::ProjectDtoItemDto ],  [ Organization::ProjectDtoItemGroupDto ] ]
 end
 
 class Organization::ProjectDto < OpenApiDto
-  field name: :id, type: :integer
-  field name: :name, type: :string
-  field name: :description, type: :string, required: false
-  field name: :client_id, type: :integer
-  field name: :versions, type: :array, subtype: Organization::ProjectDtoProjectVersionDto
+  field "id", :integer
+  field "name", :string
+  field "description", :string, required: false
+  field "client_id", :integer
+  field "versions", :array, subtype: Organization::ProjectDtoProjectVersionDto
 end
