@@ -388,7 +388,45 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List all the company's project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's projects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::ProjectIndexResponseProjectDto"][];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         put?: never;
         /** Creates a new project and its descendants */
         post: {
@@ -404,6 +442,7 @@ export interface paths {
                 content: {
                     "application/json": {
                         name: string;
+                        description?: string | null;
                         client_id: number;
                         retention_guarantee_rate: number;
                         items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
@@ -532,6 +571,7 @@ export interface components {
         };
         "Organization::CreateProjectDto": {
             name: string;
+            description?: string | null;
             client_id: number;
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
@@ -564,6 +604,21 @@ export interface components {
             description?: string | null;
             client_id: number;
             versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
+        };
+        "Organization::ProjectIndexResponseProjectClientDto": {
+            id: number;
+            name: string;
+        };
+        "Organization::ProjectIndexResponseProjectDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::ProjectIndexResponseProjectClientDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::ProjectIndexResponseDto": {
+            results: components["schemas"]["Organization::ProjectIndexResponseProjectDto"][];
         };
     };
     responses: never;

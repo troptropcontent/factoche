@@ -37,6 +37,16 @@ i18n
                                 "index": {
                                     "title": "Mes projets",
                                     "add_project": "Ajouter un projet",
+                                    "table": {
+                                        "columns": {
+                                            "name": "Nom",
+                                            "status": "Status",
+                                            "client": "Client",
+                                            "total_amount": "Montant total",
+                                            "progress": "Avancement",
+                                            "last_invoice_date": "Dérnière facture"
+                                        }
+                                    }
                                 },
                                 "new": {
                                     "title": "Nouveau projet",
