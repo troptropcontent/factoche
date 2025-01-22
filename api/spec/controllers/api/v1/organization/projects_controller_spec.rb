@@ -264,7 +264,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
     end
   end
 
-  path "/api/v1/organization/companies/{company_id}/projects/{id}", focus: true do
+  path "/api/v1/organization/companies/{company_id}/projects/{id}" do
     get "Show the project details" do
       tags "Projects"
       security [ bearerAuth: [] ]
