@@ -48,6 +48,11 @@ class OpenApiDto
               type: :string,
               enum: info[:subtype]
             }
+          when :timestamp
+            {
+              type: :string,
+              format: "date-time"
+            }
           else
             { type: info[:type] }.merge(info[:required] ? {} : { nullable: true })
           end
