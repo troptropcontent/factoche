@@ -426,6 +426,45 @@ paths:
           description: not authorised
         '404':
           description: not found
+  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}":
+    get:
+      summary: Show the project version details
+      tags:
+      - Project versions
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: show project version details
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
+        '401':
+          description: not authorised
+        '404':
+          description: not found
   "/api/v1/organization/companies/{company_id}/projects":
     post:
       summary: Creates a new project and its descendants
@@ -1066,6 +1105,86 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ProjectVersionIndexResponseProjectDto"
+    Organization::ProjectVersionShowProjectVersionItemDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - quantity
+      - unit
+      - unit_price_cents
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_cents:
+          type: integer
+    Organization::ProjectVersionShowProjectVersionItemGroupDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - grouped_items
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        grouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectVersionShowProjectVersionItemDto"
+    Organization::ProjectVersionShowResponseProjectVersionDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      - retention_guarantee_rate
+      - ungrouped_items
+      - item_groups
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        retention_guarantee_rate:
+          type: integer
+        ungrouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectVersionShowProjectVersionItemDto"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectVersionShowProjectVersionItemGroupDto"
+    Organization::ProjectVersionShowResponseDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
   securitySchemes:
     bearerAuth:
       type: http
