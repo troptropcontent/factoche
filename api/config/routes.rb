@@ -17,7 +17,7 @@ Rails.application.routes.draw do
         resources :companies, only: [ :index, :show ] do
           resources :clients, only: [ :create, :index ]
           resources :projects, only: [ :create, :index, :show ] do
-            resources :versions, only: [ :index ], controller: "project_versions"
+            resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
         end
       end
