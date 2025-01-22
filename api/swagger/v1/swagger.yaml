@@ -497,6 +497,40 @@ paths:
           description: not authorised
         '404':
           description: not found
+  "/api/v1/organization/companies/{company_id}/projects/{id}":
+    get:
+      summary: Show the project details
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list company's projects
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectDto"
+        '401':
+          description: not authorised
+        '404':
+          description: not found
 components:
   schemas:
     client:
@@ -853,6 +887,125 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectDto"
+    Organization::ProjectShowResponseProjectClientDto:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      - phone
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    Organization::ProjectShowResponseProjectItemDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - quantity
+      - unit
+      - unit_price_cents
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_cents:
+          type: integer
+    Organization::ProjectShowResponseProjectItemGroupDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - grouped_items
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        grouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectItemDto"
+    Organization::ProjectShowResponseProjectLastVersionDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      - ungrouped_items
+      - item_groups
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: timestamp
+        ungrouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectItemDto"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectItemGroupDto"
+    Organization::ProjectShowResponseProjectDto:
+      type: object
+      required:
+      - id
+      - name
+      - client
+      - status
+      - last_version
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectClientDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectLastVersionDto"
+    Organization::ProjectShowResponseDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectDto"
   securitySchemes:
     bearerAuth:
       type: http
