@@ -2,10 +2,12 @@ class Organization::ProjectVersion < ApplicationRecord
   belongs_to :project
 
   has_many :items, class_name: "Organization::Item"
-  accepts_nested_attributes_for :items
 
   has_many :item_groups, class_name: "Organization::ItemGroup"
   accepts_nested_attributes_for :item_groups
+
+  has_many :ungrouped_items, -> { where(item_group_id: nil) }, class_name: "Organization::Item"
+  accepts_nested_attributes_for :ungrouped_items
 
   validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10000 }
 

@@ -9,10 +9,10 @@ RSpec.describe Organization::ProjectVersion, type: :model do
     it { should belong_to(:project) }
     it { should have_many(:items).class_name('Organization::Item') }
     it { should have_many(:item_groups).class_name('Organization::ItemGroup') }
+    it { should have_many(:ungrouped_items).class_name('Organization::Item') }
   end
 
   describe 'nested attributes' do
-    it { should accept_nested_attributes_for(:items) }
     it { should accept_nested_attributes_for(:item_groups) }
   end
 
