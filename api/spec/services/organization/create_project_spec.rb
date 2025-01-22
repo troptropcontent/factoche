@@ -87,8 +87,8 @@ RSpec.describe Organization::CreateProject do
 
         group = version.item_groups.first
         expect(group.name).to eq('Group 1')
-        expect(group.items.count).to eq(1)
-        expect(group.items.first.name).to eq('Group Item 1')
+        expect(group.grouped_items.count).to eq(1)
+        expect(group.grouped_items.first.name).to eq('Group Item 1')
       end
     end
 

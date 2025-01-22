@@ -1,6 +1,13 @@
 class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
   before_action :load_and_authorise_company!
 
+  # GET /api/v1/organization/companies/:company_id/projects/:project_id
+  def show
+    project = policy_scope(Organization::Project).includes(:client, last_version: [ :ungrouped_items, item_groups: :grouped_items ]).find(params[:id])
+
+    render json: Organization::ProjectShowResponseDto.new({ result: project }).to_json
+  end
+
   # GET /api/v1/organization/companies/:company_id/projects
   def index
     projects = policy_scope(Organization::Project)
@@ -83,7 +90,7 @@ class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
         name: item_group.name,
         description: item_group.description,
         position: item_group.position,
-        items: item_group.items.map { |item| {
+        items: item_group.grouped_items.map { |item| {
           id: item.id,
           name: item.name,
           quantity: item.quantity,
