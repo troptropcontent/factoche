@@ -16,6 +16,7 @@ RSpec.describe Organization::Project, type: :model do
   describe 'associations' do
     it { should belong_to(:client) }
     it { should have_many(:versions) }
+    it { should have_one(:last_version) }
   end
 
   describe 'nested attributes' do
