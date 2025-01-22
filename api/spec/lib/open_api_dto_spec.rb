@@ -56,6 +56,12 @@ RSpec.describe OpenApiDto do
           expect { tmp_dto_class.new({ is_active: 2 }) }.to raise_error(ArgumentError, 'Expected Boolean for is_active, got Integer')
         end
       end
+      describe "when the type is timestamp", focus: true do
+        let(:tmp_dto_class) { Class.new(OpenApiDto) { field 'created_at', :timestamp } }
+        it "raises an error" do
+          expect { tmp_dto_class.new({ created_at: 2 }) }.to raise_error(ArgumentError, 'Expected an instance of ActiveSupport::TimeWithZone for created_at, got an instance of Integer')
+        end
+      end
       describe "when the type is enum" do
         let(:tmp_dto_class) { Class.new(OpenApiDto) { field 'status', :enum, subtype: [ "new", "archived" ] } }
         describe "when the value is not a string" do
