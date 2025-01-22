@@ -43,7 +43,7 @@ module Organization
             name: group_dto.name,
             description: group_dto.description,
             position: group_dto.position,
-            items_attributes: build_items_attributes(version, group_dto.items)
+            grouped_items_attributes: build_items_attributes(version, group_dto.items)
           }
         })
       end

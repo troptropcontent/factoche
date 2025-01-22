@@ -10,11 +10,11 @@ RSpec.describe Organization::ItemGroup, type: :model do
 
   describe "associations" do
     it { should belong_to(:project_version).class_name("Organization::ProjectVersion") }
-    it { should have_many(:items).class_name("Organization::Item") }
+    it { should have_many(:grouped_items).class_name("Organization::Item") }
   end
 
   describe "nested attributes" do
-    it { should accept_nested_attributes_for(:items) }
+    it { should accept_nested_attributes_for(:grouped_items) }
   end
 
   describe "validations" do
