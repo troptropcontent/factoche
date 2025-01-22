@@ -390,6 +390,42 @@ paths:
                     - details
                 required:
                 - error
+  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
+    get:
+      summary: List all the project's versions
+      tags:
+      - Project versions
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list company's projects
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::ProjectVersionIndexResponseProjectDto"
+        '401':
+          description: not authorised
+        '404':
+          description: not found
   "/api/v1/organization/companies/{company_id}/projects":
     post:
       summary: Creates a new project and its descendants
@@ -963,7 +999,8 @@ components:
         number:
           type: integer
         created_at:
-          type: timestamp
+          type: string
+          format: date-time
         ungrouped_items:
           type: array
           items:
@@ -1006,6 +1043,29 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectDto"
+    Organization::ProjectVersionIndexResponseProjectDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    Organization::ProjectVersionIndexResponseDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectVersionIndexResponseProjectDto"
   securitySchemes:
     bearerAuth:
       type: http
