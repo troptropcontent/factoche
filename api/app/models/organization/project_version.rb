@@ -9,6 +9,8 @@ class Organization::ProjectVersion < ApplicationRecord
   has_many :ungrouped_items, -> { where(item_group_id: nil) }, class_name: "Organization::Item"
   accepts_nested_attributes_for :ungrouped_items
 
+  has_many :completion_snapshots, class_name: "Organization::CompletionSnapshot"
+
   validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10000 }
 
   validates :number, presence: true, uniqueness: { scope: :project_id }
