@@ -1,9 +1,9 @@
 class Organization::ProjectVersion < ApplicationRecord
   belongs_to :project
 
-  has_many :items, class_name: "Organization::Item"
+  has_many :items, dependent: :destroy, class_name: "Organization::Item"
 
-  has_many :item_groups, class_name: "Organization::ItemGroup"
+  has_many :item_groups, dependent: :destroy, class_name: "Organization::ItemGroup"
   accepts_nested_attributes_for :item_groups
 
   has_many :ungrouped_items, -> { where(item_group_id: nil) }, class_name: "Organization::Item"
