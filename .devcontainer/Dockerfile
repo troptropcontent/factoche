@@ -29,6 +29,7 @@ RUN eval "$(rbenv init -)" \
     && rbenv install ${RUBY_VERSION} \
     && rbenv global ${RUBY_VERSION}
 
-RUN gem install ruby-lsp
+RUN gem install ruby-lsp 
+RUN gem install lefthook 
 
 WORKDIR /factoche
