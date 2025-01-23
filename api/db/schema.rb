@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_23_151110) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_23_174818) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_151110) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["registration_number"], name: "index_organization_companies_on_registration_number", unique: true
+  end
+
+  create_table "organization_completion_snapshot_items", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "completion_snapshot_id", null: false
+    t.decimal "completion_percentage", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["completion_snapshot_id"], name: "idx_on_completion_snapshot_id_f747b636af"
+    t.index ["item_id"], name: "index_organization_completion_snapshot_items_on_item_id"
   end
 
   create_table "organization_completion_snapshots", force: :cascade do |t|
@@ -115,6 +125,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_151110) do
   end
 
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
+  add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
+  add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
   add_foreign_key "organization_completion_snapshots", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"

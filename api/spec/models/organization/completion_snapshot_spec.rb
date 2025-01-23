@@ -8,5 +8,6 @@ RSpec.describe Organization::CompletionSnapshot, type: :model do
   let(:project_version) { FactoryBot.create(:project_version, project: project) }
   describe 'associations' do
     it { should belong_to(:project_version).class_name('Organization::ProjectVersion') }
+    it { should have_many(:completion_snapshot_items).class_name('Organization::CompletionSnapshotItem') }
   end
 end
