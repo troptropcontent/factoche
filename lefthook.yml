@@ -1,10 +1,12 @@
 pre-commit:
   parallel: true
   jobs:
-    - run: yarn eslint {staged_files}
+    - run: pnpmx eslint {staged_files}
+      root: "frontend/"
       glob: "*.{js,ts,jsx,tsx}"
 
     - name: rubocop
+      root: "api/"
       glob: "*.rb"
       exclude:
         - config/application.rb
