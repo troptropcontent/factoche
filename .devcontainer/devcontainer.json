@@ -35,8 +35,7 @@
 				"esbenp.prettier-vscode",
 				"bradlc.vscode-tailwindcss",
 				"nidu.copy-json-path",
-				"rubocop.vscode-rubocop",
-				"Shopify.ruby-extensions-pack"
+				"rubocop.vscode-rubocop"
 			]
 		}
 	},
