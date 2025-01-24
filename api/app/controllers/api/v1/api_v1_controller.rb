@@ -10,4 +10,12 @@ class Api::V1::ApiV1Controller < ApplicationController
   def current_user
     @current_user
   end
+
+  def load_and_authorise_resource(name, class_name: nil)
+    id = params["#{name}_id"]
+    klass = (class_name || name.camelize).constantize
+    instance_variable_set("@#{name}", klass.find(id))
+
+    raise Error::UnauthorizedError unless policy_scope(klass).exists?({ id: id })
+  end
 end
