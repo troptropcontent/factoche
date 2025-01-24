@@ -107,6 +107,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         let(:project) { {} }
         describe "when the company does not exists" do
           let(:company_id) { "not_existing_id" }
+
           run_test!
         end
       end
@@ -116,14 +117,17 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
           let(:another_company) { FactoryBot.create(:company) }
           let!(:company_id) { another_company.id }
           let(:project) { {} }
+
           run_test!
         end
+
         describe "when the client does not belong to the company" do
           let(:another_company) { FactoryBot.create(:company) }
           let!(:another_client_of_another_company) { FactoryBot.create(:client, company: another_company) }
           let(:project) { {
             client_id: another_client_of_another_company.id
           } }
+
           run_test!
         end
       end
@@ -250,6 +254,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         context "when the user is not a member of the company" do
           let(:another_user) { FactoryBot.create(:user) }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+
           run_test!
         end
       end
@@ -258,6 +263,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         context "when the company does not exists" do
           let(:company_id) { 123123123123123123123123 }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
           run_test!
         end
       end
@@ -310,6 +316,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         context "when the user is not a member of the company" do
           let(:another_user) { FactoryBot.create(:user) }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+
           run_test!
         end
       end
@@ -318,12 +325,14 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         context "when the company does not exists" do
           let(:company_id) { 123123123123123123123123 }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
           run_test!
         end
 
         context "when the project does not exists within the company" do
           let(:id) { 123123123123123123123123 }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
           run_test!
         end
       end
