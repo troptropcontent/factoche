@@ -7,3 +7,18 @@ require:
 
 RSpec:
   Enabled: true
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 20
+
+RSpec/VariableName:
+  Exclude:
+    - "spec/controllers/**/*"
+
+RSpec/EmptyExampleGroup:
+  Exclude:
+    - "spec/controllers/**/*"
+
+RSpec/LetSetup:
+  Exclude:
+    - "spec/controllers/**/*"
