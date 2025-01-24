@@ -18,6 +18,7 @@ Rails.application.routes.draw do
           resources :clients, only: [ :create, :index ]
           resources :projects, only: [ :create, :index, :show ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
+            resources :completion_snapshot, only: [ :create ]
           end
         end
       end
