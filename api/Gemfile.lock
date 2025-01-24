@@ -290,6 +290,8 @@ GEM
       rubocop-minitest
       rubocop-performance
       rubocop-rails
+    rubocop-rspec (3.4.0)
+      rubocop (~> 1.61)
     ruby-progressbar (1.13.0)
     securerandom (0.4.0)
     shoulda-matchers (6.4.0)
@@ -361,6 +363,7 @@ DEPENDENCIES
   rswag-specs
   rswag-ui
   rubocop-rails-omakase
+  rubocop-rspec
   shoulda-matchers
   solid_cable
   solid_cache
