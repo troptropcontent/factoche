@@ -112,4 +112,63 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       it_behaves_like "an authenticated endpoint"
     end
   end
+
+  path '/api/v1/organization/completion_snapshots/{id}' do
+    parameter name: :id, in: :path, type: :integer
+
+    get "Show completion snapshot details" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let(:client) { FactoryBot.create(:client, company: company) }
+      let(:company_project) { FactoryBot.create(:project, client: client,) }
+      let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
+      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
+        name: "Item",
+        unit: "U",
+        position: 1,
+        unit_price_cents: "1000",
+        project_version: company_project_version,
+        quantity: 2
+      } ]) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:company_id) { company.id }
+      let(:project_id) { company_project.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let!(:completion_snapshot) {
+        FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "New version following discussion with the boss", completion_snapshot_items_attributes: [
+          {
+            item_id: company_project_version_item_group.grouped_items.first.id,
+            completion_percentage: "10"
+          }
+        ] })
+      }
+      let(:id) { completion_snapshot.id }
+
+      response "200", "show completion_snapshot" do
+        schema Organization::ShowCompletionSnapshotResponseDto.to_schema
+
+        run_test!
+      end
+
+      response "404", "not found" do
+        context "when snapshot does not belong to a company of wich the user is a member" do
+          let(:another_user) { FactoryBot.create(:user) }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+
+          run_test!
+        end
+
+        context "when the snapshot does not exists" do
+          let(:id) { 123451234 }
+
+          run_test!
+        end
+      end
+    end
+  end
 end
