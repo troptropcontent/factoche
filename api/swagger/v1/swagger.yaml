@@ -390,6 +390,57 @@ paths:
                     - details
                 required:
                 - error
+  "/api/v1/organization/companies/{company_id}/projects/{project_id}/completion_snapshots":
+    post:
+      summary: Create a new completion snapshot on the project's last version
+      tags:
+      - Completion snapshot
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: completion snapshot successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
+        '422':
+          description: unprocessable entity
+        '401':
+          description: unauthorised
+        '403':
+          description: forbiden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - completion_snapshot_items
+              properties:
+                description:
+                  type: string
+                  nullable: true
+                completion_snapshot_items:
+                  type: array
+                  items:
+                    "$ref": "#/components/schemas/Organization::CreateCompletionSnapshotItemDto"
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
@@ -765,6 +816,54 @@ components:
           - details
       required:
       - error
+    Organization::CompletionSnapshotDtoItemDto:
+      type: object
+      required:
+      - completion_percentage
+      - item_id
+      properties:
+        completion_percentage:
+          type: string
+          format: decimal
+        item_id:
+          type: integer
+    Organization::CompletionSnapshotDto:
+      type: object
+      required:
+      - id
+      - completion_snapshot_items
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        completion_snapshot_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::CompletionSnapshotDtoItemDto"
+    Organization::CreateCompletionSnapshotItemDto:
+      type: object
+      required:
+      - completion_percentage
+      - item_id
+      properties:
+        completion_percentage:
+          type: string
+        item_id:
+          type: integer
+    Organization::CreateCompletionSnapshotDto:
+      type: object
+      required:
+      - completion_snapshot_items
+      properties:
+        description:
+          type: string
+          nullable: true
+        completion_snapshot_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::CreateCompletionSnapshotItemDto"
     Organization::CreateProjecItemDto:
       type: object
       required:
@@ -1185,6 +1284,13 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
+    Organization::ShowCompletionSnapshotResponseDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
   securitySchemes:
     bearerAuth:
       type: http
