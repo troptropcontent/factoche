@@ -22,10 +22,10 @@ const ItemGroupSummary = ({
   items,
 }: {
   name: string;
-  description?: string;
+  description?: string | null;
   items: Array<{
     name: string;
-    description?: string;
+    description?: string | null;
     quantity: number;
     unit_price: number;
     unit: string;

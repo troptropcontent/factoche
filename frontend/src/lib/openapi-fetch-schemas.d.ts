@@ -381,6 +381,117 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the project's versions */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    project_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's projects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::ProjectVersionIndexResponseProjectDto"][];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show the project version details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    project_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show project version details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects": {
         parameters: {
             query?: never;
@@ -490,6 +601,61 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/projects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show the project details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's projects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::ProjectShowResponseProjectDto"];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -619,6 +785,85 @@ export interface components {
         };
         "Organization::ProjectIndexResponseDto": {
             results: components["schemas"]["Organization::ProjectIndexResponseProjectDto"][];
+        };
+        "Organization::ProjectShowResponseProjectClientDto": {
+            id: number;
+            name: string;
+            email: string;
+            phone: string;
+        };
+        "Organization::ProjectShowResponseProjectItemDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            unit_price_cents: number;
+        };
+        "Organization::ProjectShowResponseProjectItemGroupDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::ProjectShowResponseProjectItemDto"][];
+        };
+        "Organization::ProjectShowResponseProjectLastVersionDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            ungrouped_items: components["schemas"]["Organization::ProjectShowResponseProjectItemDto"][];
+            item_groups: components["schemas"]["Organization::ProjectShowResponseProjectItemGroupDto"][];
+        };
+        "Organization::ProjectShowResponseProjectDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::ProjectShowResponseProjectClientDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            last_version: components["schemas"]["Organization::ProjectShowResponseProjectLastVersionDto"];
+        };
+        "Organization::ProjectShowResponseDto": {
+            result: components["schemas"]["Organization::ProjectShowResponseProjectDto"];
+        };
+        "Organization::ProjectVersionIndexResponseProjectDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        "Organization::ProjectVersionIndexResponseDto": {
+            results: components["schemas"]["Organization::ProjectVersionIndexResponseProjectDto"][];
+        };
+        "Organization::ProjectVersionShowProjectVersionItemDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            unit_price_cents: number;
+        };
+        "Organization::ProjectVersionShowProjectVersionItemGroupDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
+        };
+        "Organization::ProjectVersionShowResponseProjectVersionDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            retention_guarantee_rate: number;
+            ungrouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
+            item_groups: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemGroupDto"][];
+        };
+        "Organization::ProjectVersionShowResponseDto": {
+            result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
         };
     };
     responses: never;
