@@ -14,7 +14,7 @@ const ItemSummary = ({
 }: {
   name: string;
   quantity: number;
-  description?: string;
+  description?: string | null;
   unit_price: number;
   unit: string;
 }) => {
