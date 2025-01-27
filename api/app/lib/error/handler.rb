@@ -21,7 +21,7 @@ module Error
             error: {
               status: e.class.status,
               code: e.class.code,
-              message: e.class.message,
+              message: e.message || e.class.message,
               details: e.respond_to?(:details) ? e.details : nil
             }
           }, status: e.class.status
