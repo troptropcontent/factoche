@@ -3,7 +3,7 @@
 # - Error handling
 # - For :array & :object handle when the type is not a DTO (or dto variant, like string)
 class OpenApiDto
-  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object, :enum, :timestamp ].freeze
+  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object, :enum, :timestamp, :decimal ].freeze
   @registered_dto_schemas = {}
 
   class << self
@@ -52,6 +52,11 @@ class OpenApiDto
             {
               type: :string,
               format: "date-time"
+            }
+          when :decimal
+            {
+              type: :string,
+              format: "decimal"
             }
           else
             { type: info[:type] }.merge(info[:required] ? {} : { nullable: true })
@@ -136,6 +141,8 @@ class OpenApiDto
       validated_field_value = validate_boolean_value!(field_value, field_name)
     when :timestamp
       validated_field_value = validate_timestamp_value!(field_value, field_name)
+    when :decimal
+      validated_field_value = validate_decimal_value!(field_value, field_name)
     when :array
       validated_field_value = validate_array_value!(field_value, field_name, field_subtype)
     when :object
@@ -195,6 +202,11 @@ class OpenApiDto
       raise ArgumentError, "Expected Boolean or Nil for #{field_name}, got #{value.class}" unless [ true, false ].include?(value) || value.nil?
     end
     value
+  end
+
+  def validate_decimal_value!(value, field_name)
+    raise ArgumentError, "Expected an instance of BigDecimal for #{field_name}, got an instance of #{value.class}" unless value.is_a?(BigDecimal)
+    value.to_s
   end
 
   def validate_timestamp_value!(value, field_name)
