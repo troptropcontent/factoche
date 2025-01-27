@@ -37,7 +37,7 @@ RSpec.describe Organization::CreateProject do
         ]
       end
 
-      it 'creates a project with simple items' do
+      it 'creates a project with simple items', :aggregate_failures do
         project = described_class.call(create_project_dto)
 
         expect(project).to be_persisted
@@ -76,7 +76,7 @@ RSpec.describe Organization::CreateProject do
       end
       let(:project_name) { 'Test Project with Groups' }
 
-      it 'creates a project with item groups' do
+      it 'creates a project with item groups', :aggregate_failures do
         project = described_class.call(create_project_dto)
 
         expect(project).to be_persisted
@@ -136,7 +136,7 @@ RSpec.describe Organization::CreateProject do
         let(:project_name) { '' }
         let(:items) { [] }
 
-        it 'raises ActiveRecord::RecordInvalid and does not create anything' do
+        it 'raises ActiveRecord::RecordInvalid and does not create anything', :aggregate_failures do
           expect {
             described_class.call(create_project_dto)
           }.to raise_error(ActiveRecord::RecordInvalid)
@@ -151,7 +151,7 @@ RSpec.describe Organization::CreateProject do
         let(:retention_guarantee_rate) { 100000 }
         let(:items) { [] }
 
-        it 'raises ActiveRecord::RecordInvalid and does not create anything' do
+        it 'raises ActiveRecord::RecordInvalid and does not create anything', :aggregate_failures do
           expect {
             described_class.call(create_project_dto)
           }.to raise_error(ActiveRecord::RecordInvalid)
@@ -184,7 +184,7 @@ RSpec.describe Organization::CreateProject do
           ]
         end
 
-        it 'raises ActiveRecord::RecordInvalid and does not create anything' do
+        it 'raises ActiveRecord::RecordInvalid and does not create anything', :aggregate_failures do
           expect {
             described_class.call(create_project_dto)
           }.to raise_error(ActiveRecord::RecordInvalid)
@@ -231,7 +231,7 @@ RSpec.describe Organization::CreateProject do
           ]
         end
 
-        it 'raises ActiveRecord::RecordInvalid and does not create anything' do
+        it 'raises ActiveRecord::RecordInvalid and does not create anything', :aggregate_failures do
           expect {
             described_class.call(create_project_dto)
           }.to raise_error(ActiveRecord::RecordInvalid)

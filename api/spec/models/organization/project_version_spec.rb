@@ -2,36 +2,39 @@ require 'rails_helper'
 
 RSpec.describe Organization::ProjectVersion, type: :model do
   subject { FactoryBot.create(:project_version, project: project) }
+
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:project, client: client) }
+
   describe 'associations' do
-    it { should belong_to(:project) }
-    it { should have_many(:items).class_name('Organization::Item') }
-    it { should have_many(:item_groups).class_name('Organization::ItemGroup') }
-    it { should have_many(:ungrouped_items).class_name('Organization::Item') }
-    it { should have_many(:completion_snapshots).class_name('Organization::CompletionSnapshot') }
+    it { is_expected.to belong_to(:project) }
+    it { is_expected.to have_many(:items).class_name('Organization::Item') }
+    it { is_expected.to have_many(:item_groups).class_name('Organization::ItemGroup') }
+    it { is_expected.to have_many(:ungrouped_items).class_name('Organization::Item') }
+    it { is_expected.to have_many(:completion_snapshots).class_name('Organization::CompletionSnapshot') }
   end
 
   describe 'nested attributes' do
-    it { should accept_nested_attributes_for(:item_groups) }
+    it { is_expected.to accept_nested_attributes_for(:item_groups) }
   end
 
   describe '#next_available_number' do
     context 'when project_id is not set' do
-      subject { FactoryBot.build(:project_version, project: nil) }
+      subject(:project_version) { FactoryBot.build(:project_version, project: nil) }
 
       it 'raises an error' do
-        expect { subject.send(:next_available_number) }
+        expect { project_version.send(:next_available_number) }
           .to raise_error(RuntimeError, "Project must be set to determine next version number")
       end
     end
   end
 
   describe 'validations' do
-    it { should validate_presence_of(:number) }
-    it { should validate_presence_of(:retention_guarantee_rate) }
-    it { should validate_numericality_of(:retention_guarantee_rate)
+    it { is_expected.to validate_presence_of(:number) }
+    it { is_expected.to validate_presence_of(:retention_guarantee_rate) }
+
+    it { expect(project_version).to validate_numericality_of(:retention_guarantee_rate)
           .is_greater_than_or_equal_to(0)
           .is_less_than_or_equal_to(10000) }
     # Uniqueness validation of number scoped to project_id is not necessary
@@ -67,6 +70,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
           before do
             FactoryBot.create(:project_version, project: project)
           end
+
           it 'overwrites the number set' do
             version = FactoryBot.build(:project_version, project: project, number: 10)
             version.valid?

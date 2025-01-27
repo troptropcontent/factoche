@@ -56,12 +56,14 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
 
         describe 'with invalid token format' do
           let(:Authorization) { 'invalid_token' }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
 
         describe 'with expired token' do
           let(:Authorization) { travel_to 1.day.before { "Bearer #{JwtAuth.generate_access_token(1)} " } }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
@@ -74,6 +76,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
 
         describe "when the company does not exist" do
           let(:company_id) { 999999 }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
@@ -81,6 +84,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
         describe "when the user is not authorized to create client within this company" do
           let(:company) { FactoryBot.create(:company) }
           let(:company_id) { company.id }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
@@ -95,24 +99,28 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
 
         describe "when name is missing" do
           let(:client) { valid_client_payload.merge(name: nil) }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
 
         describe "when email is invalid" do
           let(:client) { valid_client_payload.merge(email: 'invalid-email') }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
 
         describe "when registration number is missing" do
           let(:client) { valid_client_payload.merge(registration_number: nil) }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
 
         describe "when phone is invalid" do
           let(:client) { valid_client_payload.merge(phone: 'invalid-phone') }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
@@ -144,6 +152,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
 
         describe "when the company does not exist" do
           let(:company_id) { 999999 }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
@@ -151,6 +160,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
         describe "when the user is not authorized to view clients within this company" do
           let(:company) { FactoryBot.create(:company) }
           let(:company_id) { company.id }
+
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end

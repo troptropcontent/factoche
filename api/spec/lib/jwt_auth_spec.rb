@@ -30,7 +30,7 @@ RSpec.describe JwtAuth do
       expect(decoded_token['iat']).to be_within(5).of(Time.now.to_i)
     end
 
-    it 'includes a JWT ID' do
+    it 'includes a JWT ID', :aggregate_failures do
       expect(decoded_token['jti']).to be_present
       expect(decoded_token['jti']).to match(/^[0-9a-f-]{36}$/) # UUID format
     end
@@ -63,7 +63,7 @@ RSpec.describe JwtAuth do
       expect(decoded_token['iat']).to be_within(5).of(Time.now.to_i)
     end
 
-    it 'includes a JWT ID' do
+    it 'includes a JWT ID', :aggregate_failures do
       expect(decoded_token['jti']).to be_present
       expect(decoded_token['jti']).to match(/^[0-9a-f-]{36}$/) # UUID format
     end
@@ -127,7 +127,7 @@ RSpec.describe JwtAuth do
       expect(token1).not_to eq(token2)
     end
 
-    it 'uses different secrets for access and refresh tokens' do
+    it 'uses different secrets for access and refresh tokens', :aggregate_failures do
       access_token = described_class.generate_access_token(user_id)
       refresh_token = described_class.generate_refresh_token(user_id)
 
@@ -144,13 +144,13 @@ RSpec.describe JwtAuth do
 
   describe '.find_token' do
     let(:headers) { {} }
-    let(:request) { double('request', headers: headers) }
+    let(:request) { Struct.new(:headers).new(headers) }
 
     context 'when Authorization header is present with valid Bearer token' do
       let(:headers) { { 'Authorization' => 'Bearer valid_token_123' } }
 
       it 'returns the token' do
-        expect(JwtAuth.find_token(request)).to eq('valid_token_123')
+        expect(described_class.find_token(request)).to eq('valid_token_123')
       end
     end
 
@@ -158,7 +158,7 @@ RSpec.describe JwtAuth do
       let(:headers) { { 'Authorization' => 'Basic some_token' } }
 
       it 'returns nil' do
-        expect(JwtAuth.find_token(request)).to be_nil
+        expect(described_class.find_token(request)).to be_nil
       end
     end
 
@@ -166,7 +166,7 @@ RSpec.describe JwtAuth do
       let(:headers) { {} }
 
       it 'returns nil' do
-        expect(JwtAuth.find_token(request)).to be_nil
+        expect(described_class.find_token(request)).to be_nil
       end
     end
 
@@ -174,7 +174,7 @@ RSpec.describe JwtAuth do
       let(:headers) { { 'Authorization' => nil } }
 
       it 'returns nil' do
-        expect(JwtAuth.find_token(request)).to be_nil
+        expect(described_class.find_token(request)).to be_nil
       end
     end
   end
