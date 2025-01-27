@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_24_095840) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,6 +95,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_24_095840) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "invoice_id"
+    t.bigint "credit_note_id"
+    t.index ["credit_note_id"], name: "index_organization_completion_snapshots_on_credit_note_id"
+    t.index ["invoice_id"], name: "index_organization_completion_snapshots_on_invoice_id"
     t.index ["project_version_id"], name: "index_organization_completion_snapshots_on_project_version_id"
   end
 
@@ -168,6 +172,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_24_095840) do
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
+  add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "credit_note_id"
+  add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "invoice_id"
   add_foreign_key "organization_completion_snapshots", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
