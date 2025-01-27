@@ -22,3 +22,7 @@ RSpec/EmptyExampleGroup:
 RSpec/LetSetup:
   Exclude:
     - "spec/controllers/**/*"
+
+RSpec/SharedContext:
+  Exclude:
+    - "spec/controllers/**/*"
