@@ -121,6 +121,17 @@ i18n
                                     "item_total_label": "Total",
                                     "composition_empty_state_title": "Aucun élément trouvé",
                                     "composition_empty_state_description": "Ajouter un élément ou un groupe d'éléments pour commencer"
+                                },
+                                "show": {
+                                    "project_versions": "Versions du project",
+                                    "version_label": "Version n°{{number}} ({{createdAt, datetime}})",
+                                    "client_info": {
+                                        "title": "Information client"
+                                    },
+                                    "project_composition": {
+                                        "title": "Composition du project",
+                                        "project_total": "Total:"
+                                    }
                                 }
                             },
                             "clients": {
