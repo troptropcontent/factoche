@@ -1,5 +1,5 @@
 class Organization::Project < ApplicationRecord
-  belongs_to :client
+  belongs_to :client, class_name: "Organization::Client"
   has_many :versions, dependent: :destroy, class_name: "Organization::ProjectVersion", foreign_key: "project_id"
   has_many :completion_snapshots, through: :versions, class_name: "Organization::CompletionSnapshot"
   has_one :last_version, -> { order(created_at: :desc) }, class_name: "Organization::ProjectVersion"

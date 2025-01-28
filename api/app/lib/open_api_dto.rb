@@ -183,12 +183,13 @@ class OpenApiDto
   end
 
   def validate_integer_value!(value, field_name)
-    if is_field_required?(field_name)
-      raise ArgumentError, "Expected Integer for #{field_name}, got #{value.class}" unless value.is_a?(Integer)
-    else
-      raise ArgumentError, "Expected Integer or Nil for #{field_name}, got #{value.class}" unless value.is_a?(Integer) || value.nil?
+    return value if value.is_a?(Integer)
+    begin
+      return Integer(value, 10) if value.is_a?(String)
+    rescue ArgumentError
+      raise ArgumentError, "Expected an instance of Integer or a integer parsable instance of String for #{field_name}, got #{value}"
     end
-    value
+    raise ArgumentError, "Expected an instance of Integer or a integer parsable instance of String for #{field_name}, got an instance #{value.class}"
   end
 
   def validate_float_value!(value, field_name)

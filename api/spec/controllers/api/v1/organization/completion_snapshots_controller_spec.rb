@@ -171,4 +171,167 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       end
     end
   end
+
+  path '/api/v1/organization/completion_snapshots' do
+    get "List all project version completion snapshot" do
+      parameter name: :filter, in: :query, schema: Organization::CompletionSnapshotIndexRequestDto.to_schema
+      parameter name: :query, in: :query, schema: QueryParamsDto.to_schema
+
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let(:client) { FactoryBot.create(:client, company: company) }
+      let(:company_project) { FactoryBot.create(:project, client: client,) }
+      let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
+      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
+        name: "Item",
+        unit: "U",
+        position: 1,
+        unit_price_cents: "1000",
+        project_version: company_project_version,
+        quantity: 2
+      } ]) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:company_id) { company.id }
+      let(:project_id) { company_project.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let!(:completion_snapshot) {
+        FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "New version following discussion with the boss", completion_snapshot_items_attributes: [
+          {
+            item_id: company_project_version_item_group.grouped_items.first.id,
+            completion_percentage: "10"
+          }
+        ] })
+      }
+      let!(:another_completion_snapshot) {
+        FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "Another new version following discussion with the boss", completion_snapshot_items_attributes: [
+          {
+            item_id: company_project_version_item_group.grouped_items.first.id,
+            completion_percentage: "10"
+          }
+        ] })
+      }
+      let(:filter) { {} }
+      let(:query) { {} }
+
+      response "200", "list completion_snapshot" do
+        schema Organization::CompletionSnapshotIndexResponseDto.to_schema
+
+        context "when no params are given" do
+          run_test! "It returns all completion_snapshots of the companies of wich the user is a member"
+        end
+
+        context "when filter params are provide" do
+          describe "company_id" do
+            before do
+              another_company = FactoryBot.create(:company, name: "AnotherCompany")
+              another_client = FactoryBot.create(:client, company: another_company)
+              another_project = FactoryBot.create(:project, client: another_client)
+              another_project_version = FactoryBot.create(:project_version, project: another_project)
+              another_project_version_item_group = FactoryBot.create(:item_group, project_version: another_project_version, name: "Item Group", grouped_items_attributes: [ {
+                name: "Item",
+                unit: "U",
+                position: 1,
+                unit_price_cents: "1000",
+                project_version: company_project_version,
+                quantity: 2
+              } ])
+              FactoryBot.create(:completion_snapshot, { project_version: another_project_version, description: "First completion snapshot for the project", completion_snapshot_items_attributes: [
+                {
+                  item_id: another_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "10"
+                }
+              ] })
+
+              FactoryBot.create(:member, user:, company: another_company)
+            end
+
+            let(:filter) { { filter: { company_id: Organization::Company.find_by({ name: "AnotherCompany" }).id } } }
+
+            run_test!("It only returns the completion snapshots that belongs to the company") {
+              parsed_response = JSON.parse(response.body)
+
+              expect(parsed_response.dig("results", 0, "description")).to eq("First completion snapshot for the project")
+              expect(parsed_response.dig("results").length).to eq(1)
+            }
+          end
+
+          describe "project_id" do
+            before do
+              another_project = FactoryBot.create(:project, client: client, name: "AnotherProject")
+              another_project_version = FactoryBot.create(:project_version, project: another_project)
+              another_project_version_item_group = FactoryBot.create(:item_group, project_version: another_project_version, name: "Item Group", grouped_items_attributes: [ {
+                name: "Item",
+                unit: "U",
+                position: 1,
+                unit_price_cents: "1000",
+                project_version: company_project_version,
+                quantity: 2
+              } ])
+              FactoryBot.create(:completion_snapshot, { project_version: another_project_version, description: "First completion snapshot for the other project", completion_snapshot_items_attributes: [
+                {
+                  item_id: another_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "10"
+                }
+              ] })
+            end
+
+            let(:filter) { { filter: { project_id: Organization::Project.find_by({ name: "AnotherProject" }).id } } }
+
+            run_test!("It only returns the completion snapshots that belongs to project") {
+              parsed_response = JSON.parse(response.body)
+
+              expect(parsed_response.dig("results", 0, "description")).to eq("First completion snapshot for the other project")
+              expect(parsed_response.dig("results").length).to eq(1)
+            }
+          end
+
+          describe "project_version_id" do
+            before do
+              another_project_version = FactoryBot.create(:project_version, project: company_project)
+              another_project_version_item_group = FactoryBot.create(:item_group, project_version: another_project_version, name: "Item Group", grouped_items_attributes: [ {
+                name: "Item",
+                unit: "U",
+                position: 1,
+                unit_price_cents: "1000",
+                project_version: company_project_version,
+                quantity: 2
+              } ])
+              FactoryBot.create(:completion_snapshot, { project_version: another_project_version, description: "First completion snapshot for the new version", completion_snapshot_items_attributes: [
+                {
+                  item_id: another_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "10"
+                }
+              ] })
+            end
+
+            let(:filter) { { filter: { project_version_id: Organization::ProjectVersion.find_by({ project_id: company_project.id, number: 2 }).id } } }
+
+            run_test!("It only returns the completion snapshots that belongs to project") {
+              parsed_response = JSON.parse(response.body)
+
+              expect(parsed_response.dig("results", 0, "description")).to eq("First completion snapshot for the new version")
+              expect(parsed_response.dig("results").length).to eq(1)
+            }
+          end
+        end
+
+        context "when query params are provided" do
+          describe "limit" do
+            let(:query) { { query: { limit: 1 } } }
+
+            run_test! "It limits the number of records returned" do
+              parsed_response = JSON.parse(response.body)
+
+              expect(parsed_response.dig("results").length).to eq(1)
+            end
+          end
+        end
+      end
+    end
+  end
 end

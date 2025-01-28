@@ -1,5 +1,5 @@
 class Organization::ProjectVersion < ApplicationRecord
-  belongs_to :project
+  belongs_to :project, class_name: "Organization::Project"
 
   has_many :items, dependent: :destroy, class_name: "Organization::Item"
 

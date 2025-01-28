@@ -468,6 +468,52 @@ paths:
                     "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
         '404':
           description: not found
+  "/api/v1/organization/completion_snapshots":
+    get:
+      summary: List all project version completion snapshot
+      parameters:
+      - name: filter
+        in: query
+        schema:
+          type: object
+          required: []
+          properties:
+            company_id:
+              type: integer
+              nullable: true
+            project_id:
+              type: integer
+              nullable: true
+            project_version_id:
+              type: integer
+              nullable: true
+      - name: query
+        in: query
+        schema:
+          type: object
+          required: []
+          properties:
+            limit:
+              type: integer
+              nullable: true
+      tags:
+      - Completion snapshot
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: list completion_snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
@@ -858,9 +904,12 @@ components:
       type: object
       required:
       - id
+      - project_version_id
       - completion_snapshot_items
       properties:
         id:
+          type: integer
+        project_version_id:
           type: integer
         description:
           type: string
@@ -869,6 +918,28 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::CompletionSnapshotDtoItemDto"
+    Organization::CompletionSnapshotIndexRequestDto:
+      type: object
+      required: []
+      properties:
+        company_id:
+          type: integer
+          nullable: true
+        project_id:
+          type: integer
+          nullable: true
+        project_version_id:
+          type: integer
+          nullable: true
+    Organization::CompletionSnapshotIndexResponseDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
     Organization::CreateCompletionSnapshotItemDto:
       type: object
       required:
@@ -1321,6 +1392,13 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
+    QueryParamsDto:
+      type: object
+      required: []
+      properties:
+        limit:
+          type: integer
+          nullable: true
   securitySchemes:
     bearerAuth:
       type: http
