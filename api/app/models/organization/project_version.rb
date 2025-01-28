@@ -16,6 +16,12 @@ class Organization::ProjectVersion < ApplicationRecord
   validates :number, presence: true, uniqueness: { scope: :project_id }
   before_validation :set_number_to_next_available_number, on: :create
 
+  scope :lasts, -> { joins("JOIN (SELECT MAX(number), project_id FROM organization_project_versions GROUP BY project_id) as max_project_version_numbers ON organization_project_versions.project_id = max_project_version_numbers.project_id").where("max_project_version_numbers.max = organization_project_versions.number") }
+
+  def is_last_version?
+    self.class.lasts.exists?(id)
+  end
+
   private
 
   def next_available_number

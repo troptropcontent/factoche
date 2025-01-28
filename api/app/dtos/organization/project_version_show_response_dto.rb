@@ -19,6 +19,7 @@ end
 class Organization::ProjectVersionShowResponseProjectVersionDto < OpenApiDto
   field "id", :integer
   field "number", :integer
+  field "is_last_version", :boolean
   field "created_at", :timestamp
   field "retention_guarantee_rate", :integer
   field "ungrouped_items", :array, subtype: Organization::ProjectVersionShowProjectVersionItemDto

@@ -1282,6 +1282,7 @@ components:
       required:
       - id
       - number
+      - is_last_version
       - created_at
       - retention_guarantee_rate
       - ungrouped_items
@@ -1291,6 +1292,8 @@ components:
           type: integer
         number:
           type: integer
+        is_last_version:
+          type: boolean
         created_at:
           type: string
           format: date-time
