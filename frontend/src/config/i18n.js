@@ -131,7 +131,8 @@ i18n
                                     "project_composition": {
                                         "title": "Composition du project",
                                         "project_total": "Total:"
-                                    }
+                                    },
+                                    "new_completion_snapshot": "Nouvelle situation de travaux"
                                 }
                             },
                             "clients": {
