@@ -381,6 +381,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/completion_snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new completion snapshot on the project's last version */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    project_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        description?: string | null;
+                        completion_snapshot_items: components["schemas"]["Organization::CreateCompletionSnapshotItemDto"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description completion snapshot successfully created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshotDto"];
+                        };
+                    };
+                };
+                /** @description unauthorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/completion_snapshots/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        /** Show completion snapshot details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show completion_snapshot */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshotDto"];
+                        };
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -721,6 +839,24 @@ export interface components {
                 details: Record<string, never>;
             };
         };
+        "Organization::CompletionSnapshotDtoItemDto": {
+            /** Format: decimal */
+            completion_percentage: string;
+            item_id: number;
+        };
+        "Organization::CompletionSnapshotDto": {
+            id: number;
+            description?: string | null;
+            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotDtoItemDto"][];
+        };
+        "Organization::CreateCompletionSnapshotItemDto": {
+            completion_percentage: string;
+            item_id: number;
+        };
+        "Organization::CreateCompletionSnapshotDto": {
+            description?: string | null;
+            completion_snapshot_items: components["schemas"]["Organization::CreateCompletionSnapshotItemDto"][];
+        };
         "Organization::CreateProjecItemDto": {
             name: string;
             description?: string | null;
@@ -856,6 +992,7 @@ export interface components {
         "Organization::ProjectVersionShowResponseProjectVersionDto": {
             id: number;
             number: number;
+            is_last_version: boolean;
             /** Format: date-time */
             created_at: string;
             retention_guarantee_rate: number;
@@ -864,6 +1001,9 @@ export interface components {
         };
         "Organization::ProjectVersionShowResponseDto": {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
+        };
+        "Organization::ShowCompletionSnapshotResponseDto": {
+            result: components["schemas"]["Organization::CompletionSnapshotDto"];
         };
     };
     responses: never;
