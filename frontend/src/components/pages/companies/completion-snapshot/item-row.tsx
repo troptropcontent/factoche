@@ -80,7 +80,7 @@ const ItemRow = ({
       <TableCell>
         {t("common.number_in_currency", {
           amount:
-            previousCompletionPercentageForThisItem *
+            (previousCompletionPercentageForThisItem / 100) *
             (item.quantity * (item.unit_price_cents / 100)),
         })}
       </TableCell>
