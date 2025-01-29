@@ -73,7 +73,7 @@ const ProjectShowContent = ({
             className={`mt-6 w-full ${currentVersionId != lastVersionId && "opacity-50"}`}
             disabled={currentVersionId != lastVersionId}
           >
-            <PlusCircle className="mr-2 h-4 w-4" />
+            <PlusCircle className="h-4 w-4" />
             {t("pages.companies.projects.show.new_completion_snapshot")}
           </Link>
         </Button>

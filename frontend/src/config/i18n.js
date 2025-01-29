@@ -13,7 +13,8 @@ i18n
                 translation: {
                     "common": {
                         "total": "Total",
-                        "number_in_currency": "{{amount, currency(EUR)}}"
+                        "number_in_currency": "{{amount, currency(EUR)}}",
+                        "number_in_percentage": "{{amount, number}} %"
                     },
                     "form": {
                         "validation": {
@@ -32,6 +33,18 @@ i18n
                             "show": {
                                 "title": "Mon dashboard",
                                 "description": "Dashboard de la company {{companyId}}" // Fixed triple brackets to double
+                            },
+                            "completion_snapshot": {
+                                "form": {
+                                    "project_info": "Informations sur le projet",
+                                    "title": "Nouvelle situation de travaux",
+                                    "details_label": "Détails",
+                                    "item_total_label": "Total",
+                                    "total_label": "Total de la situation de travaux: {{total}}",
+                                    "previous_completion_percentage_label": "Avancement précédent",
+                                    "new_completion_percentage_label": "Nouvel avancement",
+                                    "submit_button_label": "Enregistrer"
+                                }
                             },
                             "projects": {
                                 "index": {

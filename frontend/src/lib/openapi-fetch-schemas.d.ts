@@ -499,6 +499,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/completion_snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all project version completion snapshot */
+        get: {
+            parameters: {
+                query?: {
+                    filter?: {
+                        company_id?: number | null;
+                        project_id?: number | null;
+                        project_version_id?: number | null;
+                    };
+                    query?: {
+                        limit?: number | null;
+                    };
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list completion_snapshot */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::CompletionSnapshotDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -846,8 +893,17 @@ export interface components {
         };
         "Organization::CompletionSnapshotDto": {
             id: number;
+            project_version_id: number;
             description?: string | null;
             completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotDtoItemDto"][];
+        };
+        "Organization::CompletionSnapshotIndexRequestDto": {
+            company_id?: number | null;
+            project_id?: number | null;
+            project_version_id?: number | null;
+        };
+        "Organization::CompletionSnapshotIndexResponseDto": {
+            results: components["schemas"]["Organization::CompletionSnapshotDto"][];
         };
         "Organization::CreateCompletionSnapshotItemDto": {
             completion_percentage: string;
@@ -1004,6 +1060,9 @@ export interface components {
         };
         "Organization::ShowCompletionSnapshotResponseDto": {
             result: components["schemas"]["Organization::CompletionSnapshotDto"];
+        };
+        QueryParamsDto: {
+            limit?: number | null;
         };
     };
     responses: never;
