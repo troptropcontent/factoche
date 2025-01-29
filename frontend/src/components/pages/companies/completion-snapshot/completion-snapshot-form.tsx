@@ -17,15 +17,13 @@ import { Button } from "@/components/ui/button";
 import { buildInitialValues } from "./completion-snapshot-form.utils";
 import { ItemRow } from "./item-row";
 import { TotalInfo } from "./total-info";
-
-const completionSnapshotFormSchema = z.object({
-  description: z.string().nullable(),
-  completion_snapshot_attributes: z.array(
-    z.object({ item_id: z.number(), completion_percentage: z.string() })
-  ),
-});
+import { Api } from "@/lib/openapi-fetch-query-client";
+import { completionSnapshotFormSchema } from "./completion-snapshot-form.schemas";
+import { useNavigate } from "@tanstack/react-router";
 
 type CompletionSnapshotFormType = {
+  companyId: number;
+  projectId: number;
   itemGroups: {
     id: number;
     name: string;
@@ -50,10 +48,16 @@ type CompletionSnapshotFormType = {
 };
 
 const CompletionSnapshotForm = ({
+  companyId,
+  projectId,
   itemGroups,
   previousCompletionSnapshot,
 }: CompletionSnapshotFormType) => {
   const { t } = useTranslation();
+  const { mutate: createCompletionSnapshotMutation } = Api.useMutation(
+    "post",
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/completion_snapshots"
+  );
   const form = useForm<z.infer<typeof completionSnapshotFormSchema>>({
     resolver: zodResolver(completionSnapshotFormSchema),
     defaultValues: buildInitialValues({
@@ -62,8 +66,25 @@ const CompletionSnapshotForm = ({
     }),
   });
 
+  const navigate = useNavigate();
+
   const onSubmit = (data: z.infer<typeof completionSnapshotFormSchema>) => {
-    console.log({ data });
+    createCompletionSnapshotMutation(
+      {
+        params: { path: { company_id: companyId, project_id: projectId } },
+        body: data,
+      },
+      {
+        onSuccess: () =>
+          navigate({
+            to: "/companies/$companyId/projects/$projectId",
+            params: {
+              companyId: companyId.toString(),
+              projectId: projectId.toString(),
+            },
+          }),
+      }
+    );
   };
 
   let itemsInputs: number[] = [];

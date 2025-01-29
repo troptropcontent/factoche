@@ -48,7 +48,7 @@ const buildInitialValues = ({
 
   return {
     description: "",
-    completion_snapshot_attributes: itemGroups.flatMap((group) =>
+    completion_snapshot_items: itemGroups.flatMap((group) =>
       group.grouped_items.map((item) => buildSnapshotAttribute(item.id))
     ),
   };
@@ -76,7 +76,7 @@ const findCompletionPercentage = (
 };
 
 const computeCompletionSnapShotTotalCents = (
-  completion_snapshot_items_attributes: CompletionSnapshotItemAttribute[],
+  completion_snapshot_items: CompletionSnapshotItemAttribute[],
   items: (ItemGroup | Item)[]
 ): number => {
   const computeValues = (item: ItemGroup | Item): number[] => {
@@ -84,17 +84,14 @@ const computeCompletionSnapShotTotalCents = (
       return item.grouped_items.map((groupedItem) =>
         computeItemValue(
           groupedItem,
-          findCompletionPercentage(
-            groupedItem.id,
-            completion_snapshot_items_attributes
-          )
+          findCompletionPercentage(groupedItem.id, completion_snapshot_items)
         )
       );
     }
     return [
       computeItemValue(
         item,
-        findCompletionPercentage(item.id, completion_snapshot_items_attributes)
+        findCompletionPercentage(item.id, completion_snapshot_items)
       ),
     ];
   };

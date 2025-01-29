@@ -39,9 +39,9 @@ const ItemRow = ({
   const previousCompletionPercentageForThisItem =
     findPreviousCompletionPercentage(item.id, previousCompletionSnapshot);
 
-  const fieldValue = watch(
-    `completion_snapshot_attributes.${inputIndex}.completion_percentage`
-  );
+  const fieldName =
+    `completion_snapshot_items.${inputIndex}.completion_percentage` as const;
+  const fieldValue = watch(fieldName);
 
   return (
     <TableRow>
@@ -87,7 +87,7 @@ const ItemRow = ({
       <TableCell>
         <FormField
           control={control}
-          name={`completion_snapshot_attributes.${inputIndex}.completion_percentage`}
+          name={fieldName}
           render={({ field }) => (
             <FormControl>
               <div className="relative w-20">

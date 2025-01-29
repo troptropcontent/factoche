@@ -42,6 +42,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const loaderData = Route.useLoaderData();
+  const { companyId, projectId } = Route.useParams();
   const { t } = useTranslation();
   return (
     <Layout.Root>
@@ -70,6 +71,8 @@ function RouteComponent() {
         <Card>
           <CardContent className="pt-6 space-y-6">
             <CompletionSnapshotForm
+              companyId={Number(companyId)}
+              projectId={Number(projectId)}
               itemGroups={
                 loaderData.projectData.result.last_version.item_groups
               }

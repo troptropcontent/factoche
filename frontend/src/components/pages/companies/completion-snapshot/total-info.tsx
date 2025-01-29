@@ -17,7 +17,7 @@ const TotalInfo = ({
   const { watch } =
     useFormContext<z.infer<typeof completionSnapshotFormSchema>>();
 
-  const { completion_snapshot_attributes } = watch();
+  const { completion_snapshot_items } = watch();
 
   return (
     <p>
@@ -25,7 +25,7 @@ const TotalInfo = ({
         total: t("common.number_in_currency", {
           amount:
             computeCompletionSnapShotTotalCents(
-              completion_snapshot_attributes,
+              completion_snapshot_items,
               itemGroups
             ) / 100,
         }),
