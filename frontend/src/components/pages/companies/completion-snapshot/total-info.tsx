@@ -8,7 +8,14 @@ import { useFormContext } from "react-hook-form";
 
 const TotalInfo = ({
   itemGroups,
+  previousCompletionSnapshot,
 }: {
+  previousCompletionSnapshot?: {
+    completion_snapshot_items: {
+      item_id: number;
+      completion_percentage: string;
+    }[];
+  };
   itemGroups: {
     grouped_items: { id: number; unit_price_cents: number; quantity: number }[];
   }[];
@@ -17,7 +24,7 @@ const TotalInfo = ({
   const { watch } =
     useFormContext<z.infer<typeof completionSnapshotFormSchema>>();
 
-  const { completion_snapshot_items } = watch();
+  const { completion_snapshot_items: completionSnapshotItems } = watch();
 
   return (
     <p>
@@ -25,7 +32,8 @@ const TotalInfo = ({
         total: t("common.number_in_currency", {
           amount:
             computeCompletionSnapShotTotalCents(
-              completion_snapshot_items,
+              previousCompletionSnapshot?.completion_snapshot_items || [],
+              completionSnapshotItems,
               itemGroups
             ) / 100,
         }),

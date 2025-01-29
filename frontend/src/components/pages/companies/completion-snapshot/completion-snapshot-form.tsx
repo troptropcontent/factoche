@@ -147,7 +147,10 @@ const CompletionSnapshotForm = ({
           </Card>
         ))}
         <div className="flex justify-between">
-          <TotalInfo itemGroups={itemGroups} />
+          <TotalInfo
+            itemGroups={itemGroups}
+            previousCompletionSnapshot={previousCompletionSnapshot}
+          />
           <Button type="submit">
             {t("pages.companies.completion_snapshot.form.submit_button_label")}
           </Button>

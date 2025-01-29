@@ -76,29 +76,37 @@ const findCompletionPercentage = (
 };
 
 const computeCompletionSnapShotTotalCents = (
+  previous_completion_snapshot_items: CompletionSnapshotItemAttribute[],
   completion_snapshot_items: CompletionSnapshotItemAttribute[],
   items: (ItemGroup | Item)[]
 ): number => {
-  const computeValues = (item: ItemGroup | Item): number[] => {
-    if ("grouped_items" in item) {
-      return item.grouped_items.map((groupedItem) =>
-        computeItemValue(
-          groupedItem,
-          findCompletionPercentage(groupedItem.id, completion_snapshot_items)
-        )
-      );
-    }
-    return [
-      computeItemValue(
-        item,
-        findCompletionPercentage(item.id, completion_snapshot_items)
-      ),
-    ];
+  const computeItemDifference = (item: Item): number => {
+    const currentPercentage = findCompletionPercentage(
+      item.id,
+      completion_snapshot_items
+    );
+    const previousPercentage = findCompletionPercentage(
+      item.id,
+      previous_completion_snapshot_items
+    );
+
+    const currentValue = computeItemValue(item, currentPercentage);
+    const previousValue = computeItemValue(item, previousPercentage);
+
+    return currentValue - previousValue;
   };
 
-  return items
-    .flatMap(computeValues)
-    .reduce((total, value) => total + value, 0);
+  const getAllItems = (item: ItemGroup | Item): Item[] => {
+    if ("grouped_items" in item) {
+      return item.grouped_items;
+    }
+    return [item];
+  };
+
+  const allItems = items.flatMap(getAllItems);
+  const differences = allItems.map(computeItemDifference);
+
+  return differences.reduce((total, value) => total + value, 0);
 };
 
 export {
