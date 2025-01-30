@@ -20,6 +20,7 @@ import { TotalInfo } from "./total-info";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { completionSnapshotFormSchema } from "./completion-snapshot-form.schemas";
 import { useNavigate } from "@tanstack/react-router";
+import { useToast } from "@/hooks/use-toast";
 
 type CompletionSnapshotFormType = {
   companyId: number;
@@ -68,6 +69,8 @@ const CompletionSnapshotForm = ({
 
   const navigate = useNavigate();
 
+  const { toast } = useToast();
+
   const onSubmit = (data: z.infer<typeof completionSnapshotFormSchema>) => {
     createCompletionSnapshotMutation(
       {
@@ -75,14 +78,27 @@ const CompletionSnapshotForm = ({
         body: data,
       },
       {
-        onSuccess: () =>
+        onError: () => {
+          toast({
+            variant: "destructive",
+            title: t("common.toast.error_title"),
+            description: t("common.toast.error_description"),
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: t(
+              "pages.companies.completion_snapshot.form.success_toast_title"
+            ),
+          });
           navigate({
             to: "/companies/$companyId/projects/$projectId",
             params: {
               companyId: companyId.toString(),
               projectId: projectId.toString(),
             },
-          }),
+          });
+        },
       }
     );
   };
