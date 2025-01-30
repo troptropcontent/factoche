@@ -1,6 +1,6 @@
 class Organization::CompletionSnapshot < ApplicationRecord
   belongs_to :project_version, class_name: "Organization::ProjectVersion"
-  has_many :completion_snapshot_items, class_name: "Organization::CompletionSnapshotItem"
+  has_many :completion_snapshot_items, class_name: "Organization::CompletionSnapshotItem", dependent: :destroy
   accepts_nested_attributes_for :completion_snapshot_items
   belongs_to :invoice, class_name: "Organization::Invoice", optional: true
   belongs_to :credit_note, class_name: "Organization::CreditNote", optional: true

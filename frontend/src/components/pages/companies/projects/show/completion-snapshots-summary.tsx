@@ -128,7 +128,15 @@ const CompletionSnapshotsSummery = ({
             actionLabel={t(
               "pages.companies.projects.show.completion_snapshots_summary.empty_state.action_label"
             )}
-            onAction={() => {}}
+            onAction={() => {
+              navigate({
+                to: "/companies/$companyId/projects/$projectId/completion_snapshots/new",
+                params: {
+                  companyId: companyId.toString(),
+                  projectId: projectId.toString(),
+                },
+              });
+            }}
             className="flex-grow mb-4"
           />
         )}
