@@ -5,7 +5,8 @@ end
 
 class Organization::CompletionSnapshotDto < OpenApiDto
   field "id", :integer
-  field "project_version_id", :integer
+  field "created_at", :timestamp
+  field "project_version", :object, subtype: Organization::ProjectVersions::CompactDto
   field "description", :string, required: false
-  field "completion_snapshot_items", :array, subtype: Organization::CompletionSnapshotDtoItemDto
+  field "status", :enum, subtype: [ "draft", "cancelled", "invoiced" ]
 end

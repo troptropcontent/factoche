@@ -8,4 +8,9 @@ class Organization::CompletionSnapshot < ApplicationRecord
   scope :draft, -> { where("invoice_id IS NULL") }
   scope :invoiced, -> { where("invoice_id IS NOT NULL AND credit_note_id IS NULL") }
   scope :cancelled, -> { where("invoice_id IS NOT NULL AND credit_note_id IS NOT NULL") }
+
+  def status
+    return "draft" if self.class.draft.exists?(id)
+    self.class.cancelled.exists?(id) ? "cancelled" : "invoiced"
+  end
 end

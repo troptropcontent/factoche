@@ -27,6 +27,7 @@ class Organization::ProjectShowResponseProjectLastVersionDto < OpenApiDto
   field "id", :integer
   field "number", :integer
   field "created_at", :timestamp
+  field "completion_snapshots", :array, subtype: Organization::CompletionSnapshots::CompactDto
   field "ungrouped_items", :array, subtype: Organization::ProjectShowResponseProjectItemDto
   field "item_groups", :array, subtype: Organization::ProjectShowResponseProjectItemGroupDto
 end
