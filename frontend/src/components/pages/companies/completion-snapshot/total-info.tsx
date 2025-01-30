@@ -31,11 +31,15 @@ const TotalInfo = ({
       {t("pages.companies.completion_snapshot.form.total_label", {
         total: t("common.number_in_currency", {
           amount:
-            computeCompletionSnapShotTotalCents(
-              previousCompletionSnapshot?.completion_snapshot_items || [],
+            (computeCompletionSnapShotTotalCents(
               completionSnapshotItems,
               itemGroups
-            ) / 100,
+            ) -
+              computeCompletionSnapShotTotalCents(
+                previousCompletionSnapshot?.completion_snapshot_items || [],
+                itemGroups
+              )) /
+            100,
         }),
       })}
     </p>
