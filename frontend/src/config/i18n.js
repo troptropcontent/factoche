@@ -14,7 +14,12 @@ i18n
                     "common": {
                         "total": "Total",
                         "number_in_currency": "{{amount, currency(EUR)}}",
-                        "number_in_percentage": "{{amount, number}} %"
+                        "number_in_percentage": "{{amount, number}} %",
+                        "toast": {
+                            "success": "Opération réussie",
+                            "error_title": "Une erreur est survenue",
+                            "error_description": "Notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
+                        }
                     },
                     "form": {
                         "validation": {
@@ -36,14 +41,22 @@ i18n
                             },
                             "completion_snapshot": {
                                 "form": {
-                                    "project_info": "Informations sur le projet",
+                                    "project_info": {
+                                        "title": "Informations sur le projet",
+                                        "name": "Nom",
+                                        "version": "Version",
+                                        "total_project_amount": "Montant total du projet",
+                                        "previous_completion_percentage": "Avancement précédent",
+                                        "remaining_amount_to_invoice": "Reliquat à facturer" 
+                                    },
                                     "title": "Nouvelle situation de travaux",
                                     "details_label": "Détails",
                                     "item_total_label": "Total",
                                     "total_label": "Total de la situation de travaux: {{total}}",
                                     "previous_completion_percentage_label": "Avancement précédent",
                                     "new_completion_percentage_label": "Nouvel avancement",
-                                    "submit_button_label": "Enregistrer"
+                                    "submit_button_label": "Enregistrer",
+                                    "success_toast_title": "Nouvelle situation de travaux enregistrée",
                                 }
                             },
                             "projects": {
