@@ -28,15 +28,14 @@ const CompletionSnapshotsSummery = ({
   companyId: number;
   projectId: number;
 }) => {
-  const { data: { results: snapshots } = { results: [] } } = Api.useQuery(
-    "get",
-    "/api/v1/organization/completion_snapshots",
-    {
-      params: {
-        query: { filter: { company_id: companyId, project_id: projectId } },
-      },
-    }
-  );
+  const {
+    data: { results: snapshots } = { results: [] },
+    isLoading: isSnapshotsLoading,
+  } = Api.useQuery("get", "/api/v1/organization/completion_snapshots", {
+    params: {
+      query: { filter: { company_id: companyId, project_id: projectId } },
+    },
+  });
 
   const navigate = useNavigate();
 
@@ -51,6 +50,10 @@ const CompletionSnapshotsSummery = ({
     });
 
   const { t } = useTranslation();
+
+  if (isSnapshotsLoading) {
+    return;
+  }
 
   return (
     <Card className="mt-6">
