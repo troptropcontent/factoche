@@ -90,4 +90,46 @@ RSpec.describe Organization::ProjectVersion, type: :model do
       end
     end
   end
+
+  describe 'scopes' do
+    describe ".lasts" do
+      before {
+        FactoryBot.create(:project_version, project: project)
+        FactoryBot.create(:project_version, project: project)
+        another_project = FactoryBot.create(:project, client: client, name: "AnotherProject")
+        FactoryBot.create(:project_version, project: another_project)
+        FactoryBot.create(:project_version, project: another_project)
+        FactoryBot.create(:project_version, project: another_project)
+      }
+
+      it "only returns the last project versions", :aggregate_failures do
+        expect(described_class.lasts.count).to eq(2)
+        expect(described_class.lasts.find_by(project_id: project.id).number).to eq(2)
+        expect(described_class.lasts.joins(:project).find_by({ project: { name: "AnotherProject" } }).number).to eq(3)
+      end
+    end
+  end
+
+  describe "instance methods" do
+    describe "#is_last_versions?" do
+      before {
+        FactoryBot.create(:project_version, project: project)
+        FactoryBot.create(:project_version, project: project)
+      }
+
+      context "when the record is the last version" do
+        it "returns true" do
+          record = described_class.find_by({ number: 2 })
+          expect(record.is_last_version?).to be(true)
+        end
+      end
+
+      context "when the record is the not the last version" do
+        it "returns true" do
+          record = described_class.find_by({ number: 1 })
+          expect(record.is_last_version?).to be(false)
+        end
+      end
+    end
+  end
 end

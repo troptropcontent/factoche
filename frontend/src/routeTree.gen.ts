@@ -21,6 +21,7 @@ import { Route as AuthenticatedCompaniesCompanyIdClientsIndexImport } from './ro
 import { Route as AuthenticatedCompaniesCompanyIdProjectsNewImport } from './routes/_authenticated/companies/$companyId/projects/new'
 import { Route as AuthenticatedCompaniesCompanyIdClientsNewImport } from './routes/_authenticated/companies/$companyId/clients/new'
 import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/index'
+import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new'
 
 // Create/Update Routes
 
@@ -89,6 +90,15 @@ const AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute =
     path: '/projects/$projectId/',
     getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
   } as any)
+
+const AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute =
+  AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewImport.update(
+    {
+      id: '/projects/$projectId/completion_snapshots/new',
+      path: '/projects/$projectId/completion_snapshots/new',
+      getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+    } as any,
+  )
 
 // Populate the FileRoutesByPath interface
 
@@ -164,6 +174,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexImport
       parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
     }
+    '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new': {
+      id: '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new'
+      path: '/projects/$projectId/completion_snapshots/new'
+      fullPath: '/companies/$companyId/projects/$projectId/completion_snapshots/new'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
+    }
   }
 }
 
@@ -176,6 +193,7 @@ interface AuthenticatedCompaniesCompanyIdRouteChildren {
   AuthenticatedCompaniesCompanyIdClientsIndexRoute: typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   AuthenticatedCompaniesCompanyIdProjectsIndexRoute: typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
   AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
+  AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
 }
 
 const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompanyIdRouteChildren =
@@ -192,6 +210,8 @@ const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompan
       AuthenticatedCompaniesCompanyIdProjectsIndexRoute,
     AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute:
       AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute,
+    AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute:
+      AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute,
   }
 
 const AuthenticatedCompaniesCompanyIdRouteWithChildren =
@@ -225,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/companies/$companyId/clients': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   '/companies/$companyId/projects': typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
   '/companies/$companyId/projects/$projectId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
+  '/companies/$companyId/projects/$projectId/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
 }
 
 export interface FileRoutesByTo {
@@ -236,6 +257,7 @@ export interface FileRoutesByTo {
   '/companies/$companyId/clients': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   '/companies/$companyId/projects': typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
   '/companies/$companyId/projects/$projectId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
+  '/companies/$companyId/projects/$projectId/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
 }
 
 export interface FileRoutesById {
@@ -250,6 +272,7 @@ export interface FileRoutesById {
   '/_authenticated/companies/$companyId/clients/': typeof AuthenticatedCompaniesCompanyIdClientsIndexRoute
   '/_authenticated/companies/$companyId/projects/': typeof AuthenticatedCompaniesCompanyIdProjectsIndexRoute
   '/_authenticated/companies/$companyId/projects/$projectId/': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
+  '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
 }
 
 export interface FileRouteTypes {
@@ -265,6 +288,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/clients'
     | '/companies/$companyId/projects'
     | '/companies/$companyId/projects/$projectId'
+    | '/companies/$companyId/projects/$projectId/completion_snapshots/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth/login'
@@ -275,6 +299,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/clients'
     | '/companies/$companyId/projects'
     | '/companies/$companyId/projects/$projectId'
+    | '/companies/$companyId/projects/$projectId/completion_snapshots/new'
   id:
     | '__root__'
     | '/_authenticated'
@@ -287,6 +312,7 @@ export interface FileRouteTypes {
     | '/_authenticated/companies/$companyId/clients/'
     | '/_authenticated/companies/$companyId/projects/'
     | '/_authenticated/companies/$companyId/projects/$projectId/'
+    | '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new'
   fileRoutesById: FileRoutesById
 }
 
@@ -337,7 +363,8 @@ export const routeTree = rootRoute
         "/_authenticated/companies/$companyId/projects/new",
         "/_authenticated/companies/$companyId/clients/",
         "/_authenticated/companies/$companyId/projects/",
-        "/_authenticated/companies/$companyId/projects/$projectId/"
+        "/_authenticated/companies/$companyId/projects/$projectId/",
+        "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new"
       ]
     },
     "/_authenticated/companies/$companyId/": {
@@ -362,6 +389,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/companies/$companyId/projects/$projectId/": {
       "filePath": "_authenticated/companies/$companyId/projects/$projectId/index.tsx",
+      "parent": "/_authenticated/companies/$companyId"
+    },
+    "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new": {
+      "filePath": "_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new.tsx",
       "parent": "/_authenticated/companies/$companyId"
     }
   }

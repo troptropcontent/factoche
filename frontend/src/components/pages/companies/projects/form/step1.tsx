@@ -15,9 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
 import { Trans, useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectItem,

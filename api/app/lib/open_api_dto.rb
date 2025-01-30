@@ -118,7 +118,7 @@ class OpenApiDto
       end
     elsif base_object.class < ActiveRecord::Base || base_object.class < ActiveRecord::Relation
       self.class.fields.each do |field_name, info|
-        value = base_object.send(field_name)
+        value = load_value_from_object(base_object, field_name, info)
         send("#{field_name}=", value)
       end
     else
@@ -127,6 +127,11 @@ class OpenApiDto
   end
 
   private
+
+  def load_value_from_object(base_object, field_name, info)
+    return base_object.send("#{field_name}?") if info[:type] == :boolean && field_name.starts_with?("is_")
+    base_object.send(field_name)
+  end
 
   def validate_field_value!(field_name, field_type, field_subtype, field_value)
     validated_field_value = nil
@@ -178,12 +183,13 @@ class OpenApiDto
   end
 
   def validate_integer_value!(value, field_name)
-    if is_field_required?(field_name)
-      raise ArgumentError, "Expected Integer for #{field_name}, got #{value.class}" unless value.is_a?(Integer)
-    else
-      raise ArgumentError, "Expected Integer or Nil for #{field_name}, got #{value.class}" unless value.is_a?(Integer) || value.nil?
+    return value if value.is_a?(Integer)
+    begin
+      return Integer(value, 10) if value.is_a?(String)
+    rescue ArgumentError
+      raise ArgumentError, "Expected an instance of Integer or a integer parsable instance of String for #{field_name}, got #{value}"
     end
-    value
+    raise ArgumentError, "Expected an instance of Integer or a integer parsable instance of String for #{field_name}, got an instance #{value.class}"
   end
 
   def validate_float_value!(value, field_name)

@@ -1,6 +1,6 @@
 import { CompanyLayout } from "@/components/layout/company-layout";
 import { Api } from "@/lib/openapi-fetch-query-client";
-import { getCompanyQueryOptions } from "@/queries/organization/companies/getCompanyQueryOptions";
+
 import {
   createFileRoute,
   notFound,
@@ -17,19 +17,18 @@ export const Route = createFileRoute("/_authenticated/companies/$companyId")({
           params: { path: { id: Number(companyId) } },
         })
       )
-      .catch((error) => {
-        if (error instanceof Error) {
-          if (error.message.includes("404")) {
-            throw notFound();
-          }
-          if (error.message.includes("401")) {
-            throw redirect({
-              to: "/auth/login",
-              search: { redirect: location.pathname },
-            });
-          }
+      .catch(({ error: { code } }) => {
+        if (code === 404) {
+          throw notFound();
         }
-        throw new Error("Something went wrong");
+        if (code === 403) {
+          throw redirect({
+            to: "/auth/login",
+            search: { redirect: location.pathname },
+          });
+        }
+
+        throw new Error("Something went super wrong");
       });
   },
 });

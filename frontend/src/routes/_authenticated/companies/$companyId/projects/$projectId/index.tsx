@@ -57,6 +57,7 @@ function RouteComponent() {
           companyId={Number(companyId)}
           projectId={Number(projectId)}
           client={project.client}
+          lastVersionId={project.last_version.id}
           initialVersionId={project.last_version.id}
         />
       </Layout.Content>
