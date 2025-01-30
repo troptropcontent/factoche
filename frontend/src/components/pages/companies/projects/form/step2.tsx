@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { ProjectFormItemsTotal } from "./private/project-form-items-total";
 import { ItemGroup } from "./private/item-group";
 import { Item } from "./private/item";
-import { FileDiff, Inbox, Plus } from "lucide-react";
+import { FileDiff, Plus } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 
 const Step2 = ({

@@ -6,7 +6,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ItemGroup } from "../form/private/item-group";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
