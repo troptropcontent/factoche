@@ -167,6 +167,11 @@ i18n
                                     "new_completion_snapshot": "Nouvelle situation de travaux",
                                     "completion_snapshots_summary": {
                                         "title": "Situations de travaux",
+                                        "empty_state": {
+                                            "title": "Aucune situation de travaux trouvée",
+                                            "description": "Créer une situation de travaux pour commencer à facturer",
+                                            "action_label": "Créer une situation de travaux"
+                                        },
                                         "columns": {
                                             "number": "Numéro",
                                             "date": "Date",
