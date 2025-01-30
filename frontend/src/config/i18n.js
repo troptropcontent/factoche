@@ -44,7 +44,7 @@ i18n
                                 "status": {
                                     "draft": "Brouillon",
                                     "invoiced": "Facturé",
-                                    "canceled": "Annulé"
+                                    "cancelled": "Annulé"
                                 },
                                 "form": {
                                     "project_info": {
