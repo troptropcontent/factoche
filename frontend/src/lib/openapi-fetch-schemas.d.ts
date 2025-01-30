@@ -417,7 +417,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshotDto"];
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
                         };
                     };
                 };
@@ -478,7 +478,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshotDto"];
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
                         };
                     };
                 };
@@ -893,9 +893,19 @@ export interface components {
         };
         "Organization::CompletionSnapshotDto": {
             id: number;
-            project_version_id: number;
+            /** Format: date-time */
+            created_at: string;
+            project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             description?: string | null;
-            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotDtoItemDto"][];
+            /** @enum {string} */
+            status: "draft" | "cancelled" | "invoiced";
+        };
+        "Organization::ProjectVersions::CompactDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            retention_guarantee_rate: number;
         };
         "Organization::CompletionSnapshotIndexRequestDto": {
             company_id?: number | null;
@@ -904,6 +914,21 @@ export interface components {
         };
         "Organization::CompletionSnapshotIndexResponseDto": {
             results: components["schemas"]["Organization::CompletionSnapshotDto"][];
+        };
+        "Organization::CompletionSnapshots::CompactDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "cancelled" | "invoiced";
+            /** Format: date-time */
+            created_at: string;
+        };
+        "Organization::CompletionSnapshots::ExtendedDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "cancelled" | "invoiced";
+            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotDtoItemDto"][];
+            /** Format: date-time */
+            created_at: string;
         };
         "Organization::CreateCompletionSnapshotItemDto": {
             completion_percentage: string;
@@ -1005,6 +1030,7 @@ export interface components {
             number: number;
             /** Format: date-time */
             created_at: string;
+            completion_snapshots: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
             ungrouped_items: components["schemas"]["Organization::ProjectShowResponseProjectItemDto"][];
             item_groups: components["schemas"]["Organization::ProjectShowResponseProjectItemGroupDto"][];
         };
@@ -1059,7 +1085,7 @@ export interface components {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
         };
         "Organization::ShowCompletionSnapshotResponseDto": {
-            result: components["schemas"]["Organization::CompletionSnapshotDto"];
+            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
         };
         QueryParamsDto: {
             limit?: number | null;

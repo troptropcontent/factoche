@@ -15,6 +15,7 @@ i18n
                         "total": "Total",
                         "number_in_currency": "{{amount, currency(EUR)}}",
                         "number_in_percentage": "{{amount, number}} %",
+                        "date": "{{date, datetime}}",
                         "toast": {
                             "success": "Opération réussie",
                             "error_title": "Une erreur est survenue",
@@ -40,6 +41,11 @@ i18n
                                 "description": "Dashboard de la company {{companyId}}" // Fixed triple brackets to double
                             },
                             "completion_snapshot": {
+                                "status": {
+                                    "draft": "Brouillon",
+                                    "invoiced": "Facturé",
+                                    "cancelled": "Annulé"
+                                },
                                 "form": {
                                     "project_info": {
                                         "title": "Informations sur le projet",
@@ -158,7 +164,24 @@ i18n
                                         "title": "Composition du project",
                                         "project_total": "Total:"
                                     },
-                                    "new_completion_snapshot": "Nouvelle situation de travaux"
+                                    "new_completion_snapshot": "Nouvelle situation de travaux",
+                                    "completion_snapshots_summary": {
+                                        "title": "Situations de travaux",
+                                        "empty_state": {
+                                            "title": "Aucune situation de travaux trouvée",
+                                            "description": "Créer une situation de travaux pour commencer à facturer",
+                                            "action_label": "Créer une situation de travaux"
+                                        },
+                                        "columns": {
+                                            "number": "Numéro",
+                                            "date": "Date",
+                                            "version": "Version",
+                                            "status": "Status"
+                                        },
+                                        "new_completion_snapshot_button": {
+                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule situation en cours de rédaction"
+                                        }
+                                    }
                                 }
                             },
                             "clients": {

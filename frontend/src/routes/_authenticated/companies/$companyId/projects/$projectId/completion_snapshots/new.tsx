@@ -24,20 +24,28 @@ export const Route = createFileRoute(
         )
       )
       .then(async (projectData) => {
-        const completionSnapshotsData = await queryClient.ensureQueryData(
-          Api.queryOptions("get", "/api/v1/organization/completion_snapshots", {
-            params: {
-              query: {
-                filter: {
-                  project_version_id: projectData.result.last_version.id,
+        if (
+          projectData.result.last_version.completion_snapshots[0] == undefined
+        ) {
+          return { projectData, lastCompletionSnapshotData: undefined };
+        }
+
+        const lastCompletionSnapshotData = await queryClient.ensureQueryData(
+          Api.queryOptions(
+            "get",
+            "/api/v1/organization/completion_snapshots/{id}",
+            {
+              params: {
+                path: {
+                  id: projectData.result.last_version.completion_snapshots[0]
+                    .id,
                 },
-                query: { limit: 1 },
               },
-            },
-          })
+            }
+          )
         );
 
-        return { projectData, completionSnapshotsData };
+        return { projectData, lastCompletionSnapshotData };
       }),
 });
 
@@ -58,7 +66,7 @@ function RouteComponent() {
         <ProjectInfo
           projectData={loaderData.projectData.result}
           lastCompletionSnapshotData={
-            loaderData.completionSnapshotsData.results[0]
+            loaderData.lastCompletionSnapshotData?.result
           }
         />
         <Card>
@@ -70,7 +78,7 @@ function RouteComponent() {
                 loaderData.projectData.result.last_version.item_groups
               }
               previousCompletionSnapshot={
-                loaderData.completionSnapshotsData.results[0]
+                loaderData.lastCompletionSnapshotData?.result
               }
             />
           </CardContent>

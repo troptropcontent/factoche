@@ -4,17 +4,13 @@ import { Api } from "@/lib/openapi-fetch-query-client";
 import { ProjectComposition } from "./project-composition";
 import { useQueryClient } from "@tanstack/react-query";
 import { VersionSelect } from "./version-select";
-import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
-import { PlusCircle } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { CompletionSnapshotsSummery } from "./completion-snapshots-summary";
 
 const ProjectShowContent = ({
   companyId,
   projectId,
   client,
   initialVersionId,
-  lastVersionId,
 }: {
   companyId: number;
   projectId: number;
@@ -32,8 +28,8 @@ const ProjectShowContent = ({
       },
     }
   );
+
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
   const handleVersionChange = async (value: string) => {
     // Preload the query needed in the component to avoid blink loading
     await queryClient.ensureQueryData(
@@ -63,20 +59,10 @@ const ProjectShowContent = ({
           versionId={currentVersionId.toString()}
           versions={versions}
         />
-        <Button asChild>
-          <Link
-            to={`/companies/$companyId/projects/$projectId/completion_snapshots/new`}
-            params={{
-              companyId: companyId.toString(),
-              projectId: projectId.toString(),
-            }}
-            className={`mt-6 w-full ${currentVersionId != lastVersionId && "opacity-50"}`}
-            disabled={currentVersionId != lastVersionId}
-          >
-            <PlusCircle className="h-4 w-4" />
-            {t("pages.companies.projects.show.new_completion_snapshot")}
-          </Link>
-        </Button>
+        <CompletionSnapshotsSummery
+          companyId={companyId}
+          projectId={projectId}
+        />
       </div>
       <div className="md:col-span-2">
         <ProjectComposition
