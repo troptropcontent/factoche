@@ -1,6 +1,7 @@
 import { CompletionSnapshotForm } from "@/components/pages/companies/completion-snapshot/completion-snapshot-form";
+import { ProjectInfo } from "@/components/pages/companies/completion-snapshot/project-info";
 import { Layout } from "@/components/pages/companies/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -48,26 +49,18 @@ function RouteComponent() {
     <Layout.Root>
       <Layout.Header>
         <div className="flex flex-col">
-          <h1 className="text-3xl font-bold">Nouvelle situation de Travaux</h1>
+          <h1 className="text-3xl font-bold">
+            {t("pages.companies.completion_snapshot.form.title")}
+          </h1>
         </div>
       </Layout.Header>
       <Layout.Content>
-        <Card>
-          <CardHeader>
-            <CardTitle>Information sur le projet</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>{loaderData.projectData.result.name}</p>
-            <p>
-              {t("pages.companies.projects.show.version_label", {
-                number: loaderData.projectData.result.last_version.number,
-                createdAt: Date.parse(
-                  loaderData.projectData.result.last_version.created_at
-                ),
-              })}
-            </p>
-          </CardContent>
-        </Card>
+        <ProjectInfo
+          projectData={loaderData.projectData.result}
+          lastCompletionSnapshotData={
+            loaderData.completionSnapshotsData.results[0]
+          }
+        />
         <Card>
           <CardContent className="pt-6 space-y-6">
             <CompletionSnapshotForm
