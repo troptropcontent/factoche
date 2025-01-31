@@ -1,4 +1,3 @@
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -6,45 +5,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 import { useTranslation } from "react-i18next";
 
 const VersionSelect = ({
+  routeParams: { companyId, projectId },
   versionId,
   onValueChange,
-  versions,
 }: {
-  versionId: string;
+  routeParams: { companyId: number; projectId: number };
+  versionId: number;
   onValueChange: (value: string) => void;
-  versions: { id: number; number: number; created_at: string }[];
 }) => {
   const { t } = useTranslation();
+  const { data: { results: versions } = { results: [] } } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions",
+    {
+      params: {
+        path: { company_id: companyId, project_id: projectId },
+      },
+    }
+  );
 
   return (
-    <Card className="mt-6">
-      <CardHeader>
-        <CardTitle>
-          {t("pages.companies.projects.show.project_versions")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Select value={versionId} onValueChange={onValueChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a version" />
-          </SelectTrigger>
-          <SelectContent>
-            {versions.map((version) => (
-              <SelectItem key={version.id} value={version.id.toString()}>
-                {t("pages.companies.projects.show.version_label", {
-                  number: version.number,
-                  createdAt: Date.parse(version.created_at),
-                })}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardContent>
-    </Card>
+    <Select value={versionId.toString()} onValueChange={onValueChange}>
+      <SelectTrigger className="w-auto">
+        <SelectValue placeholder="Select a version" />
+      </SelectTrigger>
+      <SelectContent>
+        {versions.map((version) => (
+          <SelectItem key={version.id} value={version.id.toString()}>
+            {t("pages.companies.projects.show.version_label", {
+              number: version.number,
+              createdAt: Date.parse(version.created_at),
+            })}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 

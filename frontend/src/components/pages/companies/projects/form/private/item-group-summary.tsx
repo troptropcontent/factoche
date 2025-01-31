@@ -35,7 +35,7 @@ const ItemGroupSummary = ({
   const { t } = useTranslation();
 
   return (
-    <Card className="mb-4">
+    <Card>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <p className="text-sm text-gray-600">{description}</p>

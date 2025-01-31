@@ -155,10 +155,19 @@ i18n
                                     "composition_empty_state_description": "Ajouter un élément ou un groupe d'éléments pour commencer"
                                 },
                                 "show": {
+                                    "title": "Fiche synthétique du projet",
                                     "project_versions": "Versions du project",
                                     "version_label": "Version n°{{number}} ({{createdAt, datetime}})",
                                     "client_info": {
-                                        "title": "Information client"
+                                        "title": "Information client",
+                                        "name": "<strong>Nom :</strong> {{name}}",
+                                        "phone": "<strong>Téléphone :</strong> {{phone}}",
+                                        "email": "<strong>Email :</strong> {{email}}"
+                                    },
+                                    "project_summary": {
+                                        "title": "Information projet",
+                                        "name": "<strong>Nom :</strong> {{name}}",
+                                        "description": "<strong>Description :</strong> {{description}}",
                                     },
                                     "project_composition": {
                                         "title": "Composition du project",
