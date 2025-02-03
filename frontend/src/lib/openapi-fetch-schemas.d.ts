@@ -152,7 +152,7 @@ export interface paths {
                         "application/json": components["schemas"]["client"][];
                     };
                 };
-                /** @description unauthorized */
+                /** @description unauthorised */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -206,7 +206,7 @@ export interface paths {
                         "application/json": components["schemas"]["client"];
                     };
                 };
-                /** @description unauthorized */
+                /** @description user can not create a client within this company */
                 401: {
                     headers: {
                         [name: string]: unknown;
@@ -214,6 +214,13 @@ export interface paths {
                     content: {
                         "application/json": components["schemas"]["error"];
                     };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
                 /** @description company not found */
                 404: {
@@ -235,6 +242,62 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/clients/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show client */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description client's details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Clients::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -886,6 +949,19 @@ export interface components {
                 details: Record<string, never>;
             };
         };
+        "Organization::Clients::ExtendedDto": {
+            id: number;
+            name: string;
+            registration_number: string;
+            email: string;
+            phone: string;
+            address_street: string;
+            address_city: string;
+            address_zipcode: string;
+        };
+        "Organization::Clients::ShowDto": {
+            result: components["schemas"]["Organization::Clients::ExtendedDto"];
+        };
         "Organization::CompletionSnapshotDtoItemDto": {
             /** Format: decimal */
             completion_percentage: string;
@@ -915,6 +991,11 @@ export interface components {
         "Organization::CompletionSnapshotIndexResponseDto": {
             results: components["schemas"]["Organization::CompletionSnapshotDto"][];
         };
+        "Organization::CompletionSnapshotItems::ExtendedDto": {
+            /** Format: decimal */
+            completion_percentage: string;
+            item_id: number;
+        };
         "Organization::CompletionSnapshots::CompactDto": {
             id: number;
             /** @enum {string} */
@@ -926,7 +1007,7 @@ export interface components {
             id: number;
             /** @enum {string} */
             status: "draft" | "cancelled" | "invoiced";
-            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotDtoItemDto"][];
+            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotItems::ExtendedDto"][];
             /** Format: date-time */
             created_at: string;
         };
@@ -958,6 +1039,22 @@ export interface components {
             client_id: number;
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
+        };
+        "Organization::ItemGroups::ExtendedDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
+        "Organization::Items::ExtendedDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            unit_price_cents: number;
         };
         "Organization::ProjectDtoItemDto": {
             id: number;
@@ -1083,6 +1180,18 @@ export interface components {
         };
         "Organization::ProjectVersionShowResponseDto": {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
+        };
+        "Organization::ProjectVersions::ExtendedDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            retention_guarantee_rate: number;
+            ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+            item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+        };
+        "Organization::ProjectVersions::ShowDto": {
+            result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
         };
         "Organization::ShowCompletionSnapshotResponseDto": {
             result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];

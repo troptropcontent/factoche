@@ -138,14 +138,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/client"
-        '401':
-          description: unauthorized
+        '403':
+          description: forbiden
+        '404':
+          description: company not found
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/error"
-        '404':
-          description: company not found
+        '401':
+          description: user can not create a client within this company
           content:
             application/json:
               schema:
@@ -213,7 +215,38 @@ paths:
               schema:
                 "$ref": "#/components/schemas/error"
         '401':
-          description: unauthorized
+          description: unauthorised
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+  "/api/v1/organization/clients/{id}":
+    get:
+      summary: Show client
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '403':
+          description: forbiden
+        '200':
+          description: client's details
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        '404':
+          description: not found
           content:
             application/json:
               schema:
@@ -889,6 +922,41 @@ components:
           - details
       required:
       - error
+    Organization::Clients::ExtendedDto:
+      type: object
+      required:
+      - id
+      - name
+      - registration_number
+      - email
+      - phone
+      - address_street
+      - address_city
+      - address_zipcode
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        registration_number:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address_street:
+          type: string
+        address_city:
+          type: string
+        address_zipcode:
+          type: string
+    Organization::Clients::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
     Organization::CompletionSnapshotDtoItemDto:
       type: object
       required:
@@ -963,6 +1031,17 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
+    Organization::CompletionSnapshotItems::ExtendedDto:
+      type: object
+      required:
+      - completion_percentage
+      - item_id
+      properties:
+        completion_percentage:
+          type: string
+          format: decimal
+        item_id:
+          type: integer
     Organization::CompletionSnapshots::CompactDto:
       type: object
       required:
@@ -1000,7 +1079,7 @@ components:
         completion_snapshot_items:
           type: array
           items:
-            "$ref": "#/components/schemas/Organization::CompletionSnapshotDtoItemDto"
+            "$ref": "#/components/schemas/Organization::CompletionSnapshotItems::ExtendedDto"
         created_at:
           type: string
           format: date-time
@@ -1091,6 +1170,52 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+    Organization::ItemGroups::ExtendedDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - grouped_items
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        grouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+    Organization::Items::ExtendedDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - quantity
+      - unit
+      - unit_price_cents
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_cents:
+          type: integer
     Organization::ProjectDtoItemDto:
       type: object
       required:
@@ -1454,6 +1579,40 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
+    Organization::ProjectVersions::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      - retention_guarantee_rate
+      - ungrouped_items
+      - item_groups
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        retention_guarantee_rate:
+          type: integer
+        ungrouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
+    Organization::ProjectVersions::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
     Organization::ShowCompletionSnapshotResponseDto:
       type: object
       required:
