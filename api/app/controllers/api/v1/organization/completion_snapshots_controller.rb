@@ -24,7 +24,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
                                                               .then { |filtered_snapshots| limited_snapshots(filtered_snapshots, query_dto.limit) }
                                                               .order(created_at: :desc)
 
-    render json: Organization::CompletionSnapshotIndexResponseDto.new({ results: snapshots }).to_json
+    render json: Organization::CompletionSnapshots::IndexDto.new({ results: snapshots }).to_json
   end
 
   private
