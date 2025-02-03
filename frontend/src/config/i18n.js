@@ -63,6 +63,9 @@ i18n
                                     "new_completion_percentage_label": "Nouvel avancement",
                                     "submit_button_label": "Enregistrer",
                                     "success_toast_title": "Nouvelle situation de travaux enregistrée",
+                                },
+                                "show": {
+                                    "title": "Situation de travaux"
                                 }
                             },
                             "projects": {
@@ -168,6 +171,7 @@ i18n
                                         "title": "Information projet",
                                         "name": "<strong>Nom :</strong> {{name}}",
                                         "description": "<strong>Description :</strong> {{description}}",
+                                        "version_label": "<strong>Version :</strong> N°{{number}} du {{createdAt, datetime}}",
                                     },
                                     "project_composition": {
                                         "title": "Composition du project",
