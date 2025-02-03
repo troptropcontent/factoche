@@ -1,23 +1,39 @@
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { ClientSummaryCard } from "../clients/shared/client-summary-card";
 import { ProjectSummaryCard } from "../projects/shared/project-summary-card";
+import { Card, CardContent } from "@/components/ui/card";
+import { CompletionSnapshotSummary } from "./completion-snapshot-summary";
 
 const CompletionSnapshotShow = ({
-  routeParams: { companyId, projectId },
+  routeParams: { companyId, projectId, completionSnapshotId },
 }: {
-  routeParams: { companyId: number; projectId: number };
+  routeParams: {
+    companyId: number;
+    projectId: number;
+    completionSnapshotId: number;
+  };
 }) => {
-  const { data, isLoading } = Api.useQuery(
+  const { data: completionSnapshotData } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{id}",
+    "/api/v1/organization/completion_snapshots/{id}",
     {
       params: {
-        path: { company_id: Number(companyId), id: Number(projectId) },
+        path: { id: completionSnapshotId },
       },
     }
   );
 
-  if (isLoading || data == undefined) {
+  const isCompletionSnapshotLoaded = completionSnapshotData != undefined;
+
+  const { data: projectData } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/projects/{id}",
+    { params: { path: { company_id: companyId, id: projectId } } }
+  );
+
+  const isProjectDataLoaded = projectData != undefined;
+
+  if (!isCompletionSnapshotLoaded || !isProjectDataLoaded) {
     return null;
   }
 
@@ -25,9 +41,23 @@ const CompletionSnapshotShow = ({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
       <div className="md:col-span-1 space-y-6">
         <ProjectSummaryCard routeParams={{ companyId, projectId }} />
-        <ClientSummaryCard clientId={data.result.client.id} />
+        <ClientSummaryCard clientId={projectData.result.client.id} />
       </div>
-      <div className="md:col-span-2">content</div>
+      <div className="md:col-span-2">
+        <Card>
+          <CardContent className="mt-6">
+            <CompletionSnapshotSummary
+              routeParams={{
+                companyId,
+                projectId,
+                completionSnapshotId: completionSnapshotData.result.id,
+                projectVersionId:
+                  completionSnapshotData.result.project_version.id,
+              }}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
