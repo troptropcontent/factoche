@@ -11,6 +11,6 @@ class Api::V1::Organization::ProjectVersionsController < Api::V1::ApiV1Controlle
   def show
     version = policy_scope(Organization::ProjectVersion).where({ project: { organization_clients: { company_id: @company.id  }, id: params[:project_id] } }).find(params[:id])
 
-    render json: Organization::ProjectVersionShowResponseDto.new({ result: version }).to_json
+    render json: Organization::ProjectVersions::ShowDto.new({ result: version }).to_json
   end
 end

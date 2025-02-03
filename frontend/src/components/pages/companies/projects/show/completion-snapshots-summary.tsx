@@ -15,11 +15,12 @@ import {
 } from "@/components/ui/table";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { useTranslation } from "react-i18next";
-import { CompletionSnapshotStatusBadge } from "./completion-snapshot-status-badge";
+
 import { NewCompletionSnapshotButton } from "./new-completion-snapshot-button";
 import { useNavigate } from "@tanstack/react-router";
 import { TrafficCone } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CompletionSnapshotStatusBadge } from "../../completion-snapshot/shared/completion-snapshot-status-badge";
 
 const CompletionSnapshotsSummery = ({
   companyId,

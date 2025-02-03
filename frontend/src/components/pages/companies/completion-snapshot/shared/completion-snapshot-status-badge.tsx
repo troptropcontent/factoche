@@ -18,7 +18,7 @@ const CompletionSnapshotStatusBadge = ({ status }: { status: string }) => {
   const { t } = useTranslation();
 
   return (
-    <Badge className={`${getStatusColor(status)} text-white`}>
+    <Badge className={`${getStatusColor(status)} text-white h-fit`}>
       {t(`pages.companies.completion_snapshot.status.${status}`)}
     </Badge>
   );

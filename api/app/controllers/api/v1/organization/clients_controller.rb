@@ -1,5 +1,5 @@
 class Api::V1::Organization::ClientsController < Api::V1::ApiV1Controller
-  before_action :load_company!
+  before_action(except: :show) { load_and_authorise_resource(:company, class_name: "Organization::Company") }
   # POST /api/v1/organization/companies/:company_id/clients
   def create
     client = @company.clients.new(client_params)
@@ -12,6 +12,13 @@ class Api::V1::Organization::ClientsController < Api::V1::ApiV1Controller
   def index
     clients = @company.clients
     render json: Organization::ClientSerializer.render(clients)
+  end
+
+  # GET  /api/v1/organization/clients/:id
+  def show
+    client = policy_scope(Organization::Client).find(params[:id])
+
+    render json: Organization::Clients::ShowDto.new({ result: client })
   end
 
   private

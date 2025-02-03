@@ -22,6 +22,7 @@ Rails.application.routes.draw do
           end
         end
         resources :completion_snapshots, only: [ :show, :index ]
+        resources :clients, only: [ :show ]
       end
     end
   end
