@@ -1,5 +1,6 @@
 require 'rails_helper'
 require 'swagger_helper'
+require_relative "shared_examples/an_authenticated_endpoint"
 
 RSpec.describe Api::V1::Organization::ClientsController, type: :request do
   path '/api/v1/organization/companies/{company_id}/clients' do
@@ -173,6 +174,44 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
 
         schema '$ref' => '#/components/schemas/error'
         run_test!
+      end
+    end
+  end
+  path '/api/v1/organization/clients/{id}' do
+    get 'Show client' do
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      parameter name: :id, in: :path, type: :integer
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:client) { FactoryBot.create(:client, company:) }
+      let(:id) { client.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+      it_behaves_like "an authenticated endpoint"
+
+      response "200", "client's details" do
+        schema Organization::Clients::ShowDto.to_schema
+
+        run_test!
+      end
+
+      response "404", "not found" do
+        schema '$ref' => '#/components/schemas/error'
+
+        context "when the client does not exists" do
+          let(:id) { 123412341234134 }
+
+          run_test!
+        end
+
+        context "when the client does not belong to a company of wich the user is a member" do
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(FactoryBot.create(:user).id)}" }
+
+          run_test!
+        end
       end
     end
   end
