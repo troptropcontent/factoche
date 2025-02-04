@@ -70,16 +70,32 @@ const CompletionSnapshotSummary = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Synthese</CardTitle>
+        <CardTitle>
+          {t("pages.companies.completion_snapshot.show.summary.title")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Total</TableHead>
-              <TableHead>Avancement Précédent</TableHead>
-              <TableHead>Avancement</TableHead>
-              <TableHead>Restant</TableHead>
+              <TableHead>
+                {t("pages.companies.completion_snapshot.show.summary.total")}
+              </TableHead>
+              <TableHead>
+                {t(
+                  "pages.companies.completion_snapshot.show.summary.previously_invoiced"
+                )}
+              </TableHead>
+              <TableHead>
+                {t(
+                  "pages.companies.completion_snapshot.show.summary.new_completion_snapshot"
+                )}
+              </TableHead>
+              <TableHead>
+                {t(
+                  "pages.companies.completion_snapshot.show.summary.new_invoiced"
+                )}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

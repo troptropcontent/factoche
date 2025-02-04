@@ -65,7 +65,14 @@ i18n
                                     "success_toast_title": "Nouvelle situation de travaux enregistrée",
                                 },
                                 "show": {
-                                    "title": "Situation de travaux"
+                                    "title": "Situation de travaux",
+                                    "summary": {
+                                        "title": "Synthese",
+                                        "total": "Total",
+                                        "previously_invoiced": "Précédement facturé (A)",
+                                        "new_completion_snapshot": "Nouvel avancement (B)",
+                                        "new_invoiced": "Nouvelle facture (B - A)"
+                                    }
                                 },
                                 "grouped_items_details": {
                                     "title": "Détails",
