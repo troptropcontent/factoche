@@ -15,6 +15,23 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: snapshot }).to_json
   end
 
+  # GET  /api/v1/organization/completion_snapshots/:id/previous
+  def previous
+    scope = policy_scope(Organization::CompletionSnapshot)
+    base_snapshot = scope.find(params[:id])
+    previous_snapshot = scope
+      .where(
+        "organization_projects.id = ? AND organization_completion_snapshots.created_at < ?",
+        base_snapshot.project_version.project_id,
+        base_snapshot.created_at
+      )
+      .order(created_at: :desc)
+      .limit(1)
+      .first
+
+    render json: Organization::CompletionSnapshots::PreviousDto.new({ result: previous_snapshot }).to_json
+  end
+
   # GET  /api/v1/organization/completion_snapshots
   def index
     filter_dto = Organization::CompletionSnapshotIndexRequestDto.new(filter_params)

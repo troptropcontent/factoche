@@ -11,36 +11,44 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
       parameter name: :company_id, in: :path, type: :integer
       parameter name: :project_id, in: :path, type: :integer
-      parameter name: :completion_snapshot, in: :body, schema: Organization::CreateCompletionSnapshotDto.to_schema()
+      parameter name: :completion_snapshot, in: :body, schema: Organization::CreateCompletionSnapshotDto.to_schema
 
       let(:user) { FactoryBot.create(:user) }
       let(:company) { FactoryBot.create(:company) }
       let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client,) }
+      let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
-        name: "Item",
-        unit: "U",
-        position: 1,
-        unit_price_cents: "1000",
-        project_version: company_project_version,
-        quantity: 2
-      } ]) }
+      let!(:company_project_version_item_group) do
+        FactoryBot.create(
+          :item_group,
+          project_version: company_project_version,
+          name: "Item Group",
+          grouped_items_attributes: [ {
+            name: "Item",
+            unit: "U",
+            position: 1,
+            unit_price_cents: "1000",
+            project_version: company_project_version,
+            quantity: 2
+          } ]
+        )
+      end
       let(:another_company) { FactoryBot.create(:company) }
       let(:another_client) { FactoryBot.create(:client, company: another_company) }
-      let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
-      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let!(:another_company_project) { FactoryBot.create(:project, client: another_client) }
+      let!(:member) { FactoryBot.create(:member, user: user, company: company) }
       let(:company_id) { company.id }
       let(:project_id) { company_project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-      let(:completion_snapshot) {
-        { description: "New version following discussion with the boss", completion_snapshot_items: [
-          {
+      let(:completion_snapshot) do
+        {
+          description: "New version following discussion with the boss",
+          completion_snapshot_items: [ {
             item_id: company_project_version_item_group.grouped_items.first.id,
             completion_percentage: "10"
-          }
-        ] }
-      }
+          } ]
+        }
+      end
 
       response "200", "completion snapshot successfully created" do
         schema Organization::ShowCompletionSnapshotResponseDto.to_schema
@@ -48,49 +56,53 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           let!(:number_of_completion_snapshot_before) { Organization::CompletionSnapshot.count }
           let!(:number_of_completion_snapshot_items_before) { Organization::CompletionSnapshotItem.count }
 
-          run_test!("It creates a new completion snapshot with its items and returns it") {
+          run_test!("It creates a new completion snapshot with its items and returns it") do
             parsed_response = JSON.parse(response.body)
             new_snapshot = company_project_version.completion_snapshots.last
             expect(parsed_response.dig("result", "id")).to eq(new_snapshot.id)
             expect(Organization::CompletionSnapshot.count).to eq(number_of_completion_snapshot_before + 1)
             expect(Organization::CompletionSnapshotItem.count).to eq(number_of_completion_snapshot_items_before + 1)
-          }
+          end
         end
       end
 
       response "422", "unprocessable entity" do
         context "when an draft already exists for this project" do
-          let!(:already_existing_completion_snapshot) {
-            FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "New version following discussion with the boss", completion_snapshot_items_attributes: [
+          let!(:already_existing_completion_snapshot) do
+            FactoryBot.create(
+              "completion_snapshot",
               {
-                item_id: company_project_version_item_group.grouped_items.first.id,
-                completion_percentage: "10"
+                project_version: company_project_version,
+                description: "New version following discussion with the boss",
+                completion_snapshot_items_attributes: [ {
+                  item_id: company_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "10"
+                } ]
               }
-            ] })
-          }
+            )
+          end
 
-          run_test!("It returns a 422 error with an explicit message") {
+          run_test!("It returns a 422 error with an explicit message") do
             parsed_response = JSON.parse(response.body)
-
             expect(parsed_response.dig("error", "message")).to eq("A draft already exists for this project. Only one draft can exists for a project at a time.")
-          }
+          end
         end
 
         context "when the item_id does not belong to the project version" do
-          let(:completion_snapshot) {
-            { description: "New version following discussion with the boss", completion_snapshot_items: [
-              {
+          let(:completion_snapshot) do
+            {
+              description: "New version following discussion with the boss",
+              completion_snapshot_items: [ {
                 item_id: 99999999999,
                 completion_percentage: "10"
-              }
-            ] }
-          }
+              } ]
+            }
+          end
 
-          run_test!("It returns a 422 error with an explicit message") {
+          run_test!("It returns a 422 error with an explicit message") do
             parsed_response = JSON.parse(response.body)
-
             expect(parsed_response.dig("error", "message")).to eq("The following item IDs do not belong to this project's last version: 99999999999")
-          }
+          end
         end
       end
 
@@ -125,28 +137,40 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:user) { FactoryBot.create(:user) }
       let(:company) { FactoryBot.create(:company) }
       let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client,) }
+      let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
-        name: "Item",
-        unit: "U",
-        position: 1,
-        unit_price_cents: "1000",
-        project_version: company_project_version,
-        quantity: 2
-      } ]) }
-      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let!(:company_project_version_item_group) do
+        FactoryBot.create(
+          :item_group,
+          project_version: company_project_version,
+          name: "Item Group",
+          grouped_items_attributes: [ {
+            name: "Item",
+            unit: "U",
+            position: 1,
+            unit_price_cents: "1000",
+            project_version: company_project_version,
+            quantity: 2
+          } ]
+        )
+      end
+      let!(:member) { FactoryBot.create(:member, user: user, company: company) }
       let(:company_id) { company.id }
       let(:project_id) { company_project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-      let!(:completion_snapshot) {
-        FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "New version following discussion with the boss", completion_snapshot_items_attributes: [
+      let!(:completion_snapshot) do
+        FactoryBot.create(
+          "completion_snapshot",
           {
-            item_id: company_project_version_item_group.grouped_items.first.id,
-            completion_percentage: "10"
+            project_version: company_project_version,
+            description: "New version following discussion with the boss",
+            completion_snapshot_items_attributes: [ {
+              item_id: company_project_version_item_group.grouped_items.first.id,
+              completion_percentage: "10"
+            } ]
           }
-        ] })
-      }
+        )
+      end
       let(:id) { completion_snapshot.id }
 
       response "200", "show completion_snapshot" do
@@ -159,6 +183,129 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
         context "when snapshot does not belong to a company of wich the user is a member" do
           let(:another_user) { FactoryBot.create(:user) }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+
+          run_test!
+        end
+
+        context "when the snapshot does not exists" do
+          let(:id) { 123451234 }
+
+          run_test!
+        end
+      end
+    end
+  end
+
+  path '/api/v1/organization/completion_snapshots/{id}/previous' do
+    parameter name: :id, in: :path, type: :integer
+
+    get "Show previous completion snapshot details" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let(:client) { FactoryBot.create(:client, company: company) }
+      let(:company_project) { FactoryBot.create(:project, client: client) }
+      let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
+      let!(:company_project_version_item_group) do
+        FactoryBot.create(
+          :item_group,
+          project_version: company_project_version,
+          name: "Item Group",
+          grouped_items_attributes: [ {
+            name: "Item",
+            unit: "U",
+            position: 1,
+            unit_price_cents: "1000",
+            project_version: company_project_version,
+            quantity: 2
+          } ]
+        )
+      end
+      let!(:member) { FactoryBot.create(:member, user: user, company: company) }
+      let(:company_id) { company.id }
+      let(:project_id) { company_project.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:id) { Organization::CompletionSnapshot.last.id }
+
+      response "200", "show previous completion_snapshot" do
+        schema Organization::CompletionSnapshots::PreviousDto.to_schema
+
+        context "when there is a previous completion snapshot" do
+          before do
+            travel_to(1.day.before) {
+              FactoryBot.create(
+              "completion_snapshot",
+              {
+                project_version: company_project_version,
+                description: "First snapshot",
+                completion_snapshot_items_attributes: [ {
+                  item_id: company_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "10"
+                } ]
+              }
+            ) }
+
+            FactoryBot.create(
+              "completion_snapshot",
+              {
+                project_version: company_project_version,
+                description: "Second snapshot",
+                completion_snapshot_items_attributes: [ {
+                  item_id: company_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "20"
+                } ]
+              }
+            )
+          end
+
+          run_test!("it returns the previous completion snapshot") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("result", "id")).to eq(Organization::CompletionSnapshot.first.id)
+          end
+        end
+
+        context "when there is no previous completion snapshot" do
+          before do
+            FactoryBot.create(
+              "completion_snapshot",
+              {
+                project_version: company_project_version,
+                description: "New version following discussion with the boss",
+                completion_snapshot_items_attributes: [ {
+                  item_id: company_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "20"
+                } ]
+              }
+            )
+          end
+
+          run_test!("it returns null") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("result")).to be_nil
+          end
+        end
+      end
+
+      response "404", "not found" do
+        context "when snapshot does not belong to a company of wich the user is a member" do
+          before do
+            FactoryBot.create(
+              "completion_snapshot",
+              {
+                project_version: company_project_version,
+                description: "New version following discussion with the boss",
+                completion_snapshot_items_attributes: [ {
+                  item_id: company_project_version_item_group.grouped_items.first.id,
+                  completion_percentage: "20"
+                } ]
+              }
+            )
+          end
+
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(FactoryBot.create(:user).id)}" }
 
           run_test!
         end
@@ -185,36 +332,53 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:user) { FactoryBot.create(:user) }
       let(:company) { FactoryBot.create(:company) }
       let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client,) }
+      let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
-        name: "Item",
-        unit: "U",
-        position: 1,
-        unit_price_cents: "1000",
-        project_version: company_project_version,
-        quantity: 2
-      } ]) }
-      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let!(:company_project_version_item_group) do
+        FactoryBot.create(
+          :item_group,
+          project_version: company_project_version,
+          name: "Item Group",
+          grouped_items_attributes: [ {
+            name: "Item",
+            unit: "U",
+            position: 1,
+            unit_price_cents: "1000",
+            project_version: company_project_version,
+            quantity: 2
+          } ]
+        )
+      end
+      let!(:member) { FactoryBot.create(:member, user: user, company: company) }
       let(:company_id) { company.id }
       let(:project_id) { company_project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-      let!(:completion_snapshot) {
-        FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "New version following discussion with the boss", completion_snapshot_items_attributes: [
+      let!(:completion_snapshot) do
+        FactoryBot.create(
+          "completion_snapshot",
           {
-            item_id: company_project_version_item_group.grouped_items.first.id,
-            completion_percentage: "10"
+            project_version: company_project_version,
+            description: "New version following discussion with the boss",
+            completion_snapshot_items_attributes: [ {
+              item_id: company_project_version_item_group.grouped_items.first.id,
+              completion_percentage: "10"
+            } ]
           }
-        ] })
-      }
-      let!(:another_completion_snapshot) {
-        FactoryBot.create("completion_snapshot", { project_version: company_project_version, description: "Another new version following discussion with the boss", completion_snapshot_items_attributes: [
+        )
+      end
+      let!(:another_completion_snapshot) do
+        FactoryBot.create(
+          "completion_snapshot",
           {
-            item_id: company_project_version_item_group.grouped_items.first.id,
-            completion_percentage: "10"
+            project_version: company_project_version,
+            description: "Another new version following discussion with the boss",
+            completion_snapshot_items_attributes: [ {
+              item_id: company_project_version_item_group.grouped_items.first.id,
+              completion_percentage: "10"
+            } ]
           }
-        ] })
-      }
+        )
+      end
       let(:filter) { {} }
       let(:query) { {} }
 
@@ -232,91 +396,121 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
               another_client = FactoryBot.create(:client, company: another_company)
               another_project = FactoryBot.create(:project, client: another_client)
               another_project_version = FactoryBot.create(:project_version, project: another_project)
-              another_project_version_item_group = FactoryBot.create(:item_group, project_version: another_project_version, name: "Item Group", grouped_items_attributes: [ {
-                name: "Item",
-                unit: "U",
-                position: 1,
-                unit_price_cents: "1000",
-                project_version: company_project_version,
-                quantity: 2
-              } ])
-              FactoryBot.create(:completion_snapshot, { project_version: another_project_version, description: "First completion snapshot for the project", completion_snapshot_items_attributes: [
+              another_project_version_item_group = FactoryBot.create(
+                :item_group,
+                project_version: another_project_version,
+                name: "Item Group",
+                grouped_items_attributes: [ {
+                  name: "Item",
+                  unit: "U",
+                  position: 1,
+                  unit_price_cents: "1000",
+                  project_version: company_project_version,
+                  quantity: 2
+                } ]
+              )
+              FactoryBot.create(
+                :completion_snapshot,
                 {
-                  item_id: another_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "10"
+                  project_version: another_project_version,
+                  description: "First completion snapshot for the project",
+                  completion_snapshot_items_attributes: [ {
+                    item_id: another_project_version_item_group.grouped_items.first.id,
+                    completion_percentage: "10"
+                  } ]
                 }
-              ] })
+              )
 
-              FactoryBot.create(:member, user:, company: another_company)
+              FactoryBot.create(:member, user: user, company: another_company)
             end
 
             let(:filter) { { filter: { company_id: Organization::Company.find_by({ name: "AnotherCompany" }).id } } }
 
-            run_test!("It only returns the completion snapshots that belongs to the company") {
+            run_test!("It only returns the completion snapshots that belongs to the company") do
               parsed_response = JSON.parse(response.body)
 
               expect(parsed_response.dig("results", 0, "description")).to eq("First completion snapshot for the project")
               expect(parsed_response.dig("results").length).to eq(1)
-            }
+            end
           end
 
           describe "project_id" do
             before do
               another_project = FactoryBot.create(:project, client: client, name: "AnotherProject")
               another_project_version = FactoryBot.create(:project_version, project: another_project)
-              another_project_version_item_group = FactoryBot.create(:item_group, project_version: another_project_version, name: "Item Group", grouped_items_attributes: [ {
-                name: "Item",
-                unit: "U",
-                position: 1,
-                unit_price_cents: "1000",
-                project_version: company_project_version,
-                quantity: 2
-              } ])
-              FactoryBot.create(:completion_snapshot, { project_version: another_project_version, description: "First completion snapshot for the other project", completion_snapshot_items_attributes: [
+              another_project_version_item_group = FactoryBot.create(
+                :item_group,
+                project_version: another_project_version,
+                name: "Item Group",
+                grouped_items_attributes: [ {
+                  name: "Item",
+                  unit: "U",
+                  position: 1,
+                  unit_price_cents: "1000",
+                  project_version: company_project_version,
+                  quantity: 2
+                } ]
+              )
+              FactoryBot.create(
+                :completion_snapshot,
                 {
-                  item_id: another_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "10"
+                  project_version: another_project_version,
+                  description: "First completion snapshot for the other project",
+                  completion_snapshot_items_attributes: [ {
+                    item_id: another_project_version_item_group.grouped_items.first.id,
+                    completion_percentage: "10"
+                  } ]
                 }
-              ] })
+              )
             end
 
             let(:filter) { { filter: { project_id: Organization::Project.find_by({ name: "AnotherProject" }).id } } }
 
-            run_test!("It only returns the completion snapshots that belongs to project") {
+            run_test!("It only returns the completion snapshots that belongs to project") do
               parsed_response = JSON.parse(response.body)
 
               expect(parsed_response.dig("results", 0, "description")).to eq("First completion snapshot for the other project")
               expect(parsed_response.dig("results").length).to eq(1)
-            }
+            end
           end
 
           describe "project_version_id" do
             before do
               another_project_version = FactoryBot.create(:project_version, project: company_project)
-              another_project_version_item_group = FactoryBot.create(:item_group, project_version: another_project_version, name: "Item Group", grouped_items_attributes: [ {
-                name: "Item",
-                unit: "U",
-                position: 1,
-                unit_price_cents: "1000",
-                project_version: company_project_version,
-                quantity: 2
-              } ])
-              FactoryBot.create(:completion_snapshot, { project_version: another_project_version, description: "First completion snapshot for the new version", completion_snapshot_items_attributes: [
+              another_project_version_item_group = FactoryBot.create(
+                :item_group,
+                project_version: another_project_version,
+                name: "Item Group",
+                grouped_items_attributes: [ {
+                  name: "Item",
+                  unit: "U",
+                  position: 1,
+                  unit_price_cents: "1000",
+                  project_version: company_project_version,
+                  quantity: 2
+                } ]
+              )
+              FactoryBot.create(
+                :completion_snapshot,
                 {
-                  item_id: another_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "10"
+                  project_version: another_project_version,
+                  description: "First completion snapshot for the new version",
+                  completion_snapshot_items_attributes: [ {
+                    item_id: another_project_version_item_group.grouped_items.first.id,
+                    completion_percentage: "10"
+                  } ]
                 }
-              ] })
+              )
             end
 
             let(:filter) { { filter: { project_version_id: Organization::ProjectVersion.find_by({ project_id: company_project.id, number: 2 }).id } } }
 
-            run_test!("It only returns the completion snapshots that belongs to project") {
+            run_test!("It only returns the completion snapshots that belongs to project") do
               parsed_response = JSON.parse(response.body)
 
               expect(parsed_response.dig("results", 0, "description")).to eq("First completion snapshot for the new version")
               expect(parsed_response.dig("results").length).to eq(1)
-            }
+            end
           end
         end
 

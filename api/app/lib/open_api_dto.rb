@@ -38,7 +38,7 @@ class OpenApiDto
         type: :object,
         required: fields.select { |_, info| info[:required] }.keys.map(&:to_s),
         properties: fields.transform_values do |info|
-          case info[:type]
+          base_type = case info[:type]
           when :array
             array_field_schema(info)
           when :object
@@ -59,8 +59,10 @@ class OpenApiDto
               format: "decimal"
             }
           else
-            { type: info[:type] }.merge(info[:required] ? {} : { nullable: true })
+            { type: info[:type] }
           end
+
+          base_type.merge(info[:required] ? {} : { nullable: true })
         end
       }
     end
