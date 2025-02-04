@@ -1,6 +1,6 @@
 import { Item, ProjectVersion } from "../../project-versions/shared/types";
 import { computeItemTotalCents } from "../../project-versions/shared/utils";
-import { CompletionSnapshot, CompletionSnapshotItem } from "./types";
+import { CompletionSnapshotItem } from "./types";
 
 const computeCompletionSnapShotTotalCents = (completionSnapshotData: {
   completion_snapshot_items: Array<CompletionSnapshotItem>;
@@ -52,8 +52,8 @@ const computeCompletionSnapshotItemValueCents = (
     : 0;
 };
 
-const sortAndFilterCompletionSnapshots = (
-  snapshots: Array<CompletionSnapshot>,
+const sortAndFilterCompletionSnapshots = <T extends { created_at: string }>(
+  snapshots: Array<T>,
   referenceDate: string
 ) => {
   return snapshots
