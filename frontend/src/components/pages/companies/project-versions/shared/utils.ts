@@ -1,7 +1,9 @@
+import { Item } from "./types";
+
 const computeProjectVersionTotalCents = (projectVersionData: {
-  ungrouped_items: { quantity: number; unit_price_cents: number }[];
+  ungrouped_items: Item[];
   item_groups: {
-    grouped_items: { quantity: number; unit_price_cents: number }[];
+    grouped_items: Item[];
   }[];
 }) => {
   const items = [
@@ -9,9 +11,13 @@ const computeProjectVersionTotalCents = (projectVersionData: {
     ...projectVersionData.ungrouped_items,
   ];
   return items.reduce(
-    (total, current) => total + current.quantity * current.unit_price_cents,
+    (total, current) => total + computeItemTotalCents(current),
     0
   );
 };
 
-export { computeProjectVersionTotalCents };
+const computeItemTotalCents = (item: Item) => {
+  return item.quantity * item.unit_price_cents;
+};
+
+export { computeProjectVersionTotalCents, computeItemTotalCents };

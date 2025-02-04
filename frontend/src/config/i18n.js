@@ -66,6 +66,14 @@ i18n
                                 },
                                 "show": {
                                     "title": "Situation de travaux"
+                                },
+                                "grouped_items_details": {
+                                    "title": "Détails",
+                                    "designation": "Designation",
+                                    "total_amount": "Montant total",
+                                    "previous_invoiced_label": "Précédement facturé (A)",
+                                    "new_completion_snapshot_label": "Nouvel avancement (B)",
+                                    "new_invoiced_label": "Nouvelle facture (B - A)"
                                 }
                             },
                             "projects": {

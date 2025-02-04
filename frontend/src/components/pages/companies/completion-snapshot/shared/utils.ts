@@ -1,22 +1,10 @@
+import { Item, ProjectVersion } from "../../project-versions/shared/types";
+import { computeItemTotalCents } from "../../project-versions/shared/utils";
+import { CompletionSnapshot, CompletionSnapshotItem } from "./types";
+
 const computeCompletionSnapShotTotalCents = (completionSnapshotData: {
-  completion_snapshot_items: {
-    item_id: number;
-    completion_percentage: string;
-  }[];
-  project_version: {
-    ungrouped_items: {
-      id: number;
-      quantity: number;
-      unit_price_cents: number;
-    }[];
-    item_groups: {
-      grouped_items: {
-        id: number;
-        quantity: number;
-        unit_price_cents: number;
-      }[];
-    }[];
-  };
+  completion_snapshot_items: Array<CompletionSnapshotItem>;
+  project_version: ProjectVersion;
 }): number => {
   const findPercentageAndComputeItemValueCents = (
     item: (typeof completionSnapshotData)["project_version"]["ungrouped_items"][number]
@@ -42,8 +30,30 @@ const computeCompletionSnapShotTotalCents = (completionSnapshotData: {
   );
 };
 
+const computeCompletionSnapshotItemValueCents = (
+  itemId: number,
+  completionSnapshotItems: Array<CompletionSnapshotItem>,
+  projectVersionData: ProjectVersion
+) => {
+  const completionPercentage = completionSnapshotItems.find(
+    ({ item_id }) => itemId === item_id
+  );
+
+  const item =
+    projectVersionData.ungrouped_items.find(({ id }) => id === itemId) ||
+    projectVersionData.item_groups
+      .flatMap((itemGroup) => itemGroup.grouped_items)
+      .find(({ id }) => itemId === id);
+
+  return completionPercentage && item
+    ? (Number(completionPercentage) / 100) *
+        item.quantity *
+        item.unit_price_cents
+    : 0;
+};
+
 const sortAndFilterCompletionSnapshots = (
-  snapshots: Array<{ id: number; created_at: string }>,
+  snapshots: Array<CompletionSnapshot>,
   referenceDate: string
 ) => {
   return snapshots
@@ -53,7 +63,26 @@ const sortAndFilterCompletionSnapshots = (
     );
 };
 
+const computeItemCompletionSnapshotValueCents = (
+  item: Item,
+  completionSnapshotItems: CompletionSnapshotItem[]
+) => {
+  const completionSnapshotItem = completionSnapshotItems.find(
+    (completionSnapshotItem) => completionSnapshotItem.item_id === item.id
+  );
+
+  if (completionSnapshotItem == undefined) {
+    return 0;
+  }
+
+  const percentage = Number(completionSnapshotItem.completion_percentage);
+
+  return (percentage / 100) * computeItemTotalCents(item);
+};
+
 export {
   computeCompletionSnapShotTotalCents,
   sortAndFilterCompletionSnapshots,
+  computeCompletionSnapshotItemValueCents,
+  computeItemCompletionSnapshotValueCents,
 };
