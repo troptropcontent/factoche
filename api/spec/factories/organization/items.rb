@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :item, class: 'Organization::Item' do
     project_version { nil }
     item_group { nil }
-    name { "Garde corps" }
+    sequence(:name) { |n| "Garde corps #{n}" }
     sequence(:position) { |n| n }
     description { "Trés beau garde coprs en galva" }
     quantity { 1 }
