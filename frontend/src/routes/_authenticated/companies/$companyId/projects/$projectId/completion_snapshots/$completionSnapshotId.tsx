@@ -20,9 +20,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const {
-    result: { status },
-  } = Route.useLoaderData();
+  const { result: completionSnapshot } = Route.useLoaderData();
   const routeParams = Route.useParams();
 
   const { t } = useTranslation();
@@ -33,7 +31,7 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold mr-auto">
             {t("pages.companies.completion_snapshot.show.title")}
           </h1>
-          <CompletionSnapshotStatusBadge status={status} />
+          <CompletionSnapshotStatusBadge status={completionSnapshot.status} />
         </div>
       </Layout.Header>
       <Layout.Content>
@@ -41,6 +39,7 @@ function RouteComponent() {
           routeParams={{
             companyId: Number(routeParams.companyId),
             projectId: Number(routeParams.projectId),
+            completionSnapshotId: completionSnapshot.id,
           }}
         />
       </Layout.Content>

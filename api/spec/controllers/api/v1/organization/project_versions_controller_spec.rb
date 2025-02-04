@@ -117,7 +117,7 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       response "200", "show project version details" do
-        schema Organization::ProjectVersionShowResponseDto.to_schema
+        schema Organization::ProjectVersions::ShowDto.to_schema
         run_test!("It return the project version details") {
             parsed_response = JSON.parse(response.body)
             expect(parsed_response.dig("result", "id")).to eq(company_project_version.id)

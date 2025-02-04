@@ -595,7 +595,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            results: components["schemas"]["Organization::CompletionSnapshotDto"][];
+                            results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
                         };
                     };
                 };
@@ -692,7 +692,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
+                            result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
                         };
                     };
                 };
@@ -998,8 +998,10 @@ export interface components {
         };
         "Organization::CompletionSnapshots::CompactDto": {
             id: number;
+            description?: string | null;
             /** @enum {string} */
             status: "draft" | "cancelled" | "invoiced";
+            project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** Format: date-time */
             created_at: string;
         };
@@ -1007,9 +1009,41 @@ export interface components {
             id: number;
             /** @enum {string} */
             status: "draft" | "cancelled" | "invoiced";
+            project_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotItems::ExtendedDto"][];
             /** Format: date-time */
             created_at: string;
+        };
+        "Organization::ProjectVersions::ExtendedDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            retention_guarantee_rate: number;
+            ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+            item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+        };
+        "Organization::Items::ExtendedDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            unit_price_cents: number;
+        };
+        "Organization::ItemGroups::ExtendedDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
+        "Organization::CompletionSnapshots::IndexDto": {
+            results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
+        };
+        "Organization::CompletionSnapshots::ShowDto": {
+            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
         };
         "Organization::CreateCompletionSnapshotItemDto": {
             completion_percentage: string;
@@ -1039,22 +1073,6 @@ export interface components {
             client_id: number;
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
-        };
-        "Organization::ItemGroups::ExtendedDto": {
-            id: number;
-            position: number;
-            name: string;
-            description?: string | null;
-            grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
-        };
-        "Organization::Items::ExtendedDto": {
-            id: number;
-            position: number;
-            name: string;
-            description?: string | null;
-            quantity: number;
-            unit: string;
-            unit_price_cents: number;
         };
         "Organization::ProjectDtoItemDto": {
             id: number;
@@ -1180,15 +1198,6 @@ export interface components {
         };
         "Organization::ProjectVersionShowResponseDto": {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
-        };
-        "Organization::ProjectVersions::ExtendedDto": {
-            id: number;
-            number: number;
-            /** Format: date-time */
-            created_at: string;
-            retention_guarantee_rate: number;
-            ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
-            item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
         };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];

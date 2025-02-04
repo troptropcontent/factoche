@@ -546,7 +546,7 @@ paths:
                   results:
                     type: array
                     items:
-                      "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
+                      "$ref": "#/components/schemas/Organization::CompletionSnapshots::CompactDto"
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
@@ -617,7 +617,7 @@ paths:
                 - result
                 properties:
                   result:
-                    "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
+                    "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         '401':
           description: not authorised
         '404':
@@ -1047,16 +1047,22 @@ components:
       required:
       - id
       - status
+      - project_version
       - created_at
       properties:
         id:
           type: integer
+        description:
+          type: string
+          nullable: true
         status:
           type: string
           enum:
           - draft
           - cancelled
           - invoiced
+        project_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
         created_at:
           type: string
           format: date-time
@@ -1065,6 +1071,7 @@ components:
       required:
       - id
       - status
+      - project_version
       - completion_snapshot_items
       - created_at
       properties:
@@ -1076,6 +1083,8 @@ components:
           - draft
           - cancelled
           - invoiced
+        project_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         completion_snapshot_items:
           type: array
           items:
@@ -1083,6 +1092,95 @@ components:
         created_at:
           type: string
           format: date-time
+    Organization::ProjectVersions::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      - retention_guarantee_rate
+      - ungrouped_items
+      - item_groups
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        retention_guarantee_rate:
+          type: integer
+        ungrouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
+    Organization::Items::ExtendedDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - quantity
+      - unit
+      - unit_price_cents
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_cents:
+          type: integer
+    Organization::ItemGroups::ExtendedDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - grouped_items
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        grouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+    Organization::CompletionSnapshots::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::CompletionSnapshots::CompactDto"
+    Organization::CompletionSnapshots::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::CompletionSnapshots::ExtendedDto"
     Organization::CreateCompletionSnapshotItemDto:
       type: object
       required:
@@ -1170,52 +1268,6 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
-    Organization::ItemGroups::ExtendedDto:
-      type: object
-      required:
-      - id
-      - position
-      - name
-      - grouped_items
-      properties:
-        id:
-          type: integer
-        position:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        grouped_items:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
-    Organization::Items::ExtendedDto:
-      type: object
-      required:
-      - id
-      - position
-      - name
-      - quantity
-      - unit
-      - unit_price_cents
-      properties:
-        id:
-          type: integer
-        position:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        quantity:
-          type: integer
-        unit:
-          type: string
-        unit_price_cents:
-          type: integer
     Organization::ProjectDtoItemDto:
       type: object
       required:
@@ -1579,33 +1631,6 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
-    Organization::ProjectVersions::ExtendedDto:
-      type: object
-      required:
-      - id
-      - number
-      - created_at
-      - retention_guarantee_rate
-      - ungrouped_items
-      - item_groups
-      properties:
-        id:
-          type: integer
-        number:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        retention_guarantee_rate:
-          type: integer
-        ungrouped_items:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
-        item_groups:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
     Organization::ProjectVersions::ShowDto:
       type: object
       required:

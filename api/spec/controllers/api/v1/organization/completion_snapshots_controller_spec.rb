@@ -219,7 +219,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:query) { {} }
 
       response "200", "list completion_snapshot" do
-        schema Organization::CompletionSnapshotIndexResponseDto.to_schema
+        schema Organization::CompletionSnapshots::IndexDto.to_schema
 
         context "when no params are given" do
           run_test! "It returns all completion_snapshots of the companies of wich the user is a member"
