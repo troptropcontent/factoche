@@ -21,7 +21,7 @@ Rails.application.routes.draw do
             resources :completion_snapshots, only: [ :create ]
           end
         end
-        resources :completion_snapshots, only: [ :show, :index ] do
+        resources :completion_snapshots, only: [ :show, :index, :update ] do
           member do
             get :previous
           end

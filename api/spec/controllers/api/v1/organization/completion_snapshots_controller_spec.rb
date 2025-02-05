@@ -1,5 +1,6 @@
 require "rails_helper"
 require_relative "shared_examples/an_authenticated_endpoint"
+require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
 require "swagger_helper"
 
 RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :request do
@@ -14,37 +15,20 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       parameter name: :completion_snapshot, in: :body, schema: Organization::CreateCompletionSnapshotDto.to_schema
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
-      let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client) }
-      let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) do
-        FactoryBot.create(
-          :item_group,
-          project_version: company_project_version,
-          name: "Item Group",
-          grouped_items_attributes: [ {
-            name: "Item",
-            unit: "U",
-            position: 1,
-            unit_price_cents: "1000",
-            project_version: company_project_version,
-            quantity: 2
-          } ]
-        )
-      end
+      include_context 'a company with a project with three item groups'
+
       let(:another_company) { FactoryBot.create(:company) }
       let(:another_client) { FactoryBot.create(:client, company: another_company) }
       let!(:another_company_project) { FactoryBot.create(:project, client: another_client) }
       let!(:member) { FactoryBot.create(:member, user: user, company: company) }
       let(:company_id) { company.id }
-      let(:project_id) { company_project.id }
+      let(:project_id) { project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       let(:completion_snapshot) do
         {
           description: "New version following discussion with the boss",
           completion_snapshot_items: [ {
-            item_id: company_project_version_item_group.grouped_items.first.id,
+            item_id: project_version_first_item_group_item.id,
             completion_percentage: "10"
           } ]
         }
@@ -58,7 +42,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
 
           run_test!("It creates a new completion snapshot with its items and returns it") do
             parsed_response = JSON.parse(response.body)
-            new_snapshot = company_project_version.completion_snapshots.last
+            new_snapshot = project_version.completion_snapshots.last
             expect(parsed_response.dig("result", "id")).to eq(new_snapshot.id)
             expect(Organization::CompletionSnapshot.count).to eq(number_of_completion_snapshot_before + 1)
             expect(Organization::CompletionSnapshotItem.count).to eq(number_of_completion_snapshot_items_before + 1)
@@ -72,10 +56,10 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
             FactoryBot.create(
               "completion_snapshot",
               {
-                project_version: company_project_version,
+                project_version: project_version,
                 description: "New version following discussion with the boss",
                 completion_snapshot_items_attributes: [ {
-                  item_id: company_project_version_item_group.grouped_items.first.id,
+                  item_id: project_version_first_item_group_item.id,
                   completion_percentage: "10"
                 } ]
               }
@@ -189,6 +173,109 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
 
         context "when the snapshot does not exists" do
           let(:id) { 123451234 }
+
+          run_test!
+        end
+      end
+    end
+
+    put "Update completion snapshot" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :id, in: :path, type: :integer
+      parameter name: :payload, in: :body, schema: Organization::CompletionSnapshots::UpdateDto.to_schema
+
+      let(:user) { FactoryBot.create(:user) }
+      include_context 'a company with a project with three item groups'
+      let(:completion_snapshot) do
+        FactoryBot.create(
+          :completion_snapshot,
+          {
+            project_version: project_version,
+            description: "First snapshot",
+            completion_snapshot_items_attributes: [ {
+              item_id: project_version_first_item_group_item.id,
+              completion_percentage: "10"
+            } ]
+          }
+        )
+      end
+      let(:id) { completion_snapshot.id }
+      let(:payload) {
+          {
+            completion_snapshot_items: [ {
+              item_id: project_version_first_item_group_item.id,
+              completion_percentage: "20"
+            } ]
+          }
+      }
+
+      it_behaves_like "an authenticated endpoint"
+
+      response "200", "updates completion snapshot" do
+        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+        before { FactoryBot.create(:member, company:, user:) }
+
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
+
+        run_test!("updates the completion snapshot and returns the updated record") do
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response.dig("result", "completion_snapshot_items", 0, "completion_percentage")).to eq("20.0")
+        end
+      end
+
+      response "422", "unprocessable entity" do
+        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+        before { FactoryBot.create(:member, company:, user:) }
+
+        context "when the completion snapshot is not in draft status" do
+          before do
+            completion_snapshot.update(invoice: FactoryBot.create(:invoice))
+          end
+
+          run_test!("returns a 422 with an explicit message") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("error", "message")).to eq("Cannot update completion snapshot with status 'invoiced'. Only snapshots in 'draft' status can be updated")
+          end
+
+          run_test!("does not update the record") do
+            expect(completion_snapshot.completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("10"))
+          end
+        end
+
+        context "when an item ID does not belong to the project version" do
+          let(:payload) { {
+            completion_snapshot_items: [ {
+              item_id: 99999999,
+              completion_percentage: "20"
+            } ]
+          }}
+
+          run_test!("returns a 422 with an explicit message") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("error", "message")).to eq("The following item IDs do not belong to this completion snapshot project version: 99999999")
+          end
+
+          run_test!("does not update the record") do
+            expect(completion_snapshot.completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("10"))
+          end
+        end
+      end
+
+      response "404", "not found" do
+        context "when the completion snapshot does not exist" do
+          let(:id) { 99999999 }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+          before { FactoryBot.create(:member, company:, user:) }
+
+          run_test!
+        end
+
+        context "when the completion snapshot does not belong to a company of which the user is a member" do
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(FactoryBot.create(:user).id)}" }
 
           run_test!
         end

@@ -8,6 +8,16 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: completion_snapshot }).to_json
   end
 
+  # PUT /api/v1/organization/completion_snapshots/:id
+  def update
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+    dto = Organization::CompletionSnapshots::UpdateDto.new(completion_snapshot_params)
+
+    completion_snapshot = Organization::UpdateCompletionSnapshot.call(dto, snapshot)
+
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
+  end
+
   # GET  /api/v1/organization/completion_snapshots/:id
   def show
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
@@ -47,7 +57,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
   private
 
   def completion_snapshot_params
-    params.require(:completion_snapshot).permit(:description, completion_snapshot_items: [ :completion_percentage, :item_id ])
+    params.require(:completion_snapshot).permit(:description, completion_snapshot_items: [ :completion_percentage, :item_id, :id ])
   end
 
   def filter_params
