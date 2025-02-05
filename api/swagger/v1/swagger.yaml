@@ -546,6 +546,27 @@ paths:
                   type: array
                   items:
                     "$ref": "#/components/schemas/Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem"
+    delete:
+      summary: Delete completion snapshot
+      tags:
+      - Completion snapshot
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: no content
+        '403':
+          description: forbiden
+        '422':
+          description: unprocessable entity
+        '404':
+          description: not found
   "/api/v1/organization/completion_snapshots/{id}/previous":
     parameters:
     - name: id
