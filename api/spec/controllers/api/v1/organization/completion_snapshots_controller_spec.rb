@@ -281,6 +281,80 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
         end
       end
     end
+
+    delete "Delete completion snapshot" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :id, in: :path, type: :integer
+
+      let(:user) { FactoryBot.create(:user) }
+      include_context 'a company with a project with three item groups'
+      let(:completion_snapshot) do
+        FactoryBot.create(
+          :completion_snapshot,
+          {
+            project_version: project_version,
+            description: "First snapshot",
+            completion_snapshot_items_attributes: [ {
+              item_id: project_version_first_item_group_item.id,
+              completion_percentage: "10"
+            } ]
+          }
+        )
+      end
+      let(:id) { completion_snapshot.id }
+
+      response "204", "no content" do
+        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+        before { FactoryBot.create(:member, company:, user:) }
+
+        run_test!("it destroys the record from the database") {
+          expect { Organization::CompletionSnapshot.find(id) }.to raise_error(ActiveRecord::RecordNotFound)
+        }
+      end
+
+      it_behaves_like "an authenticated endpoint"
+
+      response "422", "unprocessable entity" do
+        context "when the completion snapshot is not draft" do
+          before { FactoryBot.create(:member, company:, user:) }
+
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+          let(:completion_snapshot) do
+            FactoryBot.create(
+              :completion_snapshot,
+              {
+                project_version: project_version,
+                description: "First snapshot",
+                invoice: FactoryBot.create(:invoice)
+              }
+            )
+          end
+
+          run_test!("it returns a 422 with an explicit message") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("error", "message")).to eq("Cannot delete completion snapshot with status 'invoiced'. Only snapshots in 'draft' status can be deleted")
+          end
+        end
+      end
+
+      response "404", "not found" do
+        context "when the completion snapshot does not exist" do
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+          let(:id) { 999999999999 }
+
+          run_test!
+        end
+
+        context "when the completion snapshot does not belong to a company the user is a member of" do
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(FactoryBot.create(:user).id)}" }
+
+          run_test!
+        end
+      end
+    end
   end
 
   path '/api/v1/organization/completion_snapshots/{id}/previous' do

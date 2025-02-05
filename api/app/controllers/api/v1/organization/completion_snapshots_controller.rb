@@ -18,6 +18,15 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
   end
 
+  # DELETE /api/v1/organization/completion_snapshots/:id
+  def destroy
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+
+    Organization::DestroyCompletionSnapshot.call(snapshot)
+
+    head :no_content
+  end
+
   # GET  /api/v1/organization/completion_snapshots/:id
   def show
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
