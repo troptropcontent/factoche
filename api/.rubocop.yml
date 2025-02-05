@@ -9,7 +9,8 @@ RSpec:
   Enabled: true
 
 RSpec/MultipleMemoizedHelpers:
-  Max: 20
+  Exclude:
+    - "spec/controllers/**/*"
 
 RSpec/VariableName:
   Exclude:
