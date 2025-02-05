@@ -114,5 +114,18 @@ RSpec.describe Organization::UpdateCompletionSnapshot do
         end
       end
     end
+
+    it "returns the updated completion_snapshot" do
+      completion_snapshot = FactoryBot.create(:completion_snapshot, project_version: project_version, completion_snapshot_items_attributes: [ { item_id: project_version_ungrouped_item.id, completion_percentage: "10" } ])
+      update_dto = Organization::CompletionSnapshots::UpdateDto.new({
+        completion_snapshot_items: [
+          {
+            item_id: project_version_ungrouped_item.id,
+            completion_percentage: "40"
+          }
+        ]
+      })
+      expect(described_class.call(update_dto, completion_snapshot).completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("40"))
+    end
   end
 end

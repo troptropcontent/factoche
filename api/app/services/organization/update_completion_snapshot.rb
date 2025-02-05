@@ -41,8 +41,10 @@ module Organization
           completion_snapshot_items_attributes: update_dto.completion_snapshot_items.map { |item| {
             completion_percentage: item.completion_percentage,
             item_id: item.item_id
-          }.merge(item.id ? { id: item.id }: {}) }
+          } }
         })
+
+        completion_snapshot
       end
     end
   end
