@@ -1,6 +1,6 @@
 RSpec.shared_examples "an accounting document" do |parameter|
   describe 'associations' do
-    it { is_expected.to belong_to(:completion_snapshot).class_name('Organization::CompletionSnapshot') }
+    it { is_expected.to have_one(:completion_snapshot).class_name('Organization::CompletionSnapshot') }
     it { is_expected.to have_one(:pdf_attachment) }
     it { is_expected.to have_one(:xml_attachment) }
   end
