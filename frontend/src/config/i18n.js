@@ -63,6 +63,7 @@ i18n
                                     "new_completion_percentage_label": "Nouvel avancement",
                                     "submit_button_label": "Enregistrer",
                                     "success_toast_title": "Nouvelle situation de travaux enregistrée",
+                                    "update_success_toast_message": "Situation de travaux modifiée"
                                 },
                                 "show": {
                                     "title": "Situation de travaux",

@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { buildInitialValues } from "./completion-snapshot-form.utils";
 import { ItemRow } from "./item-row";
 import { TotalInfo } from "./total-info";
@@ -21,6 +20,8 @@ import { Api } from "@/lib/openapi-fetch-query-client";
 import { completionSnapshotFormSchema } from "./completion-snapshot-form.schemas";
 import { useNavigate } from "@tanstack/react-router";
 import { useToast } from "@/hooks/use-toast";
+import { Check } from "lucide-react";
+import { FormSubmitButton } from "./private/form-submit-button";
 
 type CompletionSnapshotFormType = {
   companyId: number;
@@ -46,6 +47,14 @@ type CompletionSnapshotFormType = {
       completion_percentage: string;
     }[];
   };
+  initialValues?: {
+    description?: string | null;
+    completion_snapshot_items: {
+      item_id: number;
+      completion_percentage: string;
+    }[];
+  };
+  completionSnapshotId?: number;
 };
 
 const CompletionSnapshotForm = ({
@@ -53,25 +62,39 @@ const CompletionSnapshotForm = ({
   projectId,
   itemGroups,
   previousCompletionSnapshot,
+  initialValues,
+  completionSnapshotId,
 }: CompletionSnapshotFormType) => {
   const { t } = useTranslation();
   const { mutate: createCompletionSnapshotMutation } = Api.useMutation(
     "post",
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/completion_snapshots"
   );
+  const { mutate: updateCompletionSnapshotMutation } = Api.useMutation(
+    "put",
+    "/api/v1/organization/completion_snapshots/{id}"
+  );
+
   const form = useForm<z.infer<typeof completionSnapshotFormSchema>>({
     resolver: zodResolver(completionSnapshotFormSchema),
-    defaultValues: buildInitialValues({
-      itemGroups,
-      previousCompletionSnapshot,
-    }),
+    defaultValues: initialValues
+      ? {
+          description: initialValues.description || "",
+          completion_snapshot_items: initialValues.completion_snapshot_items,
+        }
+      : buildInitialValues({
+          itemGroups,
+          previousCompletionSnapshot,
+        }),
   });
 
   const navigate = useNavigate();
 
   const { toast } = useToast();
 
-  const onSubmit = (data: z.infer<typeof completionSnapshotFormSchema>) => {
+  const triggerCreateMutationAndRedirectToProjectShow = (
+    data: z.infer<typeof completionSnapshotFormSchema>
+  ) => {
     createCompletionSnapshotMutation(
       {
         params: { path: { company_id: companyId, project_id: projectId } },
@@ -101,6 +124,58 @@ const CompletionSnapshotForm = ({
         },
       }
     );
+  };
+
+  const triggerUpdateMutationAndRedirectToCompletionSnapshotShow = (
+    data: z.infer<typeof completionSnapshotFormSchema>,
+    completionSnapshotId: number
+  ) => {
+    updateCompletionSnapshotMutation(
+      {
+        params: { path: { id: completionSnapshotId } },
+        body: data,
+      },
+      {
+        onError: () => {
+          toast({
+            variant: "destructive",
+            title: t("common.toast.error_title"),
+            description: t("common.toast.error_description"),
+          });
+        },
+        onSuccess: () => {
+          toast({
+            description: (
+              <span className="flex gap-2">
+                <Check className="text-primary" />
+                {t(
+                  "pages.companies.completion_snapshot.form.update_success_toast_message"
+                )}
+              </span>
+            ),
+          });
+          navigate({
+            to: "/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId",
+            params: {
+              companyId: companyId.toString(),
+              projectId: projectId.toString(),
+              completionSnapshotId: completionSnapshotId.toString(),
+            },
+          });
+        },
+      }
+    );
+  };
+
+  const onSubmit = (data: z.infer<typeof completionSnapshotFormSchema>) => {
+    if (completionSnapshotId == undefined) {
+      triggerCreateMutationAndRedirectToProjectShow(data);
+    } else {
+      triggerUpdateMutationAndRedirectToCompletionSnapshotShow(
+        data,
+        completionSnapshotId
+      );
+    }
   };
 
   let itemsInputs: number[] = [];
@@ -167,9 +242,7 @@ const CompletionSnapshotForm = ({
             itemGroups={itemGroups}
             previousCompletionSnapshot={previousCompletionSnapshot}
           />
-          <Button type="submit">
-            {t("pages.companies.completion_snapshot.form.submit_button_label")}
-          </Button>
+          <FormSubmitButton />
         </div>
       </form>
     </Form>
