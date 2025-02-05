@@ -1,5 +1,4 @@
 class Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem < OpenApiDto
-  field "id", :integer, required: false
   field "completion_percentage", :string
   field "item_id", :integer
 end
