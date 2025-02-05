@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,13 +43,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
   end
 
   create_table "organization_accounting_documents", force: :cascade do |t|
-    t.bigint "completion_snapshot_id", null: false
     t.string "type", null: false
     t.integer "total_amount_cents", null: false
     t.datetime "date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["completion_snapshot_id"], name: "idx_on_completion_snapshot_id_672fa29972"
   end
 
   create_table "organization_clients", force: :cascade do |t|
@@ -168,7 +166,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "organization_accounting_documents", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
