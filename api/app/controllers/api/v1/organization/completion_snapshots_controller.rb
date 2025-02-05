@@ -8,11 +8,47 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: completion_snapshot }).to_json
   end
 
+  # PUT /api/v1/organization/completion_snapshots/:id
+  def update
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+    dto = Organization::CompletionSnapshots::UpdateDto.new(completion_snapshot_params)
+
+    completion_snapshot = Organization::UpdateCompletionSnapshot.call(dto, snapshot)
+
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
+  end
+
+  # DELETE /api/v1/organization/completion_snapshots/:id
+  def destroy
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+
+    Organization::DestroyCompletionSnapshot.call(snapshot)
+
+    head :no_content
+  end
+
   # GET  /api/v1/organization/completion_snapshots/:id
   def show
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
 
     render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: snapshot }).to_json
+  end
+
+  # GET  /api/v1/organization/completion_snapshots/:id/previous
+  def previous
+    scope = policy_scope(Organization::CompletionSnapshot)
+    base_snapshot = scope.find(params[:id])
+    previous_snapshot = scope
+      .where(
+        "organization_projects.id = ? AND organization_completion_snapshots.created_at < ?",
+        base_snapshot.project_version.project_id,
+        base_snapshot.created_at
+      )
+      .order(created_at: :desc)
+      .limit(1)
+      .first
+
+    render json: Organization::CompletionSnapshots::PreviousDto.new({ result: previous_snapshot }).to_json
   end
 
   # GET  /api/v1/organization/completion_snapshots
@@ -30,7 +66,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
   private
 
   def completion_snapshot_params
-    params.require(:completion_snapshot).permit(:description, completion_snapshot_items: [ :completion_percentage, :item_id ])
+    params.require(:completion_snapshot).permit(:description, completion_snapshot_items: [ :completion_percentage, :item_id, :id ])
   end
 
   def filter_params

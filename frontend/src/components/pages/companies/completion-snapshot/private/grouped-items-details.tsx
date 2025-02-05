@@ -9,6 +9,7 @@ import { Item, ItemGroup } from "../../project-versions/shared/types";
 import { CompletionSnapshotItem } from "../shared/types";
 import {
   Table,
+  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -85,7 +86,7 @@ const GroupedItemsDetails = ({
   return (
     <div className="space-y-6">
       {itemGroups.map((itemGroup) => (
-        <Card>
+        <Card key={itemGroup.id}>
           <CardHeader>
             <CardTitle>{itemGroup.name}</CardTitle>
             {itemGroup.description && (
@@ -93,42 +94,45 @@ const GroupedItemsDetails = ({
             )}
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead>
+                  <TableHead className="w-[30%]">
                     {t(
                       "pages.companies.completion_snapshot.grouped_items_details.designation"
                     )}
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[15%]">
                     {t(
                       "pages.companies.completion_snapshot.grouped_items_details.total_amount"
                     )}
                   </TableHead>
-                  <TableHead colSpan={2}>
+                  <TableHead colSpan={2} className="w-[20%]">
                     {t(
                       "pages.companies.completion_snapshot.grouped_items_details.previous_invoiced_label"
                     )}
                   </TableHead>
-                  <TableHead colSpan={2}>
+                  <TableHead colSpan={2} className="w-[20%]">
                     {t(
                       "pages.companies.completion_snapshot.grouped_items_details.new_completion_snapshot_label"
                     )}
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[15%]">
                     {t(
                       "pages.companies.completion_snapshot.grouped_items_details.new_invoiced_label"
                     )}
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              {itemGroup.grouped_items.map((grouped_item) => (
-                <ItemRow
-                  groupedItem={grouped_item}
-                  completionSnapshotItems={completionSnapshotItems}
-                />
-              ))}
+              <TableBody>
+                {itemGroup.grouped_items.map((grouped_item) => (
+                  <ItemRow
+                    key={grouped_item.id}
+                    groupedItem={grouped_item}
+                    completionSnapshotItems={completionSnapshotItems}
+                  />
+                ))}
+              </TableBody>
             </Table>
           </CardContent>
         </Card>

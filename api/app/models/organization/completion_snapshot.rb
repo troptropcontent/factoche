@@ -5,7 +5,7 @@ class Organization::CompletionSnapshot < ApplicationRecord
   belongs_to :invoice, class_name: "Organization::Invoice", optional: true
   belongs_to :credit_note, class_name: "Organization::CreditNote", optional: true
 
-  scope :draft, -> { where("invoice_id IS NULL") }
+  scope :draft, -> { where("invoice_id IS NULL AND credit_note_id IS NULL") }
   scope :invoiced, -> { where("invoice_id IS NOT NULL AND credit_note_id IS NULL") }
   scope :cancelled, -> { where("invoice_id IS NOT NULL AND credit_note_id IS NOT NULL") }
 

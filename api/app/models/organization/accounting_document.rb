@@ -1,5 +1,4 @@
 class Organization::AccountingDocument < ApplicationRecord
-  belongs_to :completion_snapshot, class_name: "Organization::CompletionSnapshot"
   has_one_attached :pdf
   has_one_attached :xml
 

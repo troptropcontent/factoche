@@ -120,8 +120,8 @@ const CompletionSnapshotSummary = ({
                   <TableCell>
                     {t("common.number_in_currency", {
                       amount:
-                        (projectVersionTotalCents -
-                          completionSnapshotTotalCents) /
+                        (completionSnapshotTotalCents -
+                          previousCompletionSnapshotTotalCents) /
                         100,
                     })}
                   </TableCell>
