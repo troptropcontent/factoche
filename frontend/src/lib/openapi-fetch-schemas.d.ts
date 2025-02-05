@@ -554,6 +554,107 @@ export interface paths {
                 };
             };
         };
+        /** Update completion snapshot */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        description?: string | null;
+                        completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description updates completion snapshot */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/completion_snapshots/{id}/previous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        /** Show previous completion snapshot details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show previous completion_snapshot */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result?: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -1042,8 +1143,19 @@ export interface components {
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
         };
+        "Organization::CompletionSnapshots::PreviousDto": {
+            result?: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+        };
         "Organization::CompletionSnapshots::ShowDto": {
             result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+        };
+        "Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem": {
+            completion_percentage: string;
+            item_id: number;
+        };
+        "Organization::CompletionSnapshots::UpdateDto": {
+            description?: string | null;
+            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem"][];
         };
         "Organization::CreateCompletionSnapshotItemDto": {
             completion_percentage: string;
