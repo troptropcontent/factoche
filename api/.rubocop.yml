@@ -31,3 +31,7 @@ RSpec/ExampleLength:
 
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/ScatteredSetup:
+  Exclude:
+    - "spec/controllers/**/*"
