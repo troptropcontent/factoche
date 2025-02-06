@@ -24,6 +24,7 @@ Rails.application.routes.draw do
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
           member do
             get :previous
+            get :invoice, defaults: { format: :html }
           end
         end
         resources :clients, only: [ :show ]
