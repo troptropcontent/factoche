@@ -3,13 +3,23 @@ require 'rails_helper'
 RSpec.describe Organization::Company, type: :model do
   describe 'validations' do
     describe 'phone number' do
-      subject { described_class.new }
+      subject(:company) { described_class.new }
 
       it { is_expected.to validate_presence_of(:phone) } #
       it { is_expected.to allow_value('+33607053868').for(:phone) }
       it { is_expected.to allow_value('0607053868').for(:phone) }
       it { is_expected.not_to allow_value('not-a-phone-number').for(:phone) }
       it { is_expected.not_to allow_value('123').for(:phone) }
+
+      it {
+        expect(company).to define_enum_for(:legal_form).with_values({
+          sasu: "sasu",
+          sas: "sas",
+          eurl: "eurl",
+          sa: "sa",
+          auto_entrepreneur: "auto_entrepreneur"
+        }).backed_by_column_of_type(:enum)
+    }
     end
 
     describe 'email' do
