@@ -55,9 +55,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_10_150605) do
     t.string "number", null: false
     t.datetime "issue_date", null: false
     t.datetime "delivery_date", null: false
-    t.integer "amount_cents", null: false
-    t.integer "retention_guarantee_cents", null: false
-    t.integer "tax_cents", null: false
+    t.decimal "total_amount_excl_tax", precision: 15, scale: 2, null: false
+    t.decimal "total_amount_incl_tax", precision: 15, scale: 2, null: false
+    t.decimal "tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
     t.jsonb "data", default: {}, null: false
     t.index ["data"], name: "index_organization_accounting_documents_on_data", using: :gin
   end
