@@ -9,5 +9,7 @@ rspec:
 
 frontend:
 	(cd ../frontend && pnpm run dev)
-tailwind:
+tailwindcss:
 	pnpm exec tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css --watch
+guard:
+	bundle exec guard
