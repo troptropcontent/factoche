@@ -1,0 +1,24 @@
+.header {
+  position: running(headerRunning);
+}
+
+.footer {
+  position: running(footerRunning);
+}
+
+@page {
+  size: A4;
+  margin: 20mm 15mm;
+
+  @top-center {
+    content: element(headerRunning);
+  }
+
+  @bottom-center {
+    content: element(footerRunning);
+  }
+
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+  }
+}
