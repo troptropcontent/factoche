@@ -32,6 +32,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
   # GET /api/v1/organization/completion_snapshots/:id/invoice
   def invoice
     @snapshot = Organization::CompletionSnapshot.find(params[:id])
+    @item_groups = @snapshot.project_version.item_groups
 
     render template: "organization/completion_snapshots/invoice", layout: "print"
   end
