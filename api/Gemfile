@@ -77,3 +77,8 @@ gem "pundit", "~> 2.4"
 gem "byebug", "~> 11.1"
 
 gem "propshaft"
+
+#  Sorbet for typing
+gem "sorbet", group: :development
+gem "sorbet-runtime"
+gem "tapioca", require: false, group: [ :development, :test ]

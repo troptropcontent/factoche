@@ -36,7 +36,8 @@
 				"bradlc.vscode-tailwindcss",
 				"nidu.copy-json-path",
 				"rubocop.vscode-rubocop",
-				"vortizhe.simple-ruby-erb"
+				"vortizhe.simple-ruby-erb",
+				"sorbet.sorbet-vscode-extension"
 			]
 		}
 	},
