@@ -21,6 +21,8 @@ RSpec.describe Organization::Project, type: :model do
     it { is_expected.to belong_to(:client) }
     it { is_expected.to have_many(:versions) }
     it { is_expected.to have_one(:last_version) }
+    it { is_expected.to have_many(:invoices) }
+    it { is_expected.to have_many(:credit_notes) }
   end
 
   describe 'nested attributes' do
