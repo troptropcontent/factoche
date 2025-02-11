@@ -460,6 +460,34 @@ class Organization::Project
     sig { params(args: T.untyped, blk: T.untyped).returns(::Organization::ProjectVersion) }
     def create_last_version!(*args, &blk); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def credit_note_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def credit_note_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Organization::Project` class because it declared `has_many :credit_notes, through: :completion_snapshots`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Organization::CreditNote::PrivateCollectionProxy) }
+    def credit_notes; end
+
+    sig { params(value: T::Enumerable[::Organization::CreditNote]).void }
+    def credit_notes=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def invoice_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def invoice_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Organization::Project` class because it declared `has_many :invoices, through: :completion_snapshots`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Organization::Invoice::PrivateCollectionProxy) }
+    def invoices; end
+
+    sig { params(value: T::Enumerable[::Organization::Invoice]).void }
+    def invoices=(value); end
+
     sig { returns(T.nilable(::Organization::ProjectVersion)) }
     def last_version; end
 
