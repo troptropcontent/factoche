@@ -1,8 +1,137 @@
-<header class="header">Invoice Header - Company Name</header>
-<footer class="footer">Footer</footer>
+<header class="header flex flex-col text-xs">
+  <div class="flex justify-between">
+    <%= image_tag("images/logo_cheyere.png") %>
+    <table>
+      <tbody>
+        <tr>
+          <th colspan="2" class="px-2 bg-gray-300 border-1 rounded rounded-b-none">Facture de situation</th>
+        </tr>
+        <tr>
+          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Numéro</th>
+          <td class="px-2 text-right border-1 border-t-0 border-l-0">INV-2025-001</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Date de la facture</th>
+          <td class="px-2 text-right border-1 border-t-0 border-l-0">2025-02-07</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Date de la prestation</th>
+          <td class="px-2 text-right border-1 border-t-0 border-l-0">2025-03-07</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Délai de paiement</th>
+          <td class="px-2 text-right border-1 border-t-0 border-l-0">Net 30 Days</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 bg-gray-300 border-1 border-t-0 rounded-bl">Méthode de paiement</th>
+          <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">Bank Transfer</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flex justify-between">
+  </div>
+</header>
+
+<footer class="footer text-xs ml-[-113.336px]">
+  <p>SAS au capital de 62700 euros - RCS SEDAN 12345678 - NºTVA FR 57 308 050 384</p>
+</footer>
+
+<main class="text-xs">
+  <section class="mb-4">
+    <table class="mb-4 w-full">
+      <tbody>
+        <tr>
+          <th colspan="2" class="px-2 py-0.5 bg-gray-300 rounded rounded-b-none border-1">Vendeur</th>
+        </tr>
+        <tr>
+          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">Nom</th>
+          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">Cheyere SAS</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">Addresse</th>
+          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">15 rue de l'équerre, 51100, Reims</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">Téléphone</th>
+          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">+33 6 07 05 38 68</td>
+        </tr>
+        <tr>
+          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0 rounded-bl">Siret</th>
+          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0 rounded-br">308 050 384 00012</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="flex justify-between gap-4 mb-4">
+      <table>
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 py-1 bg-gray-300 border-1 rounded rounded-b-none">Addresse de facturation</th>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b"><strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX</td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Addresse de livraison</th>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b"><strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <table class="w-full">
+        <tbody>
+            <tr>
+            <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Contexte</th>
+            </tr>
+            <tr>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+                <strong>Projet : </strong>Rénovation energetique<br>
+                <strong>Version du projet : </strong>2<br>
+                <strong>Total HT du projet : </strong> 123 000 €<br>
+                <strong>Total HT du projet précédement facturé : </strong> 23 000 €<br>
+                <strong>Total HT du projet restant à facturer : </strong> 100 000 €<br>
+            </td>
+            </tr>
+        </tbody>
+    </table>
+  </section>
   
-<main>
-    <% 15.times do |i| %>
-        <div class="page break-inside-avoid h-48 bg-amber-400 mb-2 last:mb-0 w-full">ITEM <%= i + 1 %></div>
-    <% end %>
+  <% @item_groups.map do |item_group| %>
+    <div class="break-inside-avoid last:mb-0 w-full p-2 border-1 rounded mb-4">
+        <p class="mb-2"><strong><%= item_group.name %></strong></p>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" class="align-top text-left">Designation</th>
+              <th scope="col" class="align-top">Montant total</th>
+              <th scope="col" colspan="2">Avancements précédents<br>(A)</th>
+              <th scope="col" colspan="2">Nouvel avancement<br>(B)</th>
+              <th scope="col">Nouvelle facture<br>(B - A)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% item_group.grouped_items.map do |item| %>
+                <tr>
+                  <th scope="row" class="text-left"><%= item.name %><br><%= item.quantity%> <%= item.unit%> @ <%= number_with_precision(item.unit_price_cents / 100, precision: 2, delimiter: " ", separator: ".") %> €</th>
+                  <td><%= number_with_precision(item.unit_price_cents * item.quantity / 100, precision: 2, delimiter: " ", separator: ".") %> €</td>
+                  <td>29</td>
+                </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  <% end %>
+  
+  <section class="break-before-page">
+    <h1 class="text-center text-xl font-bold">Condition generales de ventes</h1>
+    <p>Le vendeur se réserve la propriété des marchandises vendues jusqu'au complet paiement du prix, conformément à la Loi N° 80-335 du 12 mai 1980</p>
+    <p>Délai de réglement selon loi L.ME, Pénalités de retard en cas de palement après échéance équivalentes à 3 fois le taux d'intérêt légal, indemnite forfaitaire pour frais de recouvrement de 40€. Pas d'ecomple en cas de paiement anticipé</p>
+  </section>
 </main>
+ 
