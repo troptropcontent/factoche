@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_10_150605) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_11_164636) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,7 +129,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_10_150605) do
 
   create_table "organization_item_groups", force: :cascade do |t|
     t.bigint "project_version_id", null: false
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position", null: false

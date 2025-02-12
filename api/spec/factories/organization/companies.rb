@@ -7,5 +7,9 @@ FactoryBot.define do
     address_city { "Biarritz" }
     address_street { "15 rue des mouettes" }
     address_zipcode { "64200" }
+    rcs_city { "Biarritz" }
+    rcs_number { "1234556" }
+    vat_number { "123456" }
+    capital_amount_cents { 1000000 }
   end
 end

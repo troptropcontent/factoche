@@ -64,5 +64,6 @@ RSpec.describe Organization::Company, type: :model do
     it { is_expected.to have_many(:members).dependent(:destroy) }
     it { is_expected.to have_many(:users).through(:members) }
     it { is_expected.to have_many(:clients).dependent(:destroy) }
+    it { is_expected.to have_one(:config).dependent(:destroy) }
   end
 end
