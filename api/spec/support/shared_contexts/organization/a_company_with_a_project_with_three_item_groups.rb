@@ -1,6 +1,9 @@
 # rubocop:disable RSpec/ContextWording
+# rubocop:disable RSpec/MultipleMemoizedHelpers
+# rubocop:disable RSpec/LetSetup
 RSpec.shared_context 'a company with a project with three item groups' do
   let(:company) { FactoryBot.create(:company) }
+  let!(:company_config) { FactoryBot.create(:company_config, company: company) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:project, client: client) }
   let(:project_version) { FactoryBot.create(:project_version, project: project) }
