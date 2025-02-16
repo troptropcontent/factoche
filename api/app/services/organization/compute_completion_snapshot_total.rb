@@ -9,10 +9,7 @@ module Organization
       private
 
       def compute_total(project_version_items, completion_snapshot_items)
-        indexed_snapshot_items = T.let(
-          completion_snapshot_items.index_by(&:item_id),
-          T::Hash[Integer, Organization::CompletionSnapshotItem]
-        )
+        indexed_snapshot_items = completion_snapshot_items.index_by(&:item_id)
 
         project_version_items.reduce(BigDecimal("0")) do |memo, item|
           completion_percentage = indexed_snapshot_items[item.id]&.completion_percentage || BigDecimal("0")
