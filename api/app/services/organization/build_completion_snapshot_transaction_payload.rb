@@ -35,6 +35,12 @@ module Organization
     end
 
     class << self
+      # This service builds a transaction payload for a completion snapshot by:
+      # - Computing the total amount excluding tax based on item completion percentages
+      # - Calculating tax and retention guarantee amounts
+      # - Assembling item and item group details with completion percentages
+      # - Tracking previously invoiced amounts per item
+      # Used to generate invoices based on project completion progress
       def call(completion_snapshot)
         payload = Payload.new
         payload.items = build_items_payload(completion_snapshot)
