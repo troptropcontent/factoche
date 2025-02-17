@@ -56,10 +56,6 @@ module Organization
       private
 
       def build_items_payload(new_completion_snapshot)
-        previous_snapshot = find_previous_snapshot(new_completion_snapshot)
-        previous_items = previous_snapshot ? indexed_snapshot_items(previous_snapshot) : {}
-        new_items = indexed_snapshot_items(new_completion_snapshot)
-
         new_completion_snapshot.project_version.items.map do |item|
           build_item_payload(
             item,
