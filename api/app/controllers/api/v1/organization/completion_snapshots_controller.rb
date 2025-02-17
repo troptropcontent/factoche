@@ -1,6 +1,4 @@
 class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Controller
-  include ActionView::Layouts
-  skip_before_action :authenticate_user, only: [ :invoice ]
   before_action(only: :create) { load_and_authorise_resource(:project, class_name: "Organization::Project") }
   # POST /api/v1/organization/companies/:company_id/projects/:project_id/completion_snapshots
   def create
@@ -27,14 +25,6 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     Organization::DestroyCompletionSnapshot.call(snapshot)
 
     head :no_content
-  end
-
-  # GET /api/v1/organization/completion_snapshots/:id/invoice
-  def invoice
-    @snapshot = Organization::CompletionSnapshot.find(params[:id])
-    @item_groups = @snapshot.project_version.item_groups
-
-    render template: "organization/completion_snapshots/invoice", layout: "print"
   end
 
   # GET  /api/v1/organization/completion_snapshots/:id
