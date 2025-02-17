@@ -6,6 +6,7 @@ module Error
     def self.included(clazz)
       clazz.class_eval do
         rescue_from StandardError do |e|
+          request.format = :json
           render json: {
             error: {
               status: :unexpected,
@@ -17,6 +18,7 @@ module Error
         end
 
         rescue_from ApplicationError do |e|
+          request.format = :json
           render json: {
             error: {
               status: e.class.status,
@@ -28,6 +30,7 @@ module Error
         end
 
         rescue_from Pundit::NotAuthorizedError do |e|
+          request.format = :json
           render json: {
             error: {
               status: Error::ForbiddenError.status,
@@ -39,6 +42,7 @@ module Error
         end
 
         rescue_from ActiveRecord::RecordNotFound do |e|
+          request.format = :json
           render json: {
             error: {
               status: Error::NotFoundError.status,
@@ -50,6 +54,7 @@ module Error
         end
 
         rescue_from ActiveRecord::RecordInvalid do |e|
+          request.format = :json
           render json: {
             error: {
               status: UnprocessableEntityError.status,
