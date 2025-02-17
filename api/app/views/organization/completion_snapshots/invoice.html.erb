@@ -29,8 +29,7 @@
       </tbody>
     </table>
   </div>
-  <div class="flex justify-between">
-  </div>
+  <div class="flex justify-between"></div>
 </header>
 
 <footer class="footer text-xs ml-[-113.336px]">
@@ -62,6 +61,7 @@
         </tr>
       </tbody>
     </table>
+
     <div class="flex justify-between gap-4 mb-4">
       <table>
         <tbody>
@@ -69,7 +69,10 @@
             <th colspan="2" class="px-2 py-1 bg-gray-300 border-1 rounded rounded-b-none">Addresse de facturation</th>
           </tr>
           <tr>
-            <td class="px-2 py-1 border-1 border-t-0 rounded-b"><strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX</td>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+              <strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>
+              26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX
+            </td>
           </tr>
         </tbody>
       </table>
@@ -79,59 +82,76 @@
             <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Addresse de livraison</th>
           </tr>
           <tr>
-            <td class="px-2 py-1 border-1 border-t-0 rounded-b"><strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX</td>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+              <strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>
+              26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+
     <table class="w-full">
-        <tbody>
-            <tr>
-            <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Contexte</th>
-            </tr>
-            <tr>
-            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
-                <strong>Projet : </strong>Rénovation energetique<br>
-                <strong>Version du projet : </strong>2<br>
-                <strong>Total HT du projet : </strong> 123 000 €<br>
-                <strong>Total HT du projet précédement facturé : </strong> 23 000 €<br>
-                <strong>Total HT du projet restant à facturer : </strong> 100 000 €<br>
-            </td>
-            </tr>
-        </tbody>
+      <tbody>
+        <tr>
+          <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Contexte</th>
+        </tr>
+        <tr>
+          <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+            <strong>Projet : </strong>Rénovation energetique<br>
+            <strong>Version du projet : </strong>2<br>
+            <strong>Total HT du projet : </strong>123 000 €<br>
+            <strong>Total HT du projet précédement facturé : </strong>23 000 €<br>
+            <strong>Total HT du projet restant à facturer : </strong>100 000 €<br>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </section>
-  
-  <% @item_groups.map do |item_group| %>
+
+  <% @invoice.payload.dig("transaction", "item_groups").map do |item_group| %>
+    <% group_total = BigDecimal("0") %>
     <div class="break-inside-avoid last:mb-0 w-full p-2 border-1 rounded mb-4">
-        <p class="mb-2"><strong><%= item_group.name %></strong></p>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col" class="align-top text-left">Designation</th>
-              <th scope="col" class="align-top">Montant total</th>
-              <th scope="col" colspan="2">Avancements précédents<br>(A)</th>
-              <th scope="col" colspan="2">Nouvel avancement<br>(B)</th>
-              <th scope="col">Nouvelle facture<br>(B - A)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% item_group.grouped_items.map do |item| %>
-                <tr>
-                  <th scope="row" class="text-left"><%= item.name %><br><%= item.quantity%> <%= item.unit%> @ <%= number_with_precision(item.unit_price_cents / 100, precision: 2, delimiter: " ", separator: ".") %> €</th>
-                  <td><%= number_with_precision(item.unit_price_cents * item.quantity / 100, precision: 2, delimiter: " ", separator: ".") %> €</td>
-                  <td>29</td>
-                </tr>
+      <p class="mb-2"><strong><%= item_group["name"] %></strong></p>
+      <hr class="mb-2">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" class="align-top text-left w-[30%]">Designation</th>
+            <th scope="col" class="align-top text-center w-[12%]">Montant total</th>
+            <th scope="col" colspan="2" class="text-center w-[20%]">Avancements précédents<br>(A)</th>
+            <th scope="col" colspan="2" class="text-center w-[20%]">Nouvel avancement<br>(B)</th>
+            <th scope="col" class="text-right w-[18%]">Nouvelle facture<br>(B - A)</th>
+          </tr>
+        </thead>
+        <tbody >
+          <% @invoice.payload.dig("transaction", "items").filter_map do |item| %>
+            <% if item["item_group_id"] == item_group["id"] %>
+              <% group_total +=  BigDecimal(item["completion_invoice_amount"])%>
+              <tr>
+                <th scope="row" class="text-left py-2">
+                  <%= item["name"] %><br>
+                  <p class="text-[calc(var(--text-xs)*0.80)] text-gray-400"><%= item["quantity"] %> <%= item["unit"] %> @ <%= number_with_precision(item["unit_price_amount"], precision: 2, delimiter: " ", separator: ".") %> €</p>
+                </th>
+                <td class="text-center"><%= number_with_precision(item["total_amount"], precision: 2, delimiter: " ", separator: ".") %> €</td>
+                <td class="text-center"><%= number_with_precision(item["previously_invoiced_amount"], precision: 2, delimiter: " ", separator: ".") %> €</td>
+                <td><%= number_to_percentage(BigDecimal(item["previously_invoiced_amount"]) / BigDecimal(item["total_amount"]) * 100, precision: 2) %></td>
+                <td class="text-center"><%= number_with_precision(BigDecimal(item["completion_amount"]), precision: 2, delimiter: " ", separator: ".") %> €</td>
+                <td class="text-center"><%= number_to_percentage(BigDecimal(item["completion_percentage"]) * 100, precision: 2) %></td>
+                <td class="text-right"><%= number_with_precision(BigDecimal(item["completion_invoice_amount"]), precision: 2, delimiter: " ", separator: ".") %> €</td>
+              </tr>
             <% end %>
-          </tbody>
-        </table>
+          <% end %>
+        </tbody>
+      </table>
+      <hr class="mb-2">
+      <p class="text-right"><%= number_with_precision(group_total, precision: 2, delimiter: " ", separator: ".") %> €</p>
     </div>
   <% end %>
-  
+
   <section class="break-before-page">
     <h1 class="text-center text-xl font-bold">Condition generales de ventes</h1>
     <p>Le vendeur se réserve la propriété des marchandises vendues jusqu'au complet paiement du prix, conformément à la Loi N° 80-335 du 12 mai 1980</p>
     <p>Délai de réglement selon loi L.ME, Pénalités de retard en cas de palement après échéance équivalentes à 3 fois le taux d'intérêt légal, indemnite forfaitaire pour frais de recouvrement de 40€. Pas d'ecomple en cas de paiement anticipé</p>
   </section>
 </main>
- 
