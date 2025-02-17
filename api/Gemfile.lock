@@ -280,6 +280,8 @@ GEM
       sorbet-runtime (>= 0.5.9204)
     rdoc (6.8.1)
       psych (>= 4.0.0)
+    redis-client (0.23.2)
+      connection_pool
     regexp_parser (2.9.3)
     reline (0.5.12)
       io-console (~> 0.5)
@@ -346,6 +348,12 @@ GEM
     shellany (0.0.1)
     shoulda-matchers (6.4.0)
       activesupport (>= 5.2.0)
+    sidekiq (7.3.9)
+      base64
+      connection_pool (>= 2.3.0)
+      logger
+      rack (>= 2.2.4)
+      redis-client (>= 0.22.2)
     solid_cable (3.0.4)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -447,6 +455,7 @@ DEPENDENCIES
   rubocop-rails-omakase
   rubocop-rspec
   shoulda-matchers
+  sidekiq (~> 7.3)
   solid_cable
   solid_cache
   solid_queue
