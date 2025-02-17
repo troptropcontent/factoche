@@ -31,11 +31,16 @@ RSpec.describe Organization::Company, type: :model do
       it { is_expected.not_to allow_value('test@').for(:email) }
       it { is_expected.not_to allow_value('@example.com').for(:email) }
 
-      it 'validates uniqueness of email' do
+      describe "email" do
         subject(:company) { FactoryBot.build(:company, email: "already@email.com") }
 
-        FactoryBot.create(:company, email: "already@email.com")
-        expect(company).to validate_uniqueness_of(:email)
+        before do
+          FactoryBot.create(:company, email: "already@email.com")
+        end
+
+        it 'validates uniqueness of email' do
+          expect(company).to validate_uniqueness_of(:email)
+        end
       end
     end
 
@@ -64,6 +69,8 @@ RSpec.describe Organization::Company, type: :model do
     it { is_expected.to have_many(:members).dependent(:destroy) }
     it { is_expected.to have_many(:users).through(:members) }
     it { is_expected.to have_many(:clients).dependent(:destroy) }
+    it { is_expected.to have_many(:projects).through(:clients) }
+    it { is_expected.to have_many(:invoices).through(:projects) }
     it { is_expected.to have_one(:config).dependent(:destroy) }
   end
 end

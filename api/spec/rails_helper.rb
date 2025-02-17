@@ -1,5 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
+require 'database_cleaner/active_record'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
@@ -74,6 +75,19 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  config.before(:suite) do
+    # Skip DatabaseCleaner's safeguard in order to be able to connect to a database using an URL:
+    DatabaseCleaner.allow_remote_database_url = true
+    DatabaseCleaner.clean_with(:deletion)
+    DatabaseCleaner.strategy = :transaction
+  end
+  config.before do
+    DatabaseCleaner.start
+  end
+  config.after do
+    FactoryBot.reload
+    DatabaseCleaner.clean
+  end
 end
 
 Shoulda::Matchers.configure do |config|

@@ -482,6 +482,20 @@ class Organization::Company
     def create_config!(*args, &blk); end
 
     sig { returns(T::Array[T.untyped]) }
+    def invoice_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def invoice_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Organization::Company` class because it declared `has_many :invoices, through: :projects`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Organization::Invoice::PrivateCollectionProxy) }
+    def invoices; end
+
+    sig { params(value: T::Enumerable[::Organization::Invoice]).void }
+    def invoices=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
     def member_ids; end
 
     sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
@@ -494,6 +508,20 @@ class Organization::Company
 
     sig { params(value: T::Enumerable[::Organization::Member]).void }
     def members=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def project_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def project_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Organization::Company` class because it declared `has_many :projects, through: :clients`.
+    # 🔗 [Rails guide for `has_many_through` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-through-association)
+    sig { returns(::Organization::Project::PrivateCollectionProxy) }
+    def projects; end
+
+    sig { params(value: T::Enumerable[::Organization::Project]).void }
+    def projects=(value); end
 
     sig { returns(T.nilable(::Organization::CompanyConfig)) }
     def reload_config; end

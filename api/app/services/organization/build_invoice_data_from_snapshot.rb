@@ -158,7 +158,7 @@ module Organization
           name: project.name,
           version: project_version.number,
           total_amount_cents: project_version.items.sum("quantity * unit_price_cents").to_i,
-          previously_billed_amount: project.invoices.sum("total_amount_excl_tax") - project.credit_notes.sum("total_amount_excl_tax")
+          previously_billed_amount: project.invoices.sum("total_excl_tax_amount") - project.credit_notes.sum("total_excl_tax_amount")
         )
       end
 
