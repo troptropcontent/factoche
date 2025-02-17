@@ -182,6 +182,7 @@ module Organization
       end
 
       def build_transaction_payload(completion_snapshot)
+        byebug
         BuildCompletionSnapshotTransactionPayload.call(completion_snapshot)
       end
     end
