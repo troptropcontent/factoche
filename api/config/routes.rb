@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
           member do
             get :previous
+            post :publish
             resource :invoice, only: [ :show ]
           end
         end
