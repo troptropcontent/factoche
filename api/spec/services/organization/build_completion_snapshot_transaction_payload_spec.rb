@@ -1,6 +1,7 @@
 require 'rails_helper'
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 module Organization
   RSpec.describe BuildCompletionSnapshotTransactionPayload do
     include_context 'a company with a project with three item groups'
@@ -99,7 +100,7 @@ module Organization
       end
 
       describe "item_groups" do
-        it "returns item groups with their name, description and position", :aggregate_failures do
+        it "returns item groups with their metadata", :aggregate_failures do
           expect(result.item_groups.length).to eq(3)
           expect(result.item_groups.first).to have_attributes(
             name: "Item Group 1",
@@ -111,8 +112,8 @@ module Organization
       end
 
       describe "total_excl_tax_amount" do
-        context "when there is no previous invoices" do
-          it "returns item groups with their name, description and position", :aggregate_failures do
+        context "when there are no previous invoices" do
+          it "calculates the total amount based on completion percentages", :aggregate_failures do
             # First item: 1 * 10 € * (5 % - 0 %) = 0.50 €
             # Second item: 2 * 20 € * (10 % - 0 %) = 4.00 €
             # Third item: 3 * 30 € * (15 % - 0 %) = 13.50 €
@@ -121,7 +122,7 @@ module Organization
           end
         end
 
-        context "when there is previous invoices" do
+        context "when there are previous invoices" do
           before do
             previous_snapshot = FactoryBot.create(
               :completion_snapshot,
@@ -145,7 +146,7 @@ module Organization
             previous_snapshot.update(invoice: invoice)
           end
 
-          it "returns item groups with their name, description and position", :aggregate_failures do
+          it "calculates the total amount considering previously invoiced amounts", :aggregate_failures do
             # First item (1 previous invoice): 1 * 10 € * 5 % - 0.2 € = 0.3 €
             # Second item (1 previous invoice): 2 * 20 € * 10 % - 0.4 € = 3.6 €
             # Third item (no previous invoice): 3 * 30 € * 15 % = 13.5 €
@@ -156,20 +157,20 @@ module Organization
       end
 
       describe "tax_rate & tax_amount" do
-        context "when there is no tax rate define in the company's settings" do
+        context "when there is no tax rate defined in the company's settings" do
           before { company.config.update!(settings: {}) }
 
-          it "takes the default tax rate", :aggregate_failures do
+          it "uses the default tax rate of 20%", :aggregate_failures do
             # 20 % * 18 € = 3.6 €
             expect(result.tax_rate).to eq(BigDecimal("0.20"))
             expect(result.tax_amount).to eq(BigDecimal("3.6"))
           end
         end
 
-        context "when there is a custom tax rate define in the company's settings" do
+        context "when there is a custom tax rate defined in the company's settings" do
           before { company.config.update!(settings: { "vat_rate"=>"0.10" }) }
 
-          it "takes the default tax rate", :aggregate_failures do
+          it "uses the custom tax rate from company settings", :aggregate_failures do
             # 10 % * 18 € = 1.8 €
             expect(result.tax_rate).to eq(BigDecimal("0.10"))
             expect(result.tax_amount).to eq(BigDecimal("1.8"))
@@ -180,7 +181,7 @@ module Organization
       describe "retention_guarantee_amount & retention_guarantee_rate" do
         let(:project_version_retention_guarantee_rate) { 500 }
 
-        it "takes the project_version rate", :aggregate_failures do
+        it "calculates retention guarantee based on project version rate", :aggregate_failures do
           # Base amount (total_excl_tax_amount + tax_amount): 18 € + 3.6 € = 21.6 €
           # Calculation: 21.6 * 0.05 = 1.08 €
           expect(result.retention_guarantee_rate).to eq(BigDecimal("0.05"))
