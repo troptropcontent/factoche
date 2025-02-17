@@ -21,9 +21,11 @@ module Organization
       attr_accessor :quantity
       attr_accessor :unit
       attr_accessor :unit_price_amount
-      attr_accessor :amount
+      attr_accessor :total_amount
       attr_accessor :previously_invoiced_amount
-      attr_accessor :new_completion_percentage_rate
+      attr_accessor :completion_percentage
+      attr_accessor :completion_amount
+      attr_accessor :completion_invoice_amount
     end
 
     class ItemGroup
@@ -74,13 +76,6 @@ module Organization
           }
       end
 
-      def find_previous_snapshot(snapshot)
-        snapshot.project_version.project.completion_snapshots
-          .where(created_at: ...snapshot.created_at)
-          .includes(:completion_snapshot_items)
-          .last
-      end
-
       def indexed_snapshot_items(snapshot)
         snapshot.completion_snapshot_items.includes(:item).index_by { |completion_snapshot|
           completion_snapshot.item.original_item_uuid
@@ -95,22 +90,24 @@ module Organization
       def build_item_payload(item, snapshot)
         Item.new.tap do |item_for_payload|
           item_for_payload.id = item.id
+          item_for_payload.original_item_uuid = item.original_item_uuid
           item_for_payload.name = item.name
           item_for_payload.description = item.description
           item_for_payload.item_group_id = item.item_group_id
           item_for_payload.quantity = item.quantity
           item_for_payload.unit = item.unit
           item_for_payload.unit_price_amount = BigDecimal(item.unit_price_cents.to_s) / BigDecimal("100")
-          item_for_payload.amount = rounded_amount(item_for_payload.unit_price_amount * item_for_payload.quantity)
+          item_for_payload.total_amount = rounded_amount(item_for_payload.unit_price_amount * item_for_payload.quantity)
           item_for_payload.previously_invoiced_amount = compute_previously_invoiced_amount(item.original_item_uuid, snapshot)
-          item_for_payload.original_item_uuid = item.original_item_uuid
-          item_for_payload.new_completion_percentage_rate = get_completion_rate(indexed_snapshot_items(snapshot), item.original_item_uuid)
+          item_for_payload.completion_percentage = get_completion_rate(indexed_snapshot_items(snapshot), item.original_item_uuid)
+          item_for_payload.completion_amount = item_for_payload.total_amount * item_for_payload.completion_percentage
+          item_for_payload.completion_invoice_amount = rounded_amount(item_for_payload.completion_amount - item_for_payload.previously_invoiced_amount)
         end
       end
 
       def compute_total_excl_tax_amount(items_from_payload)
         items_from_payload.reduce(0) { |sum, item_from_payload|
-          sum + (item_from_payload.amount * item_from_payload.new_completion_percentage_rate) - item_from_payload.previously_invoiced_amount
+          sum + item_from_payload.completion_invoice_amount
         }
       end
 

@@ -43,14 +43,20 @@ module Organization
 
       describe "items" do
         context "when there are no previous invoices for any items" do
-          let(:expected_attributes) { { id: project_version_first_item_group_item.id,
-          original_item_uuid: project_version_first_item_group_item.original_item_uuid,
-          name: "First Item Name",
-          quantity: 1,
-          unit: "First Item Unit",
-          unit_price_amount: BigDecimal("10"),
-          previously_invoiced_amount: BigDecimal("0"),
-          new_completion_percentage_rate: BigDecimal("0.05") }}
+          let(:expected_attributes) do
+            {
+              id: project_version_first_item_group_item.id,
+              original_item_uuid: project_version_first_item_group_item.original_item_uuid,
+              name: "First Item Name",
+              quantity: 1,
+              unit: "First Item Unit",
+              unit_price_amount: BigDecimal("10"),
+              previously_invoiced_amount: 0,
+              completion_percentage: BigDecimal("0.05"),
+              completion_amount: BigDecimal("0.5"), # 1 * 10 € * 5% = 0.50 €
+              completion_invoice_amount: BigDecimal("0.5")
+            }
+          end
 
           it "returns all items with zero previously invoiced amounts", :aggregate_failures do
             expect(result.items.length).to eq(3)
@@ -82,15 +88,20 @@ module Organization
             previous_snapshot.update(invoice: invoice)
           end
 
-          let(:expected_attributes) { {
-            id: project_version_first_item_group_item.id,
-            original_item_uuid: project_version_first_item_group_item.original_item_uuid,
-            name: "First Item Name",
-            quantity: 1,
-            unit: "First Item Unit",
-            unit_price_amount: BigDecimal("10"),
-            previously_invoiced_amount: BigDecimal("0.2"),
-            new_completion_percentage_rate: BigDecimal("0.05") }}
+          let(:expected_attributes) do
+            {
+              id: project_version_first_item_group_item.id,
+              original_item_uuid: project_version_first_item_group_item.original_item_uuid,
+              name: "First Item Name",
+              quantity: 1,
+              unit: "First Item Unit",
+              unit_price_amount: BigDecimal("10"),
+              previously_invoiced_amount: BigDecimal("0.2"),
+              completion_percentage: BigDecimal("0.05"),
+              completion_amount: BigDecimal("0.5"), # 1 * 10 € * 5% = 0.50 €
+              completion_invoice_amount: BigDecimal("0.3") # 0.5 € (completion_amount) - 0.2 € (previously_invoiced_amount) = 0.3 €
+            }
+          end
 
           it "includes previously invoiced amounts in the item payloads", :aggregate_failures do
             expect(result.items.length).to eq(3)
@@ -168,7 +179,7 @@ module Organization
         end
 
         context "when there is a custom tax rate defined in the company's settings" do
-          before { company.config.update!(settings: { "vat_rate"=>"0.10" }) }
+          before { company.config.update!(settings: { "vat_rate" => "0.10" }) }
 
           it "uses the custom tax rate from company settings", :aggregate_failures do
             # 10 % * 18 € = 1.8 €
