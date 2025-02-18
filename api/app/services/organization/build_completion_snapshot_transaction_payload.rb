@@ -138,7 +138,7 @@ module Organization
           .where("payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
           .find_each do |invoice|
             amount_from_invoices =+ invoice.payload["transaction"]["items"].sum do |item|
-              item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["amount"]) : BigDecimal("0")
+              item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["completion_invoice_amount"]) : BigDecimal("0")
             end
           end
 
@@ -151,7 +151,7 @@ module Organization
           .where("payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
           .find_each do |invoice|
             amount_from_invoices =+ invoice.payload["transaction"]["items"].sum do |item|
-              item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["amount"]) : BigDecimal("0")
+              item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["completion_invoice_amount"]) : BigDecimal("0")
             end
           end
 
