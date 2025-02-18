@@ -20,5 +20,6 @@
     }
   ],
   "git.decorations.enabled": false,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "tailwindCSS.experimental.configFile": "app/assets/tailwind/input.css"
 }

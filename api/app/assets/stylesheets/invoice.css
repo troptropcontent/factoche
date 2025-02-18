@@ -1,0 +1,43 @@
+.header {
+  position: running(headerRunning);
+}
+
+.footer {
+  position: running(footerRunning);
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.pagedjs_page {
+  border: 1px solid red;
+  margin-inline: auto;
+}
+
+@media print {
+  .pagedjs_page {
+    border: 0;
+    margin-inline: 0;
+  }
+}
+
+
+@page {
+  size: A4;
+  margin: 50mm 15mm 30mm;
+
+  @top-center {
+    content: element(headerRunning);
+  }
+
+  @bottom-center {
+    content: element(footerRunning);
+  }
+
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+    font-size: 10px;
+  }
+}

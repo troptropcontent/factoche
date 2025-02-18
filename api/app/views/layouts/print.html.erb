@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Invoice</title>
+    <%= stylesheet_link_tag 'stylesheets/invoice'%>
+    <%= stylesheet_link_tag 'tailwind/output' %>
+    </head>
+    <body class="relative">
+        <%= yield %>
+    </body>
+    <%= javascript_include_tag "js/pagedPolyfill" %>
+</html>

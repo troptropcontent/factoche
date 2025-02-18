@@ -56,10 +56,15 @@ group :development, :test do
   gem "rswag-api"
   gem "rswag-ui"
   gem "rswag-specs"
+
+  # Live reload
+  gem "guard"
+  gem "guard-shell"
 end
 
 group :test do
   gem "shoulda-matchers"
+  gem "database_cleaner-active_record"
 end
 
 gem "phonelib", "~> 0.10.1"
@@ -71,3 +76,7 @@ gem "awesome_print", "~> 1.9"
 gem "pundit", "~> 2.4"
 
 gem "byebug", "~> 11.1"
+
+gem "propshaft"
+
+gem "sidekiq", "~> 7.3"

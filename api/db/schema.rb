@@ -10,9 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_14_152829) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pgcrypto"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -44,10 +49,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
 
   create_table "organization_accounting_documents", force: :cascade do |t|
     t.string "type", null: false
-    t.integer "total_amount_cents", null: false
-    t.datetime "date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "number", null: false
+    t.datetime "issue_date", null: false
+    t.datetime "delivery_date", null: false
+    t.decimal "tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
+    t.datetime "due_date"
+    t.index ["payload"], name: "index_organization_accounting_documents_on_payload", using: :gin
   end
 
   create_table "organization_clients", force: :cascade do |t|
@@ -75,7 +87,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
     t.string "address_zipcode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "legal_form", default: "sas", null: false, enum_type: "legal_form"
+    t.string "rcs_city", null: false
+    t.string "rcs_number", null: false
+    t.string "vat_number", null: false
+    t.integer "capital_amount_cents", null: false
     t.index ["registration_number"], name: "index_organization_companies_on_registration_number", unique: true
+  end
+
+  create_table "organization_company_configs", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.jsonb "settings", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_organization_company_configs_on_company_id"
+    t.index ["settings"], name: "index_organization_company_configs_on_settings", using: :gin
   end
 
   create_table "organization_completion_snapshot_items", force: :cascade do |t|
@@ -102,7 +128,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
 
   create_table "organization_item_groups", force: :cascade do |t|
     t.bigint "project_version_id", null: false
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position", null: false
@@ -122,7 +148,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
     t.bigint "project_version_id", null: false
     t.bigint "item_group_id"
     t.integer "position", null: false
+    t.uuid "original_item_uuid", null: false
     t.index ["item_group_id"], name: "index_organization_items_on_item_group_id"
+    t.index ["original_item_uuid"], name: "index_organization_items_on_original_item_uuid"
     t.index ["project_version_id"], name: "index_organization_items_on_project_version_id"
   end
 
@@ -167,6 +195,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_05_094446) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
+  add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
   add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "credit_note_id"

@@ -3,8 +3,14 @@ FactoryBot.define do
     completion_snapshot { nil }
     pdf { nil }
     xml { nil }
-    total_amount_cents { 1 }
-    date { "2025-01-24 09:58:40" }
+    sequence(:number) { |n| "DOC-#{n}" }
+    issue_date { Time.current }
+    delivery_date { Time.current }
+    tax_amount { BigDecimal("10.00") }
+    retention_guarantee_amount { BigDecimal("0.00") }
+    payload { {} }
+    total_excl_tax_amount { BigDecimal("100.00") }
+    due_date { Time.current + 30.days }
 
     factory :invoice, class: 'Organization::Invoice'
     factory :credit_note, class: 'Organization::CreditNote'
