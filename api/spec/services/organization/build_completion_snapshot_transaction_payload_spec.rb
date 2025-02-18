@@ -7,7 +7,7 @@ module Organization
     include_context 'a company with a project with three item groups'
 
     describe ".call" do
-      subject(:result) { described_class.call(completion_snapshot) }
+      subject(:result) { described_class.call(completion_snapshot, Time.current) }
 
       let(:project_version_first_item_group_item_quantity) { 1 }
       let(:project_version_first_item_group_item_unit_price_cents) { 1000 }
@@ -75,11 +75,11 @@ module Organization
                 items: [
                   {
                     original_item_uuid: project_version_first_item_group_item.original_item_uuid,
-                    amount: "0.2"
+                    completion_invoice_amount: "0.2"
                   },
                   {
                     original_item_uuid: project_version_second_item_group_item.original_item_uuid,
-                    amount: "0.4"
+                    completion_invoice_amount: "0.4"
                   }
                 ]
               }
@@ -144,11 +144,11 @@ module Organization
                 items: [
                   {
                     original_item_uuid: project_version_first_item_group_item.original_item_uuid,
-                    amount: "0.2"
+                    completion_invoice_amount: "0.2"
                   },
                   {
                     original_item_uuid: project_version_second_item_group_item.original_item_uuid,
-                    amount: "0.4"
+                    completion_invoice_amount: "0.4"
                   }
                 ]
               }

@@ -33,12 +33,19 @@ module Organization
       attr_accessor :name, :address
     end
 
+    class ProjectVersion
+      include ActiveModel::AttributeAssignment
+      attr_accessor :date,
+                    :number
+    end
+
     class ProjectContext
       include ActiveModel::AttributeAssignment
       attr_accessor :name,
                     :version,
                     :total_amount,
-                    :previously_billed_amount
+                    :previously_billed_amount,
+                    :remaining_amount
     end
 
     class Item
@@ -80,7 +87,7 @@ module Organization
     end
 
     class << self
-      def call(snapshot)
+      def call(snapshot, issue_date)
         project_version, project, client, company, company_config = load_dependencies!(snapshot)
 
         Result.new.tap do |result|
@@ -89,8 +96,8 @@ module Organization
             seller: seller(company),
             billing_address: billing_address(client),
             delivery_address: delivery_address(client),
-            project_context: project_context(project, project_version),
-            transaction: build_transaction_payload(snapshot)
+            project_context: project_context(project, project_version, issue_date),
+            transaction: build_transaction_payload(snapshot, issue_date)
           )
         end
       end
@@ -178,15 +185,18 @@ module Organization
       end
 
 
-      def project_context(project, project_version)
-        ProjectContext.new.tap { |p| p.assign_attributes(name: project.name,
-        version: project_version.number,
-        total_amount: BigDecimal(project_version.items.sum("quantity * unit_price_cents").to_i) / 100,
-        previously_billed_amount: project.invoices.sum("total_excl_tax_amount") - project.credit_notes.sum("total_excl_tax_amount"))}
+      def project_context(project, project_version, issue_date)
+        context = ProjectContext.new
+        context.name = project.name
+        context.version = ProjectVersion.new.tap { |v| v.assign_attributes(number: project_version.number, date: project_version.created_at) }
+        context.total_amount = BigDecimal(project_version.items.sum("quantity * unit_price_cents").to_i) / 100
+        context.previously_billed_amount = project.invoices.where(issue_date: ...issue_date).sum("total_excl_tax_amount") - project.credit_notes.where(issue_date: ...issue_date).sum("total_excl_tax_amount")
+        context.remaining_amount = context.total_amount - context.previously_billed_amount
+        context
       end
 
-      def build_transaction_payload(completion_snapshot)
-        BuildCompletionSnapshotTransactionPayload.call(completion_snapshot)
+      def build_transaction_payload(completion_snapshot, issue_date)
+        BuildCompletionSnapshotTransactionPayload.call(completion_snapshot, issue_date)
       end
     end
   end
