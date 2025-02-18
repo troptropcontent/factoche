@@ -1,157 +1,270 @@
-<header class="header flex flex-col text-xs">
-  <div class="flex justify-between">
-    <%= image_tag("images/logo_cheyere.png") %>
-    <table>
-      <tbody>
-        <tr>
-          <th colspan="2" class="px-2 bg-gray-300 border-1 rounded rounded-b-none">Facture de situation</th>
-        </tr>
-        <tr>
-          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Numéro</th>
-          <td class="px-2 text-right border-1 border-t-0 border-l-0">INV-2025-001</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Date de la facture</th>
-          <td class="px-2 text-right border-1 border-t-0 border-l-0">2025-02-07</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Date de la prestation</th>
-          <td class="px-2 text-right border-1 border-t-0 border-l-0">2025-03-07</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 bg-gray-300 border-1 border-t-0">Délai de paiement</th>
-          <td class="px-2 text-right border-1 border-t-0 border-l-0">Net 30 Days</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 bg-gray-300 border-1 border-t-0 rounded-bl">Méthode de paiement</th>
-          <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">Bank Transfer</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="flex justify-between"></div>
-</header>
-
-<footer class="footer text-xs ml-[-113.336px]">
-  <p>SAS au capital de 62700 euros - RCS SEDAN 12345678 - NºTVA FR 57 308 050 384</p>
-</footer>
-
-<main class="text-xs">
-  <section class="mb-4">
-    <table class="mb-4 w-full">
-      <tbody>
-        <tr>
-          <th colspan="2" class="px-2 py-0.5 bg-gray-300 rounded rounded-b-none border-1">Vendeur</th>
-        </tr>
-        <tr>
-          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">Nom</th>
-          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">Cheyere SAS</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">Addresse</th>
-          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">15 rue de l'équerre, 51100, Reims</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">Téléphone</th>
-          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">+33 6 07 05 38 68</td>
-        </tr>
-        <tr>
-          <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0 rounded-bl">Siret</th>
-          <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0 rounded-br">308 050 384 00012</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="flex justify-between gap-4 mb-4">
+<%= I18n.with_locale(@locale) do %>
+  <header class="header flex flex-col text-xs">
+    <div class="flex justify-between">
+      <%= image_tag("images/logo_cheyere.png") %>
       <table>
         <tbody>
           <tr>
-            <th colspan="2" class="px-2 py-1 bg-gray-300 border-1 rounded rounded-b-none">Addresse de facturation</th>
+            <th colspan="2" class="px-2 bg-gray-300 border-1 rounded rounded-b-none">
+              <%= t("views.organization.completion_snapshots.invoice.title") %>
+            </th>
           </tr>
           <tr>
-            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
-              <strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>
-              26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX
+            <th class="text-left px-2 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.number") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.number %>
             </td>
           </tr>
-        </tbody>
-      </table>
-      <table>
-        <tbody>
           <tr>
-            <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Addresse de livraison</th>
+            <th class="text-left px-2 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.issue_date") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= l(@invoice.issue_date, format: :short) %>
+            </td>
           </tr>
           <tr>
-            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
-              <strong>Syndicat de copropriété ORGEVAL COLOMBIER</strong><br>
-              26 cours JeanBaptiste Langlet, CS40004, 51723 REIMS CEDEX
+            <th class="text-left px-2 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.delivery_date") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= l(@invoice.delivery_date, format: :short) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.payment_term.days_label") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= t("views.organization.completion_snapshots.invoice.payment_term.days_value",
+                  count: @invoice.payload.dig("payment_term", "days")) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-300 border-1 border-t-0 rounded-bl">
+              <%= t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_label",
+                  count: @invoice.payload.dig("payment_term", "accepted_methods").length) %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
+              <%= @invoice.payload.dig("payment_term", "accepted_methods")
+                    .map { |method| t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_value.#{method}") }
+                    .join(", ") %>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <div class="flex justify-between"></div>
+  </header>
 
-    <table class="w-full">
-      <tbody>
-        <tr>
-          <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">Contexte</th>
-        </tr>
-        <tr>
-          <td class="px-2 py-1 border-1 border-t-0 rounded-b">
-            <strong>Projet : </strong>Rénovation energetique<br>
-            <strong>Version du projet : </strong>2<br>
-            <strong>Total HT du projet : </strong>123 000 €<br>
-            <strong>Total HT du projet précédement facturé : </strong>23 000 €<br>
-            <strong>Total HT du projet restant à facturer : </strong>100 000 €<br>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+  <footer class="footer text-xs ml-[-113.336px]">
+    <p>
+      <%= [
+        t("views.organization.completion_snapshots.invoice.seller_details.legal_form.#{@invoice.payload.dig("seller", "legal_form")}",
+          capital_amount: number_to_currency(@invoice.payload.dig("seller", "capital_amount"))),
+        t("views.organization.completion_snapshots.invoice.seller_details.rcs",
+          city: @invoice.payload.dig("seller", "rcs_city"),
+          number: @invoice.payload.dig("seller", "rcs_number")),
+        t("views.organization.completion_snapshots.invoice.seller_details.vat_number",
+          number: @invoice.payload.dig("seller", "vat_number"))
+      ].join(" - ") %>
+    </p>
+  </footer>
 
-  <% @invoice.payload.dig("transaction", "item_groups").map do |item_group| %>
-    <% group_total = BigDecimal("0") %>
-    <div class="break-inside-avoid last:mb-0 w-full p-2 border-1 rounded mb-4">
-      <p class="mb-2"><strong><%= item_group["name"] %></strong></p>
-      <hr class="mb-2">
-      <table>
-        <thead>
+  <main class="text-xs">
+    <section class="mb-4">
+      <table class="mb-4 w-full">
+        <tbody>
           <tr>
-            <th scope="col" class="align-top text-left w-[30%]">Designation</th>
-            <th scope="col" class="align-top text-center w-[12%]">Montant total</th>
-            <th scope="col" colspan="2" class="text-center w-[20%]">Avancements précédents<br>(A)</th>
-            <th scope="col" colspan="2" class="text-center w-[20%]">Nouvel avancement<br>(B)</th>
-            <th scope="col" class="text-right w-[18%]">Nouvelle facture<br>(B - A)</th>
+            <th colspan="2" class="px-2 py-0.5 bg-gray-300 rounded rounded-b-none border-1">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.title") %>
+            </th>
           </tr>
-        </thead>
-        <tbody >
-          <% @invoice.payload.dig("transaction", "items").filter_map do |item| %>
-            <% if item["item_group_id"] == item_group["id"] %>
-              <% group_total +=  BigDecimal(item["completion_invoice_amount"])%>
-              <tr>
-                <th scope="row" class="text-left py-2">
-                  <%= item["name"] %><br>
-                  <p class="text-[calc(var(--text-xs)*0.80)] text-gray-400"><%= item["quantity"] %> <%= item["unit"] %> @ <%= number_with_precision(item["unit_price_amount"], precision: 2, delimiter: " ", separator: ".") %> €</p>
-                </th>
-                <td class="text-center"><%= number_with_precision(item["total_amount"], precision: 2, delimiter: " ", separator: ".") %> €</td>
-                <td class="text-center"><%= number_with_precision(item["previously_invoiced_amount"], precision: 2, delimiter: " ", separator: ".") %> €</td>
-                <td><%= number_to_percentage(BigDecimal(item["previously_invoiced_amount"]) / BigDecimal(item["total_amount"]) * 100, precision: 2) %></td>
-                <td class="text-center"><%= number_with_precision(BigDecimal(item["completion_amount"]), precision: 2, delimiter: " ", separator: ".") %> €</td>
-                <td class="text-center"><%= number_to_percentage(BigDecimal(item["completion_percentage"]) * 100, precision: 2) %></td>
-                <td class="text-right"><%= number_with_precision(BigDecimal(item["completion_invoice_amount"]), precision: 2, delimiter: " ", separator: ".") %> €</td>
-              </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.name_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.payload.dig("seller", "name") %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_value", **@invoice.payload.dig("seller", "address").symbolize_keys) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.phone_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.payload.dig("seller", "phone") %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-300 border-1 border-t-0 rounded-bl">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.siret_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0 rounded-br">
+              <%= @invoice.payload.dig("seller", "siret") %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="flex justify-between gap-4 mb-4">
+        <table class="grow">
+          <tbody>
+            <tr>
+              <th colspan="2" class="px-2 py-1 bg-gray-300 border-1 rounded rounded-b-none">
+                <%= t("views.organization.completion_snapshots.invoice.billing_address.title") %>
+              </th>
+            </tr>
+            <tr>
+              <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+                <strong><%= @invoice.payload.dig("billing_address", "name") %></strong><br>
+                <%= t("common.address.value", **@invoice.payload.dig("billing_address", "address").symbolize_keys) %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="grow">
+          <tbody>
+            <tr>
+              <th colspan="2" class="px-2 py-1 bg-gray-300 border-1 rounded rounded-b-none">
+                <%= t("views.organization.completion_snapshots.invoice.delivery_address.title") %>
+              </th>
+            </tr>
+            <tr>
+              <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+                <strong><%= @invoice.payload.dig("delivery_address", "name") %></strong><br>
+                <%= t("common.address.value", **@invoice.payload.dig("delivery_address", "address").symbolize_keys) %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <table class="w-full">
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 py-1 bg-gray-300 border rounded rounded-b-none">
+              <%= t("views.organization.completion_snapshots.invoice.context.title") %>
+            </th>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+              <%= t("views.organization.completion_snapshots.invoice.context.project_html",
+                    name: @invoice.payload.dig("project_context", "name")) %><br>
+              <%= t("views.organization.completion_snapshots.invoice.context.project_version_html",
+                    version_number: @invoice.payload.dig("project_context", "version", "number"),
+                    version_date: l(DateTime.parse(@invoice.payload.dig("project_context", "version", "date")))) %><br>
+              <%= t("views.organization.completion_snapshots.invoice.context.project_total_html",
+                    total: number_to_currency(@invoice.payload.dig("project_context", "total_amount"))) %><br>
+              <%= t("views.organization.completion_snapshots.invoice.context.project_previously_billed_html",
+                    previously_billed: number_to_currency(@invoice.payload.dig("project_context", "previously_billed_amount"))) %><br>
+              <%= t("views.organization.completion_snapshots.invoice.context.project_remaining_html",
+                    remaining: number_to_currency(@invoice.payload.dig("project_context", "remaining_amount"))) %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <% @invoice.payload.dig("transaction", "item_groups").map do |item_group| %>
+      <% group_total_amount = BigDecimal("0") %>
+      <% group_previously_billed_amount = BigDecimal("0") %>
+      <% group_new_completion_amount = BigDecimal("0") %>
+      <% group_invoice_amount = BigDecimal("0") %>
+      <div class="break-inside-avoid last:mb-0 w-full p-2 border-1 rounded mb-4">
+        <p class="mb-2">
+          <strong><%= item_group["name"] %></strong>
+        </p>
+        <hr class="mb-2">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" class="align-top text-left w-[30%]"><%= t("views.organization.completion_snapshots.invoice.items.designation_label") %></th>
+              <th scope="col" class="align-top text-center w-[12%]"><%= t("views.organization.completion_snapshots.invoice.items.total_label") %></th>
+              <th scope="col" colspan="2" class="text-center w-[20%]">
+                <%= t("views.organization.completion_snapshots.invoice.items.previously_invoiced_label_html") %>
+              </th>
+              <th scope="col" colspan="2" class="text-center w-[20%]">
+                <%= t("views.organization.completion_snapshots.invoice.items.new_completion_label_html") %>
+              </th>
+              <th scope="col" class="text-right w-[18%]">
+                <%= t("views.organization.completion_snapshots.invoice.items.new_invoice_label_html") %>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @invoice.payload.dig("transaction", "items").filter_map do |item| %>
+              <% if item["item_group_id"] == item_group["id"] %>
+                <% group_total_amount += BigDecimal(item["total_amount"]) %>
+                <% group_previously_billed_amount += BigDecimal(item["previously_invoiced_amount"]) %>
+                <% group_new_completion_amount += BigDecimal(item["completion_amount"]) %>
+                <% group_invoice_amount += BigDecimal(item["completion_invoice_amount"]) %>
+                <tr>
+                  <th scope="row" class="text-left py-2">
+                    <%= item["name"] %><br>
+                    <p class="text-[calc(var(--text-xs)*0.80)] text-gray-400">
+                      <%= item["quantity"] %> <%= item["unit"] %> @
+                      <%= number_to_currency(item["unit_price_amount"]) %>
+                    </p>
+                  </th>
+                  <td class="text-right">
+                    <%= number_to_currency(item["total_amount"]) %>
+                  </td>
+                  <td class="text-right">
+                    <%= number_to_currency(item["previously_invoiced_amount"]) %>
+                  </td>
+                  <td class="text-right">
+                    <%= number_to_percentage(BigDecimal(item["previously_invoiced_amount"]) / BigDecimal(item["total_amount"]) * 100, precision: 2) %>
+                  </td>
+                  <td class="text-right">
+                    <%= number_to_currency(item["completion_amount"]) %>
+                  </td>
+                  <td class="text-right">
+                    <%= number_to_percentage(BigDecimal(item["completion_percentage"]) * 100, precision: 2) %>
+                  </td>
+                  <td class="text-right">
+                    <%= number_to_currency(item["completion_invoice_amount"]) %>
+                  </td>
+                </tr>
+              <% end %>
             <% end %>
-          <% end %>
-        </tbody>
-      </table>
-      <hr class="mb-2">
-      <p class="text-right"><%= number_with_precision(group_total, precision: 2, delimiter: " ", separator: ".") %> €</p>
-    </div>
-  <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="border-t-1"></td>
+              <td class="text-right border-t-1 py-2"><%= number_to_currency(group_total_amount) %></td>
+              <td class="text-right border-t-1"><%= number_to_currency(group_previously_billed_amount) %></td>
+              <td class="border-t-1"></td>
+              <td class="text-right border-t-1"><%= number_to_currency(group_new_completion_amount) %></td>
+              <td class="border-t-1"></td>
+              <td class="text-right border-t-1"><%= number_to_currency(group_invoice_amount) %></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    <% end %>
 
-  <section class="break-before-page">
-    <h1 class="text-center text-xl font-bold">Condition generales de ventes</h1>
-    <p>Le vendeur se réserve la propriété des marchandises vendues jusqu'au complet paiement du prix, conformément à la Loi N° 80-335 du 12 mai 1980</p>
-    <p>Délai de réglement selon loi L.ME, Pénalités de retard en cas de palement après échéance équivalentes à 3 fois le taux d'intérêt légal, indemnite forfaitaire pour frais de recouvrement de 40€. Pas d'ecomple en cas de paiement anticipé</p>
-  </section>
-</main>
+    <section class="break-before-page">
+      <h1 class="text-center text-xl font-bold">Condition generales de ventes</h1>
+      <p>
+        Le vendeur se réserve la propriété des marchandises vendues jusqu'au complet paiement du prix,
+        conformément à la Loi N° 80-335 du 12 mai 1980
+      </p>
+      <p>
+        Délai de réglement selon loi L.ME, Pénalités de retard en cas de palement après échéance équivalentes
+        à 3 fois le taux d'intérêt légal, indemnite forfaitaire pour frais de recouvrement de 40€.
+        Pas d'ecomple en cas de paiement anticipé
+      </p>
+    </section>
+  </main>
+<% end %>
