@@ -6,7 +6,7 @@ module Organization
     include_context 'a company with a project with three item groups'
 
     describe ".call" do
-      subject(:result) { described_class.call(completion_snapshot) }
+      subject(:result) { described_class.call(completion_snapshot, Time.current) }
 
       let(:completion_snapshot) do
         FactoryBot.create(
@@ -85,7 +85,8 @@ module Organization
 
         # Project Context
         expect(result.project_context.name).to eq(project.name)
-        expect(result.project_context.version).to eq(project_version.number)
+        expect(result.project_context.version.number).to eq(project_version.number)
+        expect(result.project_context.version.date).to eq(project_version.created_at)
         expect(result.project_context.total_amount).to eq(BigDecimal("14"))
         expect(result.project_context.previously_billed_amount).to eq(BigDecimal("0"))
 
@@ -98,15 +99,22 @@ module Organization
 
         expect(result.transaction.items.size).to eq(3)
         expect(result.transaction.items[0]).to have_attributes(
+          id: project_version_first_item_group_item.id,
+          original_item_uuid: project_version_first_item_group_item.original_item_uuid,
           name: "Super item 1",
           description: "Trés beau garde coprs en galva",
+          item_group_id: project_version_first_item_group.id,
           quantity: 1,
           unit: "ENS",
-          unit_price_amount: BigDecimal("1.0"),
-          amount: BigDecimal("1.0"),
-          previously_invoiced_amount: BigDecimal("0"),
-          new_completion_percentage_rate: BigDecimal("0.05")
+          unit_price_amount: BigDecimal("1"),
+          total_amount: BigDecimal("1"),
+          previously_invoiced_amount: 0,
+          completion_percentage: BigDecimal("0.05"),
+          completion_amount: BigDecimal("0.05"),
+          completion_invoice_amount: BigDecimal("0.05")
         )
+
+
 
         expect(result.transaction.item_groups.size).to eq(3)
         expect(result.transaction.item_groups[0]).to have_attributes(

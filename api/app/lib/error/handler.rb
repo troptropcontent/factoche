@@ -10,7 +10,8 @@ module Error
 
         def render_error(error:, status:, code:, message:, details: nil)
           respond_to do |format|
-            format.html { render "errors/error", locals: { error: error, status: status, code: code, message: message, details: details }, status: status }
+            format.html {
+              render "errors/error", locals: { error: error, status: status, code: code, message: message, details: details }, status: status }
             format.json do
               render json: {
                 error: {
@@ -27,7 +28,7 @@ module Error
         rescue_from StandardError do |e|
           render_error(
             error: e,
-            status: :unexpected,
+            status: :internal_server_error,
             code: 500,
             message: e.to_s
           )

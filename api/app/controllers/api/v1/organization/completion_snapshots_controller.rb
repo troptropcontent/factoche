@@ -18,6 +18,15 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
   end
 
+  # POST /api/v1/organization/completion_snapshots/:id/publish
+  def publish
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+
+    updated_snapshot, _ = Organization::TransitionCompletionSnapshotToInvoiced.call(snapshot, Time.current)
+
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: updated_snapshot }).to_json
+  end
+
   # DELETE /api/v1/organization/completion_snapshots/:id
   def destroy
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
