@@ -16,6 +16,8 @@ module Organization
                     :address,
                     :phone,
                     :siret,
+                    :legal_form,
+                    :capital_amount,
                     :vat_number,
                     :rcs_city,
                     :rcs_number
@@ -130,6 +132,8 @@ module Organization
             rcs_city: company.rcs_city,
             rcs_number: company.rcs_number,
             vat_number: company.vat_number,
+            legal_form: company.legal_form,
+            capital_amount: BigDecimal(company.capital_amount_cents) / BigDecimal("100"),
             address: Address.new.tap { |a|
               a.assign_attributes(
                 city: company.address_city,
@@ -182,7 +186,6 @@ module Organization
       end
 
       def build_transaction_payload(completion_snapshot)
-        byebug
         BuildCompletionSnapshotTransactionPayload.call(completion_snapshot)
       end
     end
