@@ -1,5 +1,5 @@
 server:
-	bundle exec rails server
+	bundle exec rails server -b 0.0.0.0 -p 8080 
 rswag:
 	bundle exec rails rswag:specs:swaggerize PATTERN="spec/controllers/**/*_spec.rb"
 rspecf:

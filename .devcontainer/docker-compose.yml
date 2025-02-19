@@ -12,6 +12,8 @@ services:
     env_file:
       - ../.env
       - ../backend/.env.development
+    ports:
+      - "8080:8080"
     networks:
       - development
     depends_on:
@@ -35,9 +37,21 @@ services:
       - 6379:6379
     networks:
       - development
+  chromium:
+    image: browserless/chrome:latest # Using browserless/chrome instead of alpine-chrome
+    restart: unless-stopped
+    ports:
+      - "9222:3000" # browserless/chrome uses port 3000 by default
+    environment:
+      CONNECTION_TIMEOUT: -1
+      TOKEN: 6R0W53R135510
+      DEFAULT_LAUNCH_ARGS: '["--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]'
+    networks:
+      - development
 
 volumes:
   postgres-data:
+
 
 networks:
   development:
