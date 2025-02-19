@@ -6,7 +6,6 @@ rspecf:
 	bundle exec rspec --tag focus
 rspec:
 	bundle exec rspec
-
 frontend:
 	(cd ../frontend && pnpm run dev)
 tailwindcss:
@@ -15,3 +14,5 @@ guard:
 	bundle exec guard
 sidekiq:
 	bundle exec sidekiq
+console:
+	bundle exec rails console
