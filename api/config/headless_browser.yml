@@ -1,0 +1,2 @@
+development:
+  app_host: app:8080

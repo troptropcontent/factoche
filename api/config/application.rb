@@ -36,5 +36,8 @@ module Api
     config.middleware.use ActionDispatch::Cookies
 
     config.middleware.use config.session_store, config.session_options
+
+    # Load headless_browser configs
+    config.headless_browser = config_for(:headless_browser)
   end
 end
