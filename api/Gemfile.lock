@@ -112,6 +112,12 @@ GEM
     factory_bot_rails (6.4.4)
       factory_bot (~> 6.5)
       railties (>= 5.0.0)
+    ferrum (0.16)
+      addressable (~> 2.5)
+      base64 (~> 0.2)
+      concurrent-ruby (~> 1.1)
+      webrick (~> 1.7)
+      websocket-driver (~> 0.7)
     ffi (1.17.1)
     ffi (1.17.1-aarch64-linux-gnu)
     ffi (1.17.1-x86_64-linux-gnu)
@@ -384,6 +390,7 @@ GEM
     unicode-emoji (4.0.4)
     uri (1.0.2)
     useragent (0.16.11)
+    webrick (1.9.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -404,6 +411,7 @@ DEPENDENCIES
   database_cleaner-active_record
   debug
   factory_bot_rails
+  ferrum
   guard
   guard-shell
   jwt
