@@ -9,6 +9,7 @@ module Organization
       attr_accessor :retention_guarantee_rate
       attr_accessor :items
       attr_accessor :item_groups
+      attr_accessor :invoice_total_amount
     end
 
     class Item
@@ -52,6 +53,7 @@ module Organization
         payload.tax_amount = rounded_amount(payload.total_excl_tax_amount * payload.tax_rate)
         payload.retention_guarantee_rate = find_retention_guarantee_rate(completion_snapshot)
         payload.retention_guarantee_amount = rounded_amount((payload.total_excl_tax_amount + payload.tax_amount) * payload.retention_guarantee_rate)
+        payload.invoice_total_amount = payload.total_excl_tax_amount + payload.tax_amount + payload.retention_guarantee_amount
         payload
       end
 

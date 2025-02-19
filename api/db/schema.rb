@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_14_152829) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_18_203207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -59,6 +59,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_14_152829) do
     t.jsonb "payload", default: {}, null: false
     t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
     t.datetime "due_date"
+    t.decimal "total_amount", null: false
     t.index ["payload"], name: "index_organization_accounting_documents_on_payload", using: :gin
   end
 

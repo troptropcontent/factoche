@@ -24,6 +24,7 @@ module Organization
             total_excl_tax_amount: payload.transaction.total_excl_tax_amount,
             tax_amount: payload.transaction.tax_amount,
             retention_guarantee_amount: payload.transaction.retention_guarantee_amount,
+            total_amount: payload.transaction.invoice_total_amount,
             payload: payload
           })
 
