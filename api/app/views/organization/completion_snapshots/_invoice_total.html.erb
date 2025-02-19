@@ -1,0 +1,40 @@
+<table class="ml-auto">
+  <tbody>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 rounded-tl">
+        Total HT<br>
+        <p class="text-[calc(var(--text-xs)*0.80)] font-light">( A )</p>
+      </th>
+      <td class="px-2 text-right border-1 border-l-0 rounded-tr">
+        <%= number_to_currency(payload.dig("transaction", "total_excl_tax_amount")) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0">
+        TVA (<%= number_to_percentage(BigDecimal(payload.dig("transaction", "tax_rate")) * 100, precision: 0) %>)<br>
+        <p class="text-[calc(var(--text-xs)*0.80)] font-light">(B)</p>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0">
+        <%= number_to_currency(payload.dig("transaction", "tax_amount")) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0">
+        Retenu de guarantie (<%= number_to_percentage(BigDecimal(payload.dig("transaction", "retention_guarantee_rate")) * 100, precision: 0) %>)<br>
+        <p class="text-[calc(var(--text-xs)*0.80)] font-light">(C)</p>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0">
+        <%= number_to_currency(payload.dig("transaction", "retention_guarantee_amount")) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
+        Total TTC à régler<br>
+        <p class="text-[calc(var(--text-xs)*0.80)] font-light">(A + B - C)</p>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
+        <%= number_to_currency(payload.dig("transaction", "invoice_total_amount")) %>
+      </td>
+    </tr>
+  </tbody>
+</table>
