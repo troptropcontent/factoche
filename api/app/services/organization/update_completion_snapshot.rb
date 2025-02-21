@@ -8,7 +8,9 @@ module Organization
 
         ActiveRecord::Base.transaction  do
           delete_previous_completion_snapshot_items!(completion_snapshot)
-          update_completion_snapshot!(completion_snapshot, update_dto)
+          updated_compeltion_snapshot = update_completion_snapshot!(completion_snapshot, update_dto)
+          update_associated_invoice!(updated_compeltion_snapshot)
+          updated_compeltion_snapshot
         end
       end
 
@@ -45,6 +47,15 @@ module Organization
         })
 
         completion_snapshot
+      end
+
+      def update_associated_invoice!(completion_snapshot)
+        update_invoice_attributes = BuildInvoiceFromCompletionSnapshot.call(completion_snapshot, Time.current).attributes.except("id", "created_at", "updated_at")
+
+        related_incoice = completion_snapshot.invoice
+
+        related_incoice.update!(**update_invoice_attributes)
+        related_incoice
       end
     end
   end
