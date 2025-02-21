@@ -6,7 +6,9 @@ module Organization
     include_context 'a company with a project with three item groups'
 
     describe ".call" do
-      subject(:result) { described_class.call(completion_snapshot, Time.current) }
+      subject(:result) { described_class.call(completion_snapshot, issue_date) }
+      let(:issue_date) { DateTime.new(2024, 1, 9) }
+      let(:due_date) { DateTime.new(2024, 2, 8) }
 
       let(:completion_snapshot) do
         FactoryBot.create(
@@ -55,6 +57,11 @@ module Organization
       # rubocop:disable RSpec/ExampleLength
       it "returns a properly structured invoice payload", :aggregate_failures do
         expect(result).to be_a(described_class::Result)
+
+        # DocumentInfo
+        expect(result.document_info.number).to eq("INV-000001")
+        expect(result.document_info.issue_date).to eq(issue_date)
+        expect(result.document_info.due_date).to eq(due_date)
 
         # Payment Term
         expect(result.payment_term.days).to eq(30)

@@ -1,5 +1,12 @@
 module Organization
   class BuildCompletionSnapshotInvoicePayload
+    class DocumentInfo
+      include ActiveModel::AttributeAssignment
+      attr_accessor :number,
+                    :issue_date,
+                    :due_date
+    end
+
     class PaymentTerm
       include ActiveModel::AttributeAssignment
       attr_accessor :days, :accepted_methods
@@ -78,7 +85,8 @@ module Organization
 
     class Result
       include ActiveModel::AttributeAssignment
-      attr_accessor :payment_term,
+      attr_accessor :document_info,
+                    :payment_term,
                     :seller,
                     :billing_address,
                     :delivery_address,
@@ -92,6 +100,7 @@ module Organization
 
         Result.new.tap do |result|
           result.assign_attributes(
+            document_info: build_document_info(company, company_config, issue_date),
             payment_term: payment_term(company_config),
             seller: seller(company),
             billing_address: billing_address(client),
@@ -197,6 +206,23 @@ module Organization
 
       def build_transaction_payload(completion_snapshot, issue_date)
         BuildCompletionSnapshotTransactionPayload.call(completion_snapshot, issue_date)
+      end
+
+      def build_document_info(company, company_config, issue_date)
+        DocumentInfo.new.tap { |document_info|
+          document_info.assign_attributes({
+            number: FindNextAvailableInvoiceNumber.call(company),
+            issue_date: issue_date,
+            due_date: compute_due_date(issue_date, company_config)
+          })
+        }
+      end
+
+      def compute_due_date(issue_date, config)
+        days = config.settings.dig("payment_term", "days") ||
+          Organization::CompanyConfig::DEFAULT_SETTINGS.fetch("payment_term").fetch("days")
+
+        issue_date.advance(days: days)
       end
     end
   end
