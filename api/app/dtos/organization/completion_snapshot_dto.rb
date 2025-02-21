@@ -8,5 +8,5 @@ class Organization::CompletionSnapshotDto < OpenApiDto
   field "created_at", :timestamp
   field "project_version", :object, subtype: Organization::ProjectVersions::CompactDto
   field "description", :string, required: false
-  field "status", :enum, subtype: [ "draft", "cancelled", "invoiced" ]
+  field "status", :enum, subtype: [ "draft", "cancelled", "published" ]
 end
