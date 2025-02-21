@@ -270,7 +270,7 @@ class OpenApiDto
 
   def validate_enum_value!(value, field_name, subtype)
     if is_field_required?(field_name)
-      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}" unless value.is_a?(String) && subtype.include?(value)
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}#{value.is_a?(String) ? " with value #{value}":""}" unless value.is_a?(String) && subtype.include?(value)
     else
       raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} or nil for #{field_name}, got an instance of #{value.class}" unless (value.is_a?(String) && subtype.include?(value)) || value.nil?
     end
