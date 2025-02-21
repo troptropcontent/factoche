@@ -84,7 +84,7 @@ module Organization
                 ]
               }
             }
-            invoice = FactoryBot.create(:invoice, payload: payload)
+            invoice = FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot)
             previous_snapshot.update(invoice: invoice)
           end
 
@@ -153,7 +153,7 @@ module Organization
                 ]
               }
             }
-            invoice = FactoryBot.create(:invoice, payload: payload)
+            invoice = FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot)
             previous_snapshot.update(invoice: invoice)
           end
 

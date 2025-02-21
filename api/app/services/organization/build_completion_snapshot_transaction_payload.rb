@@ -134,7 +134,7 @@ module Organization
 
         Organization::Invoice
           .joins(
-            "JOIN organization_completion_snapshots ON organization_completion_snapshots.invoice_id = organization_accounting_documents.id " \
+            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_accounting_documents.completion_snapshot_id " \
             "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
           )
           .where(issue_date: ...issue_date)
@@ -148,7 +148,7 @@ module Organization
 
         Organization::CreditNote
           .joins(
-            "JOIN organization_completion_snapshots ON organization_completion_snapshots.invoice_id = organization_accounting_documents.id " \
+            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_accounting_documents.completion_snapshot_id " \
             "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
           )
           .where(issue_date: ...issue_date)
