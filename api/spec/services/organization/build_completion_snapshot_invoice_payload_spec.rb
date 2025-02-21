@@ -61,6 +61,7 @@ module Organization
         # DocumentInfo
         expect(result.document_info.number).to eq("INV-000001")
         expect(result.document_info.issue_date).to eq(issue_date)
+        expect(result.document_info.delivery_date).to eq(issue_date)
         expect(result.document_info.due_date).to eq(due_date)
 
         # Payment Term

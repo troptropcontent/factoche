@@ -4,6 +4,7 @@ module Organization
       include ActiveModel::AttributeAssignment
       attr_accessor :number,
                     :issue_date,
+                    :delivery_date,
                     :due_date
     end
 
@@ -213,6 +214,7 @@ module Organization
           document_info.assign_attributes({
             number: FindNextAvailableInvoiceNumber.call(company),
             issue_date: issue_date,
+            delivery_date: issue_date,
             due_date: compute_due_date(issue_date, company_config)
           })
         }
