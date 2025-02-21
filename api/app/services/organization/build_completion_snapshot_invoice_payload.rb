@@ -101,7 +101,7 @@ module Organization
 
         Result.new.tap do |result|
           result.assign_attributes(
-            document_info: build_document_info(company, company_config, issue_date),
+            document_info: build_document_info(snapshot, company, company_config, issue_date),
             payment_term: payment_term(company_config),
             seller: seller(company),
             billing_address: billing_address(client),
@@ -209,10 +209,10 @@ module Organization
         BuildCompletionSnapshotTransactionPayload.call(completion_snapshot, issue_date)
       end
 
-      def build_document_info(company, company_config, issue_date)
+      def build_document_info(snapshot, company, company_config, issue_date)
         DocumentInfo.new.tap { |document_info|
           document_info.assign_attributes({
-            number: FindNextAvailableInvoiceNumber.call(company),
+            number: snapshot&.invoice&.number || FindNextAvailableInvoiceNumber.call(company),
             issue_date: issue_date,
             delivery_date: issue_date,
             due_date: compute_due_date(issue_date, company_config)

@@ -167,6 +167,28 @@ module Organization
           expect(result.payment_term.accepted_methods).to eq(CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "accepted_methods"))
         end
       end
+
+      context "when an invoice already exists for the snapshot" do
+        let(:completion_snapshot) do
+          FactoryBot.create(
+            :completion_snapshot,
+            :with_invoice,
+            project_version: project_version,
+            completion_snapshot_items_attributes: [
+              {
+                item_id: project_version_first_item_group_item.id,
+                completion_percentage: BigDecimal("0.05")
+              }
+            ]
+          )
+        end
+
+        before { completion_snapshot.invoice.update(number: "INV-000080") }
+
+        it "keeps the invoice number" do
+          expect(result.document_info.number).to eq("INV-000080")
+        end
+      end
     end
   end
 end
