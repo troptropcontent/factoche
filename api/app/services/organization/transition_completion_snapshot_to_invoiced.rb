@@ -14,7 +14,7 @@ module Organization
       def call(snapshot, issue_date)
         ensure_snapshot_is_draft!(snapshot)
         company, config = load_dependencies!(snapshot)
-        payload = BuildCompletionSnapshotInvoicePayload.call(snapshot)
+        payload = BuildCompletionSnapshotInvoicePayload.call(snapshot, issue_date)
         ActiveRecord::Base.transaction do
           new_invoice = Organization::Invoice.create({
             number: find_next_invoice_number(company),
@@ -27,6 +27,8 @@ module Organization
             total_amount: payload.transaction.invoice_total_amount,
             payload: payload
           })
+
+          GenerateAndAttachPdfToInvoiceJob.perform_async({ "completion_snapshot_id"=> snapshot.id })
 
           snapshot.update!(invoice: new_invoice)
           [ snapshot, new_invoice ]

@@ -88,6 +88,9 @@ RSpec.configure do |config|
     FactoryBot.reload
     DatabaseCleaner.clean
   end
+  config.before do
+    Sidekiq::Worker.clear_all
+  end
 end
 
 Shoulda::Matchers.configure do |config|
