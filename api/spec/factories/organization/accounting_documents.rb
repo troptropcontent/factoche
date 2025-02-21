@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :accounting_document, class: 'Organization::AccountingDocument' do
+    status { "draft" }
     completion_snapshot { nil }
     pdf { nil }
     xml { nil }

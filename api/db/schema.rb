@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_18_203207) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_100445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_203207) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
+  create_enum "status", ["draft", "published", "posted"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -60,6 +61,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_203207) do
     t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
     t.datetime "due_date"
     t.decimal "total_amount", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "status"
+    t.bigint "completion_snapshot_id"
+    t.index ["completion_snapshot_id"], name: "idx_on_completion_snapshot_id_672fa29972"
     t.index ["payload"], name: "index_organization_accounting_documents_on_payload", using: :gin
   end
 
@@ -120,10 +124,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_203207) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "invoice_id"
-    t.bigint "credit_note_id"
-    t.index ["credit_note_id"], name: "index_organization_completion_snapshots_on_credit_note_id"
-    t.index ["invoice_id"], name: "index_organization_completion_snapshots_on_invoice_id"
     t.index ["project_version_id"], name: "index_organization_completion_snapshots_on_project_version_id"
   end
 
@@ -195,12 +195,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_18_203207) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "organization_accounting_documents", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
-  add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "credit_note_id"
-  add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "invoice_id"
   add_foreign_key "organization_completion_snapshots", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
