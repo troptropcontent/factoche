@@ -138,6 +138,7 @@ module Organization
             "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
           )
           .where(issue_date: ...issue_date)
+          .where("completion_snapshot_id != ?", completion_snapshot.id)
           .where("organization_project_versions.project_id = ?", completion_snapshot.project_version.project.id)
           .where("payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
           .find_each do |invoice|
@@ -152,6 +153,7 @@ module Organization
             "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
           )
           .where(issue_date: ...issue_date)
+          .where("completion_snapshot_id != ?", completion_snapshot.id)
           .where("organization_project_versions.project_id = ?", completion_snapshot.project_version.project.id)
           .where("payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
           .find_each do |invoice|

@@ -153,8 +153,7 @@ module Organization
                 ]
               }
             }
-            invoice = FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot)
-            previous_snapshot.update(invoice: invoice)
+            FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot)
           end
 
           it "calculates the total amount considering previously invoiced amounts", :aggregate_failures do
