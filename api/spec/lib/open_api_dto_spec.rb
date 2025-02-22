@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 RSpec.describe OpenApiDto do
   describe "initialization" do
@@ -68,7 +68,15 @@ RSpec.describe OpenApiDto do
         let(:tmp_dto_class) { Class.new(OpenApiDto) { field 'created_at', :timestamp } }
 
         it "raises an error" do
-          expect { tmp_dto_class.new({ created_at: 2 }) }.to raise_error(ArgumentError, 'Expected an instance of ActiveSupport::TimeWithZone for created_at, got an instance of Integer')
+          expect { tmp_dto_class.new({ created_at: 2 }) }.to raise_error(ArgumentError, 'Expected ActiveSupport::TimeWithZone or timestamp string for created_at, got Integer')
+        end
+      end
+
+      describe "when the type is decimal" do
+        let(:tmp_dto_class) { Class.new(OpenApiDto) { field 'amount', :decimal } }
+
+        it "raises an error" do
+          expect { tmp_dto_class.new({ amount: 1 }) }.to raise_error(ArgumentError, 'Expected BigDecimal or string parsable as BigDecimal for amount, got Integer')
         end
       end
 
