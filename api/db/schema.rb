@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_21_100445) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_22_105627) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "credit_note_status", ["draft", "published"]
+  create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
-  create_enum "status", ["draft", "published", "posted"]
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -46,25 +47,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_100445) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "organization_accounting_documents", force: :cascade do |t|
-    t.string "type", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "number", null: false
-    t.datetime "issue_date", null: false
-    t.datetime "delivery_date", null: false
-    t.decimal "tax_amount", precision: 15, scale: 2, null: false
-    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
-    t.jsonb "payload", default: {}, null: false
-    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
-    t.datetime "due_date"
-    t.decimal "total_amount", null: false
-    t.enum "status", default: "draft", null: false, enum_type: "status"
-    t.bigint "completion_snapshot_id"
-    t.index ["completion_snapshot_id"], name: "idx_on_completion_snapshot_id_672fa29972"
-    t.index ["payload"], name: "index_organization_accounting_documents_on_payload", using: :gin
   end
 
   create_table "organization_clients", force: :cascade do |t|
@@ -125,6 +107,40 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_100445) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["project_version_id"], name: "index_organization_completion_snapshots_on_project_version_id"
+  end
+
+  create_table "organization_credit_notes", force: :cascade do |t|
+    t.string "number", null: false
+    t.datetime "issue_date", null: false
+    t.decimal "tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "total_amount", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "credit_note_status"
+    t.bigint "original_invoice_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["original_invoice_id"], name: "index_organization_credit_notes_on_original_invoice_id"
+    t.index ["payload"], name: "index_organization_credit_notes_on_payload", using: :gin
+  end
+
+  create_table "organization_invoices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "number", null: false
+    t.datetime "issue_date", null: false
+    t.datetime "delivery_date", null: false
+    t.decimal "tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
+    t.datetime "due_date"
+    t.decimal "total_amount", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "invoice_status"
+    t.bigint "completion_snapshot_id"
+    t.index ["completion_snapshot_id"], name: "index_organization_invoices_on_completion_snapshot_id"
+    t.index ["payload"], name: "index_organization_invoices_on_payload", using: :gin
   end
 
   create_table "organization_item_groups", force: :cascade do |t|
@@ -195,12 +211,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_100445) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "organization_accounting_documents", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
   add_foreign_key "organization_completion_snapshots", "organization_project_versions", column: "project_version_id"
+  add_foreign_key "organization_credit_notes", "organization_invoices", column: "original_invoice_id"
+  add_foreign_key "organization_invoices", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
   add_foreign_key "organization_items", "organization_project_versions", column: "project_version_id"
