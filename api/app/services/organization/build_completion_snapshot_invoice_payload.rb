@@ -56,34 +56,6 @@ module Organization
                     :remaining_amount
     end
 
-    class Item
-      include ActiveModel::AttributeAssignment
-      attr_accessor :name,
-                    :description,
-                    :item_group_id,
-                    :quantity,
-                    :unit,
-                    :unit_price,
-                    :previous_completion_percentage,
-                    :new_completion_percentage
-    end
-
-    class ItemGroup
-      include ActiveModel::AttributeAssignment
-      attr_accessor :name, :description, :id
-    end
-
-    class Transaction
-      include ActiveModel::AttributeAssignment
-      attr_accessor :total_excl_tax_amount,
-                    :tax_rate,
-                    :tax_amount,
-                    :retention_guarantee_amount,
-                    :retention_guarantee_rate,
-                    :items,
-                    :item_groups
-    end
-
     class Result
       include ActiveModel::AttributeAssignment
       attr_accessor :document_info,
