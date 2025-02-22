@@ -109,7 +109,7 @@ module Organization
       end
 
       def compute_total_excl_tax_amount(items_from_payload)
-        items_from_payload.reduce(0) { |sum, item_from_payload|
+        items_from_payload.reduce(BigDecimal("0")) { |sum, item_from_payload|
           sum + item_from_payload.completion_invoice_amount
         }
       end
@@ -134,7 +134,7 @@ module Organization
 
         Organization::Invoice
           .joins(
-            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_accounting_documents.completion_snapshot_id " \
+            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_invoices.completion_snapshot_id " \
             "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
           )
           .where(issue_date: ...issue_date)
@@ -149,13 +149,14 @@ module Organization
 
         Organization::CreditNote
           .joins(
-            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_accounting_documents.completion_snapshot_id " \
+            "JOIN organization_invoices ON organization_invoices.id = organization_credit_notes.original_invoice_id " \
+            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_invoices.completion_snapshot_id " \
             "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
           )
           .where(issue_date: ...issue_date)
           .where("completion_snapshot_id != ?", completion_snapshot.id)
           .where("organization_project_versions.project_id = ?", completion_snapshot.project_version.project.id)
-          .where("payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
+          .where("organization_credit_notes.payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
           .find_each do |invoice|
             amount_from_invoices =+ invoice.payload["transaction"]["items"].sum do |item|
               item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["completion_invoice_amount"]) : BigDecimal("0")
