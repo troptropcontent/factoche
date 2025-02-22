@@ -5,7 +5,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     dto = Organization::CreateCompletionSnapshotDto.new(completion_snapshot_params)
     completion_snapshot = Organization::CreateCompletionSnapshot.call(dto, params[:project_id])
 
-    render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: completion_snapshot }).to_json
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
   end
 
   # PUT /api/v1/organization/completion_snapshots/:id
@@ -40,7 +40,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
   def show
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
 
-    render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: snapshot }).to_json
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: snapshot }).to_json
   end
 
   # GET  /api/v1/organization/completion_snapshots/:id/previous
