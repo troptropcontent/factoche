@@ -10,6 +10,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # return unless Rails.env.test?
 require 'rspec/rails'
 require_relative 'controllers/api/v1/helpers'
+require 'sidekiq/testing'
 
 
 
@@ -76,20 +77,18 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
   config.before(:suite) do
-    # Skip DatabaseCleaner's safeguard in order to be able to connect to a database using an URL:
-    DatabaseCleaner.allow_remote_database_url = true
     DatabaseCleaner.clean_with(:deletion)
     DatabaseCleaner.strategy = :transaction
   end
   config.before do
+    Sidekiq::Testing.fake!
+    Sidekiq::Worker.clear_all
+    DatabaseCleaner.clean
     DatabaseCleaner.start
   end
   config.after do
     FactoryBot.reload
     DatabaseCleaner.clean
-  end
-  config.before do
-    Sidekiq::Worker.clear_all
   end
 end
 

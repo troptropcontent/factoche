@@ -2,7 +2,7 @@ require 'rails_helper'
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
 
 RSpec.describe Organization::FindNextAvailableInvoiceNumber do
-  subject(:service) { described_class.new }
+  subject(:service) { described_class }
 
   include_context 'a company with a project with three item groups'
   describe '#call' do

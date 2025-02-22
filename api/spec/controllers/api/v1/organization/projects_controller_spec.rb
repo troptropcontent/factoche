@@ -290,7 +290,8 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         position: 1,
         unit_price_cents: "1000",
         project_version: company_project_version,
-        quantity: 2
+        quantity: 2,
+        original_item_uuid: SecureRandom.uuid
       } ]) }
       let(:another_company) { FactoryBot.create(:company) }
       let(:another_client) { FactoryBot.create(:client, company: another_company) }

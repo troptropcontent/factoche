@@ -293,8 +293,8 @@ paths:
                   - address_city
                   - address_street
                   - address_zipcode
-        '401':
-          description: unauthorized
+        '403':
+          description: forbidden
           content:
             application/json:
               schema:
@@ -367,8 +367,8 @@ paths:
                 - address_city
                 - address_street
                 - address_zipcode
-        '401':
-          description: unauthorized
+        '403':
+          description: forbidden
           content:
             application/json:
               schema:
@@ -1113,7 +1113,7 @@ components:
           enum:
           - draft
           - cancelled
-          - invoiced
+          - published
     Organization::ProjectVersions::CompactDto:
       type: object
       required:
@@ -1182,7 +1182,7 @@ components:
           enum:
           - draft
           - cancelled
-          - invoiced
+          - published
         project_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
         created_at:
@@ -1204,7 +1204,7 @@ components:
           enum:
           - draft
           - cancelled
-          - invoiced
+          - published
         project_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         completion_snapshot_items:

@@ -4,7 +4,7 @@ module Organization
     describe '.call' do
       subject(:new_invoice) { described_class.call(snapshot, issue_date) }
 
-      let(:snapshot) { instance_double(CompletionSnapshot) }
+      let(:snapshot) { instance_double(CompletionSnapshot, id: 12) }
       let(:issue_date) { DateTime.now }
       let(:due_date) { Date.tomorrow }
       let(:payload) do

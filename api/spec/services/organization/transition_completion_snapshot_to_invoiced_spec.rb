@@ -1,6 +1,5 @@
 require 'rails_helper'
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
-require 'sidekiq/testing'
 # rubocop:disable RSpec/ExampleLength
 # rubocop:disable RSpec/MultipleMemoizedHelpers
 module Organization
@@ -33,32 +32,32 @@ module Organization
       )
     end
 
+    before { Organization::BuildInvoiceFromCompletionSnapshot.call(snapshot, Time.current).save! && snapshot.reload }
+
     describe '.call' do
       context 'when all dependencies are present and valid' do
-        before { Sidekiq::Testing.fake! }
-
-        it 'creates an invoice, trigger the pdf generation and updates the snapshot', :aggregate_failures do
+        it 'update the invoice, trigger the pdf generation and updates the snapshot status', :aggregate_failures do
           issue_date = Time.now
           expect(GenerateAndAttachPdfToInvoiceJob.jobs.size).to eq(0)
-          updated_snapshot, new_invoice = described_class.call(snapshot, issue_date)
+          updated_snapshot, published_invoice = described_class.call(snapshot, issue_date)
           expect(GenerateAndAttachPdfToInvoiceJob.jobs.size).to eq(1)
-          expect(new_invoice.issue_date).to be_within(1.second).of(issue_date)
-          expect(new_invoice.delivery_date).to be_within(1.second).of(issue_date)
-          expect(new_invoice.due_date).to be_within(1.second).of(issue_date.advance(days: 30))
+          expect(published_invoice.issue_date).to be_within(1.second).of(issue_date)
+          expect(published_invoice.delivery_date).to be_within(1.second).of(issue_date)
+          expect(published_invoice.due_date).to be_within(1.second).of(issue_date.advance(days: 30))
 
-          expect(new_invoice).to have_attributes(
+          expect(published_invoice).to have_attributes(
             number: 'INV-000001',
             total_excl_tax_amount: 18, # (1 * 10.00 * 0.05) + (2 * 20.00 * 0.10) + (3 * 30.00 * 0.15) = 0.50 + 4.00 + 13.50 = 18.00
             tax_amount: 3.6, # 18.00 * 0.20 = 3.60
             retention_guarantee_amount: 1.08 # (18.00 + 3.60) * 0.05 = 1.08
           )
 
-          expect(updated_snapshot.status).to eq("invoiced")
+          expect(updated_snapshot.status).to eq("published")
         end
       end
 
       context 'when snapshot is not in draft status' do
-        let(:snapshot) { instance_double(Organization::CompletionSnapshot, status: "invoiced") }
+        before { allow(snapshot).to receive(:status).and_return("published") }
 
         it 'raises an UnprocessableEntityError' do
           expect {

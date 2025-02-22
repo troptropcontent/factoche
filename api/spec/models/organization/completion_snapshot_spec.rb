@@ -1,8 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Organization::CompletionSnapshot, type: :model do
-  subject(:completion_snapshot) { FactoryBot.create(:completion_snapshot, project_version: project_version) }
+  subject(:completion_snapshot) {
+    FactoryBot.create(:completion_snapshot, project_version: project_version)
+  }
 
+  let(:invoice) { FactoryBot.create(:invoice, completion_snapshot: completion_snapshot) }
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:project, client: client) }
@@ -15,25 +18,22 @@ RSpec.describe Organization::CompletionSnapshot, type: :model do
 
   describe "instance methods" do
     describe "#status" do
-      context "when neither an invoice nor a credit note is attached" do
-        it "returns draft" do
-          expect(completion_snapshot.status).to eq("draft")
+      context "when there is no invoice" do
+        it "raises an error" do
+          expect { completion_snapshot.status }.to raise_error(ActiveSupport::DelegationError, 'status delegated to invoice, but invoice is nil')
         end
       end
 
-      context "when an invoice_id is there but no credit_note" do
-        before { completion_snapshot.update({ invoice: FactoryBot.create(:invoice) }) }
+      context "when there is an invoice" do
+        before { invoice }
 
-        it "returns invoiced" do
-          expect(completion_snapshot.status).to eq("invoiced")
+        it "delegates to the invoice status" do
+          expect(completion_snapshot.status).to eq(invoice.status)
         end
-      end
 
-      context "when a credit_note is there" do
-        before { completion_snapshot.update({ invoice: FactoryBot.create(:invoice), credit_note:  FactoryBot.create(:credit_note) }) }
-
-        it "returns cancelled" do
-          expect(completion_snapshot.status).to eq("cancelled")
+        it "changes when invoice status changes" do
+          invoice.update(status: :published)
+          expect(completion_snapshot.status).to eq("published")
         end
       end
     end

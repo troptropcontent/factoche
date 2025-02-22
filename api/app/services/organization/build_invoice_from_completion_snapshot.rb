@@ -4,6 +4,7 @@ module Organization
       def call(snapshot, issue_date)
         payload = BuildCompletionSnapshotInvoicePayload.call(snapshot, issue_date)
         Organization::Invoice.new({
+            completion_snapshot_id: snapshot.id,
             number: payload.document_info.number,
             issue_date: issue_date,
             delivery_date: issue_date,

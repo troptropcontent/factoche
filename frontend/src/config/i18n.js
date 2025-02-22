@@ -43,7 +43,7 @@ i18n
                             "completion_snapshot": {
                                 "status": {
                                     "draft": "Brouillon",
-                                    "invoiced": "Facturé",
+                                    "published": "Facturé",
                                     "cancelled": "Annulé"
                                 },
                                 "form": {

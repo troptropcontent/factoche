@@ -2,7 +2,7 @@ require 'rails_helper'
 require_relative "shared_examples/accounting_document_example"
 
 RSpec.describe Organization::CreditNote, type: :model do
-  subject { FactoryBot.create(:credit_note) }
+  subject { FactoryBot.create(:credit_note, completion_snapshot: completion_snapshot) }
 
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company: company) }

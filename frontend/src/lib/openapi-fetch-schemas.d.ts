@@ -339,8 +339,8 @@ export interface paths {
                         }[];
                     };
                 };
-                /** @description unauthorized */
-                401: {
+                /** @description forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -402,8 +402,8 @@ export interface paths {
                         };
                     };
                 };
-                /** @description unauthorized */
-                401: {
+                /** @description forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -698,6 +698,62 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/completion_snapshots/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish the completion snapshot */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description completion snapshot published */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1116,7 +1172,7 @@ export interface components {
             project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             description?: string | null;
             /** @enum {string} */
-            status: "draft" | "cancelled" | "invoiced";
+            status: "draft" | "cancelled" | "published";
         };
         "Organization::ProjectVersions::CompactDto": {
             id: number;
@@ -1142,7 +1198,7 @@ export interface components {
             id: number;
             description?: string | null;
             /** @enum {string} */
-            status: "draft" | "cancelled" | "invoiced";
+            status: "draft" | "cancelled" | "published";
             project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** Format: date-time */
             created_at: string;
@@ -1150,7 +1206,7 @@ export interface components {
         "Organization::CompletionSnapshots::ExtendedDto": {
             id: number;
             /** @enum {string} */
-            status: "draft" | "cancelled" | "invoiced";
+            status: "draft" | "cancelled" | "published";
             project_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotItems::ExtendedDto"][];
             /** Format: date-time */

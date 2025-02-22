@@ -40,7 +40,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
         end
       end
 
-      response '401', 'unauthorized' do
+      response '403', 'forbidden' do
         let(:Authorization) { 'invalid_token' }
         schema ApiError.schema
 
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
         end
       end
 
-      response '401', 'unauthorized' do
+      response '403', 'forbidden' do
         let(:id) { 1 }
         let(:Authorization) { 'invalid_token' }
         schema ApiError.schema

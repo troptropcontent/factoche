@@ -62,6 +62,7 @@ module Organization
 
       def build_item_attributes(item_dto)
         {
+          original_item_uuid: SecureRandom.uuid,
           name: item_dto.name,
           description: item_dto.description,
           position: item_dto.position,

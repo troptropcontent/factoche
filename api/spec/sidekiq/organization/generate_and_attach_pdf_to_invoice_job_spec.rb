@@ -9,17 +9,16 @@ RSpec.describe Organization::GenerateAndAttachPdfToInvoiceJob do
         :completion_snapshot,
         project_version: project_version,
         completion_snapshot_items_attributes: [],
-        invoice:
       )
     end
-    let(:invoice) { FactoryBot.create(:invoice) }
+    let(:invoice) { FactoryBot.create(:invoice, completion_snapshot: completion_snapshot) }
 
     let(:pdf_file) { Tempfile.new([ 'test', '.pdf' ]) }
 
     before do
       allow(HeadlessBrowserPdfGenerator).to receive(:call)
         .and_return(pdf_file)
-      completion_snapshot.update!(invoice: invoice)
+      invoice
     end
 
     after do
@@ -46,7 +45,7 @@ RSpec.describe Organization::GenerateAndAttachPdfToInvoiceJob do
 
     context 'when invoice is missing' do
       before do
-        completion_snapshot.update!(invoice: nil)
+        invoice.destroy
       end
 
       it 'raises an UnprocessableEntityError' do

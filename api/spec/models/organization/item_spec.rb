@@ -1,5 +1,6 @@
 require 'rails_helper'
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe Organization::Item, type: :model do
   subject { FactoryBot.build(:item, project_version: project_version, name: item_name) }
 
@@ -71,7 +72,7 @@ RSpec.describe Organization::Item, type: :model do
   end
 
   describe ".amount_cents" do
-    subject(:item) { FactoryBot.create(:item, project_version: project_version, name: item_name, quantity: 2, unit_price_cents: 123) }
+    subject(:item) { FactoryBot.create(:item, original_item_uuid: SecureRandom.uuid, project_version: project_version, name: item_name, quantity: 2, unit_price_cents: 123) }
 
     it "returns unit_price_cents * quantity" do
       expect(item.amount_cents).to eq(246)

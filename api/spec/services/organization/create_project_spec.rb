@@ -1,5 +1,6 @@
 require 'rails_helper'
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe Organization::CreateProject do
   describe '.call' do
     let(:company) { FactoryBot.create(:company) }
@@ -37,6 +38,7 @@ RSpec.describe Organization::CreateProject do
         ]
       end
 
+      # rubocop:disable RSpec/ExampleLength
       it 'creates a project with simple items', :aggregate_failures do
         project = described_class.call(create_project_dto)
 
@@ -50,6 +52,7 @@ RSpec.describe Organization::CreateProject do
 
         expect(version.items.count).to eq(2)
         expect(version.items.first.name).to eq('Item 1')
+        expect(version.items.first.original_item_uuid).to match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
         expect(version.items.second.name).to eq('Item 2')
       end
     end
