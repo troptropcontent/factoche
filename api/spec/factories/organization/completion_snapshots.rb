@@ -4,7 +4,8 @@ FactoryBot.define do
     description { "MyString" }
     trait :with_invoice do
       after(:create) do |completion_snapshot|
-        create(:invoice, completion_snapshot: completion_snapshot)
+        Organization::BuildInvoiceFromCompletionSnapshot.call(completion_snapshot, Time.current).save!
+        completion_snapshot.reload
       end
     end
   end

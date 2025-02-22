@@ -35,7 +35,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       end
 
       response "200", "completion snapshot successfully created" do
-        schema Organization::ShowCompletionSnapshotResponseDto.to_schema
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
         context "when the project correctly belong to the company and there is no already existing draft" do
           let!(:number_of_completion_snapshot_before) { Organization::CompletionSnapshot.count }
           let!(:number_of_completion_snapshot_items_before) { Organization::CompletionSnapshotItem.count }
@@ -120,7 +120,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_config) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
@@ -147,7 +147,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let!(:completion_snapshot) do
         FactoryBot.create(
           "completion_snapshot",
-          "with_invoice",
+          :with_invoice,
           {
             project_version: company_project_version,
             description: "New version following discussion with the boss",
@@ -161,7 +161,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:id) { completion_snapshot.id }
 
       response "200", "show completion_snapshot" do
-        schema Organization::ShowCompletionSnapshotResponseDto.to_schema
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
 
         run_test!
       end
@@ -375,7 +375,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_config) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
@@ -590,7 +590,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_config) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
