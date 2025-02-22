@@ -73,6 +73,10 @@ i18n
                                         "previously_invoiced": "Précédement facturé (A)",
                                         "new_completion_snapshot": "Nouvel avancement (B)",
                                         "new_invoiced": "Nouvelle facture (B - A)"
+                                    },
+                                    "actions": {
+                                        "download_invoice_pdf": "Télécharger la facture en pdf",
+                                        "invoice_pdf_unavailable": "Facture pdf en cours de génération"
                                     }
                                 },
                                 "grouped_items_details": {
