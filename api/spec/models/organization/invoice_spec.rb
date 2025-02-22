@@ -1,5 +1,4 @@
 require 'rails_helper'
-require_relative "shared_examples/accounting_document_example"
 
 RSpec.describe Organization::Invoice, type: :model do
   subject { FactoryBot.create(:invoice, completion_snapshot: completion_snapshot) }
@@ -10,5 +9,18 @@ RSpec.describe Organization::Invoice, type: :model do
   let(:project_version) { FactoryBot.create(:project_version, project: project) }
   let(:completion_snapshot) { FactoryBot.create(:completion_snapshot, project_version: project_version) }
 
-  it_behaves_like "an accounting document"
+  describe "associations" do
+    it { is_expected.to belong_to(:completion_snapshot).class_name("Organization::CompletionSnapshot") }
+    it { is_expected.to have_one_attached(:pdf) }
+    it { is_expected.to have_one_attached(:xml) }
+    it { is_expected.to have_one(:credit_note).class_name("Organization::CreditNote").with_foreign_key(:original_invoice_id).dependent(:destroy) }
+  end
+
+  describe "validations" do
+    it { is_expected.to validate_numericality_of(:total_excl_tax_amount).is_greater_than_or_equal_to(0) }
+  end
+
+  describe "enums" do
+    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", published: "published", posted: "cancelled").with_default(:draft) }
+  end
 end
