@@ -13,7 +13,7 @@ class Organization::AccountingDocument < ApplicationRecord
   }, default: :draft, validate: true
 
   def pdf_url
-    return if pdf.nil?
+    return unless pdf.attached?
     Rails.application.routes.url_helpers.rails_blob_path(pdf, only_path: true, disposition: "attachment")
   end
 end
