@@ -1195,6 +1195,7 @@ components:
       - status
       - project_version
       - completion_snapshot_items
+      - invoice
       - created_at
       properties:
         id:
@@ -1211,6 +1212,8 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::CompletionSnapshotItems::ExtendedDto"
+        invoice:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
         created_at:
           type: string
           format: date-time
@@ -1287,6 +1290,268 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+    Organization::Invoices::ExtendedDto::DocumentInfo:
+      type: object
+      required:
+      - number
+      - issue_date
+      - delivery_date
+      - due_date
+      properties:
+        number:
+          type: string
+        issue_date:
+          type: string
+          format: date-time
+        delivery_date:
+          type: string
+          format: date-time
+        due_date:
+          type: string
+          format: date-time
+    Organization::Invoices::ExtendedDto::PaymentTerm:
+      type: object
+      required:
+      - days
+      properties:
+        days:
+          type: integer
+    Organization::Invoices::ExtendedDto::Address:
+      type: object
+      required:
+      - city
+      - street
+      - zip
+      properties:
+        city:
+          type: string
+        street:
+          type: string
+        zip:
+          type: string
+    Organization::Invoices::ExtendedDto::Seller:
+      type: object
+      required:
+      - name
+      - address
+      - phone
+      - siret
+      - legal_form
+      - capital_amount
+      - vat_number
+      - rcs_city
+      - rcs_number
+      properties:
+        name:
+          type: string
+        address:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Address"
+        phone:
+          type: string
+        siret:
+          type: string
+        legal_form:
+          type: string
+        capital_amount:
+          type: string
+          format: decimal
+        vat_number:
+          type: string
+        rcs_city:
+          type: string
+        rcs_number:
+          type: string
+    Organization::Invoices::ExtendedDto::BillingAddress:
+      type: object
+      required:
+      - name
+      - address
+      properties:
+        name:
+          type: string
+        address:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Address"
+    Organization::Invoices::ExtendedDto::DeliveryAddress:
+      type: object
+      required:
+      - name
+      - address
+      properties:
+        name:
+          type: string
+        address:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Address"
+    Organization::Invoices::ExtendedDto::ProjectVersion:
+      type: object
+      required:
+      - date
+      - number
+      properties:
+        date:
+          type: string
+          format: date-time
+        number:
+          type: integer
+    Organization::Invoices::ExtendedDto::ProjectContext:
+      type: object
+      required:
+      - name
+      - version
+      - total_amount
+      - previously_billed_amount
+      - remaining_amount
+      properties:
+        name:
+          type: string
+        version:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::ProjectVersion"
+        total_amount:
+          type: string
+          format: decimal
+        previously_billed_amount:
+          type: string
+          format: decimal
+        remaining_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::ExtendedDto::Item:
+      type: object
+      required:
+      - id
+      - original_item_uuid
+      - name
+      - item_group_id
+      - quantity
+      - unit
+      - unit_price_amount
+      - total_amount
+      - previously_invoiced_amount
+      - completion_percentage
+      - completion_amount
+      - completion_invoice_amount
+      properties:
+        id:
+          type: integer
+        original_item_uuid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        item_group_id:
+          type: integer
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_amount:
+          type: string
+          format: decimal
+        total_amount:
+          type: string
+          format: decimal
+        previously_invoiced_amount:
+          type: string
+          format: decimal
+        completion_percentage:
+          type: string
+          format: decimal
+        completion_amount:
+          type: string
+          format: decimal
+        completion_invoice_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::ExtendedDto::ItemGroup:
+      type: object
+      required:
+      - id
+      - name
+      - position
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        position:
+          type: integer
+        description:
+          type: string
+          nullable: true
+    Organization::Invoices::ExtendedDto::Transaction:
+      type: object
+      required:
+      - total_excl_tax_amount
+      - tax_rate
+      - tax_amount
+      - retention_guarantee_amount
+      - retention_guarantee_rate
+      - items
+      - item_groups
+      - invoice_total_amount
+      properties:
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        tax_rate:
+          type: string
+          format: decimal
+        tax_amount:
+          type: string
+          format: decimal
+        retention_guarantee_amount:
+          type: string
+          format: decimal
+        retention_guarantee_rate:
+          type: string
+          format: decimal
+        items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Item"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::ItemGroup"
+        invoice_total_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::ExtendedDto::Payload:
+      type: object
+      required:
+      - document_info
+      - payment_term
+      - seller
+      - billing_address
+      - delivery_address
+      - project_context
+      - transaction
+      properties:
+        document_info:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::DocumentInfo"
+        payment_term:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::PaymentTerm"
+        seller:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Seller"
+        billing_address:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::BillingAddress"
+        delivery_address:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::DeliveryAddress"
+        project_context:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::ProjectContext"
+        transaction:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Transaction"
+    Organization::Invoices::ExtendedDto:
+      type: object
+      required:
+      - pdf_url
+      - payload
+      properties:
+        pdf_url:
+          type: string
+        payload:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Payload"
     Organization::CompletionSnapshots::IndexDto:
       type: object
       required:
