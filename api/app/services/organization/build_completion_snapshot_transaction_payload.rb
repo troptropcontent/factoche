@@ -129,8 +129,8 @@ module Organization
       end
 
       def compute_previously_invoiced_amount(original_item_uuid, completion_snapshot, issue_date)
-        amount_from_invoices = 0
-        amount_from_credit_notes = 0
+        amount_from_invoices = BigDecimal("0")
+        amount_from_credit_notes = BigDecimal("0")
 
         Organization::Invoice
           .joins(
