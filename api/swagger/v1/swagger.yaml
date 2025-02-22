@@ -1545,11 +1545,11 @@ components:
     Organization::Invoices::ExtendedDto:
       type: object
       required:
-      - pdf_url
       - payload
       properties:
         pdf_url:
           type: string
+          nullable: true
         payload:
           "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Payload"
     Organization::CompletionSnapshots::IndexDto:

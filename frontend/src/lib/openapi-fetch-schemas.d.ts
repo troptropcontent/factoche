@@ -1209,6 +1209,7 @@ export interface components {
             status: "draft" | "cancelled" | "published";
             project_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotItems::ExtendedDto"][];
+            invoice: components["schemas"]["Organization::Invoices::ExtendedDto"];
             /** Format: date-time */
             created_at: string;
         };
@@ -1236,6 +1237,114 @@ export interface components {
             name: string;
             description?: string | null;
             grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
+        "Organization::Invoices::ExtendedDto::DocumentInfo": {
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            delivery_date: string;
+            /** Format: date-time */
+            due_date: string;
+        };
+        "Organization::Invoices::ExtendedDto::PaymentTerm": {
+            days: number;
+        };
+        "Organization::Invoices::ExtendedDto::Address": {
+            city: string;
+            street: string;
+            zip: string;
+        };
+        "Organization::Invoices::ExtendedDto::Seller": {
+            name: string;
+            address: components["schemas"]["Organization::Invoices::ExtendedDto::Address"];
+            phone: string;
+            siret: string;
+            legal_form: string;
+            /** Format: decimal */
+            capital_amount: string;
+            vat_number: string;
+            rcs_city: string;
+            rcs_number: string;
+        };
+        "Organization::Invoices::ExtendedDto::BillingAddress": {
+            name: string;
+            address: components["schemas"]["Organization::Invoices::ExtendedDto::Address"];
+        };
+        "Organization::Invoices::ExtendedDto::DeliveryAddress": {
+            name: string;
+            address: components["schemas"]["Organization::Invoices::ExtendedDto::Address"];
+        };
+        "Organization::Invoices::ExtendedDto::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::Invoices::ExtendedDto::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::Invoices::ExtendedDto::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_invoiced_amount: string;
+            /** Format: decimal */
+            completion_percentage: string;
+            /** Format: decimal */
+            completion_amount: string;
+            /** Format: decimal */
+            completion_invoice_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::Invoices::ExtendedDto::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            items: components["schemas"]["Organization::Invoices::ExtendedDto::Item"][];
+            item_groups: components["schemas"]["Organization::Invoices::ExtendedDto::ItemGroup"][];
+            /** Format: decimal */
+            invoice_total_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::Payload": {
+            document_info: components["schemas"]["Organization::Invoices::ExtendedDto::DocumentInfo"];
+            payment_term: components["schemas"]["Organization::Invoices::ExtendedDto::PaymentTerm"];
+            seller: components["schemas"]["Organization::Invoices::ExtendedDto::Seller"];
+            billing_address: components["schemas"]["Organization::Invoices::ExtendedDto::BillingAddress"];
+            delivery_address: components["schemas"]["Organization::Invoices::ExtendedDto::DeliveryAddress"];
+            project_context: components["schemas"]["Organization::Invoices::ExtendedDto::ProjectContext"];
+            transaction: components["schemas"]["Organization::Invoices::ExtendedDto::Transaction"];
+        };
+        "Organization::Invoices::ExtendedDto": {
+            pdf_url?: string | null;
+            payload: components["schemas"]["Organization::Invoices::ExtendedDto::Payload"];
         };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
