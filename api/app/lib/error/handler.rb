@@ -8,10 +8,11 @@ module Error
       clazz.class_eval do
         private
 
-        def render_error(error:, status:, code:, message:, details: nil)
+        def render_application_error(error:, status:, code:, message:, details: nil)
           respond_to do |format|
-            format.html {
-              render "errors/error", locals: { error: error, status: status, code: code, message: message, details: details }, status: status }
+            format.html do
+              render "errors/error", locals: { error: error, status: status, code: code, message: message, details: details }, status: status
+            end
             format.json do
               render json: {
                 error: {
@@ -26,7 +27,7 @@ module Error
         end
 
         rescue_from StandardError do |e|
-          render_error(
+          render_application_error(
             error: e,
             status: :internal_server_error,
             code: 500,
@@ -35,7 +36,7 @@ module Error
         end
 
         rescue_from ApplicationError do |e|
-          render_error(
+          render_application_error(
             error: e,
             status: e.class.status,
             code: e.class.code,
@@ -45,7 +46,7 @@ module Error
         end
 
         rescue_from Pundit::NotAuthorizedError do |e|
-          render_error(
+          render_application_error(
             error: e,
             status: Error::ForbiddenError.status,
             code: Error::ForbiddenError.code,
@@ -54,7 +55,7 @@ module Error
         end
 
         rescue_from ActiveRecord::RecordNotFound do |e|
-          render_error(
+          render_application_error(
             error: e,
             status: Error::NotFoundError.status,
             code: Error::NotFoundError.code,
@@ -74,7 +75,7 @@ module Error
             end
           end
 
-          render_error(
+          render_application_error(
             error: e,
             status: UnprocessableEntityError.status,
             code: UnprocessableEntityError.code,
