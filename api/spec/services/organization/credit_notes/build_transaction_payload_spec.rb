@@ -26,7 +26,7 @@ module Organization
                 "quantity" => 2,
                 "unit" => "hours",
                 "unit_price_amount" => "100.00",
-                "completion_invoice_amount" => "200.00"
+                "invoice_amount" => "200.00"
               }
             ]
           }

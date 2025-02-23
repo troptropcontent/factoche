@@ -1,5 +1,4 @@
 require 'rails_helper'
-require_relative "shared_examples/accounting_document_example"
 
 RSpec.describe Organization::CreditNote, type: :model do
   subject { FactoryBot.build(:credit_note, original_invoice: completion_snapshot.invoice) }

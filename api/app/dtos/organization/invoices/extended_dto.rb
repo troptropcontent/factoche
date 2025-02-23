@@ -67,7 +67,7 @@ module Organization
         field "previously_invoiced_amount", :decimal
         field "completion_percentage", :decimal
         field "completion_amount", :decimal
-        field "completion_invoice_amount", :decimal
+        field "invoice_amount", :decimal
       end
 
       class ItemGroup < OpenApiDto

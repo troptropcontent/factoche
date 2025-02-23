@@ -5,6 +5,7 @@ module Organization
       attr_accessor :total_excl_tax_amount
       attr_accessor :tax_rate
       attr_accessor :tax_amount
+      attr_accessor :total_incl_tax_amount
       attr_accessor :retention_guarantee_amount
       attr_accessor :retention_guarantee_rate
       attr_accessor :items
@@ -26,7 +27,7 @@ module Organization
       attr_accessor :previously_invoiced_amount
       attr_accessor :completion_percentage
       attr_accessor :completion_amount
-      attr_accessor :completion_invoice_amount
+      attr_accessor :invoice_amount
     end
 
     class ItemGroup
@@ -48,12 +49,13 @@ module Organization
         payload = Payload.new
         payload.items = build_items_payload(completion_snapshot, issue_date)
         payload.item_groups = build_item_groups_payload(completion_snapshot)
-        payload.total_excl_tax_amount = rounded_amount(compute_total_excl_tax_amount(payload.items))
+        payload.total_excl_tax_amount = compute_total_excl_tax_amount(payload.items)
         payload.tax_rate = find_tax_rate(completion_snapshot)
         payload.tax_amount = rounded_amount(payload.total_excl_tax_amount * payload.tax_rate)
+        payload.total_incl_tax_amount = rounded_amount(payload.total_excl_tax_amount + payload.tax_amount)
         payload.retention_guarantee_rate = find_retention_guarantee_rate(completion_snapshot)
-        payload.retention_guarantee_amount = rounded_amount((payload.total_excl_tax_amount + payload.tax_amount) * payload.retention_guarantee_rate)
-        payload.invoice_total_amount = payload.total_excl_tax_amount + payload.tax_amount + payload.retention_guarantee_amount
+        payload.retention_guarantee_amount = rounded_amount(payload.total_incl_tax_amount * payload.retention_guarantee_rate)
+        payload.invoice_total_amount = rounded_amount(payload.total_incl_tax_amount - payload.retention_guarantee_amount)
         payload
       end
 
@@ -103,14 +105,14 @@ module Organization
           item_for_payload.total_amount = rounded_amount(item_for_payload.unit_price_amount * item_for_payload.quantity)
           item_for_payload.previously_invoiced_amount = compute_previously_invoiced_amount(item.original_item_uuid, snapshot, issue_date)
           item_for_payload.completion_percentage = get_completion_rate(indexed_snapshot_items(snapshot), item.original_item_uuid)
-          item_for_payload.completion_amount = item_for_payload.total_amount * item_for_payload.completion_percentage
-          item_for_payload.completion_invoice_amount = rounded_amount(item_for_payload.completion_amount - item_for_payload.previously_invoiced_amount)
+          item_for_payload.completion_amount = rounded_amount(item_for_payload.total_amount * item_for_payload.completion_percentage)
+          item_for_payload.invoice_amount = rounded_amount(item_for_payload.completion_amount - item_for_payload.previously_invoiced_amount)
         end
       end
 
       def compute_total_excl_tax_amount(items_from_payload)
         items_from_payload.reduce(BigDecimal("0")) { |sum, item_from_payload|
-          sum + item_from_payload.completion_invoice_amount
+          sum + item_from_payload.invoice_amount
         }
       end
 
@@ -129,41 +131,9 @@ module Organization
       end
 
       def compute_previously_invoiced_amount(original_item_uuid, completion_snapshot, issue_date)
-        amount_from_invoices = BigDecimal("0")
-        amount_from_credit_notes = BigDecimal("0")
-
-        Organization::Invoice
-          .joins(
-            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_invoices.completion_snapshot_id " \
-            "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
-          )
-          .where(issue_date: ...issue_date)
-          .where("completion_snapshot_id != ?", completion_snapshot.id)
-          .where("organization_project_versions.project_id = ?", completion_snapshot.project_version.project.id)
-          .where("payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
-          .find_each do |invoice|
-            amount_from_invoices =+ invoice.payload["transaction"]["items"].sum do |item|
-              item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["completion_invoice_amount"]) : BigDecimal("0")
-            end
-          end
-
-        Organization::CreditNote
-          .joins(
-            "JOIN organization_invoices ON organization_invoices.id = organization_credit_notes.original_invoice_id " \
-            "JOIN organization_completion_snapshots ON organization_completion_snapshots.id = organization_invoices.completion_snapshot_id " \
-            "JOIN organization_project_versions ON organization_project_versions.id = organization_completion_snapshots.project_version_id"
-          )
-          .where(issue_date: ...issue_date)
-          .where("completion_snapshot_id != ?", completion_snapshot.id)
-          .where("organization_project_versions.project_id = ?", completion_snapshot.project_version.project.id)
-          .where("organization_credit_notes.payload -> 'transaction' -> 'items' @> ?", [ { original_item_uuid: original_item_uuid } ].to_json)
-          .find_each do |invoice|
-            amount_from_invoices =+ invoice.payload["transaction"]["items"].sum do |item|
-              item["original_item_uuid"] == original_item_uuid ? BigDecimal(item["completion_invoice_amount"]) : BigDecimal("0")
-            end
-          end
-
-        amount_from_invoices - amount_from_credit_notes
+        result = Invoices::ComputeInvoicedAmountForItem.call(completion_snapshot.project_version.project, original_item_uuid, issue_date)
+        raise result.error if result.failure?
+        result.data
       end
     end
   end

@@ -59,7 +59,7 @@ module Organization
         expect(result).to be_a(described_class::Result)
 
         # DocumentInfo
-        expect(result.document_info.number).to eq("INV-000001")
+        expect(result.document_info.number).to eq("INV-2024-000001")
         expect(result.document_info.issue_date).to eq(issue_date)
         expect(result.document_info.delivery_date).to eq(issue_date)
         expect(result.document_info.due_date).to eq(due_date)
@@ -119,7 +119,7 @@ module Organization
           previously_invoiced_amount: 0,
           completion_percentage: BigDecimal("0.05"),
           completion_amount: BigDecimal("0.05"),
-          completion_invoice_amount: BigDecimal("0.05")
+          invoice_amount: BigDecimal("0.05")
         )
 
 

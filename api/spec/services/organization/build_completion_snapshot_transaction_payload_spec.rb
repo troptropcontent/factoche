@@ -54,7 +54,7 @@ module Organization
               previously_invoiced_amount: 0,
               completion_percentage: BigDecimal("0.05"),
               completion_amount: BigDecimal("0.5"), # 1 * 10 € * 5% = 0.50 €
-              completion_invoice_amount: BigDecimal("0.5")
+              invoice_amount: BigDecimal("0.5")
             }
           end
 
@@ -75,16 +75,16 @@ module Organization
                 items: [
                   {
                     original_item_uuid: project_version_first_item_group_item.original_item_uuid,
-                    completion_invoice_amount: "0.2"
+                    invoice_amount: "0.2"
                   },
                   {
                     original_item_uuid: project_version_second_item_group_item.original_item_uuid,
-                    completion_invoice_amount: "0.4"
+                    invoice_amount: "0.4"
                   }
                 ]
               }
             }
-            invoice = FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot)
+            invoice = FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot, status: :published)
             previous_snapshot.update(invoice: invoice)
           end
 
@@ -99,7 +99,7 @@ module Organization
               previously_invoiced_amount: BigDecimal("0.2"),
               completion_percentage: BigDecimal("0.05"),
               completion_amount: BigDecimal("0.5"), # 1 * 10 € * 5% = 0.50 €
-              completion_invoice_amount: BigDecimal("0.3") # 0.5 € (completion_amount) - 0.2 € (previously_invoiced_amount) = 0.3 €
+              invoice_amount: BigDecimal("0.3") # 0.5 € (completion_amount) - 0.2 € (previously_invoiced_amount) = 0.3 €
             }
           end
 
@@ -144,16 +144,16 @@ module Organization
                 items: [
                   {
                     original_item_uuid: project_version_first_item_group_item.original_item_uuid,
-                    completion_invoice_amount: "0.2"
+                    invoice_amount: "0.2"
                   },
                   {
                     original_item_uuid: project_version_second_item_group_item.original_item_uuid,
-                    completion_invoice_amount: "0.4"
+                    invoice_amount: "0.4"
                   }
                 ]
               }
             }
-            FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot)
+            FactoryBot.create(:invoice, payload: payload, completion_snapshot: previous_snapshot, status: :published)
           end
 
           it "calculates the total amount considering previously invoiced amounts", :aggregate_failures do

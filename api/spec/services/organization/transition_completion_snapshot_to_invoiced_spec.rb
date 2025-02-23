@@ -46,10 +46,10 @@ module Organization
           expect(published_invoice.due_date).to be_within(1.second).of(issue_date.advance(days: 30))
 
           expect(published_invoice).to have_attributes(
-            number: 'INV-000001',
-            total_excl_tax_amount: 18, # (1 * 10.00 * 0.05) + (2 * 20.00 * 0.10) + (3 * 30.00 * 0.15) = 0.50 + 4.00 + 13.50 = 18.00
-            tax_amount: 3.6, # 18.00 * 0.20 = 3.60
-            retention_guarantee_amount: 1.08 # (18.00 + 3.60) * 0.05 = 1.08
+            number: "INV-2025-000001",
+            total_excl_tax_amount: BigDecimal("18"), # (1 * 10.00 * 0.05) + (2 * 20.00 * 0.10) + (3 * 30.00 * 0.15) = 0.50 + 4.00 + 13.50 = 18.00
+            tax_amount: BigDecimal("3.6"), # 18.00 * 0.20 = 3.60
+            retention_guarantee_amount: BigDecimal("1.08") # (18.00 + 3.60) * 0.05 = 1.08
           )
 
           expect(updated_snapshot.status).to eq("published")

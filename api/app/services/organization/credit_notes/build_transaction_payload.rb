@@ -8,6 +8,7 @@ module Organization
                      :tax_amount,
                      :retention_guarantee_amount,
                      :retention_guarantee_rate,
+                     :total_incl_tax_amount,
                      :items,
                      :item_groups,
                      :credit_note_total_amount
@@ -74,7 +75,7 @@ module Organization
               quantity: original_invoice_payload_item.fetch("quantity"),
               unit: original_invoice_payload_item.fetch("unit"),
               unit_price_amount: original_invoice_payload_item.fetch("unit_price_amount"),
-              credit_note_amount: original_invoice_payload_item.fetch("completion_invoice_amount")
+              credit_note_amount: original_invoice_payload_item.fetch("invoice_amount")
             )
           end
         end
