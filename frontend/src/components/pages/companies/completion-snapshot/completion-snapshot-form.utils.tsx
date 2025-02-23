@@ -28,7 +28,7 @@ const findPreviousCompletionPercentage = (
     (item) => item.item_id === itemId
   )?.completion_percentage;
 
-  return previousPercentage ? Number(previousPercentage) : 0;
+  return previousPercentage ? Number(previousPercentage) * 100 : 0;
 };
 
 const buildInitialValues = ({

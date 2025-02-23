@@ -55,6 +55,18 @@ function RouteComponent() {
   const loaderData = Route.useLoaderData();
   const { companyId, projectId, completionSnapshotId } = Route.useParams();
   const { t } = useTranslation();
+  const mappedInitialValues: typeof loaderData.completionSnapshotData.result = {
+    ...loaderData.completionSnapshotData.result,
+    completion_snapshot_items:
+      loaderData.completionSnapshotData.result.completion_snapshot_items.map(
+        (completion_snapshot_item) => ({
+          ...completion_snapshot_item,
+          completion_percentage: (
+            Number(completion_snapshot_item.completion_percentage) * 100
+          ).toString(),
+        })
+      ),
+  };
   return (
     <Layout.Root>
       <Layout.Header>
@@ -82,7 +94,7 @@ function RouteComponent() {
               previousCompletionSnapshot={
                 loaderData.previousCompletionSnapshotData?.result
               }
-              initialValues={loaderData.completionSnapshotData.result}
+              initialValues={mappedInitialValues}
               completionSnapshotId={Number(completionSnapshotId)}
             />
           </CardContent>
