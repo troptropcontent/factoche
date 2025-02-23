@@ -760,6 +760,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/completion_snapshots/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel the completion snapshot */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description completion snapshot cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/completion_snapshots": {
         parameters: {
             query?: never;
@@ -1309,7 +1365,7 @@ export interface components {
             /** Format: decimal */
             completion_amount: string;
             /** Format: decimal */
-            completion_invoice_amount: string;
+            invoice_amount: string;
         };
         "Organization::Invoices::ExtendedDto::ItemGroup": {
             id: number;
@@ -1345,6 +1401,103 @@ export interface components {
         "Organization::Invoices::ExtendedDto": {
             pdf_url?: string | null;
             payload: components["schemas"]["Organization::Invoices::ExtendedDto::Payload"];
+            /** @enum {string} */
+            status: "draft" | "published" | "cancelled";
+            credit_note?: components["schemas"]["Organization::CreditNotes::ExtendedDto"];
+        };
+        "Organization::CreditNotes::ExtendedDto::DocumentInfo": {
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            original_invoice_date: string;
+            original_invoice_number: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Address": {
+            city: string;
+            street: string;
+            zip: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Seller": {
+            name: string;
+            address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
+            phone: string;
+            siret: string;
+            legal_form: string;
+            /** Format: decimal */
+            capital_amount: string;
+            vat_number: string;
+            rcs_city: string;
+            rcs_number: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::BillingAddress": {
+            name: string;
+            address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
+        };
+        "Organization::CreditNotes::ExtendedDto::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::CreditNotes::ExtendedDto::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            credit_note_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::CreditNotes::ExtendedDto::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_incl_tax_amount: string;
+            items: components["schemas"]["Organization::CreditNotes::ExtendedDto::Item"][];
+            item_groups: components["schemas"]["Organization::CreditNotes::ExtendedDto::ItemGroup"][];
+            /** Format: decimal */
+            credit_note_total_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Payload": {
+            document_info: components["schemas"]["Organization::CreditNotes::ExtendedDto::DocumentInfo"];
+            seller: components["schemas"]["Organization::CreditNotes::ExtendedDto::Seller"];
+            billing_address: components["schemas"]["Organization::CreditNotes::ExtendedDto::BillingAddress"];
+            project_context: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectContext"];
+            transaction: components["schemas"]["Organization::CreditNotes::ExtendedDto::Transaction"];
+        };
+        "Organization::CreditNotes::ExtendedDto": {
+            pdf_url?: string | null;
+            payload: components["schemas"]["Organization::CreditNotes::ExtendedDto::Payload"];
+            /** @enum {string} */
+            status: "draft" | "published";
         };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
