@@ -172,7 +172,7 @@ module Organization
         context.name = project.name
         context.version = ProjectVersion.new.tap { |v| v.assign_attributes(number: project_version.number, date: project_version.created_at) }
         context.total_amount = BigDecimal(project_version.items.sum("quantity * unit_price_cents").to_i) / 100
-        context.previously_billed_amount = project.invoices.where(issue_date: ...issue_date).sum("total_excl_tax_amount") - project.credit_notes.where(issue_date: ...issue_date).sum("total_excl_tax_amount")
+        context.previously_billed_amount = project.invoices.where.not(status: :draft).where(issue_date: ...issue_date).sum("total_excl_tax_amount") - project.credit_notes.where.not(status: :draft).where(issue_date: ...issue_date).sum("total_excl_tax_amount")
         context.remaining_amount = context.total_amount - context.previously_billed_amount
         context
       end
