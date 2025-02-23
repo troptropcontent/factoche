@@ -8,6 +8,18 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
   end
 
+  # POST /api/v1/organization/completion_snapshots/:id/cancel
+  def cancel
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+    result = Organization::CompletionSnapshots::Cancel.call(snapshot)
+
+    if result.success?
+      render json: Organization::CompletionSnapshots::ShowDto.new({ result: snapshot.reload }).to_json
+    else
+      raise Error::UnprocessableEntityError, "Unable to cancel completion snapshot, the following error occurred: #{result.error}"
+    end
+  end
+
   # PUT /api/v1/organization/completion_snapshots/:id
   def update
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])

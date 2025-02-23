@@ -100,7 +100,7 @@ module Organization
 
       field "pdf_url", :string, required: false
       field "payload", :object, subtype: Payload
-      field "status", :enum, subtype: [ "draft", "published", "canceleld" ]
+      field "status", :enum, subtype: [ "draft", "published", "cancelled" ]
       field "credit_note", :object, subtype: CreditNotes::ExtendedDto, required: false
     end
   end

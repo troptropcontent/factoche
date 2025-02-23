@@ -579,6 +579,89 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
     end
   end
 
+  path '/api/v1/organization/completion_snapshots/{id}/cancel' do
+    parameter name: :id, in: :path, type: :integer
+
+    post "Cancel the completion snapshot" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+
+      include_context 'a company with a project with three item groups'
+
+      let(:project_version_first_item_group_item_quantity) { 1 }
+      let(:project_version_first_item_group_item_unit_price_cents) { 1000 }
+      let(:project_version_second_item_group_item_quantity) { 2 }
+      let(:project_version_second_item_group_item_unit_price_cents) { 2000 }
+      let(:project_version_third_item_group_item_quantity) { 3 }
+      let(:project_version_third_item_group_item_unit_price_cents) { 3000 }
+      let(:snapshot) do
+        FactoryBot.create(
+          :completion_snapshot,
+          :with_invoice,
+          invoice_status: :published,
+          project_version: project_version,
+          completion_snapshot_items_attributes: [
+            {
+              item_id: project_version_first_item_group_item.id,
+              completion_percentage: BigDecimal("0.05")
+            },
+            {
+              item_id: project_version_second_item_group_item.id,
+              completion_percentage: BigDecimal("0.10")
+            },
+            {
+              item_id: project_version_third_item_group_item.id,
+              completion_percentage: BigDecimal("0.15")
+            }
+          ]
+        )
+      end
+
+
+      let(:user) { FactoryBot.create(:user) }
+      before do
+        FactoryBot.create(:member, user: user, company: company)
+      end
+
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:id) { snapshot.id }
+
+      response "200", "completion snapshot cancelled" do
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
+
+        context "when the snapshot is in published mode" do
+          let!(:number_of_credit_note_before) { Organization::CreditNote.count() }
+
+          run_test!("it creates a new credit_note and switch the snapshot status to :cancelled") do
+            parsed_response = JSON.parse(response.body)
+            expect(Organization::CreditNote.count()).to eq(number_of_credit_note_before + 1)
+            expect(parsed_response.dig("result", "status")).to eq("cancelled")
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+
+      response "422", "unprocessable entity" do
+        context "when the completion snapshot is not in published status" do
+          let(:snapshot) do
+            FactoryBot.create(
+              :completion_snapshot,
+              :with_invoice,
+              project_version: project_version,
+            )
+          end
+
+          run_test!("it returns a 422 with an explicit message") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("error", "message")).to eq("Unable to cancel completion snapshot, the following error occurred: Cannot cancel a completion snapshot that is not published, current snapshot status is draft")
+          end
+        end
+      end
+    end
+  end
+
   path '/api/v1/organization/completion_snapshots' do
     get "List all project version completion snapshot" do
       parameter name: :filter, in: :query, schema: Organization::CompletionSnapshotIndexRequestDto.to_schema

@@ -28,6 +28,7 @@ Rails.application.routes.draw do
           member do
             get :previous
             post :publish
+            post :cancel
             defaults format: :html do
               resource :invoice, only: [ :show ]
             end
