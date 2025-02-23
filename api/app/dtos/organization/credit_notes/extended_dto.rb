@@ -1,16 +1,11 @@
 module Organization
-  module Invoices
+  module CreditNotes
     class ExtendedDto < OpenApiDto
       class DocumentInfo < OpenApiDto
         field "number", :string
         field "issue_date", :timestamp
-        field "delivery_date", :timestamp
-        field "due_date", :timestamp
-      end
-
-      class PaymentTerm < OpenApiDto
-        field "days", :integer
-        # field "accepted_methods", :array, subtype: :string
+        field "original_invoice_date", :timestamp
+        field "original_invoice_number", :string
       end
 
       class Address < OpenApiDto
@@ -32,11 +27,6 @@ module Organization
       end
 
       class BillingAddress < OpenApiDto
-        field "name", :string
-        field "address", :object, subtype: Address
-      end
-
-      class DeliveryAddress < OpenApiDto
         field "name", :string
         field "address", :object, subtype: Address
       end
@@ -63,11 +53,7 @@ module Organization
         field "quantity", :integer
         field "unit", :string
         field "unit_price_amount", :decimal
-        field "total_amount", :decimal
-        field "previously_invoiced_amount", :decimal
-        field "completion_percentage", :decimal
-        field "completion_amount", :decimal
-        field "invoice_amount", :decimal
+        field "credit_note_amount", :decimal
       end
 
       class ItemGroup < OpenApiDto
@@ -83,25 +69,23 @@ module Organization
         field "tax_amount", :decimal
         field "retention_guarantee_amount", :decimal
         field "retention_guarantee_rate", :decimal
+        field "total_incl_tax_amount", :decimal
         field "items", :array, subtype: Item
         field "item_groups", :array, subtype: ItemGroup
-        field "invoice_total_amount", :decimal
+        field "credit_note_total_amount", :decimal
       end
 
       class Payload < OpenApiDto
         field "document_info", :object, subtype: DocumentInfo
-        field "payment_term", :object, subtype: PaymentTerm
         field "seller", :object, subtype: Seller
         field "billing_address", :object, subtype: BillingAddress
-        field "delivery_address", :object, subtype: DeliveryAddress
         field "project_context", :object, subtype: ProjectContext
         field "transaction", :object, subtype: Transaction
       end
 
       field "pdf_url", :string, required: false
       field "payload", :object, subtype: Payload
-      field "status", :enum, subtype: [ "draft", "published", "canceleld" ]
-      field "credit_note", :object, subtype: CreditNotes::ExtendedDto, required: false
+      field "status", :enum, subtype: [ "draft", "published" ]
     end
   end
 end
