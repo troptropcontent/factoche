@@ -1,7 +1,8 @@
 module Organization
   class Invoice < ActiveRecord::Base
+    include PdfAttachable
+
     belongs_to :completion_snapshot, class_name: "Organization::CompletionSnapshot"
-    has_one_attached :pdf
     has_one_attached :xml
 
     has_one :credit_note, class_name: "Organization::CreditNote", foreign_key: :original_invoice_id, dependent: :destroy
@@ -13,11 +14,6 @@ module Organization
       published: "published",
       cancelled: "cancelled"
     }, default: :draft, validate: true
-
-    def pdf_url
-      return unless pdf.attached?
-      Rails.application.routes.url_helpers.rails_blob_path(pdf, only_path: true, disposition: "attachment")
-    end
 
     def rebuild_payload
       raise Error::UnprocessableEntityError.new("Can only rebuild payload in development environment") unless Rails.env.development?
