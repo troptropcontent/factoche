@@ -11,7 +11,7 @@ module Organization
     enum :status, {
       draft: "draft",
       published: "published",
-      posted: "cancelled"
+      cancelled: "cancelled"
     }, default: :draft, validate: true
 
     def pdf_url

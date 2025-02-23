@@ -21,6 +21,6 @@ RSpec.describe Organization::Invoice, type: :model do
   end
 
   describe "enums" do
-    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", published: "published", posted: "cancelled").with_default(:draft) }
+    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", published: "published", cancelled: "cancelled").with_default(:draft) }
   end
 end
