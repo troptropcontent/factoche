@@ -76,7 +76,15 @@ i18n
                                     },
                                     "actions": {
                                         "download_invoice_pdf": "Télécharger la facture en pdf",
-                                        "invoice_pdf_unavailable": "Facture pdf en cours de génération"
+                                        "invoice_pdf_unavailable": "Facture pdf en cours de génération",
+                                        "download_credit_note_pdf": "Télécharger l'avoir en pdf",
+                                        "credit_note_pdf_unavailable": "Avoir pdf en cours de génération",
+                                        "cancel_completion_snapshot": "Annuler la situation de travaux",
+                                        "cancel_completion_snapshot_success_toast_title": "Situation de travaux annulée",
+                                        "publish_completion_snapshot": "Valider la situation de travaux",
+                                        "publish_completion_snapshot_success_toast_title": "Situation de travaux validée",
+                                        "edit": "Modifier la situation de travaux",
+                                        "edit_success_toast_title": "Situation de travaux modifiée"
                                     }
                                 },
                                 "grouped_items_details": {
