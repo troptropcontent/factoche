@@ -12,6 +12,7 @@ type PreviousSnapshot = {
 
 type Item = {
   id: number;
+  original_item_uuid: string;
   quantity: number;
   unit_price_cents: number;
 };
@@ -33,23 +34,32 @@ const findPreviousCompletionPercentage = (
 
 const buildInitialValues = ({
   itemGroups,
-  previousCompletionSnapshot,
+  previouslyInvoicedItems,
 }: {
   itemGroups: ItemGroup[];
-  previousCompletionSnapshot?: PreviousSnapshot;
+  previouslyInvoicedItems: Record<string, number>;
 }): z.infer<typeof completionSnapshotFormSchema> => {
-  const buildSnapshotAttribute = (itemId: number): CompletionSnapshotItem => ({
-    item_id: itemId,
-    completion_percentage: findPreviousCompletionPercentage(
-      itemId,
-      previousCompletionSnapshot
-    ).toString(),
-  });
+  const buildSnapshotAttribute = (
+    item: ItemGroup[][number]["grouped_items"][number]
+  ): CompletionSnapshotItem => {
+    const previouslyBuiltAmount =
+      previouslyInvoicedItems[item.original_item_uuid] || 0;
+    const itemTotalAmount = (item.quantity * item.unit_price_cents) / 100;
 
+    const completionPercentage =
+      (previouslyBuiltAmount / itemTotalAmount) * 100;
+
+    return {
+      item_id: item.id,
+      completion_percentage: completionPercentage.toString(),
+    };
+  };
+
+  console.log({ previouslyInvoicedItems });
   return {
     description: "",
     completion_snapshot_items: itemGroups.flatMap((group) =>
-      group.grouped_items.map((item) => buildSnapshotAttribute(item.id))
+      group.grouped_items.map((item) => buildSnapshotAttribute(item))
     ),
   };
 };
@@ -103,7 +113,36 @@ const computeCompletionSnapShotTotalCents = (
   );
 };
 
+const computeCompletionSnapShotTotal = (
+  completion_snapshot_items: CompletionSnapshotItemAttribute[],
+  items: (ItemGroup | Item)[]
+): number => {
+  const findPercentageAndComputeItemValue = (item: Item): number => {
+    const percentage = findCompletionPercentage(
+      item.id,
+      completion_snapshot_items
+    );
+
+    return computeItemValue(item, percentage);
+  };
+
+  const getAllItems = (item: ItemGroup | Item): Item[] => {
+    if ("grouped_items" in item) {
+      return item.grouped_items;
+    }
+    return [item];
+  };
+
+  const allItems = items.flatMap(getAllItems);
+
+  return allItems.reduce(
+    (total, item) => total + findPercentageAndComputeItemValue(item),
+    0
+  );
+};
+
 export {
+  computeCompletionSnapShotTotal,
   buildInitialValues,
   findPreviousCompletionPercentage,
   computeCompletionSnapShotTotalCents,

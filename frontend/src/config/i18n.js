@@ -72,7 +72,14 @@ i18n
                                         "total": "Total",
                                         "previously_invoiced": "Précédement facturé (A)",
                                         "new_completion_snapshot": "Nouvel avancement (B)",
-                                        "new_invoiced": "Nouvelle facture (B - A)"
+                                        "new_invoiced": "Nouvelle facture (B - A)",
+                                        "new": {
+                                            "title": "Synthese",
+                                            "total": "Total (A)",
+                                            "previously_invoiced": "Précédement facturé (B)",
+                                            "new_completion_snapshot": "Nouvel avancement (C)",
+                                            "new_invoiced": "Restant dû (A - B - C)"
+                                        }
                                     },
                                     "actions": {
                                         "download_invoice_pdf": "Télécharger la facture en pdf",

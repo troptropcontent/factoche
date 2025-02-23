@@ -38,7 +38,7 @@
           <% group_total_amount += BigDecimal(item["total_amount"]) %>
           <% group_previously_billed_amount += BigDecimal(item["previously_invoiced_amount"]) %>
           <% group_new_completion_amount += BigDecimal(item["completion_amount"]) %>
-          <% group_invoice_amount += BigDecimal(item["completion_invoice_amount"]) %>
+          <% group_invoice_amount += BigDecimal(item["invoice_amount"]) %>
           
           <tr>
             <th scope="row" class="text-left p-2">
@@ -64,7 +64,7 @@
               </p>
             </td>
             <td class="text-right p-2">
-              <%= number_to_currency(item["completion_invoice_amount"]) %>
+              <%= number_to_currency(item["invoice_amount"]) %>
             </td>
           </tr>
         <% end %>

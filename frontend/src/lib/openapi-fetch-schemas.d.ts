@@ -863,6 +863,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/project_versions/{project_version_id}/completion_snapshots/new_completion_snapshot_data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_version_id: number;
+            };
+            cookie?: never;
+        };
+        /** Get the draft completion snapshot data */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_version_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description draft completion snapshot */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -1502,6 +1544,77 @@ export interface components {
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
         };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_invoiced_amount: string;
+            /** Format: decimal */
+            completion_percentage: string;
+            /** Format: decimal */
+            completion_amount: string;
+            /** Format: decimal */
+            invoice_amount: string;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            items: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Item"][];
+            item_groups: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ItemGroup"][];
+            /** Format: decimal */
+            invoice_total_amount: string;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Payload": {
+            project_context: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectContext"];
+            transaction: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Transaction"];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice": {
+            payload: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Payload"];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot": {
+            invoice: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice"];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto": {
+            result: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"];
+        };
         "Organization::CompletionSnapshots::PreviousDto": {
             result?: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
         };
@@ -1597,6 +1710,7 @@ export interface components {
         };
         "Organization::ProjectShowResponseProjectItemDto": {
             id: number;
+            original_item_uuid: string;
             position: number;
             name: string;
             description?: string | null;

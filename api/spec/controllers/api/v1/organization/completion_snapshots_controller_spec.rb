@@ -882,4 +882,24 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       end
     end
   end
+
+  path '/api/v1/organization/project_versions/{project_version_id}/completion_snapshots/new_completion_snapshot_data' do
+    parameter name: :project_version_id, in: :path, type: :integer
+    get "Get the draft completion snapshot data" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+      include_context 'a company with a project with three item groups'
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let!(:member) { FactoryBot.create(:member, user: user, company: company) }
+      let(:project_version_id) { project_version.id }
+      response "200", "draft completion snapshot" do
+        schema Organization::CompletionSnapshots::NewCompletionSnapshotDataDto.to_schema
+        run_test!
+      end
+
+      it "Should be fully protected and safe"
+    end
+  end
 end

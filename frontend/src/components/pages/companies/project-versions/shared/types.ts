@@ -3,6 +3,7 @@ type Item = {
   description?: string | null;
   position: number;
   id: number;
+  original_item_uuid: string;
   quantity: number;
   unit_price_cents: number;
 };

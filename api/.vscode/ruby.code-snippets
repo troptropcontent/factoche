@@ -27,9 +27,18 @@
 		"scope": "ruby",
 		"prefix": "dc",
 		"body": [
-			"# rubocop:disable '$1'",
+			"# rubocop:disable $1",
 			"$2",
-			"# rubocop:enable '$1'"
+			"# rubocop:enable $1"
 		],
+	},
+	"cc": {
+		"scope": "ruby",
+		"prefix": "cc",
+		"body": [
+			"require \"support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups\"",
+			"include_context 'a company with a project with three item groups'"
+		],
+		"description": "Include shared context: a company with a project with three item groups"
 	}
 }

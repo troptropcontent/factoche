@@ -34,6 +34,13 @@ Rails.application.routes.draw do
             end
           end
         end
+        resources :project_versions do
+          resources :completion_snapshots do
+            collection do
+              get :new_completion_snapshot_data
+            end
+          end
+        end
         resources :clients, only: [ :show ]
       end
     end

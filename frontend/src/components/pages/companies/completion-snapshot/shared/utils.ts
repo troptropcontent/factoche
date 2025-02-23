@@ -79,7 +79,7 @@ const computeItemCompletionSnapshotValueCents = (
 
   const percentage = Number(completionSnapshotItem.completion_percentage);
 
-  return (percentage / 100) * computeItemTotalCents(item);
+  return percentage * computeItemTotalCents(item);
 };
 
 const divideAllCompletionPercentagesByAHundred = (
