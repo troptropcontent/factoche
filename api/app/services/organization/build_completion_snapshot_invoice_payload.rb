@@ -184,7 +184,7 @@ module Organization
       def build_document_info(snapshot, company, company_config, issue_date)
         DocumentInfo.new.tap { |document_info|
           document_info.assign_attributes({
-            number: snapshot&.invoice&.number || FindNextAvailableInvoiceNumber.call(company),
+            number: snapshot&.invoice&.number || FindNextAvailableInvoiceNumber.call(company, issue_date),
             issue_date: issue_date,
             delivery_date: issue_date,
             due_date: compute_due_date(issue_date, company_config)
