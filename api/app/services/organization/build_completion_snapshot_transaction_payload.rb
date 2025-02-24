@@ -131,7 +131,7 @@ module Organization
       end
 
       def compute_previously_invoiced_amount(original_item_uuid, completion_snapshot, issue_date)
-        result = Invoices::ComputeInvoicedAmountForItem.call(completion_snapshot.project_version.project, original_item_uuid, issue_date)
+        result = Invoices::ComputeInvoicedAmountForItem.call(original_item_uuid, issue_date)
         raise result.error if result.failure?
         result.data
       end

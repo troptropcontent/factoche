@@ -62,7 +62,7 @@ module Organization
           end
 
           it "computes the total invoiced amount for a specific item minus credit notes ammount for a specific item", :aggregate_failures do
-            result = described_class.call(project, original_item_uuid, issue_date)
+            result = described_class.call(original_item_uuid, issue_date)
 
             expect(result).to be_success
             # invoice 1 = 20 % (completion percentage) * 20 € (unit price) * 2 quantity)  = 2 €
@@ -76,7 +76,7 @@ module Organization
               before { project.invoices.last.update!(status: :draft) }
 
               it "excludes draft documents from calculation", :aggregate_failures do
-                result = described_class.call(project, original_item_uuid, issue_date)
+                result = described_class.call(original_item_uuid, issue_date)
 
                 expect(result).to be_success
                 expect(result.data).to eq(BigDecimal("0.00"))
@@ -86,7 +86,7 @@ module Organization
 
         context "when there are no invoices or credit notes" do
           it "returns zero", :aggregate_failures do
-            result = described_class.call(project, original_item_uuid, issue_date)
+            result = described_class.call(original_item_uuid, issue_date)
 
             expect(result).to be_success
             expect(result.data).to eq(BigDecimal("0"))
@@ -96,11 +96,11 @@ module Organization
 
         context "when an error occurs" do
           before do
-            allow(project).to receive(:invoices).and_raise(StandardError.new("Database error"))
+            allow(Organization::Invoice).to receive(:from).and_raise(StandardError.new("Database error"))
           end
 
           it "returns a failure result", :aggregate_failures do
-            result = described_class.call(project, original_item_uuid, issue_date)
+            result = described_class.call(original_item_uuid, issue_date)
 
             expect(result).to be_failure
             expect(result.error).to be_a(StandardError)
