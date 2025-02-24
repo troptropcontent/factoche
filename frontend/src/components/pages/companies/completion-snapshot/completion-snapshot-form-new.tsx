@@ -74,18 +74,22 @@ const CompletionSnapshotFormNew = ({
 
   console.log({ i: projectTotal });
 
+  const defaultValues = initialValues
+    ? {
+        description: initialValues.description || "",
+        completion_snapshot_items: initialValues.completion_snapshot_items,
+      }
+    : buildInitialValues({
+        itemGroups,
+        previouslyInvoicedItems,
+      });
+
   const form = useForm<z.infer<typeof completionSnapshotFormSchema>>({
     resolver: zodResolver(completionSnapshotFormSchema),
-    defaultValues: initialValues
-      ? {
-          description: initialValues.description || "",
-          completion_snapshot_items: initialValues.completion_snapshot_items,
-        }
-      : buildInitialValues({
-          itemGroups,
-          previouslyInvoicedItems,
-        }),
+    defaultValues: defaultValues,
   });
+
+  console.log({ defaultValues });
 
   const navigate = useNavigate();
 

@@ -13,4 +13,8 @@ class Organization::Project < ApplicationRecord
     # TODO : Implement the logic
     "new"
   end
+
+  def invoiced_amount
+    invoices.where.not(status: :draft).sum(:total_excl_tax_amount) - credit_notes.where.not(status: :draft).sum(:total_excl_tax_amount)
+  end
 end

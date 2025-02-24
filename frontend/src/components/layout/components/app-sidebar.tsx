@@ -46,7 +46,7 @@ export function AppSidebar() {
       icon: Handshake,
     },
     {
-      title: "Settings",
+      title: "Paramétres",
       url: `settings`,
       icon: Settings,
     },

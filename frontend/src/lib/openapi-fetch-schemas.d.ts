@@ -1042,7 +1042,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            results: components["schemas"]["Organization::ProjectIndexResponseProjectDto"][];
+                            results: components["schemas"]["Organization::Projects::CompactDto"][];
                         };
                     };
                 };
@@ -1278,6 +1278,8 @@ export interface components {
             /** Format: date-time */
             created_at: string;
             retention_guarantee_rate: number;
+            /** Format: decimal */
+            total_amount: string;
         };
         "Organization::CompletionSnapshotIndexRequestDto": {
             company_id?: number | null;
@@ -1322,6 +1324,7 @@ export interface components {
         };
         "Organization::Items::ExtendedDto": {
             id: number;
+            original_item_uuid: string;
             position: number;
             name: string;
             description?: string | null;
@@ -1696,6 +1699,7 @@ export interface components {
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::ProjectIndexResponseProjectClientDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** @enum {string} */
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
@@ -1728,6 +1732,8 @@ export interface components {
         "Organization::ProjectShowResponseProjectLastVersionDto": {
             id: number;
             number: number;
+            /** Format: decimal */
+            total_amount: string;
             /** Format: date-time */
             created_at: string;
             completion_snapshots: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
@@ -1741,6 +1747,8 @@ export interface components {
             client: components["schemas"]["Organization::ProjectShowResponseProjectClientDto"];
             /** @enum {string} */
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            /** Format: decimal */
+            invoiced_amount: string;
             last_version: components["schemas"]["Organization::ProjectShowResponseProjectLastVersionDto"];
         };
         "Organization::ProjectShowResponseDto": {
@@ -1786,6 +1794,20 @@ export interface components {
         };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+        };
+        "Organization::Projects::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            /** Format: decimal */
+            invoiced_amount: string;
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::IndexDto": {
+            results: components["schemas"]["Organization::Projects::CompactDto"][];
         };
         "Organization::ShowCompletionSnapshotResponseDto": {
             result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];

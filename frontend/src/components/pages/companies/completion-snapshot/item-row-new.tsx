@@ -36,7 +36,7 @@ const ItemRowNew = ({
   const previousCompletionPercentageForThisItem =
     previouslyBuiltAmount === 0
       ? "0"
-      : ((previouslyBuiltAmount / itemTotalAmount) * 100).toString();
+      : Math.round((previouslyBuiltAmount / itemTotalAmount) * 100).toString();
 
   const fieldName =
     `completion_snapshot_items.${inputIndex}.completion_percentage` as const;

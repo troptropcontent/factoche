@@ -100,11 +100,13 @@ function RouteComponent() {
                   )}
                 </TableHead>
                 <TableHead>
-                  {t("pages.companies.projects.index.table.columns.progress")}
+                  {t(
+                    "pages.companies.projects.index.table.columns.invoiced_amount"
+                  )}
                 </TableHead>
                 <TableHead>
                   {t(
-                    "pages.companies.projects.index.table.columns.last_invoice_date"
+                    "pages.companies.projects.index.table.columns.remaining_amount"
                   )}
                 </TableHead>
               </TableRow>
@@ -133,9 +135,23 @@ function RouteComponent() {
                     </Badge>
                   </TableCell>
                   <TableCell>{project.client.name}</TableCell>
-                  <TableCell>TO DO</TableCell>
-                  <TableCell>TO DO</TableCell>
-                  <TableCell>TO DO</TableCell>
+                  <TableCell>
+                    {t("common.number_in_currency", {
+                      amount: parseFloat(project.last_version.total_amount),
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    {t("common.number_in_currency", {
+                      amount: parseFloat(project.invoiced_amount),
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    {t("common.number_in_currency", {
+                      amount:
+                        parseFloat(project.last_version.total_amount) -
+                        parseFloat(project.invoiced_amount),
+                    })}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

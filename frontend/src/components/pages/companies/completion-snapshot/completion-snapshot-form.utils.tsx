@@ -46,8 +46,9 @@ const buildInitialValues = ({
       previouslyInvoicedItems[item.original_item_uuid] || 0;
     const itemTotalAmount = (item.quantity * item.unit_price_cents) / 100;
 
-    const completionPercentage =
-      (previouslyBuiltAmount / itemTotalAmount) * 100;
+    const completionPercentage = Math.round(
+      (previouslyBuiltAmount / itemTotalAmount) * 100
+    );
 
     return {
       item_id: item.id,
@@ -55,7 +56,6 @@ const buildInitialValues = ({
     };
   };
 
-  console.log({ previouslyInvoicedItems });
   return {
     description: "",
     completion_snapshot_items: itemGroups.flatMap((group) =>

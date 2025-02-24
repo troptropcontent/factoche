@@ -112,9 +112,9 @@ i18n
                                             "name": "Nom",
                                             "status": "Status",
                                             "client": "Client",
-                                            "total_amount": "Montant total",
-                                            "progress": "Avancement",
-                                            "last_invoice_date": "Dérnière facture"
+                                            "total_amount": "Total",
+                                            "invoiced_amount": "Facturé",
+                                            "remaining_amount": "Restant dû"
                                         }
                                     }
                                 },

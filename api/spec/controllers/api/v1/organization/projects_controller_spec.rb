@@ -234,6 +234,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
       let(:company) { FactoryBot.create(:company) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let!(:company_project) { FactoryBot.create(:project, client: client,) }
+      let!(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
       let(:another_company) { FactoryBot.create(:company) }
       let(:another_client) { FactoryBot.create(:client, company: another_company) }
       let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
@@ -242,7 +243,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       response "200", "list company's projects" do
-        schema Organization::ProjectIndexResponseDto.to_schema
+        schema Organization::Projects::IndexDto.to_schema
         run_test! {
           parsed_response = JSON.parse(response.body)
           expect(parsed_response["results"].length).to eq(1)

@@ -11,7 +11,7 @@ class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
   # GET /api/v1/organization/companies/:company_id/projects
   def index
     projects = policy_scope(Organization::Project)
-    render json: Organization::ProjectIndexResponseDto.new({ results: projects }).to_json
+    render json: Organization::Projects::IndexDto.new({ results: projects }).to_json
   end
 
   # POST /api/v1/organization/companies/:company_id/projects
