@@ -79,6 +79,6 @@ fr:
           items:
             designation_label: "Désignation"
             total_label: "Total HT"
-            previously_invoiced_label_html: "Précédemment facturé<br>(A)"
-            new_completion_label_html: "Nouvel avancement<br>(B)"
-            new_invoice_label_html: "Nouvelle facture<br>(B - A)"
+            previously_invoiced_label_html: "Déjà facturé"
+            new_completion_label_html: "Avancement"
+            new_invoice_label_html: "À facturer"

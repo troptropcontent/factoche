@@ -7,6 +7,7 @@ end
 
 class Organization::ProjectShowResponseProjectItemDto < OpenApiDto
   field "id", :integer
+  field "original_item_uuid", :string
   field "position", :integer
   field "name", :string
   field "description", :string, required: false
@@ -26,6 +27,7 @@ end
 class Organization::ProjectShowResponseProjectLastVersionDto < OpenApiDto
   field "id", :integer
   field "number", :integer
+  field "total_amount", :decimal
   field "created_at", :timestamp
   field "completion_snapshots", :array, subtype: Organization::CompletionSnapshots::CompactDto
   field "ungrouped_items", :array, subtype: Organization::ProjectShowResponseProjectItemDto
@@ -38,6 +40,7 @@ class Organization::ProjectShowResponseProjectDto < OpenApiDto
   field "description", :string, required: false
   field "client", :object, subtype: Organization::ProjectShowResponseProjectClientDto
   field "status", :enum, subtype: [ "new", "invoicing_in_progress", "invoiced", "canceled" ]
+  field "invoiced_amount", :decimal
   field "last_version", :object, subtype: Organization::ProjectShowResponseProjectLastVersionDto
 end
 

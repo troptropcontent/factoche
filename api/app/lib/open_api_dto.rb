@@ -213,13 +213,31 @@ class OpenApiDto
   end
 
   def validate_decimal_value!(value, field_name)
-    raise ArgumentError, "Expected an instance of BigDecimal for #{field_name}, got an instance of #{value.class}" unless value.is_a?(BigDecimal)
-    value.to_s
+    return value if value.is_a?(BigDecimal)
+
+    if value.is_a?(String)
+      begin
+        return BigDecimal(value)
+      rescue ArgumentError
+        raise ArgumentError, "Invalid decimal format for #{field_name}: #{value}"
+      end
+    end
+
+    raise ArgumentError, "Expected BigDecimal or string parsable as BigDecimal for #{field_name}, got #{value.class}"
   end
 
   def validate_timestamp_value!(value, field_name)
-    raise ArgumentError, "Expected an instance of ActiveSupport::TimeWithZone for #{field_name}, got an instance of #{value.class}" unless value.is_a?(ActiveSupport::TimeWithZone)
-    value
+    return value if value.is_a?(ActiveSupport::TimeWithZone)
+
+    if value.is_a?(String)
+      begin
+        return Time.zone.parse(value)
+      rescue ArgumentError
+        raise ArgumentError, "Invalid timestamp format for #{field_name}: #{value}"
+      end
+    end
+
+    raise ArgumentError, "Expected ActiveSupport::TimeWithZone or timestamp string for #{field_name}, got #{value.class}"
   end
 
   def validate_array_value!(value, field_name, subtype)
@@ -270,7 +288,7 @@ class OpenApiDto
 
   def validate_enum_value!(value, field_name, subtype)
     if is_field_required?(field_name)
-      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}" unless value.is_a?(String) && subtype.include?(value)
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}#{value.is_a?(String) ? " with value #{value}":""}" unless value.is_a?(String) && subtype.include?(value)
     else
       raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} or nil for #{field_name}, got an instance of #{value.class}" unless (value.is_a?(String) && subtype.include?(value)) || value.nil?
     end

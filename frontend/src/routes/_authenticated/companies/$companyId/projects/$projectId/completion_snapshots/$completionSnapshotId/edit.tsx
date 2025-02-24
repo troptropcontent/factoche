@@ -1,5 +1,5 @@
-import { CompletionSnapshotForm } from "@/components/pages/companies/completion-snapshot/completion-snapshot-form";
-import { ProjectInfo } from "@/components/pages/companies/completion-snapshot/project-info";
+import { CompletionSnapshotFormNew } from "@/components/pages/companies/completion-snapshot/completion-snapshot-form-new";
+import { ProjectSummary } from "@/components/pages/companies/completion-snapshot/project-summary";
 import { Layout } from "@/components/pages/companies/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Api } from "@/lib/openapi-fetch-query-client";
@@ -55,6 +55,32 @@ function RouteComponent() {
   const loaderData = Route.useLoaderData();
   const { companyId, projectId, completionSnapshotId } = Route.useParams();
   const { t } = useTranslation();
+  const mappedInitialValues: typeof loaderData.completionSnapshotData.result = {
+    ...loaderData.completionSnapshotData.result,
+    completion_snapshot_items:
+      loaderData.completionSnapshotData.result.completion_snapshot_items.map(
+        (completion_snapshot_item) => ({
+          ...completion_snapshot_item,
+          completion_percentage: (
+            Number(completion_snapshot_item.completion_percentage) * 100
+          ).toString(),
+        })
+      ),
+  };
+
+  const previouslyInvoicedItems: Record<string, number> =
+    loaderData.completionSnapshotData.result.invoice.payload.transaction.items.reduce(
+      (prev, current) => {
+        prev[current.original_item_uuid] = parseFloat(
+          current.previously_invoiced_amount
+        );
+        return prev;
+      },
+      {}
+    );
+
+  console.log({ previouslyInvoicedItems });
+
   return (
     <Layout.Root>
       <Layout.Header>
@@ -65,24 +91,39 @@ function RouteComponent() {
         </div>
       </Layout.Header>
       <Layout.Content>
-        <ProjectInfo
-          projectData={loaderData.projectData.result}
-          lastCompletionSnapshotData={
-            loaderData.previousCompletionSnapshotData?.result
-          }
+        <ProjectSummary
+          projectName={loaderData.projectData.result.name}
+          projectVersion={{
+            number:
+              loaderData.completionSnapshotData.result.invoice.payload
+                .project_context.version.number,
+            created_at:
+              loaderData.completionSnapshotData.result.invoice.payload
+                .project_context.version.date,
+          }}
+          previouslyInvoicedAmount={parseFloat(
+            loaderData.completionSnapshotData.result.invoice.payload
+              .project_context.previously_billed_amount
+          )}
+          projectTotalAmount={parseFloat(
+            loaderData.completionSnapshotData.result.invoice.payload
+              .project_context.total_amount
+          )}
         />
         <Card>
           <CardContent className="pt-6 space-y-6">
-            <CompletionSnapshotForm
+            <CompletionSnapshotFormNew
+              projectTotal={parseFloat(
+                loaderData.completionSnapshotData.result.invoice.payload
+                  .project_context.total_amount
+              )}
               companyId={Number(companyId)}
               projectId={Number(projectId)}
               itemGroups={
                 loaderData.projectData.result.last_version.item_groups
               }
-              previousCompletionSnapshot={
-                loaderData.previousCompletionSnapshotData?.result
-              }
-              initialValues={loaderData.completionSnapshotData.result}
+              previouslyInvoicedItems={previouslyInvoicedItems}
+              initialValues={mappedInitialValues}
               completionSnapshotId={Number(completionSnapshotId)}
             />
           </CardContent>

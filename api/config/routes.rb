@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  namespace :api do
+  namespace :api, defaults: { format: :json } do
     namespace :v1 do
       namespace :auth do
         post "login", to: "sessions#create"
@@ -28,7 +28,17 @@ Rails.application.routes.draw do
           member do
             get :previous
             post :publish
-            resource :invoice, only: [ :show ]
+            post :cancel
+            defaults format: :html do
+              resource :invoice, only: [ :show ]
+            end
+          end
+        end
+        resources :project_versions do
+          resources :completion_snapshots do
+            collection do
+              get :new_completion_snapshot_data
+            end
           end
         end
         resources :clients, only: [ :show ]

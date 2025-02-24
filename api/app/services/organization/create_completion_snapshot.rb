@@ -9,20 +9,28 @@ module Organization
 
         ensure_item_ids_belong_to_project!(version, create_completion_snapshot_dto)
 
-        Organization::CompletionSnapshot.create!({
-          description: create_completion_snapshot_dto.description,
-          project_version: version,
-          completion_snapshot_items_attributes: create_completion_snapshot_dto.completion_snapshot_items.map { |item| {
-            completion_percentage: item.completion_percentage,
-            item_id: item.item_id
-          }}
-        })
+        ActiveRecord::Base.transaction do
+          issue_date = Time.current
+          snapshot = Organization::CompletionSnapshot.create!({
+            description: create_completion_snapshot_dto.description,
+            project_version: version,
+            completion_snapshot_items_attributes: create_completion_snapshot_dto.completion_snapshot_items.map { |item| {
+              completion_percentage: item.completion_percentage,
+              item_id: item.item_id
+            }}
+          })
+
+          new_invoice = Organization::BuildInvoiceFromCompletionSnapshot.call(snapshot, issue_date)
+
+          new_invoice.save!
+          snapshot.reload
+        end
       end
 
       private
 
       def ensure_no_existing_draft!(project)
-        if project.completion_snapshots.draft.exists?
+        if project.invoices.draft.exists?
           raise Error::UnprocessableEntityError, "A draft already exists for this project. Only one draft can exists for a project at a time."
         end
       end

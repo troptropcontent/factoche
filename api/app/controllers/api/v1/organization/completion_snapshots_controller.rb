@@ -5,7 +5,32 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
     dto = Organization::CreateCompletionSnapshotDto.new(completion_snapshot_params)
     completion_snapshot = Organization::CreateCompletionSnapshot.call(dto, params[:project_id])
 
-    render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: completion_snapshot }).to_json
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: completion_snapshot }).to_json
+  end
+
+  # POST /api/v1/organization/completion_snapshots/:id/cancel
+  def cancel
+    snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
+    result = Organization::CompletionSnapshots::Cancel.call(snapshot)
+
+    if result.success?
+      render json: Organization::CompletionSnapshots::ShowDto.new({ result: snapshot.reload }).to_json
+    else
+      raise Error::UnprocessableEntityError, "Unable to cancel completion snapshot, the following error occurred: #{result.error}"
+    end
+  end
+
+  # GET /api/v1/project_versions/:project_version_id/completion_snapshots/new_completion_snapshot_data
+  def new_completion_snapshot_data
+    project_version = policy_scope(Organization::ProjectVersion).find(params[:project_version_id])
+    unless project_version.is_last_version?
+      raise Error::UnauthorizedError, "Cannot build completion data for a version that is not the last one"
+    end
+
+    new_snapshot = project_version.completion_snapshots.new
+    new_snapshot.invoice = Organization::BuildInvoiceFromCompletionSnapshot.call(new_snapshot, Time.current)
+
+    render json: Organization::CompletionSnapshots::NewCompletionSnapshotDataDto.new({ result: new_snapshot }).to_json
   end
 
   # PUT /api/v1/organization/completion_snapshots/:id
@@ -40,7 +65,7 @@ class Api::V1::Organization::CompletionSnapshotsController < Api::V1::ApiV1Contr
   def show
     snapshot = policy_scope(Organization::CompletionSnapshot).find(params[:id])
 
-    render json: Organization::ShowCompletionSnapshotResponseDto.new({ result: snapshot }).to_json
+    render json: Organization::CompletionSnapshots::ShowDto.new({ result: snapshot }).to_json
   end
 
   # GET  /api/v1/organization/completion_snapshots/:id/previous

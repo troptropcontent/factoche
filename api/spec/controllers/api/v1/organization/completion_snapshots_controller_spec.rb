@@ -29,13 +29,13 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           description: "New version following discussion with the boss",
           completion_snapshot_items: [ {
             item_id: project_version_first_item_group_item.id,
-            completion_percentage: "10"
+            completion_percentage: "0.10"
           } ]
         }
       end
 
       response "200", "completion snapshot successfully created" do
-        schema Organization::ShowCompletionSnapshotResponseDto.to_schema
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
         context "when the project correctly belong to the company and there is no already existing draft" do
           let!(:number_of_completion_snapshot_before) { Organization::CompletionSnapshot.count }
           let!(:number_of_completion_snapshot_items_before) { Organization::CompletionSnapshotItem.count }
@@ -53,14 +53,15 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       response "422", "unprocessable entity" do
         context "when an draft already exists for this project" do
           let!(:already_existing_completion_snapshot) do
-            FactoryBot.create(
+            s = FactoryBot.create(
               "completion_snapshot",
+              "with_invoice",
               {
                 project_version: project_version,
                 description: "New version following discussion with the boss",
                 completion_snapshot_items_attributes: [ {
                   item_id: project_version_first_item_group_item.id,
-                  completion_percentage: "10"
+                  completion_percentage: "0.10"
                 } ]
               }
             )
@@ -78,7 +79,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
               description: "New version following discussion with the boss",
               completion_snapshot_items: [ {
                 item_id: 99999999999,
-                completion_percentage: "10"
+                completion_percentage: "0.10"
               } ]
             }
           end
@@ -119,7 +120,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_config) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
@@ -129,6 +130,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           project_version: company_project_version,
           name: "Item Group",
           grouped_items_attributes: [ {
+            original_item_uuid: SecureRandom.uuid,
             name: "Item",
             unit: "U",
             position: 1,
@@ -145,12 +147,13 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let!(:completion_snapshot) do
         FactoryBot.create(
           "completion_snapshot",
+          :with_invoice,
           {
             project_version: company_project_version,
             description: "New version following discussion with the boss",
             completion_snapshot_items_attributes: [ {
               item_id: company_project_version_item_group.grouped_items.first.id,
-              completion_percentage: "10"
+              completion_percentage: "0.10"
             } ]
           }
         )
@@ -158,7 +161,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:id) { completion_snapshot.id }
 
       response "200", "show completion_snapshot" do
-        schema Organization::ShowCompletionSnapshotResponseDto.to_schema
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
 
         run_test!
       end
@@ -192,12 +195,13 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:completion_snapshot) do
         FactoryBot.create(
           :completion_snapshot,
+          :with_invoice,
           {
             project_version: project_version,
             description: "First snapshot",
             completion_snapshot_items_attributes: [ {
               item_id: project_version_first_item_group_item.id,
-              completion_percentage: "10"
+              completion_percentage: "0.10"
             } ]
           }
         )
@@ -207,7 +211,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           {
             completion_snapshot_items: [ {
               item_id: project_version_first_item_group_item.id,
-              completion_percentage: "20"
+              completion_percentage: "0.20"
             } ]
           }
       }
@@ -222,26 +226,28 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
 
         run_test!("updates the completion snapshot and returns the updated record") do
           parsed_response = JSON.parse(response.body)
-          expect(parsed_response.dig("result", "completion_snapshot_items", 0, "completion_percentage")).to eq("20.0")
+          expect(parsed_response.dig("result", "completion_snapshot_items", 0, "completion_percentage")).to eq("0.2")
         end
       end
 
       response "422", "unprocessable entity" do
         let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-        before { FactoryBot.create(:member, company:, user:) }
+        before {
+          FactoryBot.create(:member, company:, user:)
+        }
 
         context "when the completion snapshot is not in draft status" do
-          before do
-            completion_snapshot.update(invoice: FactoryBot.create(:invoice))
-          end
+          before {
+            completion_snapshot.invoice.update(status: :published)
+          }
 
           run_test!("returns a 422 with an explicit message") do
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("error", "message")).to eq("Cannot update completion snapshot with status 'invoiced'. Only snapshots in 'draft' status can be updated")
+            expect(parsed_response.dig("error", "message")).to eq("Cannot update completion snapshot with status 'published'. Only snapshots in 'draft' status can be updated")
           end
 
           run_test!("does not update the record") do
-            expect(completion_snapshot.completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("10"))
+            expect(completion_snapshot.completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("0.10"))
           end
         end
 
@@ -249,7 +255,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           let(:payload) { {
             completion_snapshot_items: [ {
               item_id: 99999999,
-              completion_percentage: "20"
+              completion_percentage: "0.20"
             } ]
           }}
 
@@ -259,7 +265,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           end
 
           run_test!("does not update the record") do
-            expect(completion_snapshot.completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("10"))
+            expect(completion_snapshot.completion_snapshot_items.first.completion_percentage).to eq(BigDecimal("0.10"))
           end
         end
       end
@@ -294,12 +300,13 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:completion_snapshot) do
         FactoryBot.create(
           :completion_snapshot,
+          :with_invoice,
           {
             project_version: project_version,
             description: "First snapshot",
             completion_snapshot_items_attributes: [ {
               item_id: project_version_first_item_group_item.id,
-              completion_percentage: "10"
+              completion_percentage: "0.10"
             } ]
           }
         )
@@ -325,17 +332,19 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           let(:completion_snapshot) do
             FactoryBot.create(
               :completion_snapshot,
+              :with_invoice,
               {
                 project_version: project_version,
-                description: "First snapshot",
-                invoice: FactoryBot.create(:invoice)
+                description: "First snapshot"
               }
             )
           end
 
+          before { completion_snapshot.invoice.update(status: :published) }
+
           run_test!("it returns a 422 with an explicit message") do
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("error", "message")).to eq("Cannot delete completion snapshot with status 'invoiced'. Only snapshots in 'draft' status can be deleted")
+            expect(parsed_response.dig("error", "message")).to eq("Cannot delete completion snapshot with status 'published'. Only snapshots in 'draft' status can be deleted")
           end
         end
       end
@@ -366,7 +375,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_config) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
@@ -376,6 +385,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           project_version: company_project_version,
           name: "Item Group",
           grouped_items_attributes: [ {
+            original_item_uuid: SecureRandom.uuid,
             name: "Item",
             unit: "U",
             position: 1,
@@ -399,24 +409,26 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
             travel_to(1.day.before) {
               FactoryBot.create(
               "completion_snapshot",
+              :with_invoice,
               {
                 project_version: company_project_version,
                 description: "First snapshot",
                 completion_snapshot_items_attributes: [ {
                   item_id: company_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "10"
+                  completion_percentage: "0.10"
                 } ]
               }
             ) }
 
             FactoryBot.create(
               "completion_snapshot",
+              :with_invoice,
               {
                 project_version: company_project_version,
                 description: "Second snapshot",
                 completion_snapshot_items_attributes: [ {
                   item_id: company_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "20"
+                  completion_percentage: "0.20"
                 } ]
               }
             )
@@ -432,12 +444,13 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           before do
             FactoryBot.create(
               "completion_snapshot",
+              :with_invoice,
               {
                 project_version: company_project_version,
                 description: "New version following discussion with the boss",
                 completion_snapshot_items_attributes: [ {
                   item_id: company_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "20"
+                  completion_percentage: "0.20"
                 } ]
               }
             )
@@ -455,12 +468,13 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           before do
             FactoryBot.create(
               "completion_snapshot",
+              :with_invoice,
               {
                 project_version: company_project_version,
                 description: "New version following discussion with the boss",
                 completion_snapshot_items_attributes: [ {
                   item_id: company_project_version_item_group.grouped_items.first.id,
-                  completion_percentage: "20"
+                  completion_percentage: "0.20"
                 } ]
               }
             )
@@ -499,6 +513,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:snapshot) do
         FactoryBot.create(
           :completion_snapshot,
+          :with_invoice,
           project_version: project_version,
           completion_snapshot_items_attributes: [
             {
@@ -519,7 +534,6 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
 
       let(:user) { FactoryBot.create(:user) }
       before do
-        # register the user within the cpmpany
         FactoryBot.create(:member, user: user, company: company)
       end
 
@@ -535,7 +549,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           run_test!("it creates a new invoice and switch the snapshot to :invoiced") do
             parsed_response = JSON.parse(response.body)
             expect(Organization::CompletionSnapshot.count()).to eq(number_of_invoices_before + 1)
-            expect(parsed_response.dig("result", "status")).to eq("invoiced")
+            expect(parsed_response.dig("result", "status")).to eq("published")
           end
         end
       end
@@ -547,14 +561,101 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           let(:snapshot) do
             FactoryBot.create(
               :completion_snapshot,
+              :with_invoice,
               project_version: project_version,
-              invoice: FactoryBot.create(:invoice)
+            )
+          end
+
+          before {
+            snapshot.invoice.update(status: :published)
+          }
+
+          run_test!("it returns a 422 with an explicit message") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("error", "message")).to eq("Only draft completion snapshots can be transitioned to invoiced")
+          end
+        end
+      end
+    end
+  end
+
+  path '/api/v1/organization/completion_snapshots/{id}/cancel' do
+    parameter name: :id, in: :path, type: :integer
+
+    post "Cancel the completion snapshot" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+
+      include_context 'a company with a project with three item groups'
+
+      let(:project_version_first_item_group_item_quantity) { 1 }
+      let(:project_version_first_item_group_item_unit_price_cents) { 1000 }
+      let(:project_version_second_item_group_item_quantity) { 2 }
+      let(:project_version_second_item_group_item_unit_price_cents) { 2000 }
+      let(:project_version_third_item_group_item_quantity) { 3 }
+      let(:project_version_third_item_group_item_unit_price_cents) { 3000 }
+      let(:snapshot) do
+        FactoryBot.create(
+          :completion_snapshot,
+          :with_invoice,
+          invoice_status: :published,
+          project_version: project_version,
+          completion_snapshot_items_attributes: [
+            {
+              item_id: project_version_first_item_group_item.id,
+              completion_percentage: BigDecimal("0.05")
+            },
+            {
+              item_id: project_version_second_item_group_item.id,
+              completion_percentage: BigDecimal("0.10")
+            },
+            {
+              item_id: project_version_third_item_group_item.id,
+              completion_percentage: BigDecimal("0.15")
+            }
+          ]
+        )
+      end
+
+
+      let(:user) { FactoryBot.create(:user) }
+      before do
+        FactoryBot.create(:member, user: user, company: company)
+      end
+
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:id) { snapshot.id }
+
+      response "200", "completion snapshot cancelled" do
+        schema Organization::CompletionSnapshots::ShowDto.to_schema
+
+        context "when the snapshot is in published mode" do
+          let!(:number_of_credit_note_before) { Organization::CreditNote.count() }
+
+          run_test!("it creates a new credit_note and switch the snapshot status to :cancelled") do
+            parsed_response = JSON.parse(response.body)
+            expect(Organization::CreditNote.count()).to eq(number_of_credit_note_before + 1)
+            expect(parsed_response.dig("result", "status")).to eq("cancelled")
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+
+      response "422", "unprocessable entity" do
+        context "when the completion snapshot is not in published status" do
+          let(:snapshot) do
+            FactoryBot.create(
+              :completion_snapshot,
+              :with_invoice,
+              project_version: project_version,
             )
           end
 
           run_test!("it returns a 422 with an explicit message") do
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("error", "message")).to eq("Only draft completion snapshots can be transitioned to invoiced")
+            expect(parsed_response.dig("error", "message")).to eq("Unable to cancel completion snapshot, the following error occurred: Cannot cancel a completion snapshot that is not published, current snapshot status is draft")
           end
         end
       end
@@ -572,7 +673,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       produces "application/json"
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_config) }
       let(:client) { FactoryBot.create(:client, company: company) }
       let(:company_project) { FactoryBot.create(:project, client: client) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
@@ -582,6 +683,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           project_version: company_project_version,
           name: "Item Group",
           grouped_items_attributes: [ {
+            original_item_uuid: SecureRandom.uuid,
             name: "Item",
             unit: "U",
             position: 1,
@@ -596,30 +698,34 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
       let(:project_id) { company_project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       let!(:completion_snapshot) do
-        FactoryBot.create(
+        snapshot = FactoryBot.create(
           "completion_snapshot",
           {
             project_version: company_project_version,
             description: "New version following discussion with the boss",
             completion_snapshot_items_attributes: [ {
               item_id: company_project_version_item_group.grouped_items.first.id,
-              completion_percentage: "10"
+              completion_percentage: "0.10"
             } ]
           }
         )
+        FactoryBot.create(:invoice, completion_snapshot: snapshot)
+        snapshot
       end
       let!(:another_completion_snapshot) do
-        FactoryBot.create(
+        snapshot = FactoryBot.create(
           "completion_snapshot",
           {
             project_version: company_project_version,
             description: "Another new version following discussion with the boss",
             completion_snapshot_items_attributes: [ {
               item_id: company_project_version_item_group.grouped_items.first.id,
-              completion_percentage: "10"
+              completion_percentage: "0.10"
             } ]
           }
-        )
+          )
+          FactoryBot.create(:invoice, completion_snapshot: snapshot)
+          snapshot
       end
       let(:filter) { {} }
       let(:query) { {} }
@@ -643,6 +749,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
                 project_version: another_project_version,
                 name: "Item Group",
                 grouped_items_attributes: [ {
+                  original_item_uuid: SecureRandom.uuid,
                   name: "Item",
                   unit: "U",
                   position: 1,
@@ -651,17 +758,18 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
                   quantity: 2
                 } ]
               )
-              FactoryBot.create(
+              another_completion_snapshot = FactoryBot.create(
                 :completion_snapshot,
                 {
                   project_version: another_project_version,
                   description: "First completion snapshot for the project",
                   completion_snapshot_items_attributes: [ {
                     item_id: another_project_version_item_group.grouped_items.first.id,
-                    completion_percentage: "10"
+                    completion_percentage: "0.10"
                   } ]
                 }
               )
+              FactoryBot.create(:invoice, completion_snapshot: another_completion_snapshot)
 
               FactoryBot.create(:member, user: user, company: another_company)
             end
@@ -685,6 +793,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
                 project_version: another_project_version,
                 name: "Item Group",
                 grouped_items_attributes: [ {
+                  original_item_uuid: SecureRandom.uuid,
                   name: "Item",
                   unit: "U",
                   position: 1,
@@ -693,17 +802,18 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
                   quantity: 2
                 } ]
               )
-              FactoryBot.create(
+              another_completion_snapshot = FactoryBot.create(
                 :completion_snapshot,
                 {
                   project_version: another_project_version,
                   description: "First completion snapshot for the other project",
                   completion_snapshot_items_attributes: [ {
                     item_id: another_project_version_item_group.grouped_items.first.id,
-                    completion_percentage: "10"
+                    completion_percentage: "0.10"
                   } ]
                 }
               )
+              FactoryBot.create(:invoice, completion_snapshot: another_completion_snapshot)
             end
 
             let(:filter) { { filter: { project_id: Organization::Project.find_by({ name: "AnotherProject" }).id } } }
@@ -724,6 +834,7 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
                 project_version: another_project_version,
                 name: "Item Group",
                 grouped_items_attributes: [ {
+                  original_item_uuid: SecureRandom.uuid,
                   name: "Item",
                   unit: "U",
                   position: 1,
@@ -732,17 +843,18 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
                   quantity: 2
                 } ]
               )
-              FactoryBot.create(
+              another_completion_snapshot = FactoryBot.create(
                 :completion_snapshot,
                 {
                   project_version: another_project_version,
                   description: "First completion snapshot for the new version",
                   completion_snapshot_items_attributes: [ {
                     item_id: another_project_version_item_group.grouped_items.first.id,
-                    completion_percentage: "10"
+                    completion_percentage: "0.10"
                   } ]
                 }
               )
+              FactoryBot.create(:invoice, completion_snapshot: another_completion_snapshot)
             end
 
             let(:filter) { { filter: { project_version_id: Organization::ProjectVersion.find_by({ project_id: company_project.id, number: 2 }).id } } }
@@ -768,6 +880,26 @@ RSpec.describe Api::V1::Organization::CompletionSnapshotsController, type: :requ
           end
         end
       end
+    end
+  end
+
+  path '/api/v1/organization/project_versions/{project_version_id}/completion_snapshots/new_completion_snapshot_data' do
+    parameter name: :project_version_id, in: :path, type: :integer
+    get "Get the draft completion snapshot data" do
+      tags "Completion snapshot"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+      include_context 'a company with a project with three item groups'
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let!(:member) { FactoryBot.create(:member, user: user, company: company) }
+      let(:project_version_id) { project_version.id }
+      response "200", "draft completion snapshot" do
+        schema Organization::CompletionSnapshots::NewCompletionSnapshotDataDto.to_schema
+        run_test!
+      end
+
+      it "Should be fully protected and safe"
     end
   end
 end

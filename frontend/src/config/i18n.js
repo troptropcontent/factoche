@@ -43,7 +43,7 @@ i18n
                             "completion_snapshot": {
                                 "status": {
                                     "draft": "Brouillon",
-                                    "invoiced": "Facturé",
+                                    "published": "Facturé",
                                     "cancelled": "Annulé"
                                 },
                                 "form": {
@@ -72,7 +72,26 @@ i18n
                                         "total": "Total",
                                         "previously_invoiced": "Précédement facturé (A)",
                                         "new_completion_snapshot": "Nouvel avancement (B)",
-                                        "new_invoiced": "Nouvelle facture (B - A)"
+                                        "new_invoiced": "Nouvelle facture (B - A)",
+                                        "new": {
+                                            "title": "Synthese",
+                                            "total": "Total (A)",
+                                            "previously_invoiced": "Précédement facturé (B)",
+                                            "new_completion_snapshot": "Nouvel avancement (C)",
+                                            "new_invoiced": "Restant dû (A - B - C)"
+                                        }
+                                    },
+                                    "actions": {
+                                        "download_invoice_pdf": "Télécharger la facture en pdf",
+                                        "invoice_pdf_unavailable": "Facture pdf en cours de génération",
+                                        "download_credit_note_pdf": "Télécharger l'avoir en pdf",
+                                        "credit_note_pdf_unavailable": "Avoir pdf en cours de génération",
+                                        "cancel_completion_snapshot": "Annuler la situation de travaux",
+                                        "cancel_completion_snapshot_success_toast_title": "Situation de travaux annulée",
+                                        "publish_completion_snapshot": "Valider la situation de travaux",
+                                        "publish_completion_snapshot_success_toast_title": "Situation de travaux validée",
+                                        "edit": "Modifier la situation de travaux",
+                                        "edit_success_toast_title": "Situation de travaux modifiée"
                                     }
                                 },
                                 "grouped_items_details": {
@@ -93,9 +112,9 @@ i18n
                                             "name": "Nom",
                                             "status": "Status",
                                             "client": "Client",
-                                            "total_amount": "Montant total",
-                                            "progress": "Avancement",
-                                            "last_invoice_date": "Dérnière facture"
+                                            "total_amount": "Total",
+                                            "invoiced_amount": "Facturé",
+                                            "remaining_amount": "Restant dû"
                                         }
                                     }
                                 },

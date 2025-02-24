@@ -22,6 +22,10 @@ class Organization::ProjectVersion < ApplicationRecord
     self.class.lasts.exists?(id)
   end
 
+  def total_amount
+    items.sum("(quantity * unit_price_cents)") / BigDecimal("100")
+  end
+
   private
 
   def next_available_number

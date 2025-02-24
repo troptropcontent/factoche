@@ -3,8 +3,8 @@ import { ClientSummaryCard } from "../clients/shared/client-summary-card";
 import { ProjectSummaryCard } from "../projects/shared/project-summary-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { CompletionSnapshotActions } from "./private/completion-snapshot-actions";
-import { CompletionSnapshotSummary } from "./completion-snapshot-summary";
-import { CompletionSnapshotDetails } from "./completion-snapshot-details";
+import { CompletionSnapshotSummaryNew } from "./completion-snapshot-summary-new";
+import { CompletionSnapshotDetailsNew } from "./completion-snapshot-details-new";
 
 const CompletionSnapshotShow = ({
   routeParams: { companyId, projectId, completionSnapshotId },
@@ -52,7 +52,7 @@ const CompletionSnapshotShow = ({
       <div className="md:col-span-2">
         <Card>
           <CardContent className="mt-6 space-y-6">
-            <CompletionSnapshotSummary
+            <CompletionSnapshotSummaryNew
               routeParams={{
                 companyId,
                 projectId,
@@ -61,7 +61,7 @@ const CompletionSnapshotShow = ({
                   completionSnapshotData.result.project_version.id,
               }}
             />
-            <CompletionSnapshotDetails
+            <CompletionSnapshotDetailsNew
               completionSnapshotId={completionSnapshotId}
             />
           </CardContent>

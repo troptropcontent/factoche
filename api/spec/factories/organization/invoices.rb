@@ -1,5 +1,6 @@
 FactoryBot.define do
-  factory :accounting_document, class: 'Organization::AccountingDocument' do
+  factory :invoice, class: 'Organization::Invoice' do
+    status { "draft" }
     completion_snapshot { nil }
     pdf { nil }
     xml { nil }
@@ -11,8 +12,6 @@ FactoryBot.define do
     payload { {} }
     total_excl_tax_amount { BigDecimal("100.00") }
     due_date { Time.current + 30.days }
-
-    factory :invoice, class: 'Organization::Invoice'
-    factory :credit_note, class: 'Organization::CreditNote'
+    total_amount { BigDecimal("110.00") }
   end
 end

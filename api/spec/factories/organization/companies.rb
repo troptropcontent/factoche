@@ -11,5 +11,9 @@ FactoryBot.define do
     rcs_number { "1234556" }
     vat_number { "123456" }
     capital_amount_cents { 1000000 }
+
+    trait :with_config do
+      after(:create) { |company| create(:company_config, company: company) }
+    end
   end
 end

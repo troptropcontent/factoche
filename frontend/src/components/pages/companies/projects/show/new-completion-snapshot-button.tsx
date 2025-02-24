@@ -34,8 +34,6 @@ const NewCompletionSnapshotButton = ({
   const isButtonDisabled =
     isSnapShotsLoading || snapshots.some(({ status }) => status === "draft");
 
-  console.log({ isButtonDisabled });
-
   return (
     <div className="w-full">
       <Button

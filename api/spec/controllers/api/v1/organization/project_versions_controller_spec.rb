@@ -17,6 +17,7 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
       let(:company_project) { FactoryBot.create(:project, client: client,) }
       let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
       let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
+        original_item_uuid: SecureRandom.uuid,
         name: "Item",
         unit: "U",
         position: 1,
@@ -99,6 +100,7 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
       let!(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
       let!(:company_project_version_item_group) {
         FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
+        original_item_uuid: SecureRandom.uuid,
         name: "Item",
         unit: "U",
         position: 1,

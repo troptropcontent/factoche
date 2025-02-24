@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Organization::ProjectVersion, type: :model do
-  subject { FactoryBot.create(:project_version, project: project) }
+  subject(:project_version) { FactoryBot.create(:project_version, project: project) }
 
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company: company) }

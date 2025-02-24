@@ -5,7 +5,7 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case "draft":
       return "bg-gray-500 hover:bg-gray-600";
-    case "invoiced":
+    case "published":
       return "bg-green-500 hover:bg-green-600";
     case "cancelled":
       return "bg-red-500 hover:bg-red-600";

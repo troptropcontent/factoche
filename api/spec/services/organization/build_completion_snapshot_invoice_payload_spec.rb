@@ -6,7 +6,9 @@ module Organization
     include_context 'a company with a project with three item groups'
 
     describe ".call" do
-      subject(:result) { described_class.call(completion_snapshot, Time.current) }
+      subject(:result) { described_class.call(completion_snapshot, issue_date) }
+      let(:issue_date) { DateTime.new(2024, 1, 9) }
+      let(:due_date) { DateTime.new(2024, 2, 8) }
 
       let(:completion_snapshot) do
         FactoryBot.create(
@@ -55,6 +57,12 @@ module Organization
       # rubocop:disable RSpec/ExampleLength
       it "returns a properly structured invoice payload", :aggregate_failures do
         expect(result).to be_a(described_class::Result)
+
+        # DocumentInfo
+        expect(result.document_info.number).to eq("INV-2024-000001")
+        expect(result.document_info.issue_date).to eq(issue_date)
+        expect(result.document_info.delivery_date).to eq(issue_date)
+        expect(result.document_info.due_date).to eq(due_date)
 
         # Payment Term
         expect(result.payment_term.days).to eq(30)
@@ -111,7 +119,7 @@ module Organization
           previously_invoiced_amount: 0,
           completion_percentage: BigDecimal("0.05"),
           completion_amount: BigDecimal("0.05"),
-          completion_invoice_amount: BigDecimal("0.05")
+          invoice_amount: BigDecimal("0.05")
         )
 
 
@@ -157,6 +165,28 @@ module Organization
         it "uses default payment terms", :aggregate_failures do
           expect(result.payment_term.days).to eq(CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "days"))
           expect(result.payment_term.accepted_methods).to eq(CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "accepted_methods"))
+        end
+      end
+
+      context "when an invoice already exists for the snapshot" do
+        let(:completion_snapshot) do
+          FactoryBot.create(
+            :completion_snapshot,
+            :with_invoice,
+            project_version: project_version,
+            completion_snapshot_items_attributes: [
+              {
+                item_id: project_version_first_item_group_item.id,
+                completion_percentage: BigDecimal("0.05")
+              }
+            ]
+          )
+        end
+
+        before { completion_snapshot.invoice.update(number: "INV-000080") }
+
+        it "keeps the invoice number" do
+          expect(result.document_info.number).to eq("INV-000080")
         end
       end
     end

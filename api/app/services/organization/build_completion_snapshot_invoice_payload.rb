@@ -1,5 +1,13 @@
 module Organization
   class BuildCompletionSnapshotInvoicePayload
+    class DocumentInfo
+      include ActiveModel::AttributeAssignment
+      attr_accessor :number,
+                    :issue_date,
+                    :delivery_date,
+                    :due_date
+    end
+
     class PaymentTerm
       include ActiveModel::AttributeAssignment
       attr_accessor :days, :accepted_methods
@@ -48,37 +56,10 @@ module Organization
                     :remaining_amount
     end
 
-    class Item
-      include ActiveModel::AttributeAssignment
-      attr_accessor :name,
-                    :description,
-                    :item_group_id,
-                    :quantity,
-                    :unit,
-                    :unit_price,
-                    :previous_completion_percentage,
-                    :new_completion_percentage
-    end
-
-    class ItemGroup
-      include ActiveModel::AttributeAssignment
-      attr_accessor :name, :description, :id
-    end
-
-    class Transaction
-      include ActiveModel::AttributeAssignment
-      attr_accessor :total_excl_tax_amount,
-                    :tax_rate,
-                    :tax_amount,
-                    :retention_guarantee_amount,
-                    :retention_guarantee_rate,
-                    :items,
-                    :item_groups
-    end
-
     class Result
       include ActiveModel::AttributeAssignment
-      attr_accessor :payment_term,
+      attr_accessor :document_info,
+                    :payment_term,
                     :seller,
                     :billing_address,
                     :delivery_address,
@@ -92,6 +73,7 @@ module Organization
 
         Result.new.tap do |result|
           result.assign_attributes(
+            document_info: build_document_info(snapshot, company, company_config, issue_date),
             payment_term: payment_term(company_config),
             seller: seller(company),
             billing_address: billing_address(client),
@@ -190,13 +172,31 @@ module Organization
         context.name = project.name
         context.version = ProjectVersion.new.tap { |v| v.assign_attributes(number: project_version.number, date: project_version.created_at) }
         context.total_amount = BigDecimal(project_version.items.sum("quantity * unit_price_cents").to_i) / 100
-        context.previously_billed_amount = project.invoices.where(issue_date: ...issue_date).sum("total_excl_tax_amount") - project.credit_notes.where(issue_date: ...issue_date).sum("total_excl_tax_amount")
+        context.previously_billed_amount = project.invoices.where.not(status: :draft).where(issue_date: ...issue_date).sum("total_excl_tax_amount") - project.credit_notes.where.not(status: :draft).where(issue_date: ...issue_date).sum("total_excl_tax_amount")
         context.remaining_amount = context.total_amount - context.previously_billed_amount
         context
       end
 
       def build_transaction_payload(completion_snapshot, issue_date)
         BuildCompletionSnapshotTransactionPayload.call(completion_snapshot, issue_date)
+      end
+
+      def build_document_info(snapshot, company, company_config, issue_date)
+        DocumentInfo.new.tap { |document_info|
+          document_info.assign_attributes({
+            number: snapshot&.invoice&.number || FindNextAvailableInvoiceNumber.call(company, issue_date),
+            issue_date: issue_date,
+            delivery_date: issue_date,
+            due_date: compute_due_date(issue_date, company_config)
+          })
+        }
+      end
+
+      def compute_due_date(issue_date, config)
+        days = config.settings.dig("payment_term", "days") ||
+          Organization::CompanyConfig::DEFAULT_SETTINGS.fetch("payment_term").fetch("days")
+
+        issue_date.advance(days: days)
       end
     end
   end

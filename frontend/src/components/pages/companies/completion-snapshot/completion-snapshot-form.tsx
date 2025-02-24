@@ -22,6 +22,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useToast } from "@/hooks/use-toast";
 import { Check } from "lucide-react";
 import { FormSubmitButton } from "./private/form-submit-button";
+import { divideAllCompletionPercentagesByAHundred } from "./shared/utils";
 
 type CompletionSnapshotFormType = {
   companyId: number;
@@ -95,10 +96,11 @@ const CompletionSnapshotForm = ({
   const triggerCreateMutationAndRedirectToProjectShow = (
     data: z.infer<typeof completionSnapshotFormSchema>
   ) => {
+    const mappedData = divideAllCompletionPercentagesByAHundred(data);
     createCompletionSnapshotMutation(
       {
         params: { path: { company_id: companyId, project_id: projectId } },
-        body: data,
+        body: mappedData,
       },
       {
         onError: () => {
@@ -130,10 +132,11 @@ const CompletionSnapshotForm = ({
     data: z.infer<typeof completionSnapshotFormSchema>,
     completionSnapshotId: number
   ) => {
+    const mappedData = divideAllCompletionPercentagesByAHundred(data);
     updateCompletionSnapshotMutation(
       {
         params: { path: { id: completionSnapshotId } },
-        body: data,
+        body: mappedData,
       },
       {
         onError: () => {

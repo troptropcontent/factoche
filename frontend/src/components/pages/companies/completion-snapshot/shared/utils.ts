@@ -1,6 +1,8 @@
 import { Item, ProjectVersion } from "../../project-versions/shared/types";
 import { computeItemTotalCents } from "../../project-versions/shared/utils";
+import { completionSnapshotFormSchema } from "../completion-snapshot-form.schemas";
 import { CompletionSnapshotItem } from "./types";
+import { z } from "zod";
 
 const computeCompletionSnapShotTotalCents = (completionSnapshotData: {
   completion_snapshot_items: Array<CompletionSnapshotItem>;
@@ -77,10 +79,25 @@ const computeItemCompletionSnapshotValueCents = (
 
   const percentage = Number(completionSnapshotItem.completion_percentage);
 
-  return (percentage / 100) * computeItemTotalCents(item);
+  return percentage * computeItemTotalCents(item);
 };
 
+const divideAllCompletionPercentagesByAHundred = (
+  formData: z.infer<typeof completionSnapshotFormSchema>
+) => ({
+  ...formData,
+  completion_snapshot_items: formData.completion_snapshot_items.map(
+    (completionSnapshotItem) => ({
+      ...completionSnapshotItem,
+      completion_percentage: (
+        Number(completionSnapshotItem.completion_percentage) / 100
+      ).toString(),
+    })
+  ),
+});
+
 export {
+  divideAllCompletionPercentagesByAHundred,
   computeCompletionSnapShotTotalCents,
   sortAndFilterCompletionSnapshots,
   computeCompletionSnapshotItemValueCents,

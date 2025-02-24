@@ -339,8 +339,8 @@ export interface paths {
                         }[];
                     };
                 };
-                /** @description unauthorized */
-                401: {
+                /** @description forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -402,8 +402,8 @@ export interface paths {
                         };
                     };
                 };
-                /** @description unauthorized */
-                401: {
+                /** @description forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -704,6 +704,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/completion_snapshots/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish the completion snapshot */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description completion snapshot published */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/completion_snapshots/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel the completion snapshot */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description completion snapshot cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/completion_snapshots": {
         parameters: {
             query?: never;
@@ -738,6 +850,48 @@ export interface paths {
                     content: {
                         "application/json": {
                             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/project_versions/{project_version_id}/completion_snapshots/new_completion_snapshot_data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_version_id: number;
+            };
+            cookie?: never;
+        };
+        /** Get the draft completion snapshot data */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_version_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description draft completion snapshot */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"];
                         };
                     };
                 };
@@ -888,7 +1042,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            results: components["schemas"]["Organization::ProjectIndexResponseProjectDto"][];
+                            results: components["schemas"]["Organization::Projects::CompactDto"][];
                         };
                     };
                 };
@@ -1116,7 +1270,7 @@ export interface components {
             project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             description?: string | null;
             /** @enum {string} */
-            status: "draft" | "cancelled" | "invoiced";
+            status: "draft" | "cancelled" | "published";
         };
         "Organization::ProjectVersions::CompactDto": {
             id: number;
@@ -1124,6 +1278,8 @@ export interface components {
             /** Format: date-time */
             created_at: string;
             retention_guarantee_rate: number;
+            /** Format: decimal */
+            total_amount: string;
         };
         "Organization::CompletionSnapshotIndexRequestDto": {
             company_id?: number | null;
@@ -1142,7 +1298,7 @@ export interface components {
             id: number;
             description?: string | null;
             /** @enum {string} */
-            status: "draft" | "cancelled" | "invoiced";
+            status: "draft" | "cancelled" | "published";
             project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** Format: date-time */
             created_at: string;
@@ -1150,9 +1306,10 @@ export interface components {
         "Organization::CompletionSnapshots::ExtendedDto": {
             id: number;
             /** @enum {string} */
-            status: "draft" | "cancelled" | "invoiced";
+            status: "draft" | "cancelled" | "published";
             project_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotItems::ExtendedDto"][];
+            invoice: components["schemas"]["Organization::Invoices::ExtendedDto"];
             /** Format: date-time */
             created_at: string;
         };
@@ -1167,6 +1324,7 @@ export interface components {
         };
         "Organization::Items::ExtendedDto": {
             id: number;
+            original_item_uuid: string;
             position: number;
             name: string;
             description?: string | null;
@@ -1181,8 +1339,284 @@ export interface components {
             description?: string | null;
             grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
         };
+        "Organization::Invoices::ExtendedDto::DocumentInfo": {
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            delivery_date: string;
+            /** Format: date-time */
+            due_date: string;
+        };
+        "Organization::Invoices::ExtendedDto::PaymentTerm": {
+            days: number;
+        };
+        "Organization::Invoices::ExtendedDto::Address": {
+            city: string;
+            street: string;
+            zip: string;
+        };
+        "Organization::Invoices::ExtendedDto::Seller": {
+            name: string;
+            address: components["schemas"]["Organization::Invoices::ExtendedDto::Address"];
+            phone: string;
+            siret: string;
+            legal_form: string;
+            /** Format: decimal */
+            capital_amount: string;
+            vat_number: string;
+            rcs_city: string;
+            rcs_number: string;
+        };
+        "Organization::Invoices::ExtendedDto::BillingAddress": {
+            name: string;
+            address: components["schemas"]["Organization::Invoices::ExtendedDto::Address"];
+        };
+        "Organization::Invoices::ExtendedDto::DeliveryAddress": {
+            name: string;
+            address: components["schemas"]["Organization::Invoices::ExtendedDto::Address"];
+        };
+        "Organization::Invoices::ExtendedDto::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::Invoices::ExtendedDto::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::Invoices::ExtendedDto::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_invoiced_amount: string;
+            /** Format: decimal */
+            completion_percentage: string;
+            /** Format: decimal */
+            completion_amount: string;
+            /** Format: decimal */
+            invoice_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::Invoices::ExtendedDto::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            items: components["schemas"]["Organization::Invoices::ExtendedDto::Item"][];
+            item_groups: components["schemas"]["Organization::Invoices::ExtendedDto::ItemGroup"][];
+            /** Format: decimal */
+            invoice_total_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::Payload": {
+            document_info: components["schemas"]["Organization::Invoices::ExtendedDto::DocumentInfo"];
+            payment_term: components["schemas"]["Organization::Invoices::ExtendedDto::PaymentTerm"];
+            seller: components["schemas"]["Organization::Invoices::ExtendedDto::Seller"];
+            billing_address: components["schemas"]["Organization::Invoices::ExtendedDto::BillingAddress"];
+            delivery_address: components["schemas"]["Organization::Invoices::ExtendedDto::DeliveryAddress"];
+            project_context: components["schemas"]["Organization::Invoices::ExtendedDto::ProjectContext"];
+            transaction: components["schemas"]["Organization::Invoices::ExtendedDto::Transaction"];
+        };
+        "Organization::Invoices::ExtendedDto": {
+            pdf_url?: string | null;
+            payload: components["schemas"]["Organization::Invoices::ExtendedDto::Payload"];
+            /** @enum {string} */
+            status: "draft" | "published" | "cancelled";
+            credit_note?: components["schemas"]["Organization::CreditNotes::ExtendedDto"];
+        };
+        "Organization::CreditNotes::ExtendedDto::DocumentInfo": {
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            original_invoice_date: string;
+            original_invoice_number: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Address": {
+            city: string;
+            street: string;
+            zip: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Seller": {
+            name: string;
+            address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
+            phone: string;
+            siret: string;
+            legal_form: string;
+            /** Format: decimal */
+            capital_amount: string;
+            vat_number: string;
+            rcs_city: string;
+            rcs_number: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::BillingAddress": {
+            name: string;
+            address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
+        };
+        "Organization::CreditNotes::ExtendedDto::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::CreditNotes::ExtendedDto::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            credit_note_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::CreditNotes::ExtendedDto::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_incl_tax_amount: string;
+            items: components["schemas"]["Organization::CreditNotes::ExtendedDto::Item"][];
+            item_groups: components["schemas"]["Organization::CreditNotes::ExtendedDto::ItemGroup"][];
+            /** Format: decimal */
+            credit_note_total_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Payload": {
+            document_info: components["schemas"]["Organization::CreditNotes::ExtendedDto::DocumentInfo"];
+            seller: components["schemas"]["Organization::CreditNotes::ExtendedDto::Seller"];
+            billing_address: components["schemas"]["Organization::CreditNotes::ExtendedDto::BillingAddress"];
+            project_context: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectContext"];
+            transaction: components["schemas"]["Organization::CreditNotes::ExtendedDto::Transaction"];
+        };
+        "Organization::CreditNotes::ExtendedDto": {
+            pdf_url?: string | null;
+            payload: components["schemas"]["Organization::CreditNotes::ExtendedDto::Payload"];
+            /** @enum {string} */
+            status: "draft" | "published";
+        };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_invoiced_amount: string;
+            /** Format: decimal */
+            completion_percentage: string;
+            /** Format: decimal */
+            completion_amount: string;
+            /** Format: decimal */
+            invoice_amount: string;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            items: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Item"][];
+            item_groups: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ItemGroup"][];
+            /** Format: decimal */
+            invoice_total_amount: string;
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Payload": {
+            project_context: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectContext"];
+            transaction: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Transaction"];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice": {
+            payload: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Payload"];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot": {
+            invoice: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice"];
+        };
+        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto": {
+            result: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"];
         };
         "Organization::CompletionSnapshots::PreviousDto": {
             result?: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
@@ -1265,6 +1699,7 @@ export interface components {
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::ProjectIndexResponseProjectClientDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** @enum {string} */
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
@@ -1279,6 +1714,7 @@ export interface components {
         };
         "Organization::ProjectShowResponseProjectItemDto": {
             id: number;
+            original_item_uuid: string;
             position: number;
             name: string;
             description?: string | null;
@@ -1296,6 +1732,8 @@ export interface components {
         "Organization::ProjectShowResponseProjectLastVersionDto": {
             id: number;
             number: number;
+            /** Format: decimal */
+            total_amount: string;
             /** Format: date-time */
             created_at: string;
             completion_snapshots: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
@@ -1309,6 +1747,8 @@ export interface components {
             client: components["schemas"]["Organization::ProjectShowResponseProjectClientDto"];
             /** @enum {string} */
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            /** Format: decimal */
+            invoiced_amount: string;
             last_version: components["schemas"]["Organization::ProjectShowResponseProjectLastVersionDto"];
         };
         "Organization::ProjectShowResponseDto": {
@@ -1354,6 +1794,20 @@ export interface components {
         };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+        };
+        "Organization::Projects::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            /** Format: decimal */
+            invoiced_amount: string;
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::IndexDto": {
+            results: components["schemas"]["Organization::Projects::CompactDto"][];
         };
         "Organization::ShowCompletionSnapshotResponseDto": {
             result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
