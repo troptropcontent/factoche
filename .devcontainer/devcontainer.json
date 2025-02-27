@@ -1,45 +1,45 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Factoche Development",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/factoche",
-	"initializeCommand": "echo 'Factoche Development Container Initialization'",
-	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"installZsh": true,
-			"configureZshAsDefaultShell": true,
-			"installOhMyZsh": true,
-			"upgradePackages": true
-		}
-	},
-	"remoteUser": "vscode",
-	// Add customizations for VS Code
-	"customizations": {
-		"vscode": {
-			"settings": {
-				"terminal.integrated.defaultProfile.linux": "zsh"
-			},
-			"extensions": [
-				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg",
-				"GitHub.vscode-pull-request-github",
-				"Postman.postman-for-vscode",
-				"golang.Go",
-				"Shopify.ruby-lsp",
-				"ezforo.copy-relative-path-and-line-numbers",
-				"esbenp.prettier-vscode",
-				"bradlc.vscode-tailwindcss",
-				"nidu.copy-json-path",
-				"rubocop.vscode-rubocop",
-				"vortizhe.simple-ruby-erb",
-				"sorbet.sorbet-vscode-extension"
-			]
-		}
-	},
-	"postCreateCommand": "git config --global user.email ${GIT_EMAIL} && git config --global user.name ${GIT_NAME}"
+  "name": "Factoche Development",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/factoche",
+  "initializeCommand": "echo 'Factoche Development Container Initialization'",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    }
+  },
+  "remoteUser": "vscode",
+  // Add customizations for VS Code
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      },
+      "extensions": [
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "GitHub.vscode-pull-request-github",
+        "Postman.postman-for-vscode",
+        "golang.Go",
+        "Shopify.ruby-lsp",
+        "ezforo.copy-relative-path-and-line-numbers",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "nidu.copy-json-path",
+        "rubocop.vscode-rubocop",
+        "vortizhe.simple-ruby-erb",
+        "sorbet.sorbet-vscode-extension"
+      ]
+    }
+  },
+  "postCreateCommand": "git config --global user.email ${GIT_EMAIL} && git config --global user.name ${GIT_NAME}"
 }
