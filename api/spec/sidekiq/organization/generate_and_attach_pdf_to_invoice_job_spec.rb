@@ -37,7 +37,7 @@ RSpec.describe Organization::GenerateAndAttachPdfToInvoiceJob do
 
       expected_url = Rails.application.routes.url_helpers.api_v1_organization_invoice_url(
         completion_snapshot,
-        host: "app:8080"
+        host: "html_pdf:8081"
       )
 
       expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(expected_url)

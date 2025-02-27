@@ -12,13 +12,45 @@ services:
     env_file:
       - ../.env
       - ../backend/.env.development
-    ports:
-      - "8080:8080"
     networks:
       - development
     depends_on:
       - db
-
+  sidekiq_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/factoche:cached
+    networks:
+      - development
+    working_dir: /factoche/api
+    command: bundle exec sidekiq
+    env_file:
+      - ../.env
+      - ../backend/.env.development
+    depends_on:
+      - redis
+      - db
+  html_pdf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RAILS_HTML_PDF_ENABLED=true
+    volumes:
+      - ..:/factoche:cached
+    env_file:
+      - ../.env
+      - ../backend/.env.development
+    networks:
+      - development
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    working_dir: /factoche/api
+    command: bundle exec rails s -p 8081 -b 0.0.0.0
   db:
     image: postgres:15.4
     restart: unless-stopped
