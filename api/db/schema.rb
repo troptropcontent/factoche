@@ -10,16 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_22_105627) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_27_143825) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "accounting_financial_transaction_status", ["draft", "posted"]
   create_enum "credit_note_status", ["draft", "published"]
   create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
+
+  create_table "accounting_financial_transactions", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "holder_id", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "accounting_financial_transaction_status"
+    t.string "number"
+    t.string "type", null: false
+    t.datetime "issue_date", null: false
+    t.jsonb "context", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_accounting_financial_transactions_on_company_id"
+    t.index ["context"], name: "index_accounting_financial_transactions_on_context", using: :gin
+    t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
