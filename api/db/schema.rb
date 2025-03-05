@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_27_153643) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_27_155435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -21,6 +21,33 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_153643) do
   create_enum "credit_note_status", ["draft", "published"]
   create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
+
+  create_table "accounting_financial_transaction_details", force: :cascade do |t|
+    t.bigint "financial_transaction_id", null: false
+    t.datetime "delivery_date", null: false
+    t.string "seller_name", null: false
+    t.string "seller_registration_number", null: false
+    t.string "seller_address_zipcode", null: false
+    t.string "seller_address_street", null: false
+    t.string "seller_address_city", null: false
+    t.string "seller_vat_number", null: false
+    t.string "client_name", null: false
+    t.string "client_registration_number", null: false
+    t.string "client_address_zipcode", null: false
+    t.string "client_address_street", null: false
+    t.string "client_address_city", null: false
+    t.string "client_vat_number", null: false
+    t.string "delivery_name", null: false
+    t.string "delivery_registration_number", null: false
+    t.string "delivery_address_zipcode", null: false
+    t.string "delivery_address_street", null: false
+    t.string "delivery_address_city", null: false
+    t.string "purchase_order_number", null: false
+    t.datetime "due_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_a3f0028db5"
+  end
 
   create_table "accounting_financial_transaction_lines", force: :cascade do |t|
     t.string "holder_id", null: false
@@ -242,6 +269,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_153643) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "accounting_financial_transaction_details", "accounting_financial_transactions", column: "financial_transaction_id"
   add_foreign_key "accounting_financial_transaction_lines", "accounting_financial_transactions", column: "financial_transaction_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
