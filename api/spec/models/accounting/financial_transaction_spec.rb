@@ -104,11 +104,36 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
         context "when the number has already been assigned for the company" do
           let(:number) { "INV-2005-0002" }
 
-          before { FactoryBot.create(:financial_transaction, company_id: 1, status: :posted, holder: FactoryBot.create(:company), number: number) && transaction.valid? }
+          before { FactoryBot.create(:completion_snapshot_invoice, company_id: 1, status: :posted, holder_id: FactoryBot.create(:company).id, number: number) && transaction.valid? }
 
           it "is invalid" do
             expect(transaction.errors[:number]).to include("has already been taken for this company")
           end
+        end
+      end
+    end
+
+    describe "type" do
+      subject(:transaction) { FactoryBot.build(:completion_snapshot_invoice, company_id: 2, holder_id: 2) }
+
+      context "when the type ends with Invoice" do
+        it { is_expected.to be_valid }
+      end
+
+      context "when the type ends with CreditNote" do
+        before { transaction.type = "SomeTypeOfCreditNote" }
+
+        it { is_expected.to be_valid }
+      end
+
+      context "when the type does not ends with CreditNote or Invoice" do
+        before { transaction.type = "SomeOtherTypeName" }
+
+        it { is_expected.not_to be_valid }
+
+        it "returns a proper message" do
+          transaction.valid?
+          expect(transaction.errors["type"]).to include("must end with Invoice or CreditNote")
         end
       end
     end
