@@ -1,5 +1,7 @@
 require "rails_helper"
 require "swagger_helper"
+require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
+require_relative "shared_examples/an_authenticated_endpoint"
 
 RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
   path "/api/v1/organization/companies/{company_id}/projects" do
@@ -338,6 +340,174 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
           run_test!
         end
       end
+    end
+  end
+
+  path "/api/v1/organization/projects/{id}/invoiced_items" do
+    get "invoiced amount for each item" do
+      tags "Projects"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :id, in: :path, type: :integer
+
+      include_context 'a company with a project with three item groups'
+
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:user) { FactoryBot.create(:user) }
+
+      let(:id) { project.id }
+
+      response "200", "ok" do
+        schema Organization::Projects::InvoicedItemsDto.to_schema
+        before {
+          FactoryBot.create(:member, company:, user:)
+        }
+
+        context "when there is no previous invoices or credit notes" do
+          let(:expected) do
+            {
+              "results" => [
+                {
+                  "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
+                  "invoiced_amount" => "0.0"
+                },
+                {
+                  "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
+                  "invoiced_amount" => "0.0"
+                },
+                {
+                  "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
+                  "invoiced_amount" => "0.0"
+                }
+              ]
+            }
+          end
+
+          run_test!("It returns 0 for each items") do
+            parsed_body = JSON.parse(response.body)
+
+            expect(parsed_body).to eq(expected)
+          end
+        end
+
+        context "when there is some previous invoices or credit notes" do
+          context "when those transaction are before the requested issue date (current time by default)" do
+            let(:expected) do
+              {
+                "results" => [
+                  {
+                    "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
+                    "invoiced_amount" => "4.0"
+                  },
+                  {
+                    "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
+                    "invoiced_amount" => "30.0"
+                  },
+                  {
+                    "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
+                    "invoiced_amount" => "0.0"
+                  }
+                ]
+              }
+            end
+
+            before {
+                previous_invoice = FactoryBot.create(
+                  :completion_snapshot_invoice,
+                  company_id: company.id,
+                  holder_id: project_version.id
+                )
+
+                FactoryBot.create(
+                  :financial_transaction_line,
+                  holder_id: project_version_first_item_group_item.original_item_uuid,
+                  financial_transaction: previous_invoice,
+                  quantity: 2,
+                  unit_price_amount: 2,
+                  excl_tax_amount: 4
+                )
+
+                FactoryBot.create(
+                  :financial_transaction_line,
+                  holder_id: project_version_second_item_group_item.original_item_uuid,
+                  financial_transaction: previous_invoice,
+                  quantity: 10,
+                  unit_price_amount: 3,
+                  excl_tax_amount: 30
+                )
+            }
+
+            run_test!("It returns the relevant amount for each items") do
+              parsed_body = JSON.parse(response.body)
+
+              expect(parsed_body).to eq(expected)
+            end
+          end
+
+          context "when those transaction are after the requested issue date (current time by default)" do
+            let(:expected) do
+              {
+                "results" => [
+                  {
+                    "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
+                    "invoiced_amount" => "0.0"
+                  },
+                  {
+                    "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
+                    "invoiced_amount" => "0.0"
+                  },
+                  {
+                    "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
+                    "invoiced_amount" => "0.0"
+                  }
+                ]
+              }
+            end
+
+            before {
+                previous_invoice = FactoryBot.create(
+                  :completion_snapshot_invoice,
+                  company_id: company.id,
+                  holder_id: project_version.id,
+                  issue_date: 2.days.from_now
+                )
+
+                FactoryBot.create(
+                  :financial_transaction_line,
+                  holder_id: project_version_first_item_group_item.original_item_uuid,
+                  financial_transaction: previous_invoice,
+                  quantity: 2,
+                  unit_price_amount: 2,
+                  excl_tax_amount: 4
+                )
+
+                FactoryBot.create(
+                  :financial_transaction_line,
+                  holder_id: project_version_second_item_group_item.original_item_uuid,
+                  financial_transaction: previous_invoice,
+                  quantity: 10,
+                  unit_price_amount: 3,
+                  excl_tax_amount: 30
+                )
+            }
+
+            run_test!("It does not take those transaction into accoiunt") do
+              parsed_body = JSON.parse(response.body)
+
+              expect(parsed_body).to eq(expected)
+            end
+          end
+        end
+      end
+
+      response "404", "not_found" do
+        context "when the user is not a member of the project's company" do
+          run_test!
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
     end
   end
 end
