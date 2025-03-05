@@ -1,30 +1,44 @@
-class Accounting::FinancialTransaction < ApplicationRecord
-  has_many :lines, class_name: "Accounting::FinancialTransactionLine"
-  has_one :detail, class_name: "Accounting::FinancialTransactionDetail"
+module Accounting
+  class FinancialTransaction < ApplicationRecord
+    InvoiceType = "Invoice".freeze
+    CreditNoteType = "CreditNote".freeze
 
-  enum :status, {
-      draft: "draft",
-      posted: "posted"
-  }, default: :draft, validate: true
+    has_many :lines, class_name: "Accounting::FinancialTransactionLine"
+    has_one :detail, class_name: "Accounting::FinancialTransactionDetail"
 
-  validates :number, presence: true, uniqueness: { scope: :company_id,
-    message: "has already been taken for this company" }, unless: :draft?
-  validate :valid_context?
+    enum :status, {
+        draft: "draft",
+        posted: "posted"
+    }, default: :draft, validate: true
 
-  private
+    validates :number, presence: true, uniqueness: { scope: :company_id,
+      message: "has already been taken for this company" }, unless: :draft?
 
-  def valid_context?
-    return unless self.class.const_defined?("Context")
-    return errors.add(:context, "must be a hash") unless context.is_a?(Hash)
 
-    contract = self.class.const_get("Context").new
-    result = contract.call(context)
+    validate :valid_type_name?
+    validate :valid_context?
 
-    return if result.success?
+    private
 
-    result.errors.to_h.each do |field, messages|
-      messages.each do |message|
-        errors.add(:context, "#{field} #{message}")
+    def valid_context?
+      return unless self.class.const_defined?("Context")
+      return errors.add(:context, "must be a hash") unless context.is_a?(Hash)
+
+      contract = self.class.const_get("Context").new
+      result = contract.call(context)
+
+      return if result.success?
+
+      result.errors.to_h.each do |field, messages|
+        messages.each do |message|
+          errors.add(:context, "#{field} #{message}")
+        end
+      end
+    end
+
+    def valid_type_name?
+      unless type&.ends_with?(InvoiceType) || type&.ends_with?(CreditNoteType)
+        errors.add(:type, "must end with Invoice or CreditNote")
       end
     end
   end
