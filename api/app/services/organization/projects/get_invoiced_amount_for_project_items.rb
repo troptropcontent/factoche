@@ -10,7 +10,7 @@ module Organization
           result = original_item_uuids.map do |original_item_uuid|
             {
               original_item_uuid: original_item_uuid,
-              invoiced_amount: invoiced_amounts[original_item_uuid] || 0
+              invoiced_amount: invoiced_amounts[original_item_uuid] || 0.to_d
             }
           end
 
@@ -42,7 +42,7 @@ module Organization
               END) as total_amount"
             )
             .group(:holder_id)
-            .each_with_object({}) { |record, hash| hash[record.holder_id] = record.total_amount }
+            .each_with_object({}) { |record, hash| hash[record.holder_id] = record.total_amount.to_d }
         end
 
         def fetch_original_item_uuids(project_id)

@@ -939,6 +939,37 @@ paths:
           description: not authorised
         '404':
           description: not found
+  "/api/v1/organization/projects/{id}/invoiced_items":
+    get:
+      summary: invoiced amount for each item
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
+        '404':
+          description: not_found
+        '403':
+          description: forbiden
 components:
   schemas:
     client:
@@ -2578,6 +2609,26 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Projects::CompactDto"
+    Organization::Projects::InvoicedItemDto:
+      type: object
+      required:
+      - original_item_uuid
+      - invoiced_amount
+      properties:
+        original_item_uuid:
+          type: string
+        invoiced_amount:
+          type: string
+          format: decimal
+    Organization::Projects::InvoicedItemsDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
     Organization::ShowCompletionSnapshotResponseDto:
       type: object
       required:

@@ -1,5 +1,5 @@
 class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
-  before_action :load_and_authorise_company!
+  before_action :load_and_authorise_company!, except: :invoiced_items
 
   # GET /api/v1/organization/companies/:company_id/projects/:project_id
   def show
@@ -12,6 +12,17 @@ class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
   def index
     projects = policy_scope(Organization::Project)
     render json: Organization::Projects::IndexDto.new({ results: projects }).to_json
+  end
+
+  # GET /api/v1/organization/projects/:id/invoiced_items
+  def invoiced_items
+    project = policy_scope(Organization::Project).find(params[:id])
+
+    result = Organization::Projects::GetInvoicedAmountForProjectItems.call(project.client.company_id, project.id)
+
+    raise Error::UnprocessableEntityError.new(result.error) unless result.success?
+
+    render json: Organization::Projects::InvoicedItemsDto.new({ results: result.data })
   end
 
   # POST /api/v1/organization/companies/:company_id/projects
