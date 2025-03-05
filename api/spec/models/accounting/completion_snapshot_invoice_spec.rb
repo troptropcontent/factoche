@@ -2,24 +2,26 @@ require 'rails_helper'
 
 module Accounting
   RSpec.describe CompletionSnapshotInvoice do
-    subject(:invoice) { described_class.new(holder:, context: context) }
+    subject(:invoice) { described_class.new(holder_id: 2, company_id: 2, context: context) }
 
-    let(:holder) { FactoryBot.build(:completion_snapshot) }
     let(:context) do
       {
         project_version_number: 1,
         project_version_date: Time.current.iso8601,
         project_total_amount: BigDecimal('1000.00'),
         project_total_previously_billed_amount: BigDecimal('500.00'),
+        project_version_retention_guarantee_rate: BigDecimal('0.05'),
         project_version_items: [
           {
-            uuid: SecureRandom.uuid,
+            original_item_uuid: SecureRandom.uuid,
             name: 'Item 1',
             description: 'Description 1',
             quantity: 2,
             unit: 'pieces',
             unit_price_amount: BigDecimal('100.00'),
-            previously_billed_amount: BigDecimal('50.00')
+            previously_billed_amount: BigDecimal('50.00'),
+            tax_rate: BigDecimal("0.2"),
+            group_id: nil
           }
         ],
         project_version_item_groups: [
