@@ -1,4 +1,5 @@
 class Accounting::FinancialTransaction < ApplicationRecord
+  has_many :lines, class_name: "Accounting::FinancialTransactionLine"
   enum :status, {
       draft: "draft",
       posted: "posted"

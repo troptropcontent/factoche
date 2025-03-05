@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_27_143825) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_27_153643) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -21,6 +21,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_143825) do
   create_enum "credit_note_status", ["draft", "published"]
   create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
+
+  create_table "accounting_financial_transaction_lines", force: :cascade do |t|
+    t.string "holder_id", null: false
+    t.bigint "financial_transaction_id", null: false
+    t.string "unit", null: false
+    t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
+    t.decimal "quantity", precision: 15, scale: 2, null: false
+    t.decimal "tax_rate", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_rate", precision: 15, scale: 2, null: false
+    t.decimal "excl_tax_amount", precision: 15, scale: 2, null: false
+    t.bigint "group_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_7c8e3e3158"
+    t.index ["group_id"], name: "index_accounting_financial_transaction_lines_on_group_id"
+    t.index ["holder_id"], name: "index_accounting_financial_transaction_lines_on_holder_id"
+  end
 
   create_table "accounting_financial_transactions", force: :cascade do |t|
     t.bigint "company_id", null: false
@@ -225,6 +242,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_143825) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "accounting_financial_transaction_lines", "accounting_financial_transactions", column: "financial_transaction_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
