@@ -72,7 +72,7 @@ module Accounting
               holder_id: original_item_uuid,
               financial_transaction: { issue_date: ...issue_date, status: :posted }
             )
-            .sum("(unit_price_amount * quantity)")
+            .sum("excl_tax_amount")
         end
       end
     end
