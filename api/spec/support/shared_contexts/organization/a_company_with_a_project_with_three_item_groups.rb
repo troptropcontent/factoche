@@ -28,5 +28,6 @@ RSpec.shared_context 'a company with a project with three item groups' do
         unit: send("project_version_#{ordinal}_item_group_item_unit"),
         original_item_uuid: SecureRandom.uuid)
     end
+    let("#{ordinal}_item") { send("project_version_#{ordinal}_item_group_item") }
   end
 end
