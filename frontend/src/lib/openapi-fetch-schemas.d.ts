@@ -1186,6 +1186,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/projects/{id}/invoiced_items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** invoiced amount for each item */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not_found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1321,6 +1375,7 @@ export interface components {
             retention_guarantee_rate: number;
             ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
             item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+            items: components["schemas"]["Organization::Items::ExtendedDto"][];
         };
         "Organization::Items::ExtendedDto": {
             id: number;
@@ -1331,6 +1386,7 @@ export interface components {
             quantity: number;
             unit: string;
             unit_price_cents: number;
+            item_group_id?: number | null;
         };
         "Organization::ItemGroups::ExtendedDto": {
             id: number;
@@ -1749,7 +1805,7 @@ export interface components {
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
             /** Format: decimal */
             invoiced_amount: string;
-            last_version: components["schemas"]["Organization::ProjectShowResponseProjectLastVersionDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
         };
         "Organization::ProjectShowResponseDto": {
             result: components["schemas"]["Organization::ProjectShowResponseProjectDto"];
@@ -1808,6 +1864,14 @@ export interface components {
         };
         "Organization::Projects::IndexDto": {
             results: components["schemas"]["Organization::Projects::CompactDto"][];
+        };
+        "Organization::Projects::InvoicedItemDto": {
+            original_item_uuid: string;
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
+        "Organization::Projects::InvoicedItemsDto": {
+            results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
         };
         "Organization::ShowCompletionSnapshotResponseDto": {
             result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];

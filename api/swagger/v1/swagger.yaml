@@ -1315,6 +1315,7 @@ components:
       - retention_guarantee_rate
       - ungrouped_items
       - item_groups
+      - items
       properties:
         id:
           type: integer
@@ -1333,6 +1334,10 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
+        items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
     Organization::Items::ExtendedDto:
       type: object
       required:
@@ -1361,6 +1366,9 @@ components:
           type: string
         unit_price_cents:
           type: integer
+        item_group_id:
+          type: integer
+          nullable: true
     Organization::ItemGroups::ExtendedDto:
       type: object
       required:
@@ -2448,7 +2456,7 @@ components:
           type: string
           format: decimal
         last_version:
-          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectLastVersionDto"
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
     Organization::ProjectShowResponseDto:
       type: object
       required:
