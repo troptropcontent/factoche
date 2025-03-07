@@ -5,7 +5,7 @@ module Accounting
         def call(company, client, project_version, issue_date)
           attributes = {
               delivery_date: issue_date,
-              due_date: issue_date + company.fetch(:config).fetch("payment_term").fetch("days").to_i.days,
+              due_date: issue_date + company.fetch(:config).fetch(:payment_term).fetch(:days).to_i.days,
               seller_name: company.fetch(:name),
               seller_registration_number: company.fetch(:registration_number),
               seller_address_zipcode: company.fetch(:address_zipcode),
