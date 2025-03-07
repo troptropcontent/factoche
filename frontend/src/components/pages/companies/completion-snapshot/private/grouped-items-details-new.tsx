@@ -38,7 +38,7 @@ const ItemRow = ({
       groupedItem,
       completionSnapshotItems
     );
-  console.log({ thisItemCompletionSnapshotValueCents });
+
   const thisItemInvoiceAmount =
     thisItemCompletionSnapshotValueCents / 100 - previouslyBuiltAmount;
 
@@ -89,7 +89,7 @@ const GroupedItemsDetailsNew = ({
   invoice: object;
 }) => {
   const { t } = useTranslation();
-  console.log({ invoice, itemGroups });
+
   const findPreviouslyInvoiedAmount = (original_item_uuid: string) => {
     const payloadItem = invoice.payload.transaction.items.find(
       (item) => item.original_item_uuid === original_item_uuid

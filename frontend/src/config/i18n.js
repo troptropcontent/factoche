@@ -213,21 +213,48 @@ i18n
                                         "project_total": "Total:"
                                     },
                                     "new_completion_snapshot": "Nouvelle situation de travaux",
-                                    "completion_snapshots_summary": {
-                                        "title": "Situations de travaux",
+                                    "completion_snapshot_invoices_summary": {
+                                        "title": "Factures d'avancement",
                                         "empty_state": {
-                                            "title": "Aucune situation de travaux trouvée",
-                                            "description": "Créer une situation de travaux pour commencer à facturer",
-                                            "action_label": "Créer une situation de travaux"
+                                            "title": "Aucune facture d'avancement trouvée",
+                                            "description": "Créer une facture d'avancement pour commencer à facturer",
+                                            "action_label": "Créer une facture d'avancement"
                                         },
                                         "columns": {
                                             "number": "Numéro",
                                             "date": "Date",
-                                            "version": "Version",
                                             "status": "Status"
                                         },
-                                        "new_completion_snapshot_button": {
-                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule situation en cours de rédaction"
+                                        "new_completion_snapshot_invoice_button": {
+                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule facture en cours de rédaction"
+                                        }
+                                    }
+                                },
+                                "invoices": {
+                                    "completion_snapshot": {
+                                        "new": {
+                                            "title": "Nouvelle facture d'avancement",
+                                        },
+                                        "form": {
+                                            "project_summary": {
+                                                "title": "Information projet",
+                                                "columns": {
+                                                    "name": "Nom",
+                                                    "version": "Version",
+                                                    "total": "Montant total",
+                                                    "previously_invoiced": "Précédement facturé",
+                                                    "new_invoice_amount": "Nouvelle facture",
+                                                    "remaining_amount": "Restant dû",
+                                                }
+                                            },
+                                            "columns": {
+                                                "designation": "Designation",
+                                                "total": "Total",
+                                                "previously_invoiced_amount": "Précédement facturé",
+                                                "new_completion_percentage": "Nouvel avancement",
+                                                "new_invoice_amount": "Nouvelle facture",
+                                            },
+                                            "total_info": "Total de la facture: <strong>{{total}}<strong>"
                                         }
                                     }
                                 }

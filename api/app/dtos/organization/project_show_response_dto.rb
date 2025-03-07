@@ -41,7 +41,7 @@ class Organization::ProjectShowResponseProjectDto < OpenApiDto
   field "client", :object, subtype: Organization::ProjectShowResponseProjectClientDto
   field "status", :enum, subtype: [ "new", "invoicing_in_progress", "invoiced", "canceled" ]
   field "invoiced_amount", :decimal
-  field "last_version", :object, subtype: Organization::ProjectShowResponseProjectLastVersionDto
+  field "last_version", :object, subtype: Organization::ProjectVersions::ExtendedDto
 end
 
 class Organization::ProjectShowResponseDto < OpenApiDto

@@ -10,7 +10,7 @@ module Accounting
         let(:company_id) { 1 }
         let(:new_invoice_items) { [ {
           original_item_uuid: first_item_uuid,
-          invoice_amount: 125
+          invoice_amount: "125.23"
         } ] }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
@@ -112,10 +112,10 @@ module Accounting
             invoice = result.data
 
             expect(invoice.lines.count).to eq(2)
-            expect(invoice.lines.first.excl_tax_amount).to eq(125)
+            expect(invoice.lines.first.excl_tax_amount).to eq('125.23'.to_d)
             expect(invoice.lines.second.excl_tax_amount).to eq(0.to_d)
 
-            expect(invoice.lines.first.quantity).to eq("1.25".to_d) # 125 € (invoice amount) / 100 € (unit price) => the proportional quantity required to reach the amount invoiced
+            expect(invoice.lines.first.quantity).to eq("1.2523".to_d) # 125 € (invoice amount) / 100 € (unit price) => the proportional quantity required to reach the amount invoiced
           end
 
           # rubocop:disable RSpec/ExampleLength

@@ -54,7 +54,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_155435) do
     t.bigint "financial_transaction_id", null: false
     t.string "unit", null: false
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
-    t.decimal "quantity", precision: 15, scale: 2, null: false
+    t.decimal "quantity", precision: 15, scale: 6, null: false
     t.decimal "tax_rate", precision: 15, scale: 2, null: false
     t.decimal "retention_guarantee_rate", precision: 15, scale: 2, null: false
     t.decimal "excl_tax_amount", precision: 15, scale: 2, null: false

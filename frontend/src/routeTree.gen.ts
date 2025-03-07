@@ -23,6 +23,7 @@ import { Route as AuthenticatedCompaniesCompanyIdClientsNewImport } from './rout
 import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/index'
 import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new'
 import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/index'
+import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new'
 import { Route as AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditImport } from './routes/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit'
 
 // Create/Update Routes
@@ -107,6 +108,15 @@ const AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsComplet
     {
       id: '/projects/$projectId/completion_snapshots/$completionSnapshotId/',
       path: '/projects/$projectId/completion_snapshots/$completionSnapshotId/',
+      getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+    } as any,
+  )
+
+const AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute =
+  AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewImport.update(
+    {
+      id: '/projects/$projectId/invoices/completion_snapshots/new',
+      path: '/projects/$projectId/invoices/completion_snapshots/new',
       getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
     } as any,
   )
@@ -208,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditImport
       parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
     }
+    '/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new': {
+      id: '/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new'
+      path: '/projects/$projectId/invoices/completion_snapshots/new'
+      fullPath: '/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
+    }
     '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/': {
       id: '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/'
       path: '/projects/$projectId/completion_snapshots/$completionSnapshotId'
@@ -229,6 +246,7 @@ interface AuthenticatedCompaniesCompanyIdRouteChildren {
   AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
   AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
   AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute
+  AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute
   AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute
 }
 
@@ -250,6 +268,8 @@ const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompan
       AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute,
     AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute:
       AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute,
+    AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute:
+      AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute,
     AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute:
       AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute,
   }
@@ -287,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/companies/$companyId/projects/$projectId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
   '/companies/$companyId/projects/$projectId/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
   '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute
+  '/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute
   '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute
 }
 
@@ -301,6 +322,7 @@ export interface FileRoutesByTo {
   '/companies/$companyId/projects/$projectId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
   '/companies/$companyId/projects/$projectId/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
   '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute
+  '/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute
   '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute
 }
 
@@ -318,6 +340,7 @@ export interface FileRoutesById {
   '/_authenticated/companies/$companyId/projects/$projectId/': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdIndexRoute
   '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsNewRoute
   '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdEditRoute
+  '/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdInvoicesCompletionsnapshotsNewRoute
   '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/': typeof AuthenticatedCompaniesCompanyIdProjectsProjectIdCompletionsnapshotsCompletionSnapshotIdIndexRoute
 }
 
@@ -336,6 +359,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/projects/$projectId'
     | '/companies/$companyId/projects/$projectId/completion_snapshots/new'
     | '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit'
+    | '/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new'
     | '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -349,6 +373,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/projects/$projectId'
     | '/companies/$companyId/projects/$projectId/completion_snapshots/new'
     | '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit'
+    | '/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new'
     | '/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId'
   id:
     | '__root__'
@@ -364,6 +389,7 @@ export interface FileRouteTypes {
     | '/_authenticated/companies/$companyId/projects/$projectId/'
     | '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new'
     | '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit'
+    | '/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new'
     | '/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/'
   fileRoutesById: FileRoutesById
 }
@@ -418,6 +444,7 @@ export const routeTree = rootRoute
         "/_authenticated/companies/$companyId/projects/$projectId/",
         "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/new",
         "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit",
+        "/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new",
         "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/"
       ]
     },
@@ -451,6 +478,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit": {
       "filePath": "_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/edit.tsx",
+      "parent": "/_authenticated/companies/$companyId"
+    },
+    "/_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new": {
+      "filePath": "_authenticated/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new.tsx",
       "parent": "/_authenticated/companies/$companyId"
     },
     "/_authenticated/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId/": {

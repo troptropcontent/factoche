@@ -79,8 +79,6 @@ function RouteComponent() {
       {}
     );
 
-  console.log({ previouslyInvoicedItems });
-
   return (
     <Layout.Root>
       <Layout.Header>

@@ -3,8 +3,8 @@ module Accounting
     InvoiceType = "Invoice".freeze
     CreditNoteType = "CreditNote".freeze
 
-    has_many :lines, class_name: "Accounting::FinancialTransactionLine"
-    has_one :detail, class_name: "Accounting::FinancialTransactionDetail"
+    has_many :lines, class_name: "Accounting::FinancialTransactionLine", dependent: :destroy
+    has_one :detail, class_name: "Accounting::FinancialTransactionDetail", dependent: :destroy
 
     enum :status, {
         draft: "draft",
