@@ -17,7 +17,7 @@ class Accounting::FinancialTransactionLine < ApplicationRecord
   private
 
   def validate_excl_tax_amount_calculation
-    return if [ quantity, unit_price_amount ].all? && excl_tax_amount == (expected_amount = quantity * unit_price_amount)
+    return if [ quantity, unit_price_amount ].all? && excl_tax_amount.round(2) == (expected_amount = quantity * unit_price_amount).round(2)
 
     errors.add(:excl_tax_amount, "must equal quantity * unit_price_amount (#{expected_amount})")
   end
