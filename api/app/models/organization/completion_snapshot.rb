@@ -4,5 +4,7 @@ class Organization::CompletionSnapshot < ApplicationRecord
   accepts_nested_attributes_for :completion_snapshot_items
   has_one :invoice, class_name: "Organization::Invoice", dependent: :destroy
 
-  delegate :status, to: :invoice
+  def status
+    "draft"
+  end
 end
