@@ -36,11 +36,14 @@ const TotalInfoNew = ({
 
   return (
     <p>
-      {t("pages.companies.completion_snapshot.form.total_label", {
-        total: t("common.number_in_currency", {
-          amount: completionTotalAmount - previouslyInvoicedItemsAmount,
-        }),
-      })}
+      {t(
+        "pages.companies.projects.invoices.completion_snapshot.form.total_info",
+        {
+          total: t("common.number_in_currency", {
+            amount: completionTotalAmount - previouslyInvoicedItemsAmount,
+          }),
+        }
+      )}
     </p>
   );
 };

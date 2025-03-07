@@ -58,7 +58,6 @@ const CompletionSnapshotFormNew = ({
   projectId,
   itemGroups,
   previouslyInvoicedItems,
-  projectTotal,
   initialValues,
   completionSnapshotId,
 }: CompletionSnapshotFormType) => {
@@ -71,8 +70,6 @@ const CompletionSnapshotFormNew = ({
     "put",
     "/api/v1/organization/completion_snapshots/{id}"
   );
-
-  console.log({ i: projectTotal });
 
   const defaultValues = initialValues
     ? {
@@ -88,8 +85,6 @@ const CompletionSnapshotFormNew = ({
     resolver: zodResolver(completionSnapshotFormSchema),
     defaultValues: defaultValues,
   });
-
-  console.log({ defaultValues });
 
   const navigate = useNavigate();
 
