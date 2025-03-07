@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_07_131243) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_07_140960) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -56,7 +56,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_07_131243) do
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
     t.decimal "quantity", precision: 15, scale: 6, null: false
     t.decimal "tax_rate", precision: 15, scale: 2, null: false
-    t.decimal "retention_guarantee_rate", precision: 15, scale: 2, null: false
     t.decimal "excl_tax_amount", precision: 15, scale: 2, null: false
     t.bigint "group_id"
     t.datetime "created_at", null: false
@@ -120,6 +119,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_07_131243) do
     t.string "address_zipcode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "vat_number", null: false
     t.index ["company_id"], name: "index_organization_clients_on_company_id"
     t.index ["registration_number", "company_id"], name: "idx_on_registration_number_company_id_fc061ed019", unique: true
   end

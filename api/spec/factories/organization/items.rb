@@ -9,5 +9,6 @@ FactoryBot.define do
     quantity { 1 }
     unit { "unité" }
     unit_price_cents { 1 }
+    tax_rate { 0.2 }
   end
 end

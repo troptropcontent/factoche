@@ -21,7 +21,6 @@ module Accounting
               unit_price_amount: project_version_item.fetch("unit_price_amount").to_d,
               excl_tax_amount: invoice_amount,
               tax_rate: project_version_item.fetch("tax_rate").to_d,
-              retention_guarantee_rate: invoice_context.fetch("project_version_retention_guarantee_rate").to_d,
               group_id: project_version_item.fetch("group_id")
             }
           end
