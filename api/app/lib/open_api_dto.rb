@@ -23,7 +23,9 @@ class OpenApiDto
       validate_enum_subtype!(name, type, subtype) if type == :enum
 
       fields[name] = { type: type, subtype: subtype, required: required }
-      attr_reader name
+
+      define_getters(name)
+
       define_setter(name, type, subtype)
 
       OpenApiDto.register_schema(self.name, self.to_schema())
@@ -110,6 +112,15 @@ class OpenApiDto
         end
       end
     end
+
+    def define_getters(name)
+      define_method(name) do
+        instance_variable_get("@#{name}")
+      end
+      define_method("[]") do |arg|
+        send(arg)
+      end
+    end
   end
 
   def initialize(base_object)
@@ -126,6 +137,10 @@ class OpenApiDto
     else
       raise ArgumentError, "Unhandled argument for initialization, handled types are hash or instance of ActiveRecord::Base"
     end
+  end
+
+  def fetch(attribute)
+    send(attribute)
   end
 
   private
