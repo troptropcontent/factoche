@@ -36,9 +36,9 @@
 		"scope": "ruby",
 		"prefix": "cc",
 		"body": [
-			"require \"support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups\"",
-			"include_context 'a company with a project with three item groups'"
+			"require \"support/shared_contexts/organization/a_company_with_a_project_with_three_items\"",
+			"include_context 'a company with a project with three items'"
 		],
-		"description": "Include shared context: a company with a project with three item groups"
+		"description": "Include shared context: a company with a project with three items"
 	}
 }
