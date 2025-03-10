@@ -4,14 +4,19 @@ require "support/shared_contexts/organization/a_company_with_a_project_with_thre
 
 RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
   include_context 'a company with a project with three item groups'
+
   describe '.call' do
     subject(:result) { described_class.call(project_version.id, params) }
 
     let(:params) do
-     { invoice_amounts:  [ {
-      original_item_uuid: first_item.original_item_uuid,
-      invoice_amount: first_item.quantity % 3 *  first_item.unit_price_cents / 100
-    } ] }
+      {
+        invoice_amounts: [
+          {
+            original_item_uuid: first_item.original_item_uuid,
+            invoice_amount: first_item.quantity % 3 * first_item.unit_price_cents / 100
+          }
+        ]
+      }
     end
 
     context 'when all validations pass' do
@@ -27,9 +32,9 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
 
     context 'when validations fail' do
       context 'when project version is not the last one' do
-        before {
+        before do
           FactoryBot.create(:project_version, project: project, retention_guarantee_rate: project_version_retention_guarantee_rate)
-        }
+        end
 
         it { is_expected.to be_failure }
 
@@ -40,10 +45,14 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
 
       context 'when invoice amount references non-existent item' do
         let(:params) do
-          { invoice_amounts: [ {
-            original_item_uuid: 'non-existent-uuid',
-            invoice_amount: 100.0
-          } ] }
+          {
+            invoice_amounts: [
+              {
+                original_item_uuid: 'non-existent-uuid',
+                invoice_amount: 100.0
+              }
+            ]
+          }
         end
 
         it { is_expected.to be_failure }
