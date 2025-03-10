@@ -40,5 +40,12 @@
 			"include_context 'a company with a project with three items'"
 		],
 		"description": "Include shared context: a company with a project with three items"
+	},
+	"auth": {
+		"scope": "ruby",
+		"prefix": "auth",
+		"body": [
+			"it_behaves_like \"an authenticated endpoint\""
+		],
 	}
 }
