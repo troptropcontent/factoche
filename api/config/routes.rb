@@ -40,6 +40,9 @@ Rails.application.routes.draw do
               get :new_completion_snapshot_data
             end
           end
+          namespace :invoices do
+            post :completion_snapshot, to: "completion_snapshots#create"
+          end
         end
         resources :clients, only: [ :show ]
         resources :projects do
