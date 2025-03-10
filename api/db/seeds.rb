@@ -43,7 +43,8 @@ client = Organization::Client.create!(
   phone: "+33612345678",
   address_street: "26 Cours De L'exemple",
   address_city: "Reims Cedex",
-  address_zipcode: "51723"
+  address_zipcode: "51723",
+  vat_number: "1234"
 )
 
 project = Organization::Project.create!(
@@ -62,7 +63,8 @@ item_groups_params = [
           quantity: 1,
           unit: "ENS",
           unit_price_cents: 123500,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -70,7 +72,8 @@ item_groups_params = [
           quantity: 1,
           unit: "ENS",
           unit_price_cents: 134500,
-          position: 1
+          position: 1,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -78,7 +81,8 @@ item_groups_params = [
           quantity: 1,
           unit: "ENS",
           unit_price_cents: 200000,
-          position: 2
+          position: 2,
+          tax_rate: "0.20"
         }
       ]
     },
@@ -92,7 +96,8 @@ item_groups_params = [
           quantity: 2,
           unit: "U",
           unit_price_cents: 725000,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -100,7 +105,8 @@ item_groups_params = [
           quantity: 2,
           unit: "ENS",
           unit_price_cents: 22300,
-          position: 1
+          position: 1,
+          tax_rate: "0.20"
         }
       ]
     },
@@ -114,7 +120,8 @@ item_groups_params = [
           quantity: 100,
           unit: "ML",
           unit_price_cents: 44500,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -122,7 +129,8 @@ item_groups_params = [
           quantity: 27,
           unit: "ML",
           unit_price_cents: 39500,
-          position: 1
+          position: 1,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -130,7 +138,8 @@ item_groups_params = [
           quantity: 42,
           unit: "ML",
           unit_price_cents: 41200,
-          position: 2
+          position: 2,
+          tax_rate: "0.20"
         }
       ]
     },
@@ -144,7 +153,8 @@ item_groups_params = [
           quantity: 5,
           unit: "U",
           unit_price_cents: 75300,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         }
       ]
     },
@@ -158,7 +168,8 @@ item_groups_params = [
           quantity: 2,
           unit: "U",
           unit_price_cents: 896000,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -166,7 +177,8 @@ item_groups_params = [
           quantity: 5,
           unit: "U",
           unit_price_cents: 414400,
-          position: 1
+          position: 1,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -174,7 +186,8 @@ item_groups_params = [
           quantity: 20,
           unit: "U",
           unit_price_cents: 368500,
-          position: 2
+          position: 2,
+          tax_rate: "0.20"
         }
       ]
     },
@@ -188,7 +201,8 @@ item_groups_params = [
           quantity: 46,
           unit: "ML",
           unit_price_cents: 9200,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -196,7 +210,8 @@ item_groups_params = [
           quantity: 2,
           unit: "ENS",
           unit_price_cents: 22700,
-          position: 1
+          position: 1,
+          tax_rate: "0.20"
         }
       ]
     },
@@ -210,7 +225,8 @@ item_groups_params = [
           quantity: 2,
           unit: "ENS",
           unit_price_cents: 225000,
-          position: 0
+          position: 0,
+          tax_rate: "0.20"
         },
         {
           original_item_uuid: SecureRandom.uuid,
@@ -218,7 +234,8 @@ item_groups_params = [
           quantity: 1,
           unit: "ENS",
           unit_price_cents: 845000,
-          position: 1
+          position: 1,
+          tax_rate: "0.20"
         }
       ]
     }
