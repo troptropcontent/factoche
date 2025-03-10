@@ -23,29 +23,26 @@ const NewCompletionSnapshotButton = ({
   companyId: number;
   projectId: number;
 }) => {
-  const {
-    data: { results: snapshots } = { results: [] },
-    isLoading: isSnapShotsLoading,
-  } = Api.useQuery("get", "/api/v1/organization/completion_snapshots", {
-    params: {
-      query: { filter: { company_id: companyId, project_id: projectId } },
-    },
-  });
-  const isButtonDisabled =
-    isSnapShotsLoading || snapshots.some(({ status }) => status === "draft");
+  const { data: projectInvoices } = Api.useQuery(
+    "get",
+    "/api/v1/organization/projects/{project_id}/invoices",
+    { params: { path: { project_id: projectId } } },
+    { select: ({ results }) => results }
+  );
+  const isButtonEnable =
+    projectInvoices != undefined &&
+    !projectInvoices.some(({ status }) => status === "draft");
 
   return (
     <div className="w-full">
       <Button
-        disabled={isButtonDisabled}
-        asChild={!isButtonDisabled}
+        disabled={!isButtonEnable}
+        asChild={isButtonEnable}
         className="text-wrap w-full"
       >
-        {isButtonDisabled ? (
-          <ButtonContent />
-        ) : (
+        {isButtonEnable ? (
           <Link
-            to={`/companies/$companyId/projects/$projectId/completion_snapshots/new`}
+            to={`/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new`}
             params={{
               companyId: companyId.toString(),
               projectId: projectId.toString(),
@@ -53,12 +50,14 @@ const NewCompletionSnapshotButton = ({
           >
             <ButtonContent />
           </Link>
+        ) : (
+          <ButtonContent />
         )}
       </Button>
-      {isButtonDisabled && !isSnapShotsLoading && (
+      {!isButtonEnable && (
         <p className="text-xs text-muted-foreground mt-2 text-center">
           {t(
-            "pages.companies.projects.show.completion_snapshots_summary.new_completion_snapshot_button.disabled_hint"
+            "pages.companies.projects.show.completion_snapshot_invoices_summary.new_completion_snapshot_invoice_button.disabled_hint"
           )}
         </p>
       )}

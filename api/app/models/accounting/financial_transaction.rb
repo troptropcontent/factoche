@@ -3,17 +3,43 @@ module Accounting
     InvoiceType = "Invoice".freeze
     CreditNoteType = "CreditNote".freeze
 
-    has_many :lines, class_name: "Accounting::FinancialTransactionLine", dependent: :destroy
-    has_one :detail, class_name: "Accounting::FinancialTransactionDetail", dependent: :destroy
+    has_many :lines,
+             class_name: "Accounting::FinancialTransactionLine",
+             dependent: :destroy
+    has_one :detail,
+            class_name: "Accounting::FinancialTransactionDetail",
+            dependent: :destroy
 
-    enum :status, {
-        draft: "draft",
-        posted: "posted"
-    }, default: :draft, validate: true
+    def self.inherited(subclass)
+      super
 
-    validates :number, presence: true, uniqueness: { scope: :company_id,
-      message: "has already been taken for this company" }, unless: :draft?
+      if subclass.name.ends_with?(InvoiceType)
+        subclass.enum :status,
+                     {
+                       draft: "draft",
+                       posted: "posted",
+                       cancelled: "cancelled"
+                     },
+                     default: :draft,
+                     validate: true
+      else
+        subclass.enum :status,
+                     {
+                       draft: "draft",
+                       posted: "posted"
+                     },
+                     default: :draft,
+                     validate: true
+      end
+    end
 
+    validates :number,
+              presence: true,
+              uniqueness: {
+                scope: :company_id,
+                message: "has already been taken for this company"
+              },
+              unless: :draft?
 
     validate :valid_type_name?
     validate :valid_context?

@@ -20,7 +20,9 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
     end
 
     context 'when all validations pass' do
-      it { is_expected.to be_success }
+      it {
+        expect(result).to be_success
+      }
 
       it 'creates a completion snapshot invoice, its detail record and its lines records successfully', :aggregate_failures do
         expect { result }
@@ -40,6 +42,18 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
 
         it 'raises an error', :aggregate_failures do
           expect(result.error).to include("Can only create completion snapshot invoice from the last version")
+        end
+      end
+
+      context 'when there is already a draft for this project' do
+        before do
+          described_class.call(project_version.id, params)
+        end
+
+        it { is_expected.to be_failure }
+
+        it 'raises an error', :aggregate_failures do
+          expect(result.error).to include("Cannot create a new invoice while another draft invoice exists for this project")
         end
       end
 
@@ -64,8 +78,8 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
 
       context 'when invoice amount exceeds item total amount' do
         before do
-          # Create a previous invoice for this item
-          described_class.call(
+        # Create a previous invoice for this item
+        invoice = described_class.call(
             project_version.id,
             {
               invoice_amounts: [
@@ -75,7 +89,9 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
                 }
               ]
             }
-          )
+          ).data
+
+          invoice.update!(status: :posted, number: "INV-001")
         end
 
         it { is_expected.to be_failure }

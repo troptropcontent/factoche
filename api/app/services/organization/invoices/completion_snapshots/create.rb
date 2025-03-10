@@ -6,15 +6,17 @@ module Organization
           def call(project_version_id, params)
             project_version, project, client, company = load_ressouces!(project_version_id)
 
-            ensure_params_are_valid!(params)
+            validated_params = validate_params!(params)
 
             ensure_project_version_is_the_last_one!(project_version)
 
-            ensure_original_item_uuid_belongs_to_project_version!(project_version, params[:invoice_amounts])
+            ensure_no_other_draft!(project)
 
-            ensure_invoiced_item_remains_within_limits!(params[:invoice_amounts], project_version.items, project.id, company.id)
+            ensure_original_item_uuid_belongs_to_project_version!(project_version, validated_params["invoice_amounts"])
 
-            accounting_service_arguments = build_accounting_service_arguments(company, client, project_version, params[:invoice_amounts])
+            ensure_invoiced_item_remains_within_limits!(validated_params["invoice_amounts"], project_version.items, project.id, company.id)
+
+            accounting_service_arguments = build_accounting_service_arguments(company, client, project_version, validated_params["invoice_amounts"])
 
             invoice = create_invoice!(accounting_service_arguments)
 
@@ -34,10 +36,12 @@ module Organization
             [ project_version, project, client, company ]
           end
 
-          def ensure_params_are_valid!(params)
-            unless CreateContract.new.call(params).success?
+          def validate_params!(params)
+            contract = CreateContract.new.call(params)
+            unless contract.success?
               raise Error::UnprocessableEntityError, "Invalid completion snapshot invoice parameters"
             end
+            contract.to_h.with_indifferent_access
           end
 
           def ensure_project_version_is_the_last_one!(project_version)
@@ -134,6 +138,9 @@ module Organization
             end
 
             result.data
+          end
+          def ensure_no_other_draft!(project)
+            raise "Cannot create a new invoice while another draft invoice exists for this project" if Accounting::CompletionSnapshotInvoice.where(holder_id: project.versions.pluck(:id)).draft.any?
           end
         end
       end

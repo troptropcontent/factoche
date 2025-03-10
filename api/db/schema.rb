@@ -17,7 +17,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_07_140960) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "accounting_financial_transaction_status", ["draft", "posted"]
+  create_enum "accounting_financial_transaction_status", ["draft", "posted", "cancelled"]
   create_enum "credit_note_status", ["draft", "published"]
   create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]

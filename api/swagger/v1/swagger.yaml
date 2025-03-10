@@ -790,6 +790,37 @@ paths:
                   type: array
                   items:
                     "$ref": "#/components/schemas/Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"
+  "/api/v1/organization/projects/{project_id}/invoices":
+    get:
+      summary: Lists invoices for a project
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoices found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+        '404':
+          description: project not found
+        '403':
+          description: forbiden
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
@@ -2260,6 +2291,31 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+    Organization::Invoices::CompactDto:
+      type: object
+      required:
+      - id
+      - status
+      - updated_at
+      - total_amount
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+        number:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        total_amount:
+          type: string
+          format: decimal
     Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount:
       type: object
       required:
@@ -2294,6 +2350,15 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::Invoices::CompletionSnapshots::ExtendedDto"
+    Organization::Invoices::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
     Organization::ProjectDtoItemDto:
       type: object
       required:

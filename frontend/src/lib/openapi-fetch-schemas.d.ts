@@ -974,6 +974,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/projects/{project_id}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists invoices for a project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoices found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Invoices::CompactDto"][];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description project not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -1786,6 +1840,16 @@ export interface components {
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
         };
+        "Organization::Invoices::CompactDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled";
+            number?: string | null;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+        };
         "Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount": {
             original_item_uuid: string;
             /** Format: decimal */
@@ -1799,6 +1863,9 @@ export interface components {
         };
         "Organization::Invoices::CompletionSnapshots::ShowDto": {
             result: components["schemas"]["Organization::Invoices::CompletionSnapshots::ExtendedDto"];
+        };
+        "Organization::Invoices::IndexDto": {
+            results: components["schemas"]["Organization::Invoices::CompactDto"][];
         };
         "Organization::ProjectDtoItemDto": {
             id: number;

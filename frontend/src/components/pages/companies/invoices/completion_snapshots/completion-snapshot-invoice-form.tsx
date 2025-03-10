@@ -85,6 +85,13 @@ const CompletionSnapshotInvoiceForm = ({
             },
           });
         },
+        onError() {
+          toast({
+            variant: "destructive",
+            title: t("common.toast.error_title"),
+            description: t("common.toast.error_description"),
+          });
+        },
       }
     );
   };
