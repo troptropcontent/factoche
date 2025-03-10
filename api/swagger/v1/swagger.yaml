@@ -723,6 +723,73 @@ paths:
                 properties:
                   result:
                     "$ref": "#/components/schemas/Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"
+  "/api/v1/organization/project_versions/{project_version_id}/invoices/completion_snapshot":
+    post:
+      summary: Creates a completion snapshot invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: project_version_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successfully creates completion snapshot invoice
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::CompletionSnapshots::ExtendedDto"
+        '403':
+          description: forbiden
+        '404':
+          description: not_found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - invoice_amounts
+              properties:
+                invoice_amounts:
+                  type: array
+                  items:
+                    "$ref": "#/components/schemas/Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
@@ -2193,6 +2260,40 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+    Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount:
+      type: object
+      required:
+      - original_item_uuid
+      - invoice_amount
+      properties:
+        original_item_uuid:
+          type: string
+        invoice_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::CompletionSnapshots::CreateDto:
+      type: object
+      required:
+      - invoice_amounts
+      properties:
+        invoice_amounts:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"
+    Organization::Invoices::CompletionSnapshots::ExtendedDto:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: integer
+    Organization::Invoices::CompletionSnapshots::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Invoices::CompletionSnapshots::ExtendedDto"
     Organization::ProjectDtoItemDto:
       type: object
       required:

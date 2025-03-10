@@ -7,10 +7,15 @@ import { Form } from "@/components/ui/form";
 import { FormItemGroup } from "./private/form-item-group";
 import { FormSubmitButton } from "./private/form-submit-button";
 import { FormInvoiceTotalInfo } from "./private/form-invoice-total-info";
+import { Api } from "@/lib/openapi-fetch-query-client";
+import { useNavigate } from "@tanstack/react-router";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface CompletionSnapshotInvoiceFormProps {
   companyId: number;
   projectId: number;
+  projectVersionId: number;
   items: Array<{
     id: number;
     original_item_uuid: string;
@@ -32,6 +37,7 @@ interface CompletionSnapshotInvoiceFormProps {
 const CompletionSnapshotInvoiceForm = ({
   companyId,
   projectId,
+  projectVersionId,
   itemGroups,
   items,
 }: CompletionSnapshotInvoiceFormProps) => {
@@ -41,13 +47,46 @@ const CompletionSnapshotInvoiceForm = ({
   }));
   const form = useForm<z.infer<typeof completionSnapshotInvoiceFormSchema>>({
     resolver: zodResolver(completionSnapshotInvoiceFormSchema),
-    defaultValues: { invoiced_amounts: initialValues },
+    defaultValues: { invoice_amounts: initialValues },
   });
+  const { mutate: createNewInvoice } = Api.useMutation(
+    "post",
+    "/api/v1/organization/project_versions/{project_version_id}/invoices/completion_snapshot"
+  );
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { t } = useTranslation();
 
   const onSubmit = (
     data: z.infer<typeof completionSnapshotInvoiceFormSchema>
   ) => {
-    console.log({ data });
+    createNewInvoice(
+      {
+        params: { path: { project_version_id: projectVersionId } },
+        body: {
+          invoice_amounts: data.invoice_amounts.map((invoice_amount) => ({
+            ...invoice_amount,
+            invoice_amount: invoice_amount.invoice_amount.toString(),
+          })),
+        },
+      },
+      {
+        onSuccess() {
+          toast({
+            title: t(
+              "pages.companies.projects.invoices.completion_snapshot.form.toast.create_success_toast_title"
+            ),
+          });
+          navigate({
+            to: "/companies/$companyId/projects/$projectId",
+            params: {
+              companyId: companyId.toString(),
+              projectId: projectId.toString(),
+            },
+          });
+        },
+      }
+    );
   };
 
   return (

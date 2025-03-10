@@ -905,6 +905,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/project_versions/{project_version_id}/invoices/completion_snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Creates a completion snapshot invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_version_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        invoice_amounts: components["schemas"]["Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description successfully creates completion snapshot invoice */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::CompletionSnapshots::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not_found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -1716,6 +1785,20 @@ export interface components {
             client_id: number;
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
+        };
+        "Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount": {
+            original_item_uuid: string;
+            /** Format: decimal */
+            invoice_amount: string;
+        };
+        "Organization::Invoices::CompletionSnapshots::CreateDto": {
+            invoice_amounts: components["schemas"]["Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"][];
+        };
+        "Organization::Invoices::CompletionSnapshots::ExtendedDto": {
+            id: number;
+        };
+        "Organization::Invoices::CompletionSnapshots::ShowDto": {
+            result: components["schemas"]["Organization::Invoices::CompletionSnapshots::ExtendedDto"];
         };
         "Organization::ProjectDtoItemDto": {
             id: number;

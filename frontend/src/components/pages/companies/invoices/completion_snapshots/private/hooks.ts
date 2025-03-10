@@ -8,7 +8,7 @@ const useNewInvoiceTotalAmount = () => {
   const formValues =
     useWatch<z.infer<typeof completionSnapshotInvoiceFormSchema>>();
 
-  return formValues.invoiced_amounts?.reduce((prev, current) => {
+  return formValues.invoice_amounts?.reduce((prev, current) => {
     const invoiceAmount = current.invoice_amount || 0;
     return prev + invoiceAmount;
   }, 0);
@@ -54,13 +54,13 @@ const useCompletionSnapshotInvoiceItemRow = ({
     setValue,
   } = useFormContext<z.infer<typeof completionSnapshotInvoiceFormSchema>>();
 
-  if (defaultValues?.invoiced_amounts == undefined) {
+  if (defaultValues?.invoice_amounts == undefined) {
     throw new Error(
       "This hook must be used within a form context with properly initialized default values"
     );
   }
 
-  const itemInputIndex = defaultValues.invoiced_amounts.findIndex(
+  const itemInputIndex = defaultValues.invoice_amounts.findIndex(
     (invoicedAmount) =>
       invoicedAmount?.original_item_uuid === item.original_item_uuid
   );
@@ -71,8 +71,7 @@ const useCompletionSnapshotInvoiceItemRow = ({
     );
   }
 
-  const inputName =
-    `invoiced_amounts.${itemInputIndex}.invoice_amount` as const;
+  const inputName = `invoice_amounts.${itemInputIndex}.invoice_amount` as const;
 
   const newInvoiceAmount = watch(inputName);
 

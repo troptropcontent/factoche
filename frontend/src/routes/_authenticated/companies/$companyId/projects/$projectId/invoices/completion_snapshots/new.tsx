@@ -64,6 +64,7 @@ function RouteComponent() {
         <CompletionSnapshotInvoiceForm
           companyId={Number(companyId)}
           projectId={Number(projectId)}
+          projectVersionId={projectData.last_version.id}
           itemGroups={projectData.last_version.item_groups}
           items={projectData.last_version.items}
           projectTotal={projectVersionTotalAmount}
