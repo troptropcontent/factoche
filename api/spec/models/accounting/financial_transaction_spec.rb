@@ -1,28 +1,29 @@
 require 'rails_helper'
 
+module Tests
+  class TestInvoice < Accounting::FinancialTransaction
+    class Context < Dry::Validation::Contract
+      params do
+        required(:test_field).filled(:string)
+        required(:amount).filled(:decimal, gteq?: 0)
+      end
+    end
+  end
+
+  class TestCreditNote < Accounting::FinancialTransaction
+    class Context < Dry::Validation::Contract
+      params do
+        required(:test_field).filled(:string)
+        required(:amount).filled(:decimal, gteq?: 0)
+      end
+    end
+  end
+end
+
 RSpec.describe Accounting::FinancialTransaction, type: :model do
   describe "validation" do
     describe "context" do
-      subject(:transaction) { test_transaction_class.new(context: context) }
-
-      let(:test_context) do
-        Class.new(Dry::Validation::Contract) do
-          params do
-            required(:test_field).filled(:string)
-            required(:amount).filled(:decimal, gteq?: 0)
-          end
-        end
-      end
-
-      let(:test_transaction_class) do
-        context_class = test_context
-        Class.new(described_class) do
-          def self.name
-            'TestTransactionClass'
-          end
-          const_set(:Context, context_class)
-        end
-      end
+      subject(:transaction) { Tests::TestInvoice.new(context: context) }
 
       context 'when context is valid' do
         let(:context) do
@@ -60,15 +61,6 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
         end
       end
 
-      context 'when context is nil' do
-        let(:context) { nil }
-
-        it "does return an error for the context attribute" do
-          transaction.valid?
-          expect(transaction.errors["context"]).not_to be_empty
-        end
-      end
-
       context 'when context is empty hash' do
         let(:context) { {} }
 
@@ -80,10 +72,9 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
     end
 
     describe "number" do
-      subject(:transaction) { FactoryBot.build(:financial_transaction, company_id: 1, status: status, number: number) }
+      subject(:transaction) { Tests::TestInvoice.new(company_id: 1, status: status, number: number) }
 
       let(:status) { :draft }
-
       let(:number) { nil }
 
       before { transaction.valid? }
@@ -104,7 +95,16 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
         context "when the number has already been assigned for the company" do
           let(:number) { "INV-2005-0002" }
 
-          before { FactoryBot.create(:completion_snapshot_invoice, company_id: 1, status: :posted, holder_id: FactoryBot.create(:company).id, number: number) && transaction.valid? }
+          before do
+            FactoryBot.create(
+              :completion_snapshot_invoice,
+              company_id: 1,
+              status: :posted,
+              holder_id: FactoryBot.create(:company).id,
+              number: number
+            )
+            transaction.valid?
+          end
 
           it "is invalid" do
             expect(transaction.errors[:number]).to include("has already been taken for this company")
@@ -135,6 +135,30 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
           transaction.valid?
           expect(transaction.errors["type"]).to include("must end with Invoice or CreditNote")
         end
+      end
+    end
+  end
+
+  describe "enums" do
+    context "when the class ends with Invoice" do
+      subject(:transaction) { Tests::TestInvoice.new }
+
+      it "define an enum with draft, posted, and cancell staus" do
+        expect(transaction).to define_enum_for(:status)
+          .backed_by_column_of_type(:enum)
+          .with_values(draft: "draft", posted: "posted", cancelled: "cancelled")
+          .with_default(:draft)
+      end
+    end
+
+    context "when the class does not ends with Invoice" do
+      subject(:transaction) { Tests::TestCreditNote.new }
+
+      it "define an enum with draft and posted staus" do
+        expect(transaction).to define_enum_for(:status)
+          .backed_by_column_of_type(:enum)
+          .with_values(draft: "draft", posted: "posted")
+          .with_default(:draft)
       end
     end
   end

@@ -1,6 +1,6 @@
 class CreateAccountingFinancialTransactions < ActiveRecord::Migration[8.0]
   def change
-    create_enum :accounting_financial_transaction_status, [ "draft", "posted" ]
+    create_enum :accounting_financial_transaction_status, [ "draft", "posted", "cancelled" ]
     create_table :accounting_financial_transactions do |t|
       t.bigint :company_id, null: false, index: true
       t.bigint :holder_id, null: false, index: true
