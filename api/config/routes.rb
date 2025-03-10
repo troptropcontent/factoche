@@ -50,6 +50,7 @@ Rails.application.routes.draw do
             get :invoiced_items
           end
         end
+        resources :prints, only: [ :show ]
       end
     end
   end
