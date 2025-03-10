@@ -15,4 +15,13 @@ class Api::V1::Organization::InvoicesController < Api::V1::ApiV1Controller
 
     render json: ::Organization::Invoices::IndexDto.new({ results: invoices })
   end
+
+  # GET  /api/v1/organization/projects/:project_id/invoices/:id
+  def show
+    project = policy_scope(Organization::Project).find(params[:project_id])
+
+    invoice = Accounting::CompletionSnapshotInvoice.where(holder_id: project.versions.pluck(:id)).includes(:lines).find(params[:id])
+
+    render json: ::Organization::Invoices::ShowDto.new({ result: invoice })
+  end
 end

@@ -46,7 +46,7 @@ Rails.application.routes.draw do
         end
         resources :clients, only: [ :show ]
         resources :projects do
-          resources :invoices, only: [ :index ]
+          resources :invoices, only: [ :index, :show ]
           member do
             get :invoiced_items
           end
