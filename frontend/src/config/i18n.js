@@ -254,6 +254,9 @@ i18n
                                                 "new_completion_percentage": "Nouvel avancement",
                                                 "new_invoice_amount": "Nouvelle facture",
                                             },
+                                            "toast": {
+                                                "create_success_toast_title": "Nouvelle facture d'avancement enregistrée"
+                                            },
                                             "total_info": "Total de la facture: <strong>{{total}}<strong>"
                                         }
                                     }

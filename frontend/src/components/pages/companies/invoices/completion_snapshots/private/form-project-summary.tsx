@@ -59,7 +59,7 @@ const FormProjectSummary = ({
   );
 
   const newInvoiceAmount =
-    formValues.invoiced_amounts?.reduce((prev, { invoice_amount }) => {
+    formValues.invoice_amounts?.reduce((prev, { invoice_amount }) => {
       return prev + Number(invoice_amount || 0);
     }, 0) || 0;
 
