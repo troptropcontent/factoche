@@ -20,6 +20,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { TrafficCone } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CompletionSnapshotStatusBadge } from "../../completion-snapshot/shared/completion-snapshot-status-badge";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 const CompletionSnapshotInvoicesSummery = ({
   companyId,
@@ -28,19 +29,12 @@ const CompletionSnapshotInvoicesSummery = ({
   companyId: number;
   projectId: number;
 }) => {
-  // TODO: Replace with invoice endpoint when available
-  const {
-    data: { results: invoices },
-    isLoading,
-  }: {
-    data: {
-      results: Array<{ id: number; created_at: string; status: string }>;
-    };
-    isLoading: boolean;
-  } = {
-    data: { results: [] },
-    isLoading: false,
-  };
+  const { data: projectInvoices } = Api.useQuery(
+    "get",
+    "/api/v1/organization/projects/{project_id}/invoices",
+    { params: { path: { project_id: projectId } } },
+    { select: ({ results }) => results }
+  );
 
   const navigate = useNavigate();
 
@@ -56,7 +50,7 @@ const CompletionSnapshotInvoicesSummery = ({
 
   const { t } = useTranslation();
 
-  if (isLoading) {
+  if (projectInvoices == undefined) {
     return;
   }
 
@@ -70,7 +64,7 @@ const CompletionSnapshotInvoicesSummery = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {invoices.length > 0 && (
+        {projectInvoices.length > 0 && (
           <Table>
             <TableHeader>
               <TableRow>
@@ -79,25 +73,25 @@ const CompletionSnapshotInvoicesSummery = ({
                     "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.number"
                   )}
                 </TableHead>
-                <TableHead>
+                <TableHead className="text-center">
                   {t(
                     "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.date"
                   )}
                 </TableHead>
-                <TableHead>
-                  {t(
-                    "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.version"
-                  )}
-                </TableHead>
-                <TableHead>
+                <TableHead className="text-center">
                   {t(
                     "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.status"
+                  )}
+                </TableHead>
+                <TableHead className="text-right">
+                  {t(
+                    "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.amount"
                   )}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoices.map((invoice, index) => (
+              {projectInvoices.map((invoice, index) => (
                 <TableRow
                   key={index}
                   onClick={() => handleRowClick(invoice.id)}
@@ -105,22 +99,30 @@ const CompletionSnapshotInvoicesSummery = ({
                   role="link"
                 >
                   <TableCell>
-                    {(index + 1).toString().padStart(2, "0")}
+                    {invoice.number ||
+                      t(
+                        "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.number_when_empty"
+                      )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     {t("common.date", {
-                      date: Date.parse(invoice.created_at),
+                      date: Date.parse(invoice.updated_at),
                     })}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <CompletionSnapshotStatusBadge status={invoice.status} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {t("common.number_in_currency", {
+                      amount: invoice.total_amount,
+                    })}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
-        {invoices.length === 0 && (
+        {projectInvoices.length === 0 && (
           <EmptyState
             icon={TrafficCone}
             title={t(
@@ -145,7 +147,7 @@ const CompletionSnapshotInvoicesSummery = ({
           />
         )}
       </CardContent>
-      {invoices.length > 0 && (
+      {projectInvoices.length > 0 && (
         <CardFooter>
           <NewCompletionSnapshotButton {...{ companyId, projectId }} />
         </CardFooter>

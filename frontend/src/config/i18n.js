@@ -214,16 +214,18 @@ i18n
                                     },
                                     "new_completion_snapshot": "Nouvelle situation de travaux",
                                     "completion_snapshot_invoices_summary": {
-                                        "title": "Factures d'avancement",
+                                        "title": "Factures",
                                         "empty_state": {
-                                            "title": "Aucune facture d'avancement trouvée",
-                                            "description": "Créer une facture d'avancement pour commencer à facturer",
-                                            "action_label": "Créer une facture d'avancement"
+                                            "title": "Aucune facture trouvée",
+                                            "description": "Créer une facture pour commencer à facturer",
+                                            "action_label": "Créer une facture"
                                         },
                                         "columns": {
                                             "number": "Numéro",
+                                            "number_when_empty": "N/A",
                                             "date": "Date",
-                                            "status": "Status"
+                                            "status": "Status",
+                                            "amount": "Montant",
                                         },
                                         "new_completion_snapshot_invoice_button": {
                                             "disabled_hint": "Vous ne pouvez avoir qu'une seule facture en cours de rédaction"
