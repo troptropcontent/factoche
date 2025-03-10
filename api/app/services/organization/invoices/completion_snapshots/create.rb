@@ -10,6 +10,8 @@ module Organization
 
             ensure_project_version_is_the_last_one!(project_version)
 
+            ensure_no_other_draft!(project)
+
             ensure_original_item_uuid_belongs_to_project_version!(project_version, validated_params["invoice_amounts"])
 
             ensure_invoiced_item_remains_within_limits!(validated_params["invoice_amounts"], project_version.items, project.id, company.id)
@@ -136,6 +138,9 @@ module Organization
             end
 
             result.data
+          end
+          def ensure_no_other_draft!(project)
+            raise "Cannot create a new invoice while another draft invoice exists for this project" if Accounting::CompletionSnapshotInvoice.where(holder_id: project.versions.pluck(:id)).draft.any?
           end
         end
       end
