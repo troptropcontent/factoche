@@ -32,7 +32,9 @@ module Organization
                 issue_date: ...issue_date
               },
               holder_id: original_item_uuids
-            )
+            ).where.not(financial_transaction: {
+              status: :draft
+            })
             .select(
               "accounting_financial_transaction_lines.holder_id",
               "SUM(CASE

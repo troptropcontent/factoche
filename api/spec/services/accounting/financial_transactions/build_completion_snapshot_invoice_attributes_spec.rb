@@ -45,9 +45,9 @@ module Accounting
           address_city: "Paris",
           vat_number: "FR123456789",
           config: {
-            "payment_term" => {
-              "days" => 30,
-              "accepted_methods" => [ "transfer" ]
+            payment_term: {
+              days: 30,
+              accepted_methods: [ "transfer" ]
             }
           }
         } }

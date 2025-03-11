@@ -2,8 +2,7 @@
 # rubocop:disable RSpec/MultipleMemoizedHelpers
 # rubocop:disable RSpec/LetSetup
 RSpec.shared_context 'a company with a project with three items' do
-  let(:company) { FactoryBot.create(:company) }
-  let!(:company_config) { FactoryBot.create(:company_config, company: company) }
+  let(:company) { FactoryBot.create(:company, :with_config) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:project, client: client) }
   let(:project_version) { FactoryBot.create(:project_version, project: project, retention_guarantee_rate: project_version_retention_guarantee_rate) }
