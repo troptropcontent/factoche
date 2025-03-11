@@ -45,7 +45,7 @@ module Accounting
 
         context 'when an error occurs' do
           before do
-            allow(FinancialTransaction).to receive(:posted)
+            allow(FinancialTransaction).to receive(:where)
               .and_raise(StandardError.new('Database connection error'))
           end
 

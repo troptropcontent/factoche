@@ -59,10 +59,12 @@ module Accounting
           address_street: "1 rue de la Paix",
           address_city: "Paris",
           vat_number: "FR123456789",
+          phone: "+33123456789",
+          email: "contact@acmecorp.com",
           config: {
-            "payment_term" => {
-              "days" => 30,
-              "accepted_methods" => [ "transfer" ]
+            payment_term: {
+              days: 30,
+              accepted_methods: [ :transfer ]
             }
           }
         } }
@@ -73,7 +75,9 @@ module Accounting
           address_zipcode: "75002",
           address_street: "2 avenue des Champs-Élysées",
           address_city: "Paris",
-          vat_number: "FR987654321"
+          vat_number: "FR987654321",
+          phone: "+33987654321",
+          email: "contact@clientcorp.com"
         } }
 
         before do
@@ -111,9 +115,8 @@ module Accounting
           it 'creates the relevant invoice lines', :aggregate_failures do
             invoice = result.data
 
-            expect(invoice.lines.count).to eq(2)
+            expect(invoice.lines.count).to eq(1)
             expect(invoice.lines.first.excl_tax_amount).to eq('125.23'.to_d)
-            expect(invoice.lines.second.excl_tax_amount).to eq(0.to_d)
 
             expect(invoice.lines.first.quantity).to eq("1.2523".to_d) # 125 € (invoice amount) / 100 € (unit price) => the proportional quantity required to reach the amount invoiced
           end

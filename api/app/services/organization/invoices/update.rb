@@ -88,6 +88,8 @@ module Organization
             address_street: company.address_street,
             address_city: company.address_city,
             vat_number: company.vat_number,
+            phone: company.phone,
+            email: company.email,
             config: {
               payment_term: {
                 days: company.config.settings.dig("payment_term", "days") || Organization::CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "days"),
@@ -102,14 +104,16 @@ module Organization
             address_zipcode: client.address_zipcode,
             address_street: client.address_street,
             address_city: client.address_city,
-            vat_number: client.vat_number
+            vat_number: client.vat_number,
+            phone: client.phone,
+            email: client.email
           }
 
           project_version_hash = {
             id: project_version.id,
             number: project_version.number,
             created_at: project_version.created_at,
-            retention_guarantee_rate: project_version.retention_guarantee_rate,
+            retention_guarantee_rate: project_version.retention_guarantee_rate / 10000.to_d,
             items: project_version.items.map { |item|
               {
                 original_item_uuid: item.original_item_uuid,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_07_140960) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_11_174823) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -46,6 +46,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_07_140960) do
     t.datetime "due_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "seller_phone", null: false
+    t.string "seller_email", null: false
+    t.string "client_phone", null: false
+    t.string "client_email", null: false
+    t.string "delivery_phone", null: false
+    t.string "delivery_email", null: false
     t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_a3f0028db5"
   end
 
