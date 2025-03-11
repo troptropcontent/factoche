@@ -15,7 +15,7 @@ module Accounting
         rescue StandardError => e
           ServiceResult.failure("Failed to build invoice attributes for company_id: #{company_id}, " \
                               "project_version: #{project_version[:number]}, issue_date: #{issue_date}. " \
-                              "Error: #{e.message}")
+                              "Error: #{e}, #{e.backtrace}")
         end
 
         private
@@ -35,6 +35,7 @@ module Accounting
         end
 
         def build_project_version_items_data(project_version_items, issue_date)
+          previous_invoices_data = fetch_previous_invoice_data!(project_version_items.pluck(:original_item_uuid), issue_date)
           project_version_items.map do |item|
             {
               original_item_uuid: item.fetch(:original_item_uuid),
@@ -45,9 +46,16 @@ module Accounting
               unit: item.fetch(:unit),
               unit_price_amount: item.fetch(:unit_price_amount),
               tax_rate: item.fetch(:tax_rate),
-              previously_billed_amount: find_previously_invoiced_amount_for_item(item.fetch(:original_item_uuid), issue_date)
+              previously_billed_amount: previous_invoices_data.find { |data| data[:holder_id] == item.fetch(:original_item_uuid) }&.yield_self { |data| data[:invoiced_amount] - data[:credit_note_amount] } || 0.to_d
             }
           end
+        end
+
+        def fetch_previous_invoice_data!(original_item_uuids, issue_date)
+          result = Accounting::FinancialTransactions::FindInvoicedAmountForHolders.call(original_item_uuids, issue_date)
+          raise result.error if result.failure?
+
+          result.data
         end
 
         def find_project_version_total(project_version_items)
@@ -66,13 +74,15 @@ module Accounting
           end
         end
 
-        def find_previously_invoiced_amount_for_item(original_item_uuid, issue_date)
+        def find_previously_invoiced_amount_for_item(original_item_uuids, issue_date)
           Accounting::FinancialTransactionLine.joins(:financial_transaction)
             .where(
-              holder_id: original_item_uuid,
+              holder_id: original_item_uuids,
               financial_transaction: { issue_date: ...issue_date, status: :posted }
             )
+            .select("original_item_uuid")
             .sum("excl_tax_amount")
+            .group("9aa7263b-be27-4642-8c1f-aca123ed4aaa")
         end
       end
     end

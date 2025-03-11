@@ -49,9 +49,15 @@ module Organization
         end
 
         def ensure_original_item_uuid_belongs_to_project_version!(project_version, invoice_amounts)
-          unless invoice_amounts.all? { |invoice_amount|
-            project_version.items.where({ original_item_uuid: invoice_amount["original_item_uuid"] }).exists?
-          }
+          existing_uuids = Organization::Item
+            .where(project_version_id: project_version.id)
+            .where(original_item_uuid: invoice_amounts.map { |ia| ia[:original_item_uuid] })
+            .pluck(:original_item_uuid)
+            .to_set
+
+          invalid_uuids = invoice_amounts.map { |ia| ia[:original_item_uuid] }.reject { |uuid| existing_uuids.include?(uuid) }
+
+          if invalid_uuids.any?
             raise Error::UnprocessableEntityError, "All invoice amounts must reference items that exist in the project version"
           end
         end

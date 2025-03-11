@@ -22,6 +22,14 @@ RSpec.describe Accounting::FinancialTransactions::BuildCompletionSnapshotInvoice
             "quantity" => 2,
             "tax_rate" => "0.20",
             "group_id" => "group-2"
+          },
+          {
+            "original_item_uuid" => "item-789",
+            "unit" => "pieces",
+            "unit_price_amount" => "50",
+            "quantity" => 2,
+            "tax_rate" => "0.20",
+            "group_id" => "group-2"
           }
         ],
         "project_version_retention_guarantee_rate" => "0.05"
@@ -41,7 +49,7 @@ RSpec.describe Accounting::FinancialTransactions::BuildCompletionSnapshotInvoice
       # rubocop:disable RSpec/ExampleLength
       it 'returns a success result with correct attributes', :aggregate_failures do
         expect(result.data).to be_an(Array)
-        expect(result.data.length).to eq(2)
+        expect(result.data.length).to eq(2) # Only create attributes for provided invoice amounts, not all items from context to avoid useless lines
 
         first_line = result.data.first
         expect(first_line).to include(
@@ -51,7 +59,6 @@ RSpec.describe Accounting::FinancialTransactions::BuildCompletionSnapshotInvoice
           unit_price_amount: BigDecimal("100"),
           excl_tax_amount: BigDecimal("150"),
           tax_rate: BigDecimal("0.20"),
-          retention_guarantee_rate: BigDecimal("0.05"),
           group_id: "group-1"
         )
 
@@ -63,7 +70,6 @@ RSpec.describe Accounting::FinancialTransactions::BuildCompletionSnapshotInvoice
           unit_price_amount: BigDecimal("50"),
           excl_tax_amount: BigDecimal("75"),
           tax_rate: BigDecimal("0.20"),
-          retention_guarantee_rate: BigDecimal("0.05"),
           group_id: "group-2"
         )
       end

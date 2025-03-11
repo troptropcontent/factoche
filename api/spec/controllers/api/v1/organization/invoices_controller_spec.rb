@@ -93,7 +93,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
               required: [ :original_item_uuid, :invoice_amount ],
               properties: {
                 original_item_uuid: { type: :string },
-                invoice_amount: { type: :number }
+                invoice_amount: { type: :string, format: "decimal" }
               }
             }
           }

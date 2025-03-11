@@ -11,7 +11,7 @@ module Accounting
             invoice.update!(invoice_attributes)
 
             # Drop old invoice_lines
-            invoice.lines.destroy_all
+            invoice.lines.delete_all
 
             # Create invoice line records
             invoice_lines_attributes = build_invoice_lines_attributes!(invoice.context, invoice_items)
