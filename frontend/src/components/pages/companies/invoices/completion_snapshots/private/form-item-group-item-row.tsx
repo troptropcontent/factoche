@@ -28,6 +28,7 @@ const FormItemGroupItemRow = ({
     updateItemInputInvoiceAmount,
     previouslyInvoicedAmount,
     newInvoiceAmount,
+    newInvoicePercentage,
     isLoading: isCompletionSnapshotInvoiceItemRowLoading,
   } = useCompletionSnapshotInvoiceItemRow({ item, projectId });
 
@@ -89,7 +90,7 @@ const FormItemGroupItemRow = ({
             onChange={({ target: { value } }) =>
               updateItemInputInvoiceAmount(value)
             }
-            defaultValue={currentCompletionPercentage}
+            defaultValue={newInvoicePercentage}
           />
           <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             %

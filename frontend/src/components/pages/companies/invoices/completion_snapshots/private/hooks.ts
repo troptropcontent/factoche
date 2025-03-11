@@ -83,11 +83,16 @@ const useCompletionSnapshotInvoiceItemRow = ({
       updateItemInputInvoiceAmount: undefined,
       previouslyInvoicedAmount: undefined,
       newInvoiceAmount: undefined,
+      newInvoicePercentage: undefined,
       isLoading: true as const,
     };
   }
 
   const currentCompletionAmount = previouslyInvoicedAmount + newInvoiceAmount;
+
+  const newInvoicePercentage = Math.round(
+    (currentCompletionAmount / rowTotal) * 100
+  );
 
   const currentCompletionPercentage = Math.round(
     (previouslyInvoicedAmount / rowTotal) * 100
@@ -110,6 +115,7 @@ const useCompletionSnapshotInvoiceItemRow = ({
     updateItemInputInvoiceAmount,
     previouslyInvoicedAmount,
     newInvoiceAmount,
+    newInvoicePercentage,
     isLoading: false as const,
   };
 };

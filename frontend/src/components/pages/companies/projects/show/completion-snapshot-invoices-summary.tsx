@@ -38,15 +38,22 @@ const CompletionSnapshotInvoicesSummery = ({
 
   const navigate = useNavigate();
 
-  const handleRowClick = (snapshotId: number) =>
+  const handleRowClick = (
+    invoice: NonNullable<typeof projectInvoices>[number]
+  ) => {
+    const url =
+      invoice.status === "draft"
+        ? `/companies/$companyId/projects/$projectId/invoices/$invoiceId/update`
+        : "/companies/$companyId/projects/$projectId/invoices/$invoiceId";
     navigate({
-      to: "/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId",
+      to: url,
       params: {
         companyId: companyId.toString(),
-        completionSnapshotId: snapshotId.toString(),
+        invoiceId: invoice.id.toString(),
         projectId: projectId.toString(),
       },
     });
+  };
 
   const { t } = useTranslation();
 
@@ -94,7 +101,7 @@ const CompletionSnapshotInvoicesSummery = ({
               {projectInvoices.map((invoice, index) => (
                 <TableRow
                   key={index}
-                  onClick={() => handleRowClick(invoice.id)}
+                  onClick={() => handleRowClick(invoice)}
                   className="cursor-pointer hover:bg-gray-100 transition-colors"
                   role="link"
                 >
