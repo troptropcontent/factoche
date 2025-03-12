@@ -1634,6 +1634,67 @@ export interface components {
             /** Format: decimal */
             excl_tax_amount: string;
         };
+        "Organization::Invoices::ExtendedDto::Detail": {
+            /** Format: date-time */
+            delivery_date: string;
+            seller_name: string;
+            seller_registration_number: string;
+            seller_address_zipcode: string;
+            seller_address_street: string;
+            seller_address_city: string;
+            seller_vat_number: string;
+            seller_phone: string;
+            seller_email: string;
+            client_name: string;
+            client_registration_number: string;
+            client_address_zipcode: string;
+            client_address_street: string;
+            client_address_city: string;
+            client_vat_number: string;
+            client_phone: string;
+            client_email: string;
+            delivery_name: string;
+            delivery_registration_number: string;
+            delivery_address_zipcode: string;
+            delivery_address_street: string;
+            delivery_address_city: string;
+            delivery_phone: string;
+            delivery_email: string;
+            purchase_order_number: string;
+            /** Format: date-time */
+            due_date: string;
+        };
+        "Organization::Invoices::ExtendedDto::Context::ProjectVersionItem": {
+            original_item_uuid: string;
+            group_id: number;
+            name: string;
+            description: string;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+        };
+        "Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup": {
+            id: number;
+            name: string;
+            description: string;
+        };
+        "Organization::Invoices::ExtendedDto::Context": {
+            /** Format: decimal */
+            project_version_retention_guarantee_rate: string;
+            project_version_number: number;
+            project_version_date: string;
+            /** Format: decimal */
+            project_total_amount: string;
+            /** Format: decimal */
+            project_total_previously_billed_amount: string;
+            project_version_items: components["schemas"]["Organization::Invoices::ExtendedDto::Context::ProjectVersionItem"][];
+            project_version_item_groups: components["schemas"]["Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup"][];
+        };
         "Organization::Invoices::ExtendedDto": {
             id: number;
             /** @enum {string} */
@@ -1642,6 +1703,8 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
             lines: components["schemas"]["Organization::Invoices::ExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::ExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::ExtendedDto::Context"];
         };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];

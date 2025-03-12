@@ -1590,6 +1590,169 @@ components:
         excl_tax_amount:
           type: string
           format: decimal
+    Organization::Invoices::ExtendedDto::Detail:
+      type: object
+      required:
+      - delivery_date
+      - seller_name
+      - seller_registration_number
+      - seller_address_zipcode
+      - seller_address_street
+      - seller_address_city
+      - seller_vat_number
+      - seller_phone
+      - seller_email
+      - client_name
+      - client_registration_number
+      - client_address_zipcode
+      - client_address_street
+      - client_address_city
+      - client_vat_number
+      - client_phone
+      - client_email
+      - delivery_name
+      - delivery_registration_number
+      - delivery_address_zipcode
+      - delivery_address_street
+      - delivery_address_city
+      - delivery_phone
+      - delivery_email
+      - purchase_order_number
+      - due_date
+      properties:
+        delivery_date:
+          type: string
+          format: date-time
+        seller_name:
+          type: string
+        seller_registration_number:
+          type: string
+        seller_address_zipcode:
+          type: string
+        seller_address_street:
+          type: string
+        seller_address_city:
+          type: string
+        seller_vat_number:
+          type: string
+        seller_phone:
+          type: string
+        seller_email:
+          type: string
+        client_name:
+          type: string
+        client_registration_number:
+          type: string
+        client_address_zipcode:
+          type: string
+        client_address_street:
+          type: string
+        client_address_city:
+          type: string
+        client_vat_number:
+          type: string
+        client_phone:
+          type: string
+        client_email:
+          type: string
+        delivery_name:
+          type: string
+        delivery_registration_number:
+          type: string
+        delivery_address_zipcode:
+          type: string
+        delivery_address_street:
+          type: string
+        delivery_address_city:
+          type: string
+        delivery_phone:
+          type: string
+        delivery_email:
+          type: string
+        purchase_order_number:
+          type: string
+        due_date:
+          type: string
+          format: date-time
+    Organization::Invoices::ExtendedDto::Context::ProjectVersionItem:
+      type: object
+      required:
+      - original_item_uuid
+      - group_id
+      - name
+      - description
+      - quantity
+      - unit
+      - unit_price_amount
+      - tax_rate
+      - previously_billed_amount
+      properties:
+        original_item_uuid:
+          type: string
+        group_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_amount:
+          type: string
+          format: decimal
+        tax_rate:
+          type: string
+          format: decimal
+        previously_billed_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup:
+      type: object
+      required:
+      - id
+      - name
+      - description
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+    Organization::Invoices::ExtendedDto::Context:
+      type: object
+      required:
+      - project_version_retention_guarantee_rate
+      - project_version_number
+      - project_version_date
+      - project_total_amount
+      - project_total_previously_billed_amount
+      - project_version_items
+      - project_version_item_groups
+      properties:
+        project_version_retention_guarantee_rate:
+          type: string
+          format: decimal
+        project_version_number:
+          type: integer
+        project_version_date:
+          type: string
+        project_total_amount:
+          type: string
+          format: decimal
+        project_total_previously_billed_amount:
+          type: string
+          format: decimal
+        project_version_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context::ProjectVersionItem"
+        project_version_item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup"
     Organization::Invoices::ExtendedDto:
       type: object
       required:
@@ -1597,6 +1760,8 @@ components:
       - status
       - updated_at
       - lines
+      - detail
+      - context
       properties:
         id:
           type: integer
@@ -1616,6 +1781,10 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Line"
+        detail:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Detail"
+        context:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context"
     Organization::CompletionSnapshots::IndexDto:
       type: object
       required:

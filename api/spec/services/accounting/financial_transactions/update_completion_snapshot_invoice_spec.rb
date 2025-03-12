@@ -56,10 +56,12 @@ module Accounting
           address_street: "1 rue de la Paix",
           address_city: "Paris",
           vat_number: "FR123456789",
+          phone: "+33123456789",
+          email: "contact@acmecorp.com",
           config: {
-            "payment_term" => {
-              "days" => 30,
-              "accepted_methods" => [ "transfer" ]
+            payment_term: {
+              days: 30,
+              accepted_methods: [ "transfer" ]
             }
           }
         } }
@@ -70,7 +72,9 @@ module Accounting
           address_zipcode: "75002",
           address_street: "2 avenue des Champs-Élysées",
           address_city: "Paris",
-          vat_number: "FR987654321"
+          vat_number: "FR987654321",
+          phone: "+33987654321",
+          email: "contact@clientcorp.com"
         } }
 
         let(:issue_date) { Time.current }

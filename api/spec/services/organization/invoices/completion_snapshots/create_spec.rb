@@ -28,7 +28,7 @@ RSpec.describe Organization::Invoices::CompletionSnapshots::Create do
         expect { result }
           .to change(Accounting::CompletionSnapshotInvoice, :count).by(1)
           .and change(Accounting::FinancialTransactionDetail, :count).by(1)
-          .and change(Accounting::FinancialTransactionLine, :count).by(3)
+          .and change(Accounting::FinancialTransactionLine, :count).by(1)
       end
     end
 

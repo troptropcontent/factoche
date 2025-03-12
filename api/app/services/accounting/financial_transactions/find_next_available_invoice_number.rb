@@ -4,7 +4,7 @@ module Accounting
       INVOICE_PREFIX = "INV".freeze
       class << self
         def call(company_id, issue_date = Time.current)
-          invoice_count = FinancialTransaction.posted.where("type LIKE '%Invoice' AND company_id = ?", company_id).count
+          invoice_count = FinancialTransaction.where("type LIKE '%Invoice' AND company_id = ? AND status = ?", company_id, :posted).count
 
           new_number = [ INVOICE_PREFIX, issue_date.year, (invoice_count + 1).to_s.rjust(6, "0") ].join("-")
           # TODO: Implement logic to find next available invoice number

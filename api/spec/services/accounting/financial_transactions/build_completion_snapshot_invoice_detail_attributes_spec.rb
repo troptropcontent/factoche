@@ -13,9 +13,11 @@ RSpec.describe Accounting::FinancialTransactions::BuildCompletionSnapshotInvoice
         address_street: '123 Company St',
         address_city: 'Company City',
         vat_number: 'VAT123456',
+        phone: '+33123456789',
+        email: 'contact@acmecorp.com',
         config: {
-          'payment_term' => {
-            'days' => payment_term_days
+          payment_term: {
+            days: payment_term_days
           }
         }
       }
@@ -28,7 +30,9 @@ RSpec.describe Accounting::FinancialTransactions::BuildCompletionSnapshotInvoice
         address_zipcode: '54321',
         address_street: '456 Client St',
         address_city: 'Client City',
-        vat_number: 'VAT987654'
+        vat_number: 'VAT987654',
+        phone: '+33123456789',
+        email: 'contact@clientcorp.com'
       }
     end
 
