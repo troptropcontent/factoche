@@ -40,7 +40,7 @@ module Organization
           field "original_item_uuid", :string
           field "group_id", :integer
           field "name", :string
-          field "description", :string
+          field "description", :string, required: false
           field "quantity", :integer
           field "unit", :string
           field "unit_price_amount", :decimal
@@ -51,7 +51,7 @@ module Organization
         class ProjectVersionItemGroup < OpenApiDto
           field "id", :integer
           field "name", :string
-          field "description", :string
+          field "description", :string, required: false
         end
 
         field "project_version_retention_guarantee_rate", :decimal
@@ -68,8 +68,8 @@ module Organization
       field "number", :string, required: false
       field "updated_at", :timestamp
       field "lines", :array, subtype: Line
-      # field "detail", :object, subtype: Detail
-      # field "context", :object, subtype: Context
+      field "detail", :object, subtype: Detail
+      field "context", :object, subtype: Context
     end
   end
 end
