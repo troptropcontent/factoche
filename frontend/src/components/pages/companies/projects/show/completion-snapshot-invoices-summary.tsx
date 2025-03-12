@@ -41,12 +41,8 @@ const CompletionSnapshotInvoicesSummery = ({
   const handleRowClick = (
     invoice: NonNullable<typeof projectInvoices>[number]
   ) => {
-    const url =
-      invoice.status === "draft"
-        ? `/companies/$companyId/projects/$projectId/invoices/$invoiceId/update`
-        : "/companies/$companyId/projects/$projectId/invoices/$invoiceId";
     navigate({
-      to: url,
+      to: "/companies/$companyId/projects/$projectId/invoices/$invoiceId",
       params: {
         companyId: companyId.toString(),
         invoiceId: invoice.id.toString(),

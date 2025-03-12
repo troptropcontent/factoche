@@ -20,4 +20,15 @@ const computeItemTotalCents = (item: Item) => {
   return item.quantity * item.unit_price_cents;
 };
 
-export { computeProjectVersionTotalCents, computeItemTotalCents };
+const computeProjectVersionTotalAmount = ({ items }: { items: Item[] }) => {
+  return items.reduce(
+    (total, current) => total + computeItemTotalCents(current) / 100,
+    0
+  );
+};
+
+export {
+  computeProjectVersionTotalCents,
+  computeItemTotalCents,
+  computeProjectVersionTotalAmount,
+};

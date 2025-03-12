@@ -14,7 +14,7 @@ i18n
                     "common": {
                         "total": "Total",
                         "number_in_currency": "{{amount, currency(EUR)}}",
-                        "number_in_percentage": "{{amount, number}} %",
+                        "number_in_percentage": "{{amount, number(maximumFractionDigits: 2)}} %",
                         "date": "{{date, datetime}}",
                         "toast": {
                             "success": "Opération réussie",
@@ -234,6 +234,33 @@ i18n
                                 },
                                 "invoices": {
                                     "completion_snapshot": {
+                                        "show": {
+                                            "title": "Facture de situation",
+                                            "content": {
+                                                "title": "Détails de la facture",
+                                                "withGroups": {
+                                                    "columns": {
+                                                        "name": "Nom",
+                                                        "total": "Total",
+                                                        "previously_invoiced": "Déja facturé",
+                                                        "new_snapshot": "Nouvelle situation",
+                                                        "new_invoice": "Nouvelle facture",
+                                                    }
+                                                }
+                                            },
+                                            "actions": {
+                                                "edit": "Modifier la facture proforma",
+                                                "download_draft_pdf": "Télécharger la facture proforma",
+                                                "draft_pdf_unavailable": "Facture proforma en cours de génération",
+                                                "post": "Valider la facture proforma",
+                                                "destroy": "Supprimer la facture proforma",
+                                                "download_invoice_pdf": "Télécharger la facture",
+                                                "invoice_pdf_unavailable": "Facture en cours de génération",
+                                                "cancel": "Annuler la facture",
+                                                "download_credit_note_pdf": "Télécharger l'avoir",
+                                                "credit_note_pdf_unavailable": "Avoir en cours de génération",
+                                            }
+                                        },
                                         "new": {
                                             "title": "Nouvelle facture d'avancement",
                                         },
