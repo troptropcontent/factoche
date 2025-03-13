@@ -25,7 +25,7 @@ module Organization
         private
 
         def load_ressouces!(invoice_id)
-          invoice = Accounting::CompletionSnapshotInvoice.find(invoice_id)
+          invoice = Accounting::Invoice.find(invoice_id)
           project_version = ProjectVersion.find(invoice.holder_id)
           project = project_version.project
           client = project.client
@@ -139,7 +139,7 @@ module Organization
         end
 
         def update_invoice!(args)
-          result = Accounting::FinancialTransactions::UpdateInvoice.call(*args)
+          result = Accounting::Invoices::Update.call(*args)
 
           if result.failure?
             raise result.error

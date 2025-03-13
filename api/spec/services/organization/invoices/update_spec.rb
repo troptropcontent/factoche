@@ -15,7 +15,7 @@ module Organization
         let("second_item_unit_price_cents") { 5000 } # 50 €
         let("second_item_quantity") { 10 } # => total possible amount 10 * 50 € = 500 €
 
-        let(:invoice) { Organization::Invoices::CompletionSnapshots::Create.call(project_version.id, {
+        let(:invoice) { Create.call(project_version.id, {
           invoice_amounts: [
             { original_item_uuid: first_item.original_item_uuid, invoice_amount: 99 },
             { original_item_uuid: second_item.original_item_uuid, invoice_amount: 20 }
@@ -35,11 +35,11 @@ module Organization
           it { is_expected.to be_success }
 
           it "calls the accounting service with correct arguments", :aggregate_failures do
-            allow(Accounting::FinancialTransactions::UpdateInvoice).to receive(:call).and_return(ServiceResult.success(invoice))
+            allow(Accounting::Invoices::Update).to receive(:call).and_return(ServiceResult.success(invoice))
 
             result
 
-            expect(Accounting::FinancialTransactions::UpdateInvoice).to have_received(:call) do |invoice_id, company_hash, client_hash, project_version_hash, amounts|
+            expect(Accounting::Invoices::Update).to have_received(:call) do |invoice_id, company_hash, client_hash, project_version_hash, amounts|
               expect(invoice_id).to eq(invoice.id)
               expect(company_hash[:id]).to eq(company.id)
               expect(client_hash[:name]).to eq(client.name)
@@ -51,7 +51,7 @@ module Organization
 
         context "when invoice is not in draft status" do
           before do
-            invoice.update!(status: :posted, number: "INV-0011")
+            invoice.update!(status: :posted, number: "INV-2024-00001")
           end
 
           it { is_expected.to be_failure }
@@ -105,7 +105,7 @@ module Organization
 
         context "when accounting service fails" do
           before do
-            allow(Accounting::FinancialTransactions::UpdateInvoice).to receive(:call)
+            allow(Accounting::Invoices::Update).to receive(:call)
               .and_return(ServiceResult.failure("Accounting service error"))
           end
 
