@@ -1,7 +1,7 @@
 import { ClientInfo } from "./client-info";
 import { ProjectVersionComposition } from "./project-version-composition";
 import { ProjectSummary } from "./project-summary";
-import { CompletionSnapshotInvoicesSummery } from "./completion-snapshot-invoices-summary";
+import { InvoicesSummary } from "./invoices-summary";
 
 const ProjectShowContent = ({
   companyId,
@@ -20,10 +20,7 @@ const ProjectShowContent = ({
       <div className="md:col-span-1">
         <ProjectSummary routeParams={{ companyId, projectId }} />
         <ClientInfo client={client} />
-        <CompletionSnapshotInvoicesSummery
-          companyId={companyId}
-          projectId={projectId}
-        />
+        <InvoicesSummary companyId={companyId} projectId={projectId} />
       </div>
       <div className="md:col-span-2">
         <ProjectVersionComposition

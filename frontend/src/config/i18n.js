@@ -235,7 +235,8 @@ i18n
                                 "invoices": {
                                     "completion_snapshot": {
                                         "show": {
-                                            "title": "Facture de situation",
+                                            "title_published": "Facture de situation N°{{number}}",
+                                            "title_unpublished": "Facture PROFORMA de situation N°{{number}}",
                                             "content": {
                                                 "title": "Détails de la facture",
                                                 "withGroups": {

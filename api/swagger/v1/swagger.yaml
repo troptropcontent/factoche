@@ -821,6 +821,82 @@ paths:
           description: project not found
         '403':
           description: forbiden
+    post:
+      summary: Creates an invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successfully creates completion snapshot invoice
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '403':
+          description: forbiden
+        '404':
+          description: not_found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - invoice_amounts
+              properties:
+                invoice_amounts:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - original_item_uuid
+                    - invoice_amount
+                    properties:
+                      original_item_uuid:
+                        type: string
+                      invoice_amount:
+                        type: string
+                        format: decimal
+        required: true
   "/api/v1/organization/projects/{project_id}/invoices/{id}":
     get:
       summary: Show invoice
@@ -1680,7 +1756,6 @@ components:
       - original_item_uuid
       - group_id
       - name
-      - description
       - quantity
       - unit
       - unit_price_amount
@@ -1695,6 +1770,7 @@ components:
           type: string
         description:
           type: string
+          nullable: true
         quantity:
           type: integer
         unit:
@@ -1713,7 +1789,6 @@ components:
       required:
       - id
       - name
-      - description
       properties:
         id:
           type: integer
@@ -1721,6 +1796,7 @@ components:
           type: string
         description:
           type: string
+          nullable: true
     Organization::Invoices::ExtendedDto::Context:
       type: object
       required:
@@ -1771,6 +1847,7 @@ components:
           - draft
           - posted
           - cancelled
+          - voided
         number:
           type: string
           nullable: true

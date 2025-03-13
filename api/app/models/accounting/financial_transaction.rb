@@ -10,39 +10,14 @@ module Accounting
             class_name: "Accounting::FinancialTransactionDetail",
             dependent: :destroy
 
-    def self.inherited(subclass)
-      super
-
-      if subclass.name.ends_with?(InvoiceType)
-        subclass.enum :status,
-                     {
-                       draft: "draft",
-                       posted: "posted",
-                       cancelled: "cancelled"
-                     },
-                     default: :draft,
-                     validate: true
-      else
-        subclass.enum :status,
-                     {
-                       draft: "draft",
-                       posted: "posted"
-                     },
-                     default: :draft,
-                     validate: true
-      end
-    end
-
+    validate :valid_type_name?
+    validate :valid_context?
     validates :number,
               presence: true,
               uniqueness: {
                 scope: :company_id,
                 message: "has already been taken for this company"
-              },
-              unless: :draft?
-
-    validate :valid_type_name?
-    validate :valid_context?
+              }
 
     private
 
@@ -63,8 +38,8 @@ module Accounting
     end
 
     def valid_type_name?
-      unless type&.ends_with?(InvoiceType) || type&.ends_with?(CreditNoteType)
-        errors.add(:type, "must end with Invoice or CreditNote")
+      unless type.demodulize == InvoiceType || type == CreditNoteType
+        errors.add(:type, "must either be Invoice or CreditNote")
       end
     end
   end

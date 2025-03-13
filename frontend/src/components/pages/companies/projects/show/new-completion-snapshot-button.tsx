@@ -42,7 +42,7 @@ const NewCompletionSnapshotButton = ({
       >
         {isButtonEnable ? (
           <Link
-            to={`/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new`}
+            to={`/companies/$companyId/projects/$projectId/invoices/new`}
             params={{
               companyId: companyId.toString(),
               projectId: projectId.toString(),
