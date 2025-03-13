@@ -984,7 +984,9 @@ export interface paths {
         /** Lists invoices for a project */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    status?: ("draft" | "posted" | "cancelled" | "voided")[];
+                };
                 header?: never;
                 path: {
                     project_id: number;
@@ -1982,7 +1984,7 @@ export interface components {
         "Organization::Invoices::CompactDto": {
             id: number;
             /** @enum {string} */
-            status: "draft" | "posted" | "cancelled";
+            status: "draft" | "posted" | "cancelled" | "voided";
             number?: string | null;
             /** Format: date-time */
             updated_at: string;
