@@ -7,7 +7,7 @@ module Organization
       end
 
       field "id", :integer
-      field "status", :enum, subtype: [ "draft", "posted", "cancelled" ]
+      field "status", :enum, subtype: [ "draft", "posted", "cancelled", "voided" ]
       field "number", :string, required: false
       field "updated_at", :timestamp
       field "total_amount", :decimal
