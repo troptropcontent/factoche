@@ -33,13 +33,13 @@ module Organization
               },
               holder_id: original_item_uuids
             ).where.not(financial_transaction: {
-              status: :draft
+              status: Accounting::Invoice::UNPUBLISHED_STATUS
             })
             .select(
               "accounting_financial_transaction_lines.holder_id",
               "SUM(CASE
-                WHEN type LIKE '%#{Accounting::FinancialTransaction::InvoiceType}' THEN excl_tax_amount
-                WHEN type LIKE '%#{Accounting::FinancialTransaction::CreditNoteType}' THEN -excl_tax_amount
+                WHEN type = 'Accounting::Invoice' THEN excl_tax_amount
+                WHEN type LIKE 'Accounting::CreditNote' THEN -excl_tax_amount
                 ELSE 0
               END) as total_amount"
             )

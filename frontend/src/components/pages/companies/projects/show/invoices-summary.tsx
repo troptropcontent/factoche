@@ -32,7 +32,12 @@ const InvoicesSummary = ({
   const { data: projectInvoices } = Api.useQuery(
     "get",
     "/api/v1/organization/projects/{project_id}/invoices",
-    { params: { path: { project_id: projectId } } },
+    {
+      params: {
+        path: { project_id: projectId },
+        query: { status: ["cancelled", "draft", "posted"] },
+      },
+    },
     { select: ({ results }) => results }
   );
 

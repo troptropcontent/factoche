@@ -9,6 +9,16 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       security [ bearerAuth: [] ]
       produces 'application/json'
       parameter name: :project_id, in: :path, type: :integer
+      parameter name: 'status',
+          in: :query,
+          schema: {
+            type: :array,
+            items: {
+              type: :string,
+              enum: [ 'draft', 'posted', 'cancelled', 'voided' ]
+            }
+          }
+
 
       let(:project_id) { project.id }
       let(:user) { FactoryBot.create(:user) }
@@ -32,6 +42,23 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           run_test!("it return the invoices") do
             parsed_response = JSON.parse(response.body)
             expect(parsed_response.dig("results", 0)).to include({ "id"=> previous_invoice.id })
+          end
+        end
+
+        context "when status are provided in the query params" do
+          let(:status) { [ "voided" ] }
+
+          before do
+            FactoryBot.create(:invoice, company_id: 1, holder_id: project_version.id, number: "PRO-2024-00001")
+            FactoryBot.create(:invoice, :voided, company_id: 1, holder_id: project_version.id, number: "PRO-2024-00002")
+            FactoryBot.create(:invoice, :posted, company_id: 1, holder_id: project_version.id, number: "INV-2024-00001")
+            FactoryBot.create(:invoice, :cancelled, company_id: 1, holder_id: project_version.id, number: "INV-2024-00002")
+          end
+
+          run_test!("it return the filtered invoices") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response.dig("results", 0, "number")).to eq("PRO-2024-00002")
+            expect(parsed_response.dig("results").length).to eq(1)
           end
         end
       end
@@ -176,19 +203,30 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
         schema Organization::Invoices::ShowDto.to_schema
 
-        it "Updates the invoice" do |example|
+        it "Updates the invoice by voiding the invoice and creating a new one", :aggregate_failures do |example|
           expect { submit_request(example.metadata) }
-            .to change { invoice.reload.lines.sum('excl_tax_amount') }.from(0.4).to(1)
+            .to change(Accounting::Invoice, :count).by(1)
+            .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+            .and change(Accounting::FinancialTransactionLine, :count).by(1)
 
           assert_response_matches_metadata(example.metadata)
+
+          parsed_response = JSON.parse(response.body)
+
+          expect(parsed_response.dig("result", "id")).not_to eq(invoice.id)
+          expect(parsed_response.dig("result", "status")).to eq("draft")
+          expect(parsed_response.dig("result", "number")).to end_with("002")
         end
 
         context "when the client have changed" do
           before { client.update(name: "New Client Name") }
 
           it "Updates the invoice details accordingly" do |example|
-            expect { submit_request(example.metadata) }
-              .to change { invoice.reload.detail.client_name }.from("Super Client").to("New Client Name")
+            submit_request(example.metadata)
+
+            parsed_response = JSON.parse(response.body)
+
+            expect(parsed_response.dig("result", "detail", "client_name")).to eq("New Client Name")
 
             assert_response_matches_metadata(example.metadata)
           end
@@ -205,7 +243,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
 
         context "when the invoice is not draftf" do
-          before { invoice.update(status: :posted, number: "INV-000") }
+          before { invoice.update(status: :posted, number: "INV-2024-00001") }
 
           run_test!
         end

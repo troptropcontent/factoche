@@ -7,13 +7,14 @@ module Api
           project = policy_scope(::Organization::Project).find(params[:project_id])
 
           invoices = Accounting::Invoice
-            .joins(:lines)
+            .left_outer_joins(:lines)
             .select(
               "accounting_financial_transactions.*, " \
-              "SUM(accounting_financial_transaction_lines.quantity * " \
-              "accounting_financial_transaction_lines.unit_price_amount) as total_amount"
+              "SUM(COALESCE(accounting_financial_transaction_lines.quantity, 0) * " \
+              "COALESCE(accounting_financial_transaction_lines.unit_price_amount, 0)) as total_amount"
             )
             .where(holder_id: project.versions.pluck(:id))
+            .then { |invoices| filter_by_status(invoices) }
             .group("accounting_financial_transactions.id")
 
           render json: ::Organization::Invoices::IndexDto.new({ results: invoices })
@@ -61,6 +62,13 @@ module Api
 
         def invoice_params
           params.require(:invoice).permit(invoice_amounts: [ :original_item_uuid, :invoice_amount ])
+        end
+
+        def filter_by_status(invoices)
+          return invoices unless params[:status].present?
+
+          statuses = Array(params[:status])
+          invoices.where(status: statuses)
         end
       end
     end

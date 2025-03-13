@@ -2,7 +2,7 @@ module Organization
   module Invoices
     class Create
       class << self
-        def call(project_version_id, params)
+        def call(project_version_id, params, issue_date = Time.current)
           project_version, project, client, company = load_resources!(project_version_id)
 
           validated_params = validate_params!(params)
@@ -15,7 +15,7 @@ module Organization
 
           ensure_invoiced_item_remains_within_limits!(validated_params["invoice_amounts"], project_version.items, project.id, company.id)
 
-          accounting_service_arguments = build_accounting_service_arguments(company, client, project_version, validated_params["invoice_amounts"])
+          accounting_service_arguments = build_accounting_service_arguments(company, client, project_version, validated_params["invoice_amounts"], issue_date)
 
           invoice = create_invoice!(accounting_service_arguments)
 
@@ -74,7 +74,7 @@ module Organization
           end
         end
 
-        def build_accounting_service_arguments(company, client, project_version, invoice_amounts)
+        def build_accounting_service_arguments(company, client, project_version, invoice_amounts, issue_date)
           company_hash = {
             id: company.id,
             name: company.name,
@@ -130,7 +130,7 @@ module Organization
             }
           }
 
-          [ company_hash, client_hash, project_version_hash, invoice_amounts ]
+          [ company_hash, client_hash, project_version_hash, invoice_amounts, issue_date ]
         end
 
         def create_invoice!(args)
