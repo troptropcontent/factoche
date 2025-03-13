@@ -27,7 +27,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         end
 
         context "when there is invoices attached to the project" do
-         let!(:previous_invoice) { ::Organization::Invoices::CompletionSnapshots::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+         let!(:previous_invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
 
           run_test!("it return the invoices") do
             parsed_response = JSON.parse(response.body)
@@ -44,6 +44,67 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
 
       it_behaves_like "an authenticated endpoint"
     end
+
+    post 'Creates an invoice' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      consumes 'application/json'
+
+      parameter name: :project_id, in: :path, type: :integer, required: true
+      parameter name: :body, in: :body, required: true, schema: {
+        type: :object,
+        required: [ :invoice_amounts ],
+        properties: {
+          invoice_amounts: {
+            type: :array,
+            items: {
+              type: :object,
+              required: [ :original_item_uuid, :invoice_amount ],
+              properties: {
+                original_item_uuid: { type: :string },
+                invoice_amount: { type: :string, format: "decimal" }
+              }
+            }
+          }
+        }
+      }
+
+      let(:project_id) { 1 }
+      let(:body) { }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+      include_context 'a company with a project with three items'
+
+      response '200', 'successfully creates completion snapshot invoice' do
+        schema Organization::Invoices::ShowDto.to_schema
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+        let(:project_id) { project.id }
+        let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.5" } ] } }
+
+        it("creates a invoice, its detail and its line and returns it") do |example|
+          expect { submit_request(example.metadata) }.to change(Accounting::Invoice, :count).by(1)
+          .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+          .and change(Accounting::FinancialTransactionLine, :count).by(1)
+
+          assert_response_matches_metadata(example.metadata)
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+
+      response '404', 'not_found' do
+        let(:project_id) { project.id }
+
+        schema ApiError.schema
+
+        context "when the project_version does not belong to a company the user is a member of" do
+          run_test!
+        end
+      end
+    end
   end
   path '/api/v1/organization/projects/{project_id}/invoices/{id}' do
     get 'Show invoice' do
@@ -53,7 +114,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       parameter name: :project_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
 
-      let(:invoice) { ::Organization::Invoices::CompletionSnapshots::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+      let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
       let(:id) { invoice.id }
       let(:project_id) { project.id }
       let(:user) { FactoryBot.create(:user) }
@@ -75,6 +136,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
 
       it_behaves_like "an authenticated endpoint"
     end
+
     put 'Update invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
@@ -101,7 +163,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       }
 
       let!(:invoice) {
-        ::Organization::Invoices::CompletionSnapshots::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
+        ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
       }
       let(:id) { invoice.id }
       let(:project_id) { project.id }
