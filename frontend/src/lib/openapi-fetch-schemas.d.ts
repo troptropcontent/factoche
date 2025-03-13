@@ -1021,7 +1021,64 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /** Creates an invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        invoice_amounts: {
+                            original_item_uuid: string;
+                            /** Format: decimal */
+                            invoice_amount: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description successfully creates completion snapshot invoice */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not_found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1668,7 +1725,7 @@ export interface components {
             original_item_uuid: string;
             group_id: number;
             name: string;
-            description: string;
+            description?: string | null;
             quantity: number;
             unit: string;
             /** Format: decimal */
@@ -1681,7 +1738,7 @@ export interface components {
         "Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup": {
             id: number;
             name: string;
-            description: string;
+            description?: string | null;
         };
         "Organization::Invoices::ExtendedDto::Context": {
             /** Format: decimal */
@@ -1698,7 +1755,7 @@ export interface components {
         "Organization::Invoices::ExtendedDto": {
             id: number;
             /** @enum {string} */
-            status: "draft" | "posted" | "cancelled";
+            status: "draft" | "posted" | "cancelled" | "voided";
             number?: string | null;
             /** Format: date-time */
             updated_at: string;

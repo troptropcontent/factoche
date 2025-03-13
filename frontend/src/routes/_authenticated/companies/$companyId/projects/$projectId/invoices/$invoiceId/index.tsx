@@ -27,13 +27,15 @@ function RouteComponent() {
   const { result: invoice } = Route.useLoaderData();
   const { companyId, invoiceId, projectId } = Route.useParams();
   const { t } = useTranslation();
+
   return (
     <Layout.Root>
       <Layout.Header>
         <div className="flex flex-grow items-center">
           <h1 className="text-3xl font-bold mr-auto">
             {t(
-              "pages.companies.projects.invoices.completion_snapshot.show.title"
+              `pages.companies.projects.invoices.completion_snapshot.show.title_${invoice.status == "draft" || invoice.status == "voided" ? "unpublished" : "published"}`,
+              { number: invoice.number }
             )}
           </h1>
           <CompletionSnapshotStatusBadge status={invoice.status} />
