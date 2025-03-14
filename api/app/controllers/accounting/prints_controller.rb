@@ -5,20 +5,21 @@ module Accounting
 
     before_action :ensure_microservice_env!
 
-    # # GET /api/v1/organization/prints/published_invoice/:id
-    # def published_invoice
-    #   @locale = :fr
-    #   @invoice = Accounting::Invoice.find_by(id: params[:id])
-    #   if @invoice.nil?
-    #     raise Error::UnprocessableEntityError, "No invoice found for this id"
-    #   end
+    # GET /accounting/prints/published_invoices/:id
+    def published_invoice
+      @proforma = false
+      @locale = :fr
+      @invoice = Accounting::Invoice.find_by(id: params[:id])
+      if @invoice.nil?
+        raise Error::UnprocessableEntityError, "No invoice found for this id"
+      end
 
-    #   unless @invoice.posted? || @invoice.cancelled?
-    #     raise Error::UnprocessableEntityError, "Invoice must be in posted or cancell status"
-    #   end
+      unless Invoice::PUBLISHED_STATUS.include?(@invoice.status)
+        raise Error::UnprocessableEntityError, "Invoice must be published"
+      end
 
-    #   render template: "accounting/invoice", layout: "print"
-    # end
+      render template: "accounting/invoice", layout: "print"
+    end
 
 
     # GET /accounting/prints/unpublished_invoices/:id
@@ -30,8 +31,8 @@ module Accounting
         raise Error::UnprocessableEntityError, "No invoice found for this id"
       end
 
-      unless @invoice.draft? || @invoice.voided?
-        raise Error::UnprocessableEntityError, "Invoice must be in draft or voided status"
+      unless Invoice::UNPUBLISHED_STATUS.include?(@invoice.status)
+        raise Error::UnprocessableEntityError, "Invoice must be unpublished"
       end
 
       render template: "accounting/invoice", layout: "print"
