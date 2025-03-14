@@ -1764,6 +1764,7 @@ export interface components {
             lines: components["schemas"]["Organization::Invoices::ExtendedDto::Line"][];
             detail: components["schemas"]["Organization::Invoices::ExtendedDto::Detail"];
             context: components["schemas"]["Organization::Invoices::ExtendedDto::Context"];
+            pdf_url: string;
         };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
