@@ -70,6 +70,7 @@ module Organization
       field "lines", :array, subtype: Line
       field "detail", :object, subtype: Detail
       field "context", :object, subtype: Context
+      field "pdf_url", :string, required: false
     end
   end
 end

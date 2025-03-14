@@ -1,5 +1,7 @@
 module Accounting
   class FinancialTransaction < ApplicationRecord
+    include PdfAttachable
+
     InvoiceType = "Invoice".freeze
     CreditNoteType = "CreditNote".freeze
 

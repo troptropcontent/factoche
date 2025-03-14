@@ -57,6 +57,8 @@ module Accounting
             draft_invoice
           end
 
+          GenerateAndAttachPdfToUnpublishedInvoiceJob.perform_async({ "invoice_id" => invoice.id })
+
           ServiceResult.success(invoice)
         rescue StandardError => e
           ServiceResult.failure("Failed to create invoice: #{e.message}")

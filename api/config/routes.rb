@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   namespace :accounting do
     namespace :prints do
-      get "/unpublished_invoices/:id", action: "unpublished_invoice"
+      get "/unpublished_invoices/:id", action: "unpublished_invoice", as: :unpublished_invoice
     end
   end
 
