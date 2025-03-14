@@ -805,8 +805,6 @@ paths:
           type: integer
       - name: status
         in: query
-        style: form
-        explode: true
         schema:
           type: array
           items:
@@ -1851,6 +1849,7 @@ components:
       - lines
       - detail
       - context
+      - pdf_url
       properties:
         id:
           type: integer
@@ -1875,6 +1874,8 @@ components:
           "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Detail"
         context:
           "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context"
+        pdf_url:
+          type: string
     Organization::CompletionSnapshots::IndexDto:
       type: object
       required:

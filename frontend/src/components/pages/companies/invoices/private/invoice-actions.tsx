@@ -33,15 +33,35 @@ const EditButton = ({
   );
 };
 
-const DownloadDraftInvoicePdfButton = () => {
+const DownloadDraftInvoicePdfButton = ({
+  invoiceId,
+  projectId,
+}: {
+  invoiceId: number;
+  projectId: number;
+}) => {
   const { t } = useTranslation();
+  const { data: invoiceData } = Api.useQuery(
+    "get",
+    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    {
+      params: {
+        path: { project_id: projectId, id: invoiceId },
+      },
+    },
+    { select: ({ result }) => result }
+  );
 
-  const isPdfDownloadable = false;
+  if (invoiceData == undefined) {
+    return null;
+  }
+
+  const isPdfDownloadable = invoiceData.pdf_url;
 
   return (
     <Button asChild variant="outline">
       {isPdfDownloadable ? (
-        <Link>
+        <Link to={`${import.meta.env.VITE_API_BASE_URL}${invoiceData.pdf_url}`}>
           <Download className="mr-2 h-4 w-4" />
           {t(
             "pages.companies.projects.invoices.completion_snapshot.show.actions.download_draft_pdf"
@@ -163,7 +183,11 @@ const DraftInvoiceActions = ({
         invoiceId={invoiceId}
         companyId={companyId}
       />
-      <DownloadDraftInvoicePdfButton />
+      <DownloadDraftInvoicePdfButton
+        projectId={projectId}
+        invoiceId={invoiceId}
+        companyId={companyId}
+      />
       <PostButton />
       <DestroyButton />
     </>

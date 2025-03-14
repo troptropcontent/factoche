@@ -5,7 +5,7 @@ module Accounting
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe Update do
       describe '.call' do
-        subject(:result) { described_class.call(invoice_id, company, client, project_version, new_invoice_items, issue_date) }
+        subject(:result) { described_class.call(invoice_id, company, client, project, project_version, new_invoice_items, issue_date) }
         let(:invoice_id) { original_invoice.id }
         let(:issue_date) { Date.new(2024, 1, 9) }
         let(:company_id) { 1 }
@@ -13,6 +13,7 @@ module Accounting
           original_item_uuid: first_item_uuid,
           invoice_amount: "125.23"
         } ] }
+        let(:project) { { name: "Super Project" } }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
         let(:project_version) do
@@ -62,6 +63,10 @@ module Accounting
           vat_number: "FR123456789",
           phone: "+33123456789",
           email: "contact@acmecorp.com",
+          rcs_city: "Paris",
+          rcs_number: "RCS123456",
+          legal_form: "sas",
+          capital_amount: 10000,
           config: {
             payment_term: {
               days: 30,
@@ -82,7 +87,7 @@ module Accounting
         } }
 
         let!(:original_invoice) {
-          Create.call(company.merge({ name: "OLD NAME" }), client.merge({ name: "OLD Client NAME" }), project_version, [ {
+          Create.call(company.merge({ name: "OLD NAME" }), client.merge({ name: "OLD Client NAME" }), project, project_version, [ {
           original_item_uuid: first_item_uuid,
           invoice_amount: 50
         } ], issue_date).data}

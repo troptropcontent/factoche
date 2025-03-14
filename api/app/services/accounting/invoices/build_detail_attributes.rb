@@ -5,6 +5,8 @@ module Accounting
         def call(company, client, project_version, issue_date)
           attributes = {
               delivery_date: issue_date,
+              payment_term_days: company.fetch(:config).fetch(:payment_term).fetch(:days),
+              payment_term_accepted_methods: company.fetch(:config).fetch(:payment_term).fetch(:accepted_methods),
               due_date: issue_date + company.fetch(:config).fetch(:payment_term).fetch(:days).to_i.days,
               seller_name: company.fetch(:name),
               seller_registration_number: company.fetch(:registration_number),
@@ -14,6 +16,10 @@ module Accounting
               seller_vat_number: company.fetch(:vat_number),
               seller_phone: company.fetch(:phone),
               seller_email: company.fetch(:email),
+              seller_rcs_city: company.fetch(:rcs_city),
+              seller_rcs_number: company.fetch(:rcs_number),
+              seller_legal_form: company.fetch(:legal_form),
+              seller_capital_amount: company.fetch(:capital_amount),
               client_vat_number: client.fetch(:vat_number),
               client_name: client.fetch(:name),
               client_registration_number: client.fetch(:registration_number),

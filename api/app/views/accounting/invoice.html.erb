@@ -1,0 +1,201 @@
+<% I18n.with_locale(@locale) do %>
+  <header class="header text-xs">
+    <div class="flex justify-between">
+      <%= image_tag("images/logo_cheyere.png") %>
+      <table>
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 bg-gray-200 border-1 rounded rounded-b-none">
+              <%= t("views.accounting.invoice.#{@proforma ? "unpublished" : "published"}.title") %>
+            </th>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
+              <%= t("views.accounting.invoice.shared.number") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.number %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
+              <%= t("views.accounting.invoice.shared.billing_date") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= l(@invoice.issue_date, format: :short) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
+              <%= t("views.accounting.invoice.shared.delivery_date") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= l(@invoice.detail.delivery_date, format: :short) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
+              <%= t("views.accounting.invoice.shared.payment_term.days_label") %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0">
+              <%= t("views.accounting.invoice.shared.payment_term.days_value",
+                  count: @invoice.detail.payment_term_days) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
+              <%= t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_label",
+                  count: @invoice.detail.payment_term_accepted_methods.length) %>
+            </th>
+            <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
+              <%= @invoice.detail.payment_term_accepted_methods
+                    .map { |method| t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_value.#{method}") }
+                    .join(", ") %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </header>
+
+  <footer class="footer text-xs ml-[-113.336px]">
+    <p>
+      <%= [
+        t("views.organization.completion_snapshots.invoice.seller_details.legal_form.#{@invoice.detail.seller_legal_form}",
+          capital_amount: number_to_currency(@invoice.detail.seller_capital_amount)),
+        t("views.organization.completion_snapshots.invoice.seller_details.rcs",
+          city: @invoice.detail.seller_rcs_city,
+          number: @invoice.detail.seller_rcs_number),
+        t("views.organization.completion_snapshots.invoice.seller_details.vat_number",
+          number: @invoice.detail.seller_vat_number)
+      ].join(" - ") %>
+    </p>
+  </footer>
+
+  <main class="text-xs">
+    <section class="mb-8">
+      <table class="mb-8 w-full">
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 py-0.5 bg-gray-200 rounded rounded-b-none border-1">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.title") %>
+            </th>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.name_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.detail.seller_name %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_value", 
+                street: @invoice.detail.seller_address_street,
+                city: @invoice.detail.seller_address_city,
+                zip: @invoice.detail.seller_address_zipcode
+              ) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.phone_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.detail.seller_phone %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0 rounded-bl">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.siret_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0 rounded-br">
+              <%= @invoice.detail.seller_registration_number %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="flex justify-between gap-4 mb-8">
+        <table class="grow">
+          <tbody>
+            <tr>
+              <th colspan="2" class="px-2 py-1 bg-gray-200 border-1 rounded rounded-b-none">
+                <%= t("views.organization.completion_snapshots.invoice.billing_address.title") %>
+              </th>
+            </tr>
+            <tr>
+              <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+                <strong><%= @invoice.detail.client_name %></strong><br>
+                <%= t("common.address.value", street: @invoice.detail.client_address_street, city: @invoice.detail.client_address_city, zip: @invoice.detail.client_address_zipcode) %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="grow">
+          <tbody>
+            <tr>
+              <th colspan="2" class="px-2 py-1 bg-gray-200 border-1 rounded rounded-b-none">
+                <%= t("views.organization.completion_snapshots.invoice.delivery_address.title") %>
+              </th>
+            </tr>
+            <tr>
+              <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+                <strong><%= @invoice.detail.delivery_name %></strong><br>
+                <%= t("common.address.value", street: @invoice.detail.delivery_address_street, city: @invoice.detail.delivery_address_city, zip: @invoice.detail.delivery_address_zipcode) %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <table class="w-full">
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 py-1 bg-gray-200 border rounded rounded-b-none">
+              <%= t("views.organization.completion_snapshots.invoice.context.title") %>
+            </th>
+          </tr>
+          <tr>
+            <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+              <%= t("views.accounting.invoice.shared.context.project_html",
+                    name: @invoice.context.fetch("project_name")) %><br>
+              <%= t("views.accounting.invoice.shared.context.project_version_html",
+                    version_number: @invoice.context.fetch("project_version_number"),
+                    version_date: l(DateTime.parse(@invoice.context.fetch("project_version_date")))) %><br>
+              <%= t("views.accounting.invoice.shared.context.project_total_html",
+                    total: number_to_currency(@invoice.context.fetch("project_total_amount").to_d)) %><br>
+              <%= t("views.accounting.invoice.shared.context.project_previously_billed_html",
+                    previously_billed: number_to_currency(@invoice.context.fetch("project_total_previously_billed_amount").to_d)) %><br>
+              <%= t("views.organization.completion_snapshots.invoice.context.project_remaining_html",
+                    remaining: number_to_currency(@invoice.context.fetch("project_total_amount").to_d - @invoice.context.fetch("project_total_previously_billed_amount").to_d)) %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <% @invoice.context.fetch("project_version_item_groups").map do |item_group| %>
+        <%= render "accounting/group", invoice: @invoice, item_group: item_group %>
+    <% end %>
+
+    <%= render "accounting/totals", invoice: @invoice %>
+
+    <section class="break-before-page">
+      <h1 class="text-center text-xl font-bold"><%= t("views.accounting.invoice.shared.conditions.title") %></h1>
+      <p>
+        Le vendeur se réserve la propriété des marchandises vendues jusqu'au complet paiement du prix,
+        conformément à la Loi N° 80-335 du 12 mai 1980
+      </p>
+      <p>
+        Délai de réglement selon loi L.ME, Pénalités de retard en cas de palement après échéance équivalentes
+        à 3 fois le taux d'intérêt légal, indemnite forfaitaire pour frais de recouvrement de 40€.
+        Pas d'ecomple en cas de paiement anticipé
+      </p>
+    </section>
+  </main>
+<% end %>

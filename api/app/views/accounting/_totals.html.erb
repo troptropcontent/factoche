@@ -1,0 +1,44 @@
+<table class="ml-auto break-inside-avoid">
+  <tbody>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 rounded-tl">
+        <%= t("views.accounting.invoice.shared.totals.total_excl_tax_label") %>
+      </th>
+      <td class="px-2 text-right border-1 border-l-0 rounded-tr">
+        <%= number_to_currency(invoice.lines.sum("excl_tax_amount")) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0">
+        <%= t("views.accounting.invoice.shared.totals.vat_amount_label") %>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0">
+        <%= number_to_currency(invoice.lines.sum('excl_tax_amount * tax_rate')) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0">
+        <%= t("views.accounting.invoice.shared.totals.total_incl_tax_label") %>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0">
+        <%= number_to_currency(invoice.lines.sum("excl_tax_amount") + invoice.lines.sum('excl_tax_amount * tax_rate')) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0">
+        <%= t("views.accounting.invoice.shared.totals.retention_guarantee_label", percentage: number_to_percentage(BigDecimal(invoice.context.fetch("project_version_retention_guarantee_rate")) * 100, precision: 0)) %>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0">
+        <%= number_to_currency(BigDecimal(invoice.context.fetch("project_version_retention_guarantee_rate")) * invoice.lines.sum("excl_tax_amount") + invoice.lines.sum('excl_tax_amount * tax_rate')) %>
+      </td>
+    </tr>
+    <tr>
+      <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
+        <%= t("views.accounting.invoice.shared.totals.total_to_pay_label") %>
+      </th>
+      <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
+        <%= number_to_currency(invoice.lines.sum("excl_tax_amount") + invoice.lines.sum('excl_tax_amount * tax_rate') - (BigDecimal(invoice.context.fetch("project_version_retention_guarantee_rate")) * invoice.lines.sum("excl_tax_amount") + invoice.lines.sum('excl_tax_amount * tax_rate'))) %>
+      </td>
+    </tr>
+  </tbody>
+</table>

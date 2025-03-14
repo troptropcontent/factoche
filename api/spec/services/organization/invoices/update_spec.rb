@@ -39,10 +39,11 @@ module Organization
 
             result
 
-            expect(Accounting::Invoices::Update).to have_received(:call) do |invoice_id, company_hash, client_hash, project_version_hash, amounts|
+            expect(Accounting::Invoices::Update).to have_received(:call) do |invoice_id, company_hash, client_hash, project_hash, project_version_hash, amounts|
               expect(invoice_id).to eq(invoice.id)
               expect(company_hash[:id]).to eq(company.id)
               expect(client_hash[:name]).to eq(client.name)
+              expect(project_hash[:name]).to eq(project.name)
               expect(project_version_hash[:id]).to eq(project_version.id)
               expect(amounts).to match_array(params[:invoice_amounts])
             end

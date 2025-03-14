@@ -27,6 +27,41 @@ fr:
       label: "Adresse"
       value: "%{street} %{zip} %{city}"
   views:
+    accounting:
+      invoice:
+        shared:
+          number: "Numéro"
+          billing_date: "Date de facturation"
+          delivery_date: "Date de livraison"
+          payment_term:
+            days_label: "Délai de paiement"
+            days_value:
+              one: "%{count} jour"
+              other: "%{count} jours"
+          context:
+            project_html: "<strong>Projet :</strong> %{name}"
+            project_version_html: "<strong>Version du projet :</strong> N° %{version_number} du %{version_date}"
+            project_total_html: "<strong>Total HT du projet :</strong> %{total}"
+            project_previously_billed_html: "<strong>Total HT des précédentes factures :</strong> %{previously_billed}"
+          groups:
+            columns:
+              details: "Désignation"
+              total_excl_tax_label: "Total HT"
+              total_previously_billed_label: "Déja facturé"
+              completion: "Avancement"
+              invoice: "A facturer"
+          totals:
+            total_excl_tax_label: "Total HT"
+            vat_amount_label: "TVA"
+            total_incl_tax_label: "Total TTC"
+            retention_guarantee_label: "Retenue garantie (%{percentage})"
+            total_to_pay_label: "Total à payer"
+          conditions:
+            title: "Conditions générales de ventes"
+        unpublished:
+          title: "Facture proforma de situation"
+        published:
+          title: "Facture de situation"
     organization:
       completion_snapshots:
         invoice:

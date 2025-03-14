@@ -15,7 +15,7 @@ module Organization
 
           ensure_invoiced_item_remains_within_limits!(validated_params["invoice_amounts"], project_version.items, project.id, company.id)
 
-          accounting_service_arguments = build_accounting_service_arguments(company, client, project_version, validated_params["invoice_amounts"], issue_date)
+          accounting_service_arguments = build_accounting_service_arguments(company, client, project, project_version, validated_params["invoice_amounts"], issue_date)
 
           invoice = create_invoice!(accounting_service_arguments)
 
@@ -74,7 +74,7 @@ module Organization
           end
         end
 
-        def build_accounting_service_arguments(company, client, project_version, invoice_amounts, issue_date)
+        def build_accounting_service_arguments(company, client, project, project_version, invoice_amounts, issue_date)
           company_hash = {
             id: company.id,
             name: company.name,
@@ -83,6 +83,10 @@ module Organization
             address_street: company.address_street,
             address_city: company.address_city,
             vat_number: company.vat_number,
+            rcs_city: company.rcs_city,
+            rcs_number: company.rcs_number,
+            legal_form: company.legal_form,
+            capital_amount: company.capital_amount_cents / 100.to_d,
             phone: company.phone,
             email: company.email,
             config: {
@@ -102,6 +106,10 @@ module Organization
             vat_number: client.vat_number,
             phone: client.phone,
             email: client.email
+          }
+
+          project_hash = {
+            name: project.name
           }
 
           project_version_hash = {
@@ -130,7 +138,7 @@ module Organization
             }
           }
 
-          [ company_hash, client_hash, project_version_hash, invoice_amounts, issue_date ]
+          [ company_hash, client_hash, project_hash, project_version_hash, invoice_amounts, issue_date ]
         end
 
         def create_invoice!(args)
