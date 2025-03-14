@@ -40,10 +40,10 @@ module Accounting
         # @param issue_date [Time] When the invoice is issued (defaults to current time)
         #
         # @return [ServiceResult] Success with CompletionSnapshotInvoice or failure with error message
-        def call(company, client, project_version, new_invoice_items, issue_date = Time.current)
+        def call(company, client, project, project_version, new_invoice_items, issue_date = Time.current)
           invoice = ActiveRecord::Base.transaction do
             # Create invoice record
-            base_draft_invoice_attributes = build_draft_invoice_attributes!(company.fetch(:id), project_version, issue_date)
+            base_draft_invoice_attributes = build_draft_invoice_attributes!(company.fetch(:id), project, project_version, issue_date)
             draft_invoice_number = find_next_available_unpublished_invoice_number!(company.fetch(:id), issue_date)
             draft_invoice = Accounting::Invoice.create!(base_draft_invoice_attributes.merge({ number: draft_invoice_number }))
 
@@ -64,8 +64,8 @@ module Accounting
 
         private
 
-        def build_draft_invoice_attributes!(company_id, project_version, issue_date)
-          result = BuildAttributes.call(company_id, project_version, issue_date)
+        def build_draft_invoice_attributes!(company_id, project, project_version, issue_date)
+          result = BuildAttributes.call(company_id, project, project_version, issue_date)
 
           raise result.error if result.failure?
           result.data

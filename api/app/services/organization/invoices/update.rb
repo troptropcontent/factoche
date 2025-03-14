@@ -13,7 +13,7 @@ module Organization
 
           ensure_invoiced_item_remains_within_limits!(validated_params["invoice_amounts"], project_version.items, project.id, company.id)
 
-          accounting_service_arguments = build_accounting_service_arguments(company, client, project_version, validated_params["invoice_amounts"])
+          accounting_service_arguments = build_accounting_service_arguments(company, client, project, project_version, validated_params["invoice_amounts"])
 
           invoice = update_invoice!([ invoice_id, *accounting_service_arguments ])
 
@@ -79,7 +79,7 @@ module Organization
           end
         end
 
-        def build_accounting_service_arguments(company, client, project_version, invoice_amounts)
+        def build_accounting_service_arguments(company, client, project, project_version, invoice_amounts)
           company_hash = {
             id: company.id,
             name: company.name,
@@ -90,6 +90,10 @@ module Organization
             vat_number: company.vat_number,
             phone: company.phone,
             email: company.email,
+            rcs_city: company.rcs_city,
+            rcs_number: company.rcs_number,
+            legal_form: company.legal_form,
+            capital_amount: company.capital_amount_cents / 100.to_d,
             config: {
               payment_term: {
                 days: company.config.settings.dig("payment_term", "days") || Organization::CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "days"),
@@ -107,6 +111,10 @@ module Organization
             vat_number: client.vat_number,
             phone: client.phone,
             email: client.email
+          }
+
+          project_hash = {
+            name: project.name
           }
 
           project_version_hash = {
@@ -135,7 +143,7 @@ module Organization
             }
           }
 
-          [ company_hash, client_hash, project_version_hash, invoice_amounts ]
+          [ company_hash, client_hash, project_hash, project_version_hash, invoice_amounts ]
         end
 
         def update_invoice!(args)

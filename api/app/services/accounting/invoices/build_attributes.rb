@@ -2,13 +2,13 @@ module Accounting
   module Invoices
     class BuildAttributes
       class << self
-        def call(company_id, project_version, issue_date)
+        def call(company_id, project, project_version, issue_date)
           attributes = {
             company_id: company_id,
             holder_id: project_version.fetch(:id),
             status: :draft,
             issue_date: issue_date,
-            context: build_draft_invoice_context(project_version, issue_date)
+            context: build_draft_invoice_context(project, project_version, issue_date)
           }
 
           ServiceResult.success(attributes)
@@ -20,10 +20,11 @@ module Accounting
 
         private
 
-        def build_draft_invoice_context(project_version, issue_date)
+        def build_draft_invoice_context(project, project_version, issue_date)
           project_version_items = build_project_version_items_data(project_version.fetch(:items), issue_date)
 
           {
+            project_name: project.fetch(:name),
             project_version_number: project_version.fetch(:number),
             project_version_date: project_version.fetch(:created_at).iso8601,
             project_version_retention_guarantee_rate: project_version.fetch(:retention_guarantee_rate),

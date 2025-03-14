@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_11_174823) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -52,6 +52,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_11_174823) do
     t.string "client_email", null: false
     t.string "delivery_phone", null: false
     t.string "delivery_email", null: false
+    t.enum "seller_legal_form", null: false, enum_type: "legal_form"
+    t.decimal "seller_capital_amount", precision: 10, scale: 2, null: false
+    t.string "seller_rcs_city", null: false
+    t.string "seller_rcs_number", null: false
+    t.integer "payment_term_days", null: false
+    t.string "payment_term_accepted_methods", default: [], null: false, array: true
     t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_a3f0028db5"
   end
 

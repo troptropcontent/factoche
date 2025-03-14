@@ -5,7 +5,7 @@ module Accounting
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe Create do
       describe '.call' do
-        subject(:result) { described_class.call(company, client, project_version, new_invoice_items, issue_date) }
+        subject(:result) { described_class.call(company, client, project, project_version, new_invoice_items, issue_date) }
         let(:issue_date) { Time.new(2024, 3, 20) }
         let(:company_id) { 1 }
         let(:new_invoice_items) { [ {
@@ -14,6 +14,7 @@ module Accounting
         } ] }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
+        let(:project) { { name: "Super Project" } }
         let(:project_version) do
           {
             id: project_version_id,
@@ -61,10 +62,14 @@ module Accounting
           vat_number: "FR123456789",
           phone: "+33123456789",
           email: "contact@acmecorp.com",
+          rcs_city: "Paris",
+          rcs_number: "RCS123456",
+          legal_form: "sas",
+          capital_amount: 10000,
           config: {
             payment_term: {
               days: 30,
-              accepted_methods: [ :transfer ]
+              accepted_methods: [ "transfer" ]
             }
           }
         } }
@@ -87,7 +92,7 @@ module Accounting
             invoice_amount: 50
           } ]
 
-          result = described_class.call(company, client, project_version, previous_published_invoice_items, issue_date)
+          result = described_class.call(company, client, project, project_version, previous_published_invoice_items, issue_date)
           previous_published_invoice = result.data
 
           previous_published_invoice.update!(status: :posted, number: "INV-2024-000001")
@@ -98,7 +103,7 @@ module Accounting
             invoice_amount: 50
           } ]
 
-          described_class.call(company, client, project_version, previous_unpublished_invoice_items, issue_date)
+          described_class.call(company, client, project, project_version, previous_unpublished_invoice_items, issue_date)
         end
 
         context 'when successful' do
@@ -115,6 +120,7 @@ module Accounting
             expect(invoice.status).to eq("draft")
             expect(invoice.number).to eq("PRO-2024-000002")
 
+            expect(invoice.context["project_name"]).to eq("Super Project")
             expect(invoice.context["project_version_number"]).to eq(1)
             expect(invoice.context["project_total_amount"]).to eq(250) # (2 * 100 € ) + (1 * 50 €)
             expect(invoice.context["project_version_items"]).to be_present
@@ -145,6 +151,12 @@ module Accounting
               seller_address_street: company[:address_street],
               seller_address_city: company[:address_city],
               seller_vat_number: company[:vat_number],
+              seller_rcs_city: company[:rcs_city],
+              seller_rcs_number: company[:rcs_number],
+              seller_legal_form: company[:legal_form],
+              seller_capital_amount: company[:capital_amount],
+              payment_term_days: company[:config][:payment_term][:days],
+              payment_term_accepted_methods: company[:config][:payment_term][:accepted_methods],
               client_vat_number: client[:vat_number],
               client_name: client[:name],
               client_registration_number: client[:registration_number],

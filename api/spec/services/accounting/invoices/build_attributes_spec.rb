@@ -4,9 +4,11 @@ module Accounting
   module Invoices
     RSpec.describe BuildAttributes do
       describe '.call' do
-        subject(:result) { described_class.call(company[:id], project_version, issue_date) }
+        subject(:result) { described_class.call(company[:id], project, project_version, issue_date) }
 
         let(:issue_date) { Date.current }
+
+        let(:project) { { name: "Super Project" } }
 
         let(:project_version) do
           {
@@ -46,6 +48,10 @@ module Accounting
           vat_number: "FR123456789",
           phone: "+33123456789",
           email: "contact@acmecorp.com",
+          rcs_city: "Paris",
+          rcs_number: "RCS123456",
+          legal_form: "sas",
+          capital_amount: 10000,
           config: {
             payment_term: {
               days: 30,
@@ -71,7 +77,7 @@ module Accounting
               original_item_uuid: 'item-uuid-1',
               invoice_amount: 50
             } ]
-          result = Create.call(company, client, project_version, previous_items_invoice, 2.days.ago)
+          result = Create.call(company, client, project, project_version, previous_items_invoice, 2.days.ago)
 
           previous_invoice = result.data
 
@@ -111,18 +117,20 @@ module Accounting
             description: 'Group Description'
           )
         end
-        # rubocop:enable RSpec/ExampleLength
 
-        context 'when required data is missing' do
-          let(:invalid_project_version) { { number: 'PV-001' } }
+          # rubocop:disable RSpec/MultipleMemoizedHelpers
+          context 'when required data is missing' do
+            let(:invalid_project_version) { { number: 'PV-001' } }
 
-          it 'returns failure with error message', :aggregate_failures do
-            result = described_class.call(company[:id], invalid_project_version, issue_date)
-            expect(result).not_to be_success
-            expect(result.error).to include('Failed to build invoice attributes')
-            expect(result.error).to include('PV-001')
+            it 'returns failure with error message', :aggregate_failures do
+              result = described_class.call(company[:id], project, invalid_project_version, issue_date)
+              expect(result).not_to be_success
+              expect(result.error).to include('Failed to build invoice attributes')
+              expect(result.error).to include('PV-001')
+            end
           end
-        end
+        # rubocop:enable RSpec/MultipleMemoizedHelpers
+        # rubocop:enable RSpec/ExampleLength
       end
     end
   end
