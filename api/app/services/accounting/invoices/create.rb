@@ -57,7 +57,7 @@ module Accounting
             draft_invoice
           end
 
-          GenerateAndAttachPdfToUnpublishedInvoiceJob.perform_async({ "invoice_id" => invoice.id })
+          GenerateAndAttachPdfToInvoiceJob.perform_async({ "invoice_id" => invoice.id })
 
           ServiceResult.success(invoice)
         rescue StandardError => e
@@ -88,7 +88,7 @@ module Accounting
         end
 
         def find_next_available_unpublished_invoice_number!(company_id, issue_date)
-          result = FindNextAvailableUnpublishedNumber.call(company_id, issue_date)
+          result = FindNextAvailableNumber.call(company_id: company_id, published: false, issue_date: issue_date)
 
           raise result.error if result.failure?
           result.data
