@@ -17,8 +17,8 @@ RSpec.describe Accounting::Invoices::Post do
 
     context 'when successful' do
       before do
-        allow(Accounting::Invoices::FindNextAvailableNumber).to receive(:call)
-          .with(company_id: original_invoice.company_id, published: true, issue_date: issue_date)
+        allow(Accounting::FinancialTransactions::FindNextAvailableNumber).to receive(:call)
+          .with(company_id: original_invoice.company_id, prefix: "INV", issue_date: issue_date)
           .and_return(ServiceResult.success("INV-2024-00001"))
 
         allow(Accounting::GenerateAndAttachPdfToInvoiceJob).to receive(:perform_async)
@@ -96,10 +96,10 @@ RSpec.describe Accounting::Invoices::Post do
 
     context 'when something goes wrong' do
       before do
-        allow(Accounting::Invoices::FindNextAvailableNumber).to receive(:call)
+        allow(Accounting::FinancialTransactions::FindNextAvailableNumber).to receive(:call)
           .with(hash_including(
             company_id: original_invoice.company_id,
-            published: true,
+            prefix: "INV",
             issue_date: be_within(1.second).of(issue_date)
           ))
           .and_return(ServiceResult.failure("Database error"))

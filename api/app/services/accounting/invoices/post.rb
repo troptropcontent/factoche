@@ -58,7 +58,7 @@ module Accounting
         private
 
         def find_next_available_invoice_number!(company_id, issue_date)
-          result = FindNextAvailableNumber.call(company_id: company_id, published: true, issue_date: issue_date)
+          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: company_id, prefix: Invoice::NUMBER_PUBLISHED_PREFIX, issue_date: issue_date)
 
           raise result.error unless result.success?
           result.data
