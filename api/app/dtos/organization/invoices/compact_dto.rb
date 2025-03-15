@@ -9,6 +9,7 @@ module Organization
       field "id", :integer
       field "status", :enum, subtype: [ "draft", "posted", "cancelled", "voided" ]
       field "number", :string, required: false
+      field "issue_date", :timestamp
       field "updated_at", :timestamp
       field "total_amount", :decimal
       field "lines", :array, subtype: Line
