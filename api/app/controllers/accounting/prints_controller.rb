@@ -38,6 +38,23 @@ module Accounting
       render template: "accounting/invoice", layout: "print"
     end
 
+    # GET /accounting/prints/credit_notes/:id
+    def credit_note
+      @locale = :fr
+      @credit_note = Accounting::CreditNote.find_by(id: params[:id])
+      if @credit_note.nil?
+        raise Error::UnprocessableEntityError, "No credit_note found for this id"
+      end
+
+      unless @credit_note.posted?
+        raise Error::UnprocessableEntityError, "CreditNote must be posted"
+      end
+
+      # TODO : return the credit note print
+      @invoice = @credit_note
+      render template: "accounting/invoice", layout: "print"
+    end
+
     private
 
     def ensure_microservice_env!
