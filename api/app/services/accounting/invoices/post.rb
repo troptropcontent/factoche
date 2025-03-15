@@ -48,7 +48,7 @@ module Accounting
             duplicated_invoice
           end
 
-          GenerateAndAttachPdfToInvoiceJob.perform_async({ "invoice_id" => posted_invoice.id })
+          FinancialTransactions::GenerateAndAttachPdfJob.perform_async({ "financial_transaction_id" => posted_invoice.id })
 
           ServiceResult.success(posted_invoice)
         rescue StandardError => e

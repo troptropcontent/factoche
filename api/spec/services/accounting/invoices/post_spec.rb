@@ -21,7 +21,7 @@ RSpec.describe Accounting::Invoices::Post do
           .with(company_id: original_invoice.company_id, prefix: "INV", issue_date: issue_date)
           .and_return(ServiceResult.success("INV-2024-00001"))
 
-        allow(Accounting::GenerateAndAttachPdfToInvoiceJob).to receive(:perform_async)
+        allow(Accounting::FinancialTransactions::GenerateAndAttachPdfJob).to receive(:perform_async)
       end
 
       it 'returns success with posted invoice', :aggregate_failures do
@@ -75,9 +75,9 @@ RSpec.describe Accounting::Invoices::Post do
       it 'enqueues PDF generation job' do
         result = described_class.call(invoice_id, issue_date)
 
-        expect(Accounting::GenerateAndAttachPdfToInvoiceJob)
+        expect(Accounting::FinancialTransactions::GenerateAndAttachPdfJob)
           .to have_received(:perform_async)
-          .with({ "invoice_id" => result.data.id })
+          .with({ "financial_transaction_id" => result.data.id })
       end
     end
 
