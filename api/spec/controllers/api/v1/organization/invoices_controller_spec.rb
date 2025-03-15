@@ -326,5 +326,72 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
 
       it_behaves_like "an authenticated endpoint"
     end
+
+    delete 'Voids an invoice' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+
+      parameter name: :project_id, in: :path, type: :integer, required: true
+      parameter name: :id, in: :path, type: :integer, required: true
+
+      let(:invoice) {
+        Organization::Invoices::Create.call(project_version.id, {
+          invoice_amounts: [
+            { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }
+          ]
+        }).data
+      }
+      let(:id) { invoice.id }
+      let(:project_id) { project.id }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      include_context 'a company with a project with three items'
+
+      response '200', 'invoice voided' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Invoices::ShowDto.to_schema
+
+        it "voids the invoice" do |example|
+          expect {
+            submit_request(example.metadata)
+          }.to change { invoice.reload.status }.from("draft").to("voided")
+
+          assert_response_matches_metadata(example.metadata)
+        end
+      end
+
+      response '404', 'not found' do
+        schema ApiError.schema
+
+        context "when the project does not belong to a company the user is a member of" do
+          run_test!
+        end
+
+        context "when the invoice does not exist" do
+          let(:id) { -1 }
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+          run_test!
+        end
+      end
+
+      response '422', 'unprocessable entity' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema ApiError.schema
+
+        context "when the invoice is not in draft status" do
+          before do
+            invoice.update!(status: :posted, number: "INV-2024-00001")
+          end
+
+          run_test! do |response|
+            expect(response.body).to include("Cannot void invoice that is not in draft status")
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
   end
 end

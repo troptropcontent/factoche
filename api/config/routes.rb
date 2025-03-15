@@ -53,7 +53,7 @@ Rails.application.routes.draw do
         end
         resources :clients, only: [ :show ]
         resources :projects do
-          resources :invoices, only: [ :index, :show, :update, :create ] do
+          resources :invoices, only: [ :index, :show, :update, :create, :destroy ] do
             member do
               post "", action: :post
             end
