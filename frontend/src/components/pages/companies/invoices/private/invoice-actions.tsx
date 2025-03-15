@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import { Api } from "@/lib/openapi-fetch-query-client";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Download, Loader2, Pen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -33,7 +34,7 @@ const EditButton = ({
   );
 };
 
-const DownloadDraftInvoicePdfButton = ({
+const DownloadInvoicePdfButton = ({
   invoiceId,
   projectId,
 }: {
@@ -72,32 +73,6 @@ const DownloadDraftInvoicePdfButton = ({
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           {t(
             "pages.companies.projects.invoices.completion_snapshot.show.actions.draft_pdf_unavailable"
-          )}
-        </Link>
-      )}
-    </Button>
-  );
-};
-
-const DownloadInvoicePdfButton = () => {
-  const { t } = useTranslation();
-
-  const isPdfDownloadable = false;
-
-  return (
-    <Button asChild variant="outline">
-      {isPdfDownloadable ? (
-        <Link>
-          <Download className="mr-2 h-4 w-4" />
-          {t(
-            "pages.companies.projects.invoices.completion_snapshot.show.actions.download_invoice_pdf"
-          )}
-        </Link>
-      ) : (
-        <Link disabled>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t(
-            "pages.companies.projects.invoices.completion_snapshot.show.actions.invoice_pdf_unavailable"
           )}
         </Link>
       )}
@@ -155,11 +130,62 @@ const CancelButton = () => {
   );
 };
 
-const PostButton = () => {
+const PostButton = ({
+  invoiceId,
+  projectId,
+  companyId,
+}: {
+  invoiceId: number;
+  projectId: number;
+  companyId: number;
+}) => {
   const { t } = useTranslation();
+  const { mutate: postInvoiceMutation } = Api.useMutation(
+    "post",
+    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+  );
+  const navigate = useNavigate();
+
+  const postInvoice = () => {
+    const onSuccess = () => {
+      toast({
+        title: t(
+          "pages.companies.projects.invoices.completion_snapshot.show.actions.post_success_toast_title"
+        ),
+        description: t(
+          "pages.companies.projects.invoices.completion_snapshot.show.actions.post_success_toast_description"
+        ),
+      });
+      navigate({
+        to: "/companies/$companyId/projects/$projectId",
+        params: {
+          companyId: companyId.toString(),
+          projectId: projectId.toString(),
+        },
+      });
+    };
+
+    const onError = () => {
+      toast({
+        variant: "destructive",
+        title: t("common.toast.error_title"),
+        description: t("common.toast.error_description"),
+      });
+    };
+
+    postInvoiceMutation(
+      {
+        params: { path: { id: invoiceId, project_id: projectId } },
+      },
+      {
+        onSuccess,
+        onError,
+      }
+    );
+  };
 
   return (
-    <Button variant="default">
+    <Button variant="default" onClick={postInvoice}>
       {t(
         "pages.companies.projects.invoices.completion_snapshot.show.actions.post"
       )}
@@ -183,30 +209,44 @@ const DraftInvoiceActions = ({
         invoiceId={invoiceId}
         companyId={companyId}
       />
-      <DownloadDraftInvoicePdfButton
+      <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
+      <PostButton
         projectId={projectId}
         invoiceId={invoiceId}
         companyId={companyId}
       />
-      <PostButton />
       <DestroyButton />
     </>
   );
 };
 
-const CancelledInvoiceActions = () => {
+const CancelledInvoiceActions = ({
+  projectId,
+  invoiceId,
+}: {
+  companyId: number;
+  projectId: number;
+  invoiceId: number;
+}) => {
   return (
     <>
-      <DownloadInvoicePdfButton />
+      <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
       <DownloadCreditNotePdfButton />
     </>
   );
 };
 
-const PostedInvoiceActions = () => {
+const PostedInvoiceActions = ({
+  projectId,
+  invoiceId,
+}: {
+  companyId: number;
+  projectId: number;
+  invoiceId: number;
+}) => {
   return (
     <>
-      <DownloadInvoicePdfButton />
+      <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
       <CancelButton />
     </>
   );
@@ -249,9 +289,21 @@ const InvoiceActions = ({
               />
             );
           case "posted":
-            return <PostedInvoiceActions />;
+            return (
+              <PostedInvoiceActions
+                companyId={companyId}
+                projectId={projectId}
+                invoiceId={invoiceId}
+              />
+            );
           case "cancelled":
-            return <CancelledInvoiceActions />;
+            return (
+              <CancelledInvoiceActions
+                companyId={companyId}
+                projectId={projectId}
+                invoiceId={invoiceId}
+              />
+            );
           default:
             throw new Error(`Unhandled invoice status: ${invoiceData.status}`);
         }

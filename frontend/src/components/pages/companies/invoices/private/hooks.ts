@@ -55,6 +55,38 @@ const useInvoiceContentData = ({
     return { invoiceContentData: undefined };
   }
 
+  const findInvoicedAmount = (originalItemUuid: string) => {
+    const line = invoiceData.lines.find(
+      (line) => line.holder_id === originalItemUuid
+    );
+
+    return line ? Number(line.excl_tax_amount) : 0;
+  };
+
+  // For invoices that are not draft we want to display the data stored in the invoice context not the live data
+  if (invoiceData.status != "draft") {
+    return {
+      invoiceContentData: {
+        items: invoiceData.context.project_version_items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          unit: item.unit,
+          unitPriceAmount: Number(item.unit_price_amount),
+          totalAmount: item.quantity * Number(item.unit_price_amount),
+          previouslyInvoicedAmount: Number(item.previously_billed_amount),
+          invoiceAmount: findInvoicedAmount(item.original_item_uuid),
+          groupId: item.group_id,
+        })),
+        groups: invoiceData.context.project_version_item_groups.map(
+          (group) => ({
+            name: group.name,
+            id: group.id,
+          })
+        ),
+      },
+    };
+  }
+
   const findPreviopuslyInvoicedAmount = (originalItemUuid: string) => {
     const amount = previouslyInvoicedAmounts.find(
       (previouslyInvoicedAmount) =>
@@ -62,14 +94,6 @@ const useInvoiceContentData = ({
     );
 
     return amount ? Number(amount.invoiced_amount) : 0;
-  };
-
-  const findInvoicedAmount = (originalItemUuid: string) => {
-    const line = invoiceData.lines.find(
-      (line) => line.holder_id === originalItemUuid
-    );
-
-    return line ? Number(line.excl_tax_amount) : 0;
   };
 
   return {

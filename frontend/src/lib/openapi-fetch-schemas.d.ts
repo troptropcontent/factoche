@@ -1191,7 +1191,53 @@ export interface paths {
                 };
             };
         };
-        post?: never;
+        /** Post invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoice posted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invoice not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1764,7 +1810,7 @@ export interface components {
             lines: components["schemas"]["Organization::Invoices::ExtendedDto::Line"][];
             detail: components["schemas"]["Organization::Invoices::ExtendedDto::Detail"];
             context: components["schemas"]["Organization::Invoices::ExtendedDto::Context"];
-            pdf_url: string;
+            pdf_url?: string | null;
         };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];

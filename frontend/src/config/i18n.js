@@ -235,6 +235,11 @@ i18n
                                 "invoices": {
                                     "completion_snapshot": {
                                         "show": {
+                                            "status": {
+                                                "draft": "Brouillon",
+                                                "posted": "Postée",
+                                                "cancelled": "Annulée"
+                                            },
                                             "title_published": "Facture de situation N°{{number}}",
                                             "title_unpublished": "Facture PROFORMA de situation N°{{number}}",
                                             "content": {
@@ -254,6 +259,8 @@ i18n
                                                 "download_draft_pdf": "Télécharger la facture proforma",
                                                 "draft_pdf_unavailable": "Facture proforma en cours de génération",
                                                 "post": "Valider la facture proforma",
+                                                "post_success_toast_title": "Facture proforma validée",
+                                                "post_success_toast_description": "La facture proforma a été validée et est désormais une facture",
                                                 "destroy": "Supprimer la facture proforma",
                                                 "download_invoice_pdf": "Télécharger la facture",
                                                 "invoice_pdf_unavailable": "Facture en cours de génération",
