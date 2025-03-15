@@ -73,6 +73,21 @@ module Api
           render json: ::Organization::Invoices::ShowDto.new({ result: result.data })
         end
 
+        # POST  /api/v1/organization/projects/:project_id/invoices/:id/cancel
+        def cancel
+          project = policy_scope(::Organization::Project).find(params[:project_id])
+
+          invoice = Accounting::Invoice.where(holder_id: project.versions.pluck(:id)).includes(:lines).find(params[:id])
+
+          result = ::Accounting::Invoices::Cancel.call(invoice.id)
+
+          if result.failure?
+            raise Error::UnprocessableEntityError, "Failed to cancel invoice: #{result.error}"
+          end
+
+          render json: ::Organization::Invoices::ShowDto.new({ result: result.data[:invoice] })
+        end
+
         # POST  /api/v1/organization/projects/:project_id/invoices/:id
         def post
           project = policy_scope(::Organization::Project).find(params[:project_id])

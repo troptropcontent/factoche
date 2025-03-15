@@ -2,7 +2,7 @@ module Accounting
   module Invoices
     class Cancel
       class << self
-        def call(invoice_id, issue_date)
+        def call(invoice_id, issue_date = Time.current)
           raise Error::UnprocessableEntityError, "Invoice ID is required" if invoice_id.blank?
           raise Error::UnprocessableEntityError, "Issue date is required" if issue_date.blank?
 
