@@ -1034,6 +1034,93 @@ paths:
           description: unprocessable entity
         '403':
           description: forbiden
+    delete:
+      summary: Voids an invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoice voided
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '403':
+          description: forbiden
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
