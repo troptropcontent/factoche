@@ -394,4 +394,73 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
+
+  path '/api/v1/organization/projects/{project_id}/invoices/{id}/cancel' do
+    post 'Cancels an invoice' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+
+      parameter name: :project_id, in: :path, type: :integer, required: true
+      parameter name: :id, in: :path, type: :integer, required: true
+
+      let(:invoice) {
+        draft = Organization::Invoices::Create.call(project_version.id, {
+          invoice_amounts: [
+            { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }
+          ]
+        }).data
+        Accounting::Invoices::Post.call(draft.id).data
+      }
+      let(:id) { invoice.id }
+      let(:project_id) { project.id }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      include_context 'a company with a project with three items'
+
+      response '200', 'invoice cancelled' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Invoices::ShowDto.to_schema
+
+        it "cancels the invoice and creates a credit note" do |example|
+          expect {
+            submit_request(example.metadata)
+          }.to change { invoice.reload.status }.from("posted").to("cancelled")
+          .and change(Accounting::CreditNote, :count).by(1)
+
+          assert_response_matches_metadata(example.metadata)
+        end
+      end
+
+      response '404', 'not found' do
+        schema ApiError.schema
+
+        context "when the project does not belong to a company the user is a member of" do
+          run_test!
+        end
+
+        context "when the invoice does not exist" do
+          let(:id) { -1 }
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+          run_test!
+        end
+      end
+
+      response '422', 'unprocessable entity' do
+        before { invoice.update(status: :draft, number: "PRO-2024-0001") }
+
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema ApiError.schema
+
+        context "when the invoice is not in posted status" do
+          run_test! do |response|
+            expect(response.body).to include("Cannot cancel invoice that is not in posted status")
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+  end
 end

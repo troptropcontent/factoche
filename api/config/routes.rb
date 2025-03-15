@@ -57,6 +57,7 @@ Rails.application.routes.draw do
           resources :invoices, only: [ :index, :show, :update, :create, :destroy ] do
             member do
               post "", action: :post
+              post "cancel", action: :cancel
             end
           end
           member do
