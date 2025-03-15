@@ -106,13 +106,64 @@ const DownloadCreditNotePdfButton = () => {
   );
 };
 
-const DestroyButton = () => {
+const DestroyButton = ({
+  invoiceId,
+  projectId,
+  companyId,
+}: {
+  invoiceId: number;
+  projectId: number;
+  companyId: number;
+}) => {
   const { t } = useTranslation();
+  const { mutate: voidInvoiceMutation } = Api.useMutation(
+    "delete",
+    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+  );
+  const navigate = useNavigate();
+
+  const voidInvoice = () => {
+    const onSuccess = () => {
+      toast({
+        title: t(
+          "pages.companies.projects.invoices.completion_snapshot.show.actions.void_success_toast_title"
+        ),
+        description: t(
+          "pages.companies.projects.invoices.completion_snapshot.show.actions.void_success_toast_description"
+        ),
+      });
+      navigate({
+        to: "/companies/$companyId/projects/$projectId",
+        params: {
+          companyId: companyId.toString(),
+          projectId: projectId.toString(),
+        },
+      });
+    };
+
+    const onError = () => {
+      toast({
+        variant: "destructive",
+        title: t("common.toast.error_title"),
+        description: t("common.toast.error_description"),
+      });
+    };
+
+    voidInvoiceMutation(
+      {
+        params: { path: { id: invoiceId, project_id: projectId } },
+      },
+      {
+        onSuccess,
+        onError,
+      }
+    );
+  };
 
   return (
-    <Button variant="destructive">
+    <Button variant="destructive" onClick={voidInvoice}>
       {t(
-        "pages.companies.projects.invoices.completion_snapshot.show.actions.destroy"
+        "pages.companies.projects.invoices.completion_snapshot.show.actions.void"
       )}
     </Button>
   );
@@ -215,7 +266,11 @@ const DraftInvoiceActions = ({
         invoiceId={invoiceId}
         companyId={companyId}
       />
-      <DestroyButton />
+      <DestroyButton
+        projectId={projectId}
+        invoiceId={invoiceId}
+        companyId={companyId}
+      />
     </>
   );
 };
