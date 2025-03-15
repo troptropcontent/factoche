@@ -5,7 +5,7 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case "draft":
       return "bg-gray-500 hover:bg-gray-600";
-    case "published":
+    case "posted":
       return "bg-green-500 hover:bg-green-600";
     case "cancelled":
       return "bg-red-500 hover:bg-red-600";
@@ -19,7 +19,9 @@ const CompletionSnapshotStatusBadge = ({ status }: { status: string }) => {
 
   return (
     <Badge className={`${getStatusColor(status)} text-white h-fit`}>
-      {t(`pages.companies.completion_snapshot.status.${status}`)}
+      {t(
+        `pages.companies.projects.invoices.completion_snapshot.show.status.${status}`
+      )}
     </Badge>
   );
 };
