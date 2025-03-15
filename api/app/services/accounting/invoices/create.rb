@@ -57,7 +57,7 @@ module Accounting
             draft_invoice
           end
 
-          GenerateAndAttachPdfToInvoiceJob.perform_async({ "invoice_id" => invoice.id })
+          FinancialTransactions::GenerateAndAttachPdfJob.perform_async({ "financial_transaction_id" => invoice.id })
 
           ServiceResult.success(invoice)
         rescue StandardError => e

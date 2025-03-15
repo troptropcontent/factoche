@@ -108,6 +108,9 @@ module Accounting
 
         context 'when successful' do
           # rubocop:disable RSpec/ExampleLength
+          before do
+            allow(Accounting::FinancialTransactions::GenerateAndAttachPdfJob).to receive(:perform_async)
+          end
 
           it { is_expected.to be_success }
 
@@ -172,6 +175,15 @@ module Accounting
             )
           end
           # rubocop:enable RSpec/ExampleLength
+
+          #
+          it 'enqueues PDF generation job' do
+            invoice = result.data
+
+            expect(Accounting::FinancialTransactions::GenerateAndAttachPdfJob)
+              .to have_received(:perform_async)
+              .with({ "financial_transaction_id" => invoice.id })
+          end
         end
 
         context 'when there is an error' do
