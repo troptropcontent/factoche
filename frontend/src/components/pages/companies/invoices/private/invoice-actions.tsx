@@ -169,11 +169,62 @@ const DestroyButton = ({
   );
 };
 
-const CancelButton = () => {
+const CancelButton = ({
+  invoiceId,
+  projectId,
+  companyId,
+}: {
+  invoiceId: number;
+  projectId: number;
+  companyId: number;
+}) => {
   const { t } = useTranslation();
+  const { mutate: cancelInvoiceMutation } = Api.useMutation(
+    "post",
+    "/api/v1/organization/projects/{project_id}/invoices/{id}/cancel"
+  );
+  const navigate = useNavigate();
+
+  const cancelInvoice = () => {
+    const onSuccess = () => {
+      toast({
+        title: t(
+          "pages.companies.projects.invoices.completion_snapshot.show.actions.cancel_success_toast_title"
+        ),
+        description: t(
+          "pages.companies.projects.invoices.completion_snapshot.show.actions.cancel_success_toast_description"
+        ),
+      });
+      navigate({
+        to: "/companies/$companyId/projects/$projectId",
+        params: {
+          companyId: companyId.toString(),
+          projectId: projectId.toString(),
+        },
+      });
+    };
+
+    const onError = () => {
+      toast({
+        variant: "destructive",
+        title: t("common.toast.error_title"),
+        description: t("common.toast.error_description"),
+      });
+    };
+
+    cancelInvoiceMutation(
+      {
+        params: { path: { id: invoiceId, project_id: projectId } },
+      },
+      {
+        onSuccess,
+        onError,
+      }
+    );
+  };
 
   return (
-    <Button variant="destructive">
+    <Button variant="destructive" onClick={cancelInvoice}>
       {t(
         "pages.companies.projects.invoices.completion_snapshot.show.actions.cancel"
       )}
@@ -292,6 +343,7 @@ const CancelledInvoiceActions = ({
 };
 
 const PostedInvoiceActions = ({
+  companyId,
   projectId,
   invoiceId,
 }: {
@@ -302,7 +354,11 @@ const PostedInvoiceActions = ({
   return (
     <>
       <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
-      <CancelButton />
+      <CancelButton
+        projectId={projectId}
+        invoiceId={invoiceId}
+        companyId={companyId}
+      />
     </>
   );
 };

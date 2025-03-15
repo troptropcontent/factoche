@@ -267,6 +267,8 @@ i18n
                                                 "download_invoice_pdf": "Télécharger la facture",
                                                 "invoice_pdf_unavailable": "Facture en cours de génération",
                                                 "cancel": "Annuler la facture",
+                                                "cancel_success_toast_title": "Facture annulée",
+                                                "cancel_success_toast_description": "La facture a bien été annulée",
                                                 "download_credit_note_pdf": "Télécharger l'avoir",
                                                 "credit_note_pdf_unavailable": "Avoir en cours de génération",
                                             }
