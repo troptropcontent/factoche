@@ -1308,6 +1308,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/projects/{project_id}/invoices/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancels an invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    project_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoice cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -2097,6 +2177,8 @@ export interface components {
             /** @enum {string} */
             status: "draft" | "posted" | "cancelled" | "voided";
             number?: string | null;
+            /** Format: date-time */
+            issue_date: string;
             /** Format: date-time */
             updated_at: string;
             /** Format: decimal */

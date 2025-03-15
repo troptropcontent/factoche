@@ -38,7 +38,10 @@ const InvoicesSummary = ({
         query: { status: ["cancelled", "draft", "posted"] },
       },
     },
-    { select: ({ results }) => results }
+    {
+      select: ({ results }) =>
+        results.sort((a, b) => -b.issue_date.localeCompare(a.issue_date)),
+    }
   );
 
   const navigate = useNavigate();
