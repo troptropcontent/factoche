@@ -40,7 +40,7 @@ module Accounting
     end
 
     def valid_type_name?
-      unless type.demodulize == InvoiceType || type == CreditNoteType
+      unless type.demodulize == InvoiceType || type.demodulize == CreditNoteType
         errors.add(:type, "must either be Invoice or CreditNote")
       end
     end
