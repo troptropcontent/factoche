@@ -1,6 +1,6 @@
 module Organization
   module Invoices
-    class ExtendedDto < OpenApiDto
+    class BaseExtendedDto < OpenApiDto
       class Line < OpenApiDto
         field "holder_id", :string
         field "excl_tax_amount", :decimal
@@ -71,6 +71,9 @@ module Organization
       field "detail", :object, subtype: Detail
       field "context", :object, subtype: Context
       field "pdf_url", :string, required: false
+    end
+    class ExtendedDto < BaseExtendedDto
+      field "credit_note", :object, subtype: BaseExtendedDto, required: false
     end
   end
 end

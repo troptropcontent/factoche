@@ -71,7 +71,8 @@ module Organization
             item = items_by_uuid[invoice_amount["original_item_uuid"]]
             item_amount = item.quantity * item.unit_price_cents / 100
             previously_invoiced_amount = result.data.find { |invoiced_amount| invoiced_amount[:original_item_uuid] == invoice_amount["original_item_uuid"] }[:invoiced_amount]
-            previously_invoiced_amount + invoice_amount["invoice_amount"].to_d > item_amount
+            item_amount_after_invoice = previously_invoiced_amount + invoice_amount["invoice_amount"].to_d
+            (item_amount_after_invoice - item_amount).round(2) > 0
           }
 
           if wrong_invoice_amount

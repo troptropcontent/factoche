@@ -256,8 +256,6 @@ i18n
                                             },
                                             "actions": {
                                                 "edit": "Modifier la facture proforma",
-                                                "download_draft_pdf": "Télécharger la facture proforma",
-                                                "draft_pdf_unavailable": "Facture proforma en cours de génération",
                                                 "post": "Valider la facture proforma",
                                                 "post_success_toast_title": "Facture proforma validée",
                                                 "post_success_toast_description": "La facture proforma a été validée et est désormais une facture",
@@ -266,11 +264,13 @@ i18n
                                                 "void_success_toast_description": "La facture proforma a bien été supprimée",
                                                 "download_invoice_pdf": "Télécharger la facture",
                                                 "invoice_pdf_unavailable": "Facture en cours de génération",
+                                                "download_credit_note_pdf": "Télécharger l'avoir",
+                                                "credit_note_pdf_unavailable": "Avoir en cours de génération",
+                                                "download_proforma_pdf": "Télécharger la facture proforma",
+                                                "proforma_pdf_unavailable": "Facture proforma en cours de génération",
                                                 "cancel": "Annuler la facture",
                                                 "cancel_success_toast_title": "Facture annulée",
                                                 "cancel_success_toast_description": "La facture a bien été annulée",
-                                                "download_credit_note_pdf": "Télécharger l'avoir",
-                                                "credit_note_pdf_unavailable": "Avoir en cours de génération",
                                             }
                                         },
                                         "new": {

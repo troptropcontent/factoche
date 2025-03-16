@@ -1876,7 +1876,7 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
-    Organization::Invoices::ExtendedDto::Line:
+    Organization::Invoices::BaseExtendedDto::Line:
       type: object
       required:
       - holder_id
@@ -1887,7 +1887,7 @@ components:
         excl_tax_amount:
           type: string
           format: decimal
-    Organization::Invoices::ExtendedDto::Detail:
+    Organization::Invoices::BaseExtendedDto::Detail:
       type: object
       required:
       - delivery_date
@@ -1971,7 +1971,7 @@ components:
         due_date:
           type: string
           format: date-time
-    Organization::Invoices::ExtendedDto::Context::ProjectVersionItem:
+    Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem:
       type: object
       required:
       - original_item_uuid
@@ -2005,7 +2005,7 @@ components:
         previously_billed_amount:
           type: string
           format: decimal
-    Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup:
+    Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup:
       type: object
       required:
       - id
@@ -2018,7 +2018,7 @@ components:
         description:
           type: string
           nullable: true
-    Organization::Invoices::ExtendedDto::Context:
+    Organization::Invoices::BaseExtendedDto::Context:
       type: object
       required:
       - project_version_retention_guarantee_rate
@@ -2045,11 +2045,47 @@ components:
         project_version_items:
           type: array
           items:
-            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context::ProjectVersionItem"
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"
         project_version_item_groups:
           type: array
           items:
-            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup"
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"
+    Organization::Invoices::BaseExtendedDto:
+      type: object
+      required:
+      - id
+      - status
+      - updated_at
+      - lines
+      - detail
+      - context
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+          - voided
+        number:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        lines:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Line"
+        detail:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Detail"
+        context:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context"
+        pdf_url:
+          type: string
+          nullable: true
     Organization::Invoices::ExtendedDto:
       type: object
       required:
@@ -2078,13 +2114,16 @@ components:
         lines:
           type: array
           items:
-            "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Line"
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Line"
         detail:
-          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Detail"
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Detail"
         context:
-          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto::Context"
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context"
         pdf_url:
           type: string
+          nullable: true
+        credit_note:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
           nullable: true
     Organization::CompletionSnapshots::IndexDto:
       type: object

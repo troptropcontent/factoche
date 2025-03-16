@@ -99,7 +99,8 @@ const ItemGroupSummary = ({
                       <p className="text-xs text-muted-foreground">
                         {t("common.number_in_percentage", {
                           amount:
-                            item.previouslyInvoicedAmount / item.totalAmount,
+                            (item.previouslyInvoicedAmount / item.totalAmount) *
+                            100,
                         })}
                       </p>
                     </div>

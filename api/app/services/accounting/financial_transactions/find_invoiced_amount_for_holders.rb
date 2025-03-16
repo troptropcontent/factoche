@@ -3,17 +3,17 @@ module Accounting
     class FindInvoicedAmountForHolders
       class << self
         def call(holder_ids, issue_date = Time.current)
-          invoiced_amount = Accounting::FinancialTransaction
+          invoiced_amount = Accounting::Invoice
             .joins(:lines)
-            .where("type LIKE '%#{Accounting::FinancialTransaction::InvoiceType}'")
+            .published
             .where(lines: { holder_id: holder_ids }, issue_date: ...issue_date)
             .select("lines.holder_id as line_holder_id, SUM(lines.excl_tax_amount)")
             .group("lines.holder_id")
             .each_with_object({}) { |record, object| object[record.line_holder_id] = record.sum }
 
-          credit_note_amount = Accounting::FinancialTransaction
+          credit_note_amount = Accounting::CreditNote
             .joins(:lines)
-            .where("type LIKE '%#{Accounting::FinancialTransaction::CreditNoteType}'")
+            .published
             .where(lines: { holder_id: holder_ids }, issue_date: ...issue_date)
             .select("lines.holder_id as line_holder_id, SUM(lines.excl_tax_amount)")
             .group("lines.holder_id")

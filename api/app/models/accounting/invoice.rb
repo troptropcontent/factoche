@@ -36,6 +36,8 @@ module Accounting
     PUBLISHED_STATUS = [ "posted", "cancelled" ].freeze
     NUMBER_PUBLISHED_PREFIX = "INV".freeze
 
+    has_one :credit_note, class_name: "Accounting::CreditNote", foreign_key: :holder_id
+
     enum :status,
          {
            draft: "draft",
