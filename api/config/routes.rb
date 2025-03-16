@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     namespace :prints do
       get "/unpublished_invoices/:id", action: "unpublished_invoice", as: :unpublished_invoice
       get "/published_invoices/:id", action: "published_invoice", as: :published_invoice
-      get "/credit_note/:id", action: "credit_note", as: :credit_note
+      get "/credit_notes/:id", action: "credit_note", as: :credit_note
     end
   end
 

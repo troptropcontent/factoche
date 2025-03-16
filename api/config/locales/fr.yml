@@ -59,9 +59,15 @@ fr:
           conditions:
             title: "Conditions générales de ventes"
         unpublished:
-          title: "Facture proforma de situation"
+          title: "Facture proforma"
+          number: "Numéro de facture proforma"
         published:
           title: "Facture de situation"
+          number: "Numéro de facture"
+        credit_note:
+          title: "Avoir"
+          number: "Numéro d'avoir"
+          original_invoice_number: "Numéro de la facture initiale"
     organization:
       completion_snapshots:
         invoice:
