@@ -34,71 +34,58 @@ const EditButton = ({
   );
 };
 
+type DownloadInvoicePdfButtonProps = {
+  type: "proforma" | "invoice" | "credit_note";
+} & (
+  | {
+      url?: string;
+      invoiceId?: never;
+      projectId?: never;
+    }
+  | {
+      url?: never;
+      invoiceId: number;
+      projectId: number;
+    }
+);
+
 const DownloadInvoicePdfButton = ({
   invoiceId,
   projectId,
-}: {
-  invoiceId: number;
-  projectId: number;
-}) => {
+  type,
+  url,
+}: DownloadInvoicePdfButtonProps) => {
   const { t } = useTranslation();
   const { data: invoiceData } = Api.useQuery(
     "get",
     "/api/v1/organization/projects/{project_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId, id: invoiceId },
+        path: { project_id: projectId as number, id: invoiceId as number },
       },
     },
-    { select: ({ result }) => result }
+    {
+      select: ({ result }) => result,
+      enabled: projectId != undefined && invoiceId != undefined,
+    }
   );
 
-  if (invoiceData == undefined) {
-    return null;
-  }
-
-  const isPdfDownloadable = invoiceData.pdf_url;
+  const documentUrl = url ? url : invoiceData?.pdf_url;
 
   return (
     <Button asChild variant="outline">
-      {isPdfDownloadable ? (
-        <Link to={`${import.meta.env.VITE_API_BASE_URL}${invoiceData.pdf_url}`}>
+      {documentUrl ? (
+        <Link to={`${import.meta.env.VITE_API_BASE_URL}${documentUrl}`}>
           <Download className="mr-2 h-4 w-4" />
           {t(
-            "pages.companies.projects.invoices.completion_snapshot.show.actions.download_draft_pdf"
+            `pages.companies.projects.invoices.completion_snapshot.show.actions.download_${type}_pdf`
           )}
         </Link>
       ) : (
         <Link disabled>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           {t(
-            "pages.companies.projects.invoices.completion_snapshot.show.actions.draft_pdf_unavailable"
-          )}
-        </Link>
-      )}
-    </Button>
-  );
-};
-
-const DownloadCreditNotePdfButton = () => {
-  const { t } = useTranslation();
-
-  const isPdfDownloadable = false;
-
-  return (
-    <Button asChild variant="outline">
-      {isPdfDownloadable ? (
-        <Link>
-          <Download className="mr-2 h-4 w-4" />
-          {t(
-            "pages.companies.projects.invoices.completion_snapshot.show.actions.download_credit_note_pdf"
-          )}
-        </Link>
-      ) : (
-        <Link disabled>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {t(
-            "pages.companies.projects.invoices.completion_snapshot.show.actions.credit_note_pdf_unavailable"
+            `pages.companies.projects.invoices.completion_snapshot.show.actions.${type}_pdf_unavailable`
           )}
         </Link>
       )}
@@ -311,7 +298,11 @@ const DraftInvoiceActions = ({
         invoiceId={invoiceId}
         companyId={companyId}
       />
-      <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
+      <DownloadInvoicePdfButton
+        projectId={projectId}
+        invoiceId={invoiceId}
+        type="proforma"
+      />
       <PostButton
         projectId={projectId}
         invoiceId={invoiceId}
@@ -334,10 +325,30 @@ const CancelledInvoiceActions = ({
   projectId: number;
   invoiceId: number;
 }) => {
+  const { data: invoiceData } = Api.useQuery(
+    "get",
+    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    {
+      params: {
+        path: { project_id: projectId, id: invoiceId },
+      },
+    },
+    { select: ({ result }) => result }
+  );
+
+  const creditNoteUrl = invoiceData?.credit_note?.pdf_url
+    ? invoiceData?.credit_note?.pdf_url
+    : undefined;
+
   return (
     <>
-      <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
-      <DownloadCreditNotePdfButton />
+      <DownloadInvoicePdfButton
+        projectId={projectId}
+        invoiceId={invoiceId}
+        type="invoice"
+      />
+
+      <DownloadInvoicePdfButton url={creditNoteUrl} type="credit_note" />
     </>
   );
 };
@@ -353,7 +364,11 @@ const PostedInvoiceActions = ({
 }) => {
   return (
     <>
-      <DownloadInvoicePdfButton projectId={projectId} invoiceId={invoiceId} />
+      <DownloadInvoicePdfButton
+        projectId={projectId}
+        invoiceId={invoiceId}
+        type="invoice"
+      />
       <CancelButton
         projectId={projectId}
         invoiceId={invoiceId}

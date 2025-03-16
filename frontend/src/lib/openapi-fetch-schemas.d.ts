@@ -1878,12 +1878,12 @@ export interface components {
             description?: string | null;
             grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
         };
-        "Organization::Invoices::ExtendedDto::Line": {
+        "Organization::Invoices::BaseExtendedDto::Line": {
             holder_id: string;
             /** Format: decimal */
             excl_tax_amount: string;
         };
-        "Organization::Invoices::ExtendedDto::Detail": {
+        "Organization::Invoices::BaseExtendedDto::Detail": {
             /** Format: date-time */
             delivery_date: string;
             seller_name: string;
@@ -1913,7 +1913,7 @@ export interface components {
             /** Format: date-time */
             due_date: string;
         };
-        "Organization::Invoices::ExtendedDto::Context::ProjectVersionItem": {
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
             original_item_uuid: string;
             group_id: number;
             name: string;
@@ -1927,12 +1927,12 @@ export interface components {
             /** Format: decimal */
             previously_billed_amount: string;
         };
-        "Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup": {
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup": {
             id: number;
             name: string;
             description?: string | null;
         };
-        "Organization::Invoices::ExtendedDto::Context": {
+        "Organization::Invoices::BaseExtendedDto::Context": {
             /** Format: decimal */
             project_version_retention_guarantee_rate: string;
             project_version_number: number;
@@ -1941,8 +1941,20 @@ export interface components {
             project_total_amount: string;
             /** Format: decimal */
             project_total_previously_billed_amount: string;
-            project_version_items: components["schemas"]["Organization::Invoices::ExtendedDto::Context::ProjectVersionItem"][];
-            project_version_item_groups: components["schemas"]["Organization::Invoices::ExtendedDto::Context::ProjectVersionItemGroup"][];
+            project_version_items: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"][];
+            project_version_item_groups: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"][];
+        };
+        "Organization::Invoices::BaseExtendedDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number?: string | null;
+            /** Format: date-time */
+            updated_at: string;
+            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
+            pdf_url?: string | null;
         };
         "Organization::Invoices::ExtendedDto": {
             id: number;
@@ -1951,10 +1963,11 @@ export interface components {
             number?: string | null;
             /** Format: date-time */
             updated_at: string;
-            lines: components["schemas"]["Organization::Invoices::ExtendedDto::Line"][];
-            detail: components["schemas"]["Organization::Invoices::ExtendedDto::Detail"];
-            context: components["schemas"]["Organization::Invoices::ExtendedDto::Context"];
+            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
             pdf_url?: string | null;
+            credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
         };
         "Organization::CompletionSnapshots::IndexDto": {
             results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
