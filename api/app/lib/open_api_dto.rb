@@ -9,6 +9,12 @@ class OpenApiDto
   class << self
     attr_reader :registered_dto_schemas
 
+    def inherited(subclass)
+      self.fields.each { |name, data|
+        subclass.field(name, data[:type], subtype: data[:subtype], required: data[:required])
+      }
+    end
+
     def register_schema(name, schema)
       @registered_dto_schemas[name] = schema
     end
