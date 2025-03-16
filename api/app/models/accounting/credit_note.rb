@@ -1,6 +1,7 @@
 module Accounting
   class CreditNote < FinancialTransaction
     CONTEXT = Invoice::Context
+    PUBLISHED_STATUS = [ "posted" ].freeze
     NUMBER_PREFIX = "CN".freeze
     enum :status,
           {
@@ -10,6 +11,8 @@ module Accounting
           default: :draft,
           validate: true
           validate :valid_number
+
+    scope :published, -> { where(status: PUBLISHED_STATUS) }
 
     validate :valid_number
 
