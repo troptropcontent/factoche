@@ -5,7 +5,7 @@ class Organization::Item < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: [ :project_version_id, :item_group_id ] }
   validates :quantity, presence: true
   validates :unit, presence: true
-  validates :unit_price_cents, presence: true
+  validates :unit_price_amount, presence: true
   validate :item_group_belongs_to_same_project_version
 
   def amount_cents
