@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_16_193346) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -150,7 +150,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
     t.string "rcs_city", null: false
     t.string "rcs_number", null: false
     t.string "vat_number", null: false
-    t.integer "capital_amount_cents", null: false
+    t.decimal "capital_amount", precision: 15, scale: 2, null: false
     t.index ["registration_number"], name: "index_organization_companies_on_registration_number", unique: true
   end
 
@@ -231,7 +231,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
     t.string "description"
     t.integer "quantity", null: false
     t.string "unit", null: false
-    t.integer "unit_price_cents", null: false
+    t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "project_version_id", null: false
@@ -259,7 +259,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
     t.integer "number", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "retention_guarantee_rate"
+    t.decimal "retention_guarantee_rate", precision: 3, scale: 2
     t.index ["project_id"], name: "index_organization_project_versions_on_project_id"
   end
 
@@ -269,8 +269,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "description"
+    t.string "type", null: false
+    t.bigint "original_quote_version_id"
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
     t.index ["name", "client_id"], name: "index_organization_projects_on_name_and_client_id", unique: true
+    t.index ["original_quote_version_id"], name: "index_organization_projects_on_original_quote_version_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -300,4 +303,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_14_082754) do
   add_foreign_key "organization_members", "users"
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"
   add_foreign_key "organization_projects", "organization_clients", column: "client_id"
+  add_foreign_key "organization_projects", "organization_project_versions", column: "original_quote_version_id"
 end

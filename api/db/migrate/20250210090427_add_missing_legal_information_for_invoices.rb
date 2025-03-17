@@ -5,7 +5,7 @@ class AddMissingLegalInformationForInvoices < ActiveRecord::Migration[8.0]
     add_column :organization_companies, :rcs_city, :string
     add_column :organization_companies, :rcs_number, :string
     add_column :organization_companies, :vat_number, :string
-    add_column :organization_companies, :capital_amount_cents, :integer
+    add_column :organization_companies, :capital_amount, :decimal, precision: 15, scale: 2
     add_column :organization_accounting_documents, :number, :string, null: false
     add_column :organization_accounting_documents, :issue_date, :datetime, null: false
     add_column :organization_accounting_documents, :delivery_date, :datetime, null: false
