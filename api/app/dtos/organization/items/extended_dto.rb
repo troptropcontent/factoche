@@ -6,6 +6,6 @@ class Organization::Items::ExtendedDto < OpenApiDto
   field "description", :string, required: false
   field "quantity", :integer
   field "unit", :string
-  field "unit_price_cents", :integer
+  field "unit_price_amount", :decimal
   field "item_group_id", :integer, required: false
 end

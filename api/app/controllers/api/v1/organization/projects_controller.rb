@@ -10,7 +10,7 @@ class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
 
   # GET /api/v1/organization/companies/:company_id/projects
   def index
-    projects = policy_scope(Organization::Project)
+    projects = policy_scope(Organization::Project).where(type: "Organization::Order")
     render json: Organization::Projects::IndexDto.new({ results: projects }).to_json
   end
 

@@ -9,7 +9,7 @@ class Organization::Item < ApplicationRecord
   validate :item_group_belongs_to_same_project_version
 
   def amount_cents
-    unit_price_cents * quantity
+    (unit_price_amount * 100 * quantity)
   end
 
 

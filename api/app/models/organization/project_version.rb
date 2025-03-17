@@ -23,7 +23,7 @@ class Organization::ProjectVersion < ApplicationRecord
   end
 
   def total_amount
-    items.sum("(quantity * unit_price_cents)") / BigDecimal("100")
+    items.sum("(quantity * unit_price_amount)").to_d
   end
 
   private

@@ -233,14 +233,10 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
       parameter name: :company_id, in: :path, type: :integer
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
-      let(:client) { FactoryBot.create(:client, company: company) }
-      let!(:company_project) { FactoryBot.create(:project, client: client,) }
-      let!(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let(:another_company) { FactoryBot.create(:company) }
-      let(:another_client) { FactoryBot.create(:client, company: another_company) }
-      let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+      include_context 'a company with a project with three item groups'
+
       let(:company_id) { company.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
@@ -249,7 +245,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         run_test! {
           parsed_response = JSON.parse(response.body)
           expect(parsed_response["results"].length).to eq(1)
-          expect(parsed_response.dig("results", 0, "id")).to eq(company_project.id)
+          expect(parsed_response.dig("results", 0, "id")).to eq(project.id)
         }
       end
 
@@ -283,25 +279,11 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
       parameter name: :id, in: :path, type: :integer
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
-      let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client) }
-      let!(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
-        name: "Item",
-        unit: "U",
-        position: 1,
-        unit_price_cents: "1000",
-        project_version: company_project_version,
-        quantity: 2,
-        original_item_uuid: SecureRandom.uuid
-      } ]) }
-      let(:another_company) { FactoryBot.create(:company) }
-      let(:another_client) { FactoryBot.create(:client, company: another_company) }
-      let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
+      include_context 'a company with a project with three item groups'
+
       let!(:member) { FactoryBot.create(:member, user:, company:) }
       let(:company_id) { company.id }
-      let(:id) { company_project.id }
+      let(:id) { project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       response "200", "list company's projects" do
@@ -309,10 +291,10 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
         run_test! {
           parsed_response = JSON.parse(response.body)
 
-          expect(parsed_response.dig("result", "id")).to eq(company_project.id)
+          expect(parsed_response.dig("result", "id")).to eq(project.id)
           expect(parsed_response.dig("result", "client", "id")).to eq(client.id)
-          expect(parsed_response.dig("result", "last_version", "id")).to eq(company_project_version.id)
-          expect(parsed_response.dig("result", "last_version", "item_groups", 0, "id")).to eq(company_project_version_item_group.id)
+          expect(parsed_response.dig("result", "last_version", "id")).to eq(project_version.id)
+          expect(parsed_response.dig("result", "last_version", "item_groups", 0, "id")).to eq(project_version_first_item_group.id)
         }
       end
 
@@ -398,11 +380,11 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
                 "results" => [
                   {
                     "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
-                    "invoiced_amount" => "4.0"
+                    "invoiced_amount" => "1.0"
                   },
                   {
                     "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
-                    "invoiced_amount" => "30.0"
+                    "invoiced_amount" => "2.0"
                   },
                   {
                     "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
@@ -413,29 +395,14 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
             end
 
             before {
-                previous_invoice = FactoryBot.create(
-                  :completion_snapshot_invoice,
-                  company_id: company.id,
-                  holder_id: project_version.id
-                )
+              draft_invoice = Organization::Invoices::Create.call(project_version.id, {
+                invoice_amounts: [
+                  { original_item_uuid: first_item.original_item_uuid, invoice_amount: 1 },
+                  { original_item_uuid: second_item.original_item_uuid, invoice_amount: 2 }
+                ]
+              }).data
 
-                FactoryBot.create(
-                  :financial_transaction_line,
-                  holder_id: project_version_first_item_group_item.original_item_uuid,
-                  financial_transaction: previous_invoice,
-                  quantity: 2,
-                  unit_price_amount: 2,
-                  excl_tax_amount: 4
-                )
-
-                FactoryBot.create(
-                  :financial_transaction_line,
-                  holder_id: project_version_second_item_group_item.original_item_uuid,
-                  financial_transaction: previous_invoice,
-                  quantity: 10,
-                  unit_price_amount: 3,
-                  excl_tax_amount: 30
-                )
+              Accounting::Invoices::Post.call(draft_invoice.id).data
             }
 
             run_test!("It returns the relevant amount for each items") do
@@ -466,30 +433,14 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
             end
 
             before {
-                previous_invoice = FactoryBot.create(
-                  :completion_snapshot_invoice,
-                  company_id: company.id,
-                  holder_id: project_version.id,
-                  issue_date: 2.days.from_now
-                )
+              draft_invoice = Organization::Invoices::Create.call(project_version.id, {
+                invoice_amounts: [
+                  { original_item_uuid: first_item.original_item_uuid, invoice_amount: 1 },
+                  { original_item_uuid: second_item.original_item_uuid, invoice_amount: 2 }
+                ]
+              }).data
 
-                FactoryBot.create(
-                  :financial_transaction_line,
-                  holder_id: project_version_first_item_group_item.original_item_uuid,
-                  financial_transaction: previous_invoice,
-                  quantity: 2,
-                  unit_price_amount: 2,
-                  excl_tax_amount: 4
-                )
-
-                FactoryBot.create(
-                  :financial_transaction_line,
-                  holder_id: project_version_second_item_group_item.original_item_uuid,
-                  financial_transaction: previous_invoice,
-                  quantity: 10,
-                  unit_price_amount: 3,
-                  excl_tax_amount: 30
-                )
+              Accounting::Invoices::Post.call(draft_invoice.id, 2.days.from_now).data
             }
 
             run_test!("It does not take those transaction into accoiunt") do

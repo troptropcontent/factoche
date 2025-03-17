@@ -13,7 +13,7 @@ RSpec.describe Organization::Invoices::Create do
         invoice_amounts: [
           {
             original_item_uuid: first_item.original_item_uuid,
-            invoice_amount: first_item.quantity % 3 * first_item.unit_price_cents / 100
+            invoice_amount: first_item.quantity % 3 * first_item.unit_price_amount
           }
         ]
       }
@@ -85,7 +85,7 @@ RSpec.describe Organization::Invoices::Create do
               invoice_amounts: [
                 {
                   original_item_uuid: first_item.original_item_uuid,
-                  invoice_amount: first_item.quantity * first_item.unit_price_cents / 100 # previous invoice for this item with total amount
+                  invoice_amount: first_item.quantity * first_item.unit_price_amount # previous invoice for this item with total amount
                 }
               ]
             }
