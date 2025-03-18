@@ -37,7 +37,9 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         end
 
         context "when there is invoices attached to the project" do
-         let!(:previous_invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+         let!(:previous_invoice) {
+          ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
+        }
 
           run_test!("it return the invoices") do
             parsed_response = JSON.parse(response.body)

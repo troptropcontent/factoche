@@ -40,7 +40,8 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
             phone: '+33326567890',
             address_street: 'Test Street 123',
             address_city: 'Test City',
-            address_zipcode: '12345'
+            address_zipcode: '12345',
+            vat_number: '1234'
           }
         end
 

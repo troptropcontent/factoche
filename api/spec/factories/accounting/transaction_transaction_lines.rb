@@ -7,7 +7,6 @@ FactoryBot.define do
     quantity { 1 }
     excl_tax_amount { 100.0 }
     tax_rate { 0.2 }
-    retention_guarantee_rate { 0.05 }
     group_id { nil }
   end
 end

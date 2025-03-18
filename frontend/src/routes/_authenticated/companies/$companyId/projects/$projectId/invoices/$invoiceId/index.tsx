@@ -1,5 +1,5 @@
-import { CompletionSnapshotStatusBadge } from "@/components/pages/companies/completion-snapshot/shared/completion-snapshot-status-badge";
 import { InvoiceShowContent } from "@/components/pages/companies/invoices/invoice-show-content";
+import { StatusBadge } from "@/components/pages/companies/invoices/private/status-badge";
 import { Layout } from "@/components/pages/companies/layout";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { createFileRoute } from "@tanstack/react-router";
@@ -38,7 +38,7 @@ function RouteComponent() {
               { number: invoice.number }
             )}
           </h1>
-          <CompletionSnapshotStatusBadge status={invoice.status} />
+          <StatusBadge status={invoice.status} />
         </div>
       </Layout.Header>
       <Layout.Content>

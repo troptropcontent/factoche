@@ -10,11 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import {
-  useProjectPreviouslyInvoicedTotalAmount,
-  useProjectTotalAmount,
-} from "@/components/pages/companies/projects/shared/hooks";
-import { useInvoiceTotalAmount } from "../shared/hooks";
+import { useInvoicingSummaryCardData } from "./hooks";
 
 const LoadingTable = () => (
   <>
@@ -41,23 +37,13 @@ const ProjectInvoicingSummaryCard = ({
   projectId: number;
   invoiceId: number;
 }) => {
-  const { projectTotalAmount } = useProjectTotalAmount({
+  const { invoicingSummaryCardData } = useInvoicingSummaryCardData({
     companyId,
-    projectId,
-  });
-
-  const { projectPreviouslyInvoicedTotalAmount } =
-    useProjectPreviouslyInvoicedTotalAmount({ projectId });
-
-  const { invoiceTotalAmount } = useInvoiceTotalAmount({
     projectId,
     invoiceId,
   });
 
-  const isTableDataLoaded =
-    projectTotalAmount != undefined &&
-    projectPreviouslyInvoicedTotalAmount != undefined &&
-    invoiceTotalAmount != undefined;
+  const isTableDataLoaded = invoicingSummaryCardData != undefined;
 
   const { t } = useTranslation();
 
@@ -106,21 +92,22 @@ const ProjectInvoicingSummaryCard = ({
                 <>
                   <TableCell className="align-top">
                     {t("common.number_in_currency", {
-                      amount: projectTotalAmount,
+                      amount: invoicingSummaryCardData.projectTotalAmount,
                     })}
                   </TableCell>
                   <TableCell className="text-center">
                     <div>
                       <p>
                         {t("common.number_in_currency", {
-                          amount: projectPreviouslyInvoicedTotalAmount,
+                          amount:
+                            invoicingSummaryCardData.previouslyInvoicedAmount,
                         })}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {t("common.number_in_percentage", {
                           amount:
-                            (projectPreviouslyInvoicedTotalAmount /
-                              projectTotalAmount) *
+                            (invoicingSummaryCardData.previouslyInvoicedAmount /
+                              invoicingSummaryCardData.projectTotalAmount) *
                             100,
                         })}
                       </p>
@@ -130,17 +117,14 @@ const ProjectInvoicingSummaryCard = ({
                     <div>
                       <p>
                         {t("common.number_in_currency", {
-                          amount:
-                            projectPreviouslyInvoicedTotalAmount +
-                            invoiceTotalAmount,
+                          amount: invoicingSummaryCardData.newSnapshotAmount,
                         })}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {t("common.number_in_percentage", {
                           amount:
-                            ((projectPreviouslyInvoicedTotalAmount +
-                              invoiceTotalAmount) /
-                              projectTotalAmount) *
+                            (invoicingSummaryCardData.newSnapshotAmount /
+                              invoicingSummaryCardData.projectTotalAmount) *
                             100,
                         })}
                       </p>
@@ -148,7 +132,7 @@ const ProjectInvoicingSummaryCard = ({
                   </TableCell>
                   <TableCell className="text-center align-top">
                     {t("common.number_in_currency", {
-                      amount: invoiceTotalAmount,
+                      amount: invoicingSummaryCardData.invoiceTotalAmount,
                     })}
                   </TableCell>
                 </>

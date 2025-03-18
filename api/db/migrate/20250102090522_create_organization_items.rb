@@ -6,7 +6,7 @@ class CreateOrganizationItems < ActiveRecord::Migration[8.0]
       t.string :description
       t.integer :quantity, null: false
       t.string :unit, null: false
-      t.integer :unit_price_cents, null: false
+      t.decimal :unit_price_amount, precision: 15, scale: 2, null: false
 
       t.timestamps
     end

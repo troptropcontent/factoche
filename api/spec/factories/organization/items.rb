@@ -8,7 +8,7 @@ FactoryBot.define do
     description { "Trés beau garde coprs en galva" }
     quantity { 1 }
     unit { "unité" }
-    unit_price_cents { 1 }
+    unit_price_amount { 1 }
     tax_rate { 0.2 }
   end
 end

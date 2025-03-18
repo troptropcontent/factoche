@@ -11,7 +11,7 @@ class Organization::ProjectVersion < ApplicationRecord
 
   has_many :completion_snapshots, class_name: "Organization::CompletionSnapshot"
 
-  validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10000 }
+  validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   validates :number, presence: true, uniqueness: { scope: :project_id }
   before_validation :set_number_to_next_available_number, on: :create
@@ -23,7 +23,7 @@ class Organization::ProjectVersion < ApplicationRecord
   end
 
   def total_amount
-    items.sum("(quantity * unit_price_cents)") / BigDecimal("100")
+    items.sum("(quantity * unit_price_amount)").to_d
   end
 
   private

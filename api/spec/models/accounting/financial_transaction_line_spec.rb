@@ -7,14 +7,13 @@ RSpec.describe Accounting::FinancialTransactionLine, type: :model do
 
   describe 'validations' do
     subject(:line) {
-      FactoryBot.build(:financial_transaction_line, financial_transaction: FactoryBot.create(:completion_snapshot_invoice, company_id: 2, holder_id: 2))
+      FactoryBot.build(:financial_transaction_line, financial_transaction: FactoryBot.create(:invoice, company_id: 2, holder_id: 2, number: "PRO-2024-0001"))
     }
 
     it { is_expected.to validate_presence_of(:unit) }
     it { is_expected.to validate_presence_of(:unit_price_amount) }
     it { is_expected.to validate_presence_of(:quantity) }
     it { is_expected.to validate_presence_of(:tax_rate) }
-    it { is_expected.to validate_presence_of(:retention_guarantee_rate) }
     it { is_expected.to validate_presence_of(:excl_tax_amount) }
 
     it { is_expected.to validate_numericality_of(:unit_price_amount).is_greater_than_or_equal_to(0) }
@@ -22,7 +21,6 @@ RSpec.describe Accounting::FinancialTransactionLine, type: :model do
     it { is_expected.to validate_numericality_of(:excl_tax_amount).is_greater_than_or_equal_to(0) }
 
     it { is_expected.to validate_numericality_of(:tax_rate).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(1) }
-    it { is_expected.to validate_numericality_of(:retention_guarantee_rate).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(1) }
 
     it do
       expect(line).to validate_uniqueness_of(:holder_id)

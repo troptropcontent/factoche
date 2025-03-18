@@ -3,7 +3,7 @@ class Organization::CreateProjecItemDto < OpenApiDto
   field  "description", :string, required: false
   field  "position", :integer
   field  "unit", :string
-  field  "unit_price_cents", :integer
+  field  "unit_price_amount", :decimal
   field  "quantity", :integer
 end
 

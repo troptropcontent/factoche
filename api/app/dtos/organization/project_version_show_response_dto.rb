@@ -5,7 +5,7 @@ class Organization::ProjectVersionShowProjectVersionItemDto < OpenApiDto
   field "description", :string, required: false
   field "quantity", :integer
   field "unit", :string
-  field "unit_price_cents", :integer
+  field "unit_price_amount", :decimal
 end
 
 class Organization::ProjectVersionShowProjectVersionItemGroupDto < OpenApiDto
@@ -21,7 +21,7 @@ class Organization::ProjectVersionShowResponseProjectVersionDto < OpenApiDto
   field "number", :integer
   field "is_last_version", :boolean
   field "created_at", :timestamp
-  field "retention_guarantee_rate", :integer
+  field "retention_guarantee_rate", :decimal
   field "ungrouped_items", :array, subtype: Organization::ProjectVersionShowProjectVersionItemDto
   field "item_groups", :array, subtype: Organization::ProjectVersionShowProjectVersionItemGroupDto
 end

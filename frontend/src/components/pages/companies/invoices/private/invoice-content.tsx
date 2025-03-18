@@ -18,6 +18,7 @@ const GroupedItemsContent = ({
   return invoiceContentData.groups.map((group) => {
     return (
       <ItemGroupSummary
+        key={group.id}
         name={group.name}
         items={invoiceContentData.items.filter(
           (item) => item.groupId == group.id

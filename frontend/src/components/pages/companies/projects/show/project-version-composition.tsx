@@ -52,16 +52,17 @@ const ProjectVersionComposition = ({
   };
   const { t } = useTranslation();
 
-  const totalAmountCents = useMemo(() => {
+  const totalAmount = useMemo(() => {
     if (data == undefined) {
       return 0;
     }
 
     const computeItemSum = (
-      items: { unit_price_cents: number; quantity: number }[]
+      items: { unit_price_amount: string; quantity: number }[]
     ) => {
       return items.reduce(
-        (prev, current) => prev + current.unit_price_cents * current.quantity,
+        (prev, current) =>
+          prev + Number(current.unit_price_amount) * current.quantity,
         0
       );
     };
@@ -112,7 +113,7 @@ const ProjectVersionComposition = ({
                   description={item_group.name}
                   items={item_group.grouped_items.map((item) => ({
                     ...item,
-                    unit_price: item.unit_price_cents / 100,
+                    unit_price: Number(item.unit_price_amount),
                   }))}
                 />
               )),
@@ -120,7 +121,7 @@ const ProjectVersionComposition = ({
                 <ItemSummary
                   key={ungrouped_item.id}
                   {...ungrouped_item}
-                  unit_price={ungrouped_item.unit_price_cents / 100}
+                  unit_price={Number(ungrouped_item.unit_price_amount)}
                 />
               )),
             ]}
@@ -136,7 +137,7 @@ const ProjectVersionComposition = ({
               <Skeleton className="h-6 w-[100px]" />
             ) : (
               t("common.number_in_currency", {
-                amount: totalAmountCents / 100,
+                amount: totalAmount,
               })
             )}
           </span>

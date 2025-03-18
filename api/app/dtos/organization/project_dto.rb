@@ -5,7 +5,7 @@ class Organization::ProjectDtoItemDto < OpenApiDto
   field "description", :string, required: false
   field "quantity", :integer
   field "unit", :string
-  field "unit_price_cents", :integer
+  field "unit_price_amount", :decimal
 end
 
 class Organization::ProjectDtoItemGroupDto < OpenApiDto

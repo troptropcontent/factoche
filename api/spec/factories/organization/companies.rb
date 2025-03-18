@@ -10,7 +10,7 @@ FactoryBot.define do
     rcs_city { "Biarritz" }
     rcs_number { "1234556" }
     vat_number { "123456" }
-    capital_amount_cents { 1000000 }
+    capital_amount { 1000000.0 }
 
     trait :with_config do
       after(:create) { |company| create(:company_config, company: company) }

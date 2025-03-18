@@ -444,536 +444,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/companies/{company_id}/projects/{project_id}/completion_snapshots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a new completion snapshot on the project's last version */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    company_id: number;
-                    project_id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        description?: string | null;
-                        completion_snapshot_items: components["schemas"]["Organization::CreateCompletionSnapshotItemDto"][];
-                    };
-                };
-            };
-            responses: {
-                /** @description completion snapshot successfully created */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description unauthorised */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description unprocessable entity */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/completion_snapshots/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        /** Show completion snapshot details */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description show completion_snapshot */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        /** Update completion snapshot */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        description?: string | null;
-                        completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem"][];
-                    };
-                };
-            };
-            responses: {
-                /** @description updates completion snapshot */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description unprocessable entity */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        /** Delete completion snapshot */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description no content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description unprocessable entity */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/completion_snapshots/{id}/previous": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        /** Show previous completion snapshot details */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description show previous completion_snapshot */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result?: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/completion_snapshots/{id}/publish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Publish the completion snapshot */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description completion snapshot published */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description unprocessable entity */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/completion_snapshots/{id}/cancel": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Cancel the completion snapshot */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description completion snapshot cancelled */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description unprocessable entity */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/completion_snapshots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all project version completion snapshot */
-        get: {
-            parameters: {
-                query?: {
-                    filter?: {
-                        company_id?: number | null;
-                        project_id?: number | null;
-                        project_version_id?: number | null;
-                    };
-                    query?: {
-                        limit?: number | null;
-                    };
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description list completion_snapshot */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/project_versions/{project_version_id}/completion_snapshots/new_completion_snapshot_data": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                project_version_id: number;
-            };
-            cookie?: never;
-        };
-        /** Get the draft completion snapshot data */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    project_version_id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description draft completion snapshot */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"];
-                        };
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/organization/project_versions/{project_version_id}/invoices/completion_snapshot": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Creates a completion snapshot invoice */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    project_version_id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": {
-                        invoice_amounts: components["schemas"]["Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"][];
-                    };
-                };
-            };
-            responses: {
-                /** @description successfully creates completion snapshot invoice */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            result: components["schemas"]["Organization::Invoices::CompletionSnapshots::ExtendedDto"];
-                        };
-                    };
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description not_found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            error: {
-                                status: string;
-                                code: number;
-                                message: string;
-                                details: Record<string, never>;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/organization/projects/{project_id}/invoices": {
         parameters: {
             query?: never;
@@ -1814,7 +1284,8 @@ export interface components {
             number: number;
             /** Format: date-time */
             created_at: string;
-            retention_guarantee_rate: number;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
             /** Format: decimal */
             total_amount: string;
         };
@@ -1855,7 +1326,8 @@ export interface components {
             number: number;
             /** Format: date-time */
             created_at: string;
-            retention_guarantee_rate: number;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
             ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
             item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
             items: components["schemas"]["Organization::Items::ExtendedDto"][];
@@ -1868,7 +1340,8 @@ export interface components {
             description?: string | null;
             quantity: number;
             unit: string;
-            unit_price_cents: number;
+            /** Format: decimal */
+            unit_price_amount: string;
             item_group_id?: number | null;
         };
         "Organization::ItemGroups::ExtendedDto": {
@@ -2070,7 +1543,8 @@ export interface components {
             description?: string | null;
             position: number;
             unit: string;
-            unit_price_cents: number;
+            /** Format: decimal */
+            unit_price_amount: string;
             quantity: number;
         };
         "Organization::CreateProjectItemGroupDto": {
@@ -2225,7 +1699,8 @@ export interface components {
             description?: string | null;
             quantity: number;
             unit: string;
-            unit_price_cents: number;
+            /** Format: decimal */
+            unit_price_amount: string;
         };
         "Organization::ProjectDtoItemGroupDto": {
             id: number;
@@ -2277,7 +1752,8 @@ export interface components {
             description?: string | null;
             quantity: number;
             unit: string;
-            unit_price_cents: number;
+            /** Format: decimal */
+            unit_price_amount: string;
         };
         "Organization::ProjectShowResponseProjectItemGroupDto": {
             id: number;
@@ -2327,7 +1803,8 @@ export interface components {
             description?: string | null;
             quantity: number;
             unit: string;
-            unit_price_cents: number;
+            /** Format: decimal */
+            unit_price_amount: string;
         };
         "Organization::ProjectVersionShowProjectVersionItemGroupDto": {
             id: number;
@@ -2342,7 +1819,8 @@ export interface components {
             is_last_version: boolean;
             /** Format: date-time */
             created_at: string;
-            retention_guarantee_rate: number;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
             ungrouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
             item_groups: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemGroupDto"][];
         };

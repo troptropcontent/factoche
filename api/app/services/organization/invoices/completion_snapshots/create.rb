@@ -65,7 +65,7 @@ module Organization
             items_by_uuid = items.index_by(&:original_item_uuid)
             wrong_invoice_amount = invoice_amounts.find { |invoice_amount|
               item = items_by_uuid[invoice_amount["original_item_uuid"]]
-              item_amount = item.quantity * item.unit_price_cents / 100
+              item_amount = item.quantity * item.unit_price_amount
               previously_invoiced_amount = result.data.find { |invoiced_amount| invoiced_amount[:original_item_uuid] == invoice_amount["original_item_uuid"] }[:invoiced_amount]
               previously_invoiced_amount + invoice_amount["invoice_amount"].to_d > item_amount
             }
@@ -117,7 +117,7 @@ module Organization
                   description: item.description,
                   quantity: item.quantity,
                   unit: item.unit,
-                  unit_price_amount: (item.unit_price_cents / 100).to_d,
+                  unit_price_amount: item.unit_price_amount,
                   tax_rate: item.tax_rate,
                   group_id: item.item_group_id
                 }

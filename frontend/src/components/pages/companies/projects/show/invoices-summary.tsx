@@ -19,8 +19,9 @@ import { NewCompletionSnapshotButton } from "./new-completion-snapshot-button";
 import { useNavigate } from "@tanstack/react-router";
 import { TrafficCone } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
-import { CompletionSnapshotStatusBadge } from "../../completion-snapshot/shared/completion-snapshot-status-badge";
+
 import { Api } from "@/lib/openapi-fetch-query-client";
+import { StatusBadge } from "../../invoices/private/status-badge";
 
 const InvoicesSummary = ({
   companyId,
@@ -121,7 +122,7 @@ const InvoicesSummary = ({
                     })}
                   </TableCell>
                   <TableCell className="text-center">
-                    <CompletionSnapshotStatusBadge status={invoice.status} />
+                    <StatusBadge status={invoice.status} />
                   </TableCell>
                   <TableCell className="text-right">
                     {t("common.number_in_currency", {

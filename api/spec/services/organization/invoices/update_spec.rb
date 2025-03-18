@@ -10,9 +10,9 @@ module Organization
 
         include_context 'a company with a project with three items'
 
-        let("first_item_unit_price_cents") { 20000 } # 200 €
+        let("first_item_unit_price_amount") { 200 } # 200 €
         let("first_item_quantity") { 3 } # => total possible amount 3 * 200 € = 600 €
-        let("second_item_unit_price_cents") { 5000 } # 50 €
+        let("second_item_unit_price_amount") { 50 } # 50 €
         let("second_item_quantity") { 10 } # => total possible amount 10 * 50 € = 500 €
 
         let(:invoice) { Create.call(project_version.id, {

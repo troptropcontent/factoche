@@ -5,7 +5,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
 
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:project) { FactoryBot.create(:project, client: client) }
+  let(:project) { FactoryBot.create(:quote, client: client) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -36,7 +36,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
 
     it { expect(project_version).to validate_numericality_of(:retention_guarantee_rate)
           .is_greater_than_or_equal_to(0)
-          .is_less_than_or_equal_to(10000) }
+          .is_less_than_or_equal_to(1) }
     # Uniqueness validation of number scoped to project_id is not necessary
     # since we automatically set the number to the next available number
     # through the before_validation callback on create
@@ -96,7 +96,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
       before {
         FactoryBot.create(:project_version, project: project)
         FactoryBot.create(:project_version, project: project)
-        another_project = FactoryBot.create(:project, client: client, name: "AnotherProject")
+        another_project = FactoryBot.create(:quote, client: client, name: "AnotherProject")
         FactoryBot.create(:project_version, project: another_project)
         FactoryBot.create(:project_version, project: another_project)
         FactoryBot.create(:project_version, project: another_project)

@@ -1,4 +1,4 @@
-import { CompletionSnapshotInvoiceForm } from "@/components/pages/companies/invoices/completion_snapshots/completion-snapshot-invoice-form";
+import { InvoiceForm } from "@/components/pages/companies/invoices/invoice-form";
 import { Layout } from "@/components/pages/companies/layout";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { createFileRoute } from "@tanstack/react-router";
@@ -54,7 +54,7 @@ function RouteComponent() {
 
   const projectVersionTotalAmount = projectData.last_version.items.reduce(
     (prev, current) => {
-      return prev + (current.quantity * current.unit_price_cents) / 100;
+      return prev + current.quantity * Number(current.unit_price_amount);
     },
     0
   );
@@ -101,13 +101,15 @@ function RouteComponent() {
             </div>
           </div>
         ) : (
-          <CompletionSnapshotInvoiceForm
+          <InvoiceForm
             invoiceId={Number(invoiceId)}
             companyId={Number(companyId)}
             projectId={Number(projectId)}
-            projectVersionId={projectData.last_version.id}
             itemGroups={projectData.last_version.item_groups}
-            items={projectData.last_version.items}
+            items={projectData.last_version.items.map((item) => ({
+              ...item,
+              unit_price_amount: Number(item.unit_price_amount),
+            }))}
             projectTotal={projectVersionTotalAmount}
             previouslyInvoicedAmountsPerItems={
               previouslyInvoicedAmountsPerItems

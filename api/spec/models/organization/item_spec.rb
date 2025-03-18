@@ -6,7 +6,7 @@ RSpec.describe Organization::Item, type: :model do
 
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company:) }
-  let(:project) { FactoryBot.create(:project, client: client) }
+  let(:project) { FactoryBot.create(:quote, client: client) }
   let(:project_version) { FactoryBot.create(:project_version, project: project) }
   let(:item_name) { "super_item" }
 
@@ -39,7 +39,7 @@ RSpec.describe Organization::Item, type: :model do
 
     it { is_expected.to validate_presence_of(:quantity) }
     it { is_expected.to validate_presence_of(:unit) }
-    it { is_expected.to validate_presence_of(:unit_price_cents) }
+    it { is_expected.to validate_presence_of(:unit_price_amount) }
 
     describe "item_group_belongs_to_same_project_version" do
       let(:item_group) { FactoryBot.create(:item_group, project_version: project_version) }
@@ -72,10 +72,10 @@ RSpec.describe Organization::Item, type: :model do
   end
 
   describe ".amount_cents" do
-    subject(:item) { FactoryBot.create(:item, original_item_uuid: SecureRandom.uuid, project_version: project_version, name: item_name, quantity: 2, unit_price_cents: 123) }
+    subject(:item) { FactoryBot.create(:item, original_item_uuid: SecureRandom.uuid, project_version: project_version, name: item_name, quantity: 2, unit_price_amount: 123) }
 
     it "returns unit_price_cents * quantity" do
-      expect(item.amount_cents).to eq(246)
+      expect(item.amount_cents).to eq(24600)
     end
   end
 end

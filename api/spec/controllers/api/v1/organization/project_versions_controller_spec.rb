@@ -1,6 +1,6 @@
 require "rails_helper"
 require "swagger_helper"
-
+require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
 RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request do
   path "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions" do
     get "List all the project's versions" do
@@ -12,25 +12,11 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
       parameter name: :project_id, in: :path, type: :integer
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
-      let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client,) }
-      let(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) { FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
-        original_item_uuid: SecureRandom.uuid,
-        name: "Item",
-        unit: "U",
-        position: 1,
-        unit_price_cents: "1000",
-        project_version: company_project_version,
-        quantity: 2
-      } ]) }
-      let(:another_company) { FactoryBot.create(:company) }
-      let(:another_client) { FactoryBot.create(:client, company: another_company) }
-      let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
+      include_context 'a company with a project with three items'
       let!(:member) { FactoryBot.create(:member, user:, company:) }
+
       let(:company_id) { company.id }
-      let(:project_id) { company_project.id }
+      let(:project_id) { project.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       response "200", "list company's projects" do
@@ -39,7 +25,7 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
         context "when the project correctly belong to the company" do
           run_test!("It returns all the project versions") {
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("results", 0, "id")).to eq(company_project_version.id)
+            expect(parsed_response.dig("results", 0, "id")).to eq(project_version.id)
             expect(parsed_response.dig("results").length).to eq(1)
           }
         end
@@ -54,7 +40,11 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
         end
 
         context "when the project does not belong to the company" do
-          let(:project_id) { another_company_project.id }
+          let(:another_company) { FactoryBot.create(:company) }
+          let(:another_client) { FactoryBot.create(:client, company: another_company) }
+          let(:another_project) { FactoryBot.create(:quote, client: another_client) }
+          let(:project_id) { another_project.id }
+
 
           run_test!("It returns an empty array") {
             parsed_response = JSON.parse(response.body)
@@ -94,37 +84,25 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
       parameter name: :id, in: :path, type: :integer
 
       let(:user) { FactoryBot.create(:user) }
-      let(:company) { FactoryBot.create(:company) }
-      let(:client) { FactoryBot.create(:client, company: company) }
-      let(:company_project) { FactoryBot.create(:project, client: client) }
-      let!(:company_project_version) { FactoryBot.create(:project_version, project: company_project) }
-      let!(:company_project_version_item_group) {
-        FactoryBot.create(:item_group, project_version: company_project_version, name: "Item Group", grouped_items_attributes: [ {
-        original_item_uuid: SecureRandom.uuid,
-        name: "Item",
-        unit: "U",
-        position: 1,
-        unit_price_cents: "1000",
-        project_version: company_project_version,
-        quantity: 2
-      } ]) }
+
+      include_context 'a company with a project with three items'
+
       let(:another_company) { FactoryBot.create(:company) }
       let(:another_client) { FactoryBot.create(:client, company: another_company) }
-      let!(:another_company_project) { FactoryBot.create(:project, client: another_client,) }
+      let!(:another_company_project) { FactoryBot.create(:quote, client: another_client,) }
       let!(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
       let(:company_id) { company.id }
-      let(:project_id) { company_project.id }
-      let(:id) { company_project_version.id }
+      let(:project_id) { project.id }
+      let(:id) { project_version.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       response "200", "show project version details" do
         schema Organization::ProjectVersions::ShowDto.to_schema
         run_test!("It return the project version details") {
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("result", "id")).to eq(company_project_version.id)
-            expect(parsed_response.dig("result", "retention_guarantee_rate")).to eq(company_project_version.retention_guarantee_rate)
-            expect(parsed_response.dig("result", "item_groups", 0, "id")).to eq(company_project_version_item_group.id)
+            expect(parsed_response.dig("result", "id")).to eq(project_version.id)
+            expect(parsed_response.dig("result", "retention_guarantee_rate")).to eq(project_version.retention_guarantee_rate.to_s)
         }
       end
 

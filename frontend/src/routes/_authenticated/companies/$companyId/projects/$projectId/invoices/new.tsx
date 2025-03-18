@@ -44,7 +44,7 @@ function RouteComponent() {
 
   const projectVersionTotalAmount = projectData.last_version.items.reduce(
     (prev, current) => {
-      return prev + (current.quantity * current.unit_price_cents) / 100;
+      return prev + current.quantity * Number(current.unit_price_amount);
     },
     0
   );
@@ -65,7 +65,10 @@ function RouteComponent() {
           companyId={Number(companyId)}
           projectId={Number(projectId)}
           itemGroups={projectData.last_version.item_groups}
-          items={projectData.last_version.items}
+          items={projectData.last_version.items.map((item) => ({
+            ...item,
+            unit_price_amount: Number(item.unit_price_amount),
+          }))}
           projectTotal={projectVersionTotalAmount}
           previouslyInvoicedAmountsPerItems={previouslyInvoicedAmountsPerItems}
         />

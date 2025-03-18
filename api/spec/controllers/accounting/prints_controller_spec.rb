@@ -28,7 +28,7 @@ RSpec.describe "Accounting::Prints", type: :request do
 
             expect(response.content_type).to include("text/html")
             expect(response.code).to eq("200")
-            expect(response.body).to include("Facture proforma de situation")
+            expect(response.body).to include("Facture proforma")
             expect(response.body).to include(invoice.number)
           end
         end
@@ -41,7 +41,7 @@ RSpec.describe "Accounting::Prints", type: :request do
 
             expect(response.content_type).to include("text/html")
             expect(response.code).to eq("200")
-            expect(response.body).to include("Facture proforma de situation")
+            expect(response.body).to include("Facture proforma")
             expect(response.body).to include(invoice.number)
           end
         end
@@ -54,7 +54,7 @@ RSpec.describe "Accounting::Prints", type: :request do
 
             expect(response.content_type).to include("text/html")
             expect(response.code).to eq("422")
-            expect(response.body).to include("Invoice must be in draft or voided status")
+            expect(response.body).to include("Invoice must be unpublished")
           end
         end
       end
