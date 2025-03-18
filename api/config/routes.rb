@@ -31,6 +31,7 @@ Rails.application.routes.draw do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
             resources :completion_snapshots, only: [ :create ]
           end
+          resources :quotes, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
           member do
