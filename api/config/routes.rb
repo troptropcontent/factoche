@@ -26,11 +26,15 @@ Rails.application.routes.draw do
       end
       namespace :organization do
         resources :companies, only: [ :index, :show ] do
-          resources :clients, only: [ :create, :index ]
+          resources :clients, only: [ :create, :index ] do
+            resources :quotes, only: [ :create ]
+          end
           resources :projects, only: [ :create, :index, :show ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
             resources :completion_snapshots, only: [ :create ]
           end
+          resources :quotes, only: [ :index ]
+          resources :orders, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
           member do
@@ -65,6 +69,11 @@ Rails.application.routes.draw do
           end
         end
         resources :prints, only: [ :show ]
+        resources :quotes, only: [ :show ] do
+          member do
+            post "convert_to_order"
+          end
+        end
       end
     end
   end
