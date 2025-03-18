@@ -67,6 +67,7 @@ Rails.application.routes.draw do
           end
         end
         resources :prints, only: [ :show ]
+        resources :quotes, only: [ :show ]
       end
     end
   end
