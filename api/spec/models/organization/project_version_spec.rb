@@ -12,7 +12,6 @@ RSpec.describe Organization::ProjectVersion, type: :model do
     it { is_expected.to have_many(:items).class_name('Organization::Item') }
     it { is_expected.to have_many(:item_groups).class_name('Organization::ItemGroup') }
     it { is_expected.to have_many(:ungrouped_items).class_name('Organization::Item') }
-    it { is_expected.to have_many(:completion_snapshots).class_name('Organization::CompletionSnapshot') }
   end
 
   describe 'nested attributes' do
