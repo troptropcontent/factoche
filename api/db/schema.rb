@@ -272,7 +272,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_16_193346) do
     t.string "type", null: false
     t.bigint "original_quote_version_id"
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
-    t.index ["name", "client_id"], name: "index_organization_projects_on_name_and_client_id", unique: true
+    t.index ["name", "client_id", "type"], name: "index_organization_projects_on_name_and_client_id_and_type", unique: true
     t.index ["original_quote_version_id"], name: "index_organization_projects_on_original_quote_version_id"
   end
 
