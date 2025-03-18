@@ -11,9 +11,4 @@ class Organization::Project < ApplicationRecord
     # TODO : Implement the logic
     "new"
   end
-
-  def invoiced_amount
-    # TODO : Implement the logic
-    0.to_d
-  end
 end
