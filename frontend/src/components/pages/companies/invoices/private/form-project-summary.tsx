@@ -5,7 +5,7 @@ import { Table } from "@/components/ui/table";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { completionSnapshotInvoiceFormSchema } from "./schemas";
+import { invoiceFormSchema } from "./schemas";
 import { z } from "zod";
 
 const FormProjectSummary = ({
@@ -33,8 +33,7 @@ const FormProjectSummary = ({
     }
   );
 
-  const formValues =
-    useWatch<z.infer<typeof completionSnapshotInvoiceFormSchema>>();
+  const formValues = useWatch<z.infer<typeof invoiceFormSchema>>();
 
   if (invoicedItemsData == undefined || projectData == undefined) {
     return null;
@@ -48,7 +47,7 @@ const FormProjectSummary = ({
   } = projectData;
 
   const projectVersionTotalAmount = items.reduce((prev, current) => {
-    return prev + (current.quantity * current.unit_price_cents) / 100;
+    return prev + current.quantity * Number(current.unit_price_amount);
   }, 0);
 
   const projectPreviouslyInvoicedAmount = invoicedItemsData.results.reduce(
@@ -69,7 +68,7 @@ const FormProjectSummary = ({
         <CardTitle>
           {t(
             "pages.companies.projects.invoices.completion_snapshot.form.project_summary.title"
-          )}
+          )}{" "}
         </CardTitle>
       </CardHeader>
       <CardContent>

@@ -25,7 +25,7 @@ const FormItemGroup = ({
     id: number;
     name: string;
     quantity: number;
-    unit_price_cents: number;
+    unit_price_amount: number;
     unit: string;
     original_item_uuid: string;
   }[];

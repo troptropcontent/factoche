@@ -29,7 +29,10 @@ const useProjectTotalAmount = ({
 
   return {
     projectTotalAmount: computeProjectVersionTotalAmount({
-      items: projectData.last_version.items,
+      items: projectData.last_version.items.map((item) => ({
+        ...item,
+        unit_price_amount: Number(item.unit_price_amount),
+      })),
     }),
   };
 };

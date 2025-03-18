@@ -9,7 +9,7 @@ interface FormItemGroupItemRowProps {
     name: string;
     description?: string | null;
     quantity: number;
-    unit_price_cents: number;
+    unit_price_amount: number;
     unit: string;
     original_item_uuid: string;
   };
@@ -55,7 +55,7 @@ const FormItemGroupItemRow = ({
             {item.quantity} {item.unit}
             {" @ "}
             {t("common.number_in_currency", {
-              amount: item.unit_price_cents / 100,
+              amount: item.unit_price_amount,
             })}
           </p>
         </div>

@@ -23,7 +23,7 @@ interface InvoiceFormProps {
     original_item_uuid: string;
     name: string;
     quantity: number;
-    unit_price_cents: number;
+    unit_price_amount: number;
     unit: string;
     item_group_id?: number | null;
   }>;
@@ -56,6 +56,7 @@ const InvoiceForm = ({
     [initialValues, items]
   );
 
+  console.log({ formInitialValues });
   const form = useForm<z.infer<typeof invoiceFormSchema>>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: formInitialValues,

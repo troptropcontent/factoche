@@ -1,12 +1,11 @@
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { completionSnapshotInvoiceFormSchema } from "./schemas";
+import { invoiceFormSchema } from "./schemas";
 import { z } from "zod";
 import { Api } from "@/lib/openapi-fetch-query-client";
 
 const useNewInvoiceTotalAmount = () => {
-  const formValues =
-    useWatch<z.infer<typeof completionSnapshotInvoiceFormSchema>>();
+  const formValues = useWatch<z.infer<typeof invoiceFormSchema>>();
 
   return formValues.invoice_amounts?.reduce((prev, current) => {
     const invoiceAmount = current.invoice_amount || 0;
@@ -23,13 +22,13 @@ const useCompletionSnapshotInvoiceItemRow = ({
     name: string;
     description?: string | null;
     quantity: number;
-    unit_price_cents: number;
+    unit_price_amount: number;
     unit: string;
     original_item_uuid: string;
   };
   projectId: number;
 }) => {
-  const rowTotal = (item.quantity * item.unit_price_cents) / 100;
+  const rowTotal = item.quantity * item.unit_price_amount;
   const { data: previouslyInvoicedAmount } = Api.useQuery(
     "get",
     "/api/v1/organization/projects/{id}/invoiced_items",
@@ -52,7 +51,7 @@ const useCompletionSnapshotInvoiceItemRow = ({
     watch,
     formState: { defaultValues },
     setValue,
-  } = useFormContext<z.infer<typeof completionSnapshotInvoiceFormSchema>>();
+  } = useFormContext<z.infer<typeof invoiceFormSchema>>();
 
   if (defaultValues?.invoice_amounts == undefined) {
     throw new Error(

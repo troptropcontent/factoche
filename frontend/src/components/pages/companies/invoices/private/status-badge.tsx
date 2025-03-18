@@ -14,7 +14,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const CompletionSnapshotStatusBadge = ({ status }: { status: string }) => {
+const StatusBadge = ({ status }: { status: string }) => {
   const { t } = useTranslation();
 
   return (
@@ -26,4 +26,4 @@ const CompletionSnapshotStatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-export { CompletionSnapshotStatusBadge };
+export { StatusBadge };
