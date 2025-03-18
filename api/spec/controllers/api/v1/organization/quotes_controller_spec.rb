@@ -90,4 +90,137 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       end
     end
   end
+  path "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes" do
+    post "Create a new quote for a client" do
+      tags "Quotes"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :company_id, in: :path, type: :integer
+      parameter name: :client_id, in: :path, type: :integer
+      parameter name: :body, in: :body, schema: {
+        type: :object,
+        properties: {
+          name: { type: :string },
+          description: { type: :string },
+          retention_guarantee_rate: { type: :number },
+          items: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                group_uuid: { type: :string },
+                name: { type: :string },
+                description: { type: :string },
+                quantity: { type: :integer },
+                unit: { type: :string },
+                unit_price_amount: { type: :number },
+                position: { type: :integer },
+                tax_rate: { type: :number }
+              },
+              required: [ "name", "quantity", "unit", "unit_price_amount", "position", "tax_rate" ]
+            }
+          },
+          groups: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                uuid: { type: :string },
+                name: { type: :string },
+                description: { type: :string },
+                position: { type: :integer }
+              },
+              required: [ "uuid", "name", "position" ]
+            }
+          }
+        },
+        required: [ "name", "retention_guarantee_rate", "items" ]
+      }
+
+      let(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:company_id) { company.id }
+      let(:client_id) { client.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:body) do
+        {
+          name: "New Quote",
+          description: "Description of the new quote",
+          retention_guarantee_rate: 0.05,
+          groups: [
+            { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
+          ],
+          items: [
+            {
+              group_uuid: "group-1",
+              name: "Item 1",
+              description: "First item",
+              position: 0,
+              unit: "unit",
+              unit_price_amount: 100.0,
+              quantity: 1,
+              tax_rate: 0.2
+            }
+          ]
+        }
+      end
+
+      include_context 'a company with a project with three item groups'
+
+      response "201", "quote created" do
+        schema Organization::Projects::Quotes::ShowDto.to_schema
+        run_test! do
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response.dig("result", "name")).to eq("New Quote")
+        end
+      end
+
+      response "422", "unprocessable entity" do
+        let(:body) { { name: "" } } # Invalid params
+
+        run_test! do
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response["error"]).to be_present
+        end
+      end
+
+      response "404", "client not found" do
+        context "when the user is not a member of the company" do
+          let(:company_id) { FactoryBot.create(:company).id }
+
+          run_test! do
+            expect(response.body).to include("Resource not found")
+          end
+        end
+
+        context "when the client is not one of the comapny's client" do
+          let(:another_company) { FactoryBot.create(:company) }
+          let(:client_id) { FactoryBot.create(:client, company: another_company).id }
+
+          run_test! do
+            expect(response.body).to include("Resource not found")
+          end
+        end
+
+        context "when the company does not exists" do
+          let(:company_id) { -1 }
+
+          run_test! do
+            expect(response.body).to include("Resource not found")
+          end
+        end
+
+        context "when the client does not exists" do
+          let(:client_id) { -1 }
+
+          run_test! do
+            expect(response.body).to include("Resource not found")
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+  end
 end

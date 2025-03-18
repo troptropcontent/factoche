@@ -26,7 +26,9 @@ Rails.application.routes.draw do
       end
       namespace :organization do
         resources :companies, only: [ :index, :show ] do
-          resources :clients, only: [ :create, :index ]
+          resources :clients, only: [ :create, :index ] do
+            resources :quotes, only: [ :create ]
+          end
           resources :projects, only: [ :create, :index, :show ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
             resources :completion_snapshots, only: [ :create ]
@@ -68,7 +70,6 @@ Rails.application.routes.draw do
         end
         resources :prints, only: [ :show ]
         resources :quotes, only: [ :show ]
-        resources :orders, only: [ :show ]
       end
     end
   end

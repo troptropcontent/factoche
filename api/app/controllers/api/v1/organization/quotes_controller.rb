@@ -13,6 +13,43 @@ module Api
           quote = policy_scope(::Organization::Project).where(type: "Organization::Quote").find(params[:id])
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: quote }).to_json
         end
+
+        # POST    /api/v1/organization/companies/:company_id/clients/:client_id/quotes
+        def create
+          company = policy_scope(::Organization::Company).find(params[:company_id])
+          client = company.clients.find(params[:client_id])
+
+          result = ::Organization::Quotes::Create.call(client.id, quote_params.to_h)
+          raise result.error if result.failure?
+
+          render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json, status: :created
+        end
+
+        private
+
+        def quote_params
+          params.require(:quote).permit(
+            :name,
+            :description,
+            :retention_guarantee_rate,
+            items: [
+              :group_uuid,
+              :name,
+              :description,
+              :quantity,
+              :unit,
+              :unit_price_amount,
+              :position,
+              :tax_rate
+            ],
+            groups: [
+              :uuid,
+              :name,
+              :description,
+              :position
+            ]
+          )
+        end
       end
     end
   end
