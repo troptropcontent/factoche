@@ -50,6 +50,7 @@ RSpec.describe Api::V1::Organization::OrdersController, type: :request do
       end
     end
   end
+
   path "/api/v1/organization/orders/{id}" do
     get "Show order details" do
       tags "Orders"

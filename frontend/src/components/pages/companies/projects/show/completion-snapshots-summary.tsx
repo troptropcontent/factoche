@@ -42,7 +42,7 @@ const CompletionSnapshotsSummery = ({
 
   const handleRowClick = (snapshotId: number) =>
     navigate({
-      to: "/companies/$companyId/projects/$projectId/completion_snapshots/$completionSnapshotId",
+      to: "/companies/$companyId/orders/$orderId/completion_snapshots/$completionSnapshotId",
       params: {
         companyId: companyId.toString(),
         completionSnapshotId: snapshotId.toString(),
@@ -131,7 +131,7 @@ const CompletionSnapshotsSummery = ({
             )}
             onAction={() => {
               navigate({
-                to: "/companies/$companyId/projects/$projectId/completion_snapshots/new",
+                to: "/companies/$companyId/orders/$orderId/completion_snapshots/new",
                 params: {
                   companyId: companyId.toString(),
                   projectId: projectId.toString(),

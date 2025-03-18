@@ -69,6 +69,7 @@ Rails.application.routes.draw do
           end
         end
         resources :prints, only: [ :show ]
+        resources :orders, only: [ :show ]
         resources :quotes, only: [ :show ] do
           member do
             post "convert_to_order"

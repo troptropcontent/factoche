@@ -15,7 +15,7 @@ const useNewInvoiceTotalAmount = () => {
 
 const useCompletionSnapshotInvoiceItemRow = ({
   item,
-  projectId,
+  orderId,
 }: {
   item: {
     id: number;
@@ -26,14 +26,14 @@ const useCompletionSnapshotInvoiceItemRow = ({
     unit: string;
     original_item_uuid: string;
   };
-  projectId: number;
+  orderId: number;
 }) => {
   const rowTotal = item.quantity * item.unit_price_amount;
   const { data: previouslyInvoicedAmount } = Api.useQuery(
     "get",
     "/api/v1/organization/projects/{id}/invoiced_items",
     {
-      params: { path: { id: projectId } },
+      params: { path: { id: orderId } },
     },
     {
       select: ({ results }) => {

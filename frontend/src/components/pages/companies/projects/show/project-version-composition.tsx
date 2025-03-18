@@ -10,10 +10,10 @@ import { VersionSelect } from "./version-select";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ProjectVersionComposition = ({
-  routeParams: { companyId, projectId },
+  routeParams: { companyId, orderId },
   initialVersionId,
 }: {
-  routeParams: { companyId: number; projectId: number };
+  routeParams: { companyId: number; orderId: number };
   initialVersionId: number;
 }) => {
   const [currentVersionId, setCurrentVersionId] = useState(initialVersionId);
@@ -24,7 +24,7 @@ const ProjectVersionComposition = ({
       params: {
         path: {
           company_id: companyId,
-          project_id: projectId,
+          project_id: orderId,
           id: currentVersionId,
         },
       },
@@ -41,7 +41,7 @@ const ProjectVersionComposition = ({
           params: {
             path: {
               company_id: companyId,
-              project_id: projectId,
+              project_id: orderId,
               id: Number.parseInt(value, 10),
             },
           },
@@ -88,7 +88,7 @@ const ProjectVersionComposition = ({
           {t("pages.companies.projects.show.project_composition.title")}
         </CardTitle>
         <VersionSelect
-          routeParams={{ companyId, projectId }}
+          routeParams={{ companyId, orderId }}
           onValueChange={handleVersionChange}
           versionId={currentVersionId}
         />

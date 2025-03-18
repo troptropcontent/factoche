@@ -16,7 +16,7 @@ import { FormInvoiceTotalInfo } from "./private/form-invoice-total-info";
 
 interface InvoiceFormProps {
   companyId: number;
-  projectId: number;
+  orderId: number;
   invoiceId?: number;
   items: Array<{
     id: number;
@@ -39,7 +39,7 @@ interface InvoiceFormProps {
 
 const InvoiceForm = ({
   companyId,
-  projectId,
+  orderId,
   itemGroups,
   items,
   initialValues,
@@ -105,7 +105,7 @@ const InvoiceForm = ({
           "/api/v1/organization/projects/{project_id}/invoices/{id}",
           {
             params: {
-              path: { project_id: Number(projectId), id: Number(invoiceId) },
+              path: { project_id: Number(orderId), id: Number(invoiceId) },
             },
           }
         )
@@ -117,10 +117,10 @@ const InvoiceForm = ({
         ),
       });
       navigate({
-        to: "/companies/$companyId/projects/$projectId",
+        to: "/companies/$companyId/orders/$orderId",
         params: {
           companyId: companyId.toString(),
-          projectId: projectId.toString(),
+          orderId: orderId.toString(),
         },
       });
     };
@@ -138,7 +138,7 @@ const InvoiceForm = ({
     if (invoiceId) {
       updateNewInvoice(
         {
-          params: { path: { project_id: projectId, id: invoiceId } },
+          params: { path: { project_id: orderId, id: invoiceId } },
           body,
         },
         mutationOptions
@@ -146,7 +146,7 @@ const InvoiceForm = ({
     } else {
       createNewInvoice(
         {
-          params: { path: { project_id: projectId } },
+          params: { path: { project_id: orderId } },
           body,
         },
         mutationOptions
@@ -168,7 +168,7 @@ const InvoiceForm = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col flex-grow gap-4"
       >
-        <FormProjectSummary companyId={companyId} projectId={projectId} />
+        <FormProjectSummary orderId={orderId} />
         {itemGroups.map((itemGroup) => (
           <FormItemGroup
             group={itemGroup}
@@ -176,7 +176,7 @@ const InvoiceForm = ({
               ({ item_group_id }) => item_group_id === itemGroup.id
             )}
             key={itemGroup.id}
-            projectId={projectId}
+            orderId={orderId}
           />
         ))}
         <div className="flex justify-between">

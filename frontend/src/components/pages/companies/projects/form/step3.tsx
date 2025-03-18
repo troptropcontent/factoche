@@ -59,8 +59,8 @@ const Step3 = ({
       {
         onSuccess: ({ id }) =>
           navigate({
-            to: "/companies/$companyId/projects/$projectId",
-            params: { companyId: companyId, projectId: id.toString() },
+            to: "/companies/$companyId/orders/$orderId",
+            params: { companyId: companyId, orderId: id.toString() },
           }),
       }
     );

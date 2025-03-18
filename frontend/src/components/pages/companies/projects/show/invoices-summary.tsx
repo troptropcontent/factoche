@@ -25,17 +25,17 @@ import { StatusBadge } from "../../invoices/private/status-badge";
 
 const InvoicesSummary = ({
   companyId,
-  projectId,
+  orderId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
 }) => {
   const { data: projectInvoices } = Api.useQuery(
     "get",
     "/api/v1/organization/projects/{project_id}/invoices",
     {
       params: {
-        path: { project_id: projectId },
+        path: { project_id: orderId },
         query: { status: ["cancelled", "draft", "posted"] },
       },
     },
@@ -51,11 +51,11 @@ const InvoicesSummary = ({
     invoice: NonNullable<typeof projectInvoices>[number]
   ) => {
     navigate({
-      to: "/companies/$companyId/projects/$projectId/invoices/$invoiceId",
+      to: "/companies/$companyId/orders/$orderId/invoices/$invoiceId",
       params: {
         companyId: companyId.toString(),
         invoiceId: invoice.id.toString(),
-        projectId: projectId.toString(),
+        orderId: orderId.toString(),
       },
     });
   };
@@ -148,10 +148,10 @@ const InvoicesSummary = ({
             )}
             onAction={() => {
               navigate({
-                to: "/companies/$companyId/projects/$projectId/invoices/new",
+                to: "/companies/$companyId/orders/$orderId/invoices/new",
                 params: {
                   companyId: companyId.toString(),
-                  projectId: projectId.toString(),
+                  orderId: orderId.toString(),
                 },
               });
             }}
@@ -161,7 +161,7 @@ const InvoicesSummary = ({
       </CardContent>
       {projectInvoices.length > 0 && (
         <CardFooter>
-          <NewCompletionSnapshotButton {...{ companyId, projectId }} />
+          <NewCompletionSnapshotButton {...{ companyId, orderId }} />
         </CardFooter>
       )}
     </Card>

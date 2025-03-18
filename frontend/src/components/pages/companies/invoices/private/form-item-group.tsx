@@ -18,7 +18,7 @@ import { FormItemGroupItemRow } from "./form-item-group-item-row";
 const FormItemGroup = ({
   group,
   items,
-  projectId,
+  orderId,
 }: {
   group: { name: string; id: number; description?: string | null };
   items: {
@@ -29,7 +29,7 @@ const FormItemGroup = ({
     unit: string;
     original_item_uuid: string;
   }[];
-  projectId: number;
+  orderId: number;
 }) => {
   const { t } = useTranslation();
 
@@ -74,7 +74,7 @@ const FormItemGroup = ({
             {items.map((item) => (
               <FormItemGroupItemRow
                 item={item}
-                projectId={projectId}
+                orderId={orderId}
                 key={item.id}
               />
             ))}

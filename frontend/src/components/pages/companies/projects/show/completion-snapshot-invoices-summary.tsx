@@ -42,7 +42,7 @@ const CompletionSnapshotInvoicesSummery = ({
     invoice: NonNullable<typeof projectInvoices>[number]
   ) => {
     navigate({
-      to: "/companies/$companyId/projects/$projectId/invoices/$invoiceId",
+      to: "/companies/$companyId/orders/$orderId/invoices/$invoiceId",
       params: {
         companyId: companyId.toString(),
         invoiceId: invoice.id.toString(),
@@ -139,7 +139,7 @@ const CompletionSnapshotInvoicesSummery = ({
             )}
             onAction={() => {
               navigate({
-                to: "/companies/$companyId/projects/$projectId/invoices/completion_snapshots/new",
+                to: "/companies/$companyId/orders/$orderId/invoices/completion_snapshots/new",
                 params: {
                   companyId: companyId.toString(),
                   projectId: projectId.toString(),

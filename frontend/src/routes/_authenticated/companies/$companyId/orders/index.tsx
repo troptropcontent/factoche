@@ -17,7 +17,7 @@ import { PlusCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_authenticated/companies/$companyId/projects/"
+  "/_authenticated/companies/$companyId/orders/"
 )({
   component: RouteComponent,
 });
@@ -40,16 +40,17 @@ const getStatusColor = (status: string) => {
 function RouteComponent() {
   const { companyId } = Route.useParams();
   const { t } = useTranslation();
-  const { data: { results: projects } = { results: [] } } = Api.useQuery(
+  const { data: orders = [] } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects",
-    { params: { path: { company_id: Number(companyId) } } }
+    "/api/v1/organization/companies/{company_id}/orders",
+    { params: { path: { company_id: Number(companyId) } } },
+    { select: ({ results }) => results }
   );
   const navigate = useNavigate();
-  const handleRowClick = (projectId: number) => {
+  const handleRowClick = (orderId: number) => {
     navigate({
-      to: "/companies/$companyId/projects/$projectId",
-      params: { companyId: companyId, projectId: projectId.toString() },
+      to: "/companies/$companyId/orders/$orderId",
+      params: { companyId: companyId, orderId: orderId.toString() },
     });
   };
 
@@ -62,7 +63,7 @@ function RouteComponent() {
           </h1>
           <Button asChild>
             <Link
-              to={`/companies/$companyId/projects/new`}
+              to={`/companies/$companyId/orders/new`}
               params={{ companyId }}
             >
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -112,44 +113,44 @@ function RouteComponent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projects.map((project) => (
+              {orders.map((order) => (
                 <TableRow
-                  key={project.id}
-                  onClick={() => handleRowClick(project.id)}
+                  key={order.id}
+                  onClick={() => handleRowClick(order.id)}
                   className="cursor-pointer hover:bg-gray-100 transition-colors"
                   role="link"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      handleRowClick(project.id);
+                      handleRowClick(order.id);
                     }
                   }}
                 >
-                  <TableCell className="font-medium">{project.name}</TableCell>
+                  <TableCell className="font-medium">{order.name}</TableCell>
                   <TableCell>
                     <Badge
-                      className={`${getStatusColor(project.status)} text-white`}
+                      className={`${getStatusColor(order.status)} text-white`}
                     >
-                      {project.status}
+                      {order.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{project.client.name}</TableCell>
+                  <TableCell>{order.client.name}</TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {
-                      amount: parseFloat(project.last_version.total_amount),
+                      amount: parseFloat(order.last_version.total_amount),
                     })}
                   </TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {
-                      amount: parseFloat(project.invoiced_amount),
+                      amount: parseFloat(order.invoiced_amount),
                     })}
                   </TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {
                       amount:
-                        parseFloat(project.last_version.total_amount) -
-                        parseFloat(project.invoiced_amount),
+                        parseFloat(order.last_version.total_amount) -
+                        parseFloat(order.invoiced_amount),
                     })}
                   </TableCell>
                 </TableRow>

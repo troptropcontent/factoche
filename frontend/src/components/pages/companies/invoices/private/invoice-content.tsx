@@ -43,18 +43,15 @@ const LoadedContent = ({
 };
 
 const InvoiceContent = ({
-  companyId,
-  projectId,
+  orderId,
   invoiceId,
 }: {
-  companyId: number;
-  projectId: number;
+  orderId: number;
   invoiceId: number;
 }) => {
   const { invoiceContentData } = useInvoiceContentData({
-    companyId,
     invoiceId,
-    projectId,
+    orderId,
   });
   const { t } = useTranslation();
 

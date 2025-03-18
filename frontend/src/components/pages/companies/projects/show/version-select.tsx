@@ -10,11 +10,11 @@ import { Api } from "@/lib/openapi-fetch-query-client";
 import { useTranslation } from "react-i18next";
 
 const VersionSelect = ({
-  routeParams: { companyId, projectId },
+  routeParams: { companyId, orderId },
   versionId,
   onValueChange,
 }: {
-  routeParams: { companyId: number; projectId: number };
+  routeParams: { companyId: number; orderId: number };
   versionId: number;
   onValueChange: (value: string) => void;
 }) => {
@@ -24,7 +24,7 @@ const VersionSelect = ({
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions",
     {
       params: {
-        path: { company_id: companyId, project_id: projectId },
+        path: { company_id: companyId, project_id: orderId },
       },
     }
   );
