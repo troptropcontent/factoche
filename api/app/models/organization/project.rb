@@ -7,7 +7,7 @@ class Organization::Project < ApplicationRecord
   has_one :last_version, -> { order(created_at: :desc) }, class_name: "Organization::ProjectVersion"
   accepts_nested_attributes_for :versions
 
-  validates :name, presence: true, uniqueness: { scope: :client_id }
+  validates :name, presence: true, uniqueness: { scope: [ :client_id, :type ] }
 
   def status
     # TODO : Implement the logic
