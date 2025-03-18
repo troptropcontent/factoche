@@ -223,4 +223,49 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
+  path "/api/v1/organization/quotes/{id}/convert_to_order" do
+    post "Convert a quote to an order" do
+      tags "Quotes"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :id, in: :path, type: :integer
+
+      let(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:quote) { FactoryBot.create(:quote, client: client) }
+      let(:id) { quote.id }
+
+      include_context 'a company with a project with three item groups'
+
+      response "201", "quote converted to order" do
+        schema Organization::Projects::Orders::ShowDto.to_schema
+        run_test! do
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response.dig("result", "original_quote_version_id")).to eq(quote.last_version.id)
+        end
+      end
+
+      response "404", "quote not found" do
+        let(:id) { -1 } # Non-existent quote ID
+
+        run_test! do
+          expect(response.body).to include("Resource not found")
+        end
+      end
+
+      response "422", "unprocessable entity" do
+        before do
+          allow(::Organization::Quotes::ConvertToOrder).to receive(:call).and_return(ServiceResult.failure("Conversion failed"))
+        end
+
+        run_test! do
+          expect(response.body).to include("Conversion failed")
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+  end
 end

@@ -69,7 +69,11 @@ Rails.application.routes.draw do
           end
         end
         resources :prints, only: [ :show ]
-        resources :quotes, only: [ :show ]
+        resources :quotes, only: [ :show ] do
+          member do
+            post "convert_to_order"
+          end
+        end
       end
     end
   end
