@@ -287,7 +287,7 @@ RSpec.describe Api::V1::Organization::ProjectsController, type: :request do
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       response "200", "list company's projects" do
-        schema Organization::ProjectShowResponseDto.to_schema
+        schema Organization::Projects::ShowDto.to_schema
         run_test! {
           parsed_response = JSON.parse(response.body)
 

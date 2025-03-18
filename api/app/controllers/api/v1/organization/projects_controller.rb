@@ -5,7 +5,7 @@ class Api::V1::Organization::ProjectsController < Api::V1::ApiV1Controller
   def show
     project = policy_scope(Organization::Project).includes(:client, last_version: [ :ungrouped_items, item_groups: :grouped_items ]).find(params[:id])
 
-    render json: Organization::ProjectShowResponseDto.new({ result: project }).to_json
+    render json: Organization::Projects::ShowDto.new({ result: project }).to_json
   end
 
   # GET /api/v1/organization/companies/:company_id/projects

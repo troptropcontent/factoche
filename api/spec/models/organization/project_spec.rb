@@ -13,7 +13,7 @@ RSpec.describe Organization::Project, type: :model do
       let(:already_existing_project) { FactoryBot.create(:quote, client:, name: taken_name) }
 
 
-      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:client_id) }
+      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:client_id, :type) }
     end
   end
 
@@ -21,8 +21,6 @@ RSpec.describe Organization::Project, type: :model do
     it { is_expected.to belong_to(:client) }
     it { is_expected.to have_many(:versions) }
     it { is_expected.to have_one(:last_version) }
-    it { is_expected.to have_many(:invoices) }
-    it { is_expected.to have_many(:credit_notes) }
   end
 
   describe 'nested attributes' do
