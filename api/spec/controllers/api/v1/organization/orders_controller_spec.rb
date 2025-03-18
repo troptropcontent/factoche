@@ -50,4 +50,44 @@ RSpec.describe Api::V1::Organization::OrdersController, type: :request do
       end
     end
   end
+  path "/api/v1/organization/orders/{id}" do
+    get "Show order details" do
+      tags "Orders"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+      parameter name: :id, in: :path, type: :integer
+
+      let(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+      include_context 'a company with a project with three item groups'
+
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let(:id) { project.id }
+
+      response "200", "show order details" do
+        schema Organization::Projects::Orders::ShowDto.to_schema
+        run_test! {
+          parsed_response = JSON.parse(response.body)
+          expect(parsed_response.dig("result", "id")).to eq(project.id)
+        }
+      end
+
+      response "404", "order not found" do
+        context "when the user is not a member of the company" do
+          let(:another_user) { FactoryBot.create(:user) }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
+
+          run_test!
+        end
+
+        context "when the order does not exist" do
+          let(:id) { 123123123123123123123123 }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+          run_test!
+        end
+      end
+    end
+  end
 end
