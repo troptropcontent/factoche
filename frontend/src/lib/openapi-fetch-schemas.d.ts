@@ -858,6 +858,93 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the company's quotes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's orders */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show order details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show order details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description order not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
         parameters: {
             query?: never;
@@ -1111,7 +1198,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            result: components["schemas"]["Organization::ProjectShowResponseProjectDto"];
+                            result: components["schemas"]["Organization::Projects::ExtendedDto"];
                         };
                     };
                 };
@@ -1193,6 +1280,240 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the company's quotes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's projects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/quotes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show quote details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show quote details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description quote not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new quote for a client */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    client_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        description?: string;
+                        retention_guarantee_rate: number;
+                        items: {
+                            group_uuid?: string;
+                            name: string;
+                            description?: string;
+                            quantity: number;
+                            unit: string;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        groups?: {
+                            uuid: string;
+                            name: string;
+                            description?: string;
+                            position: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description quote created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description client not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/quotes/{id}/convert_to_order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Convert a quote to an order */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description quote converted to order */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description quote not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1264,279 +1585,6 @@ export interface components {
         };
         "Organization::Clients::ShowDto": {
             result: components["schemas"]["Organization::Clients::ExtendedDto"];
-        };
-        "Organization::CompletionSnapshotDtoItemDto": {
-            /** Format: decimal */
-            completion_percentage: string;
-            item_id: number;
-        };
-        "Organization::CompletionSnapshotDto": {
-            id: number;
-            /** Format: date-time */
-            created_at: string;
-            project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            description?: string | null;
-            /** @enum {string} */
-            status: "draft" | "cancelled" | "published";
-        };
-        "Organization::ProjectVersions::CompactDto": {
-            id: number;
-            number: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: decimal */
-            retention_guarantee_rate: string;
-            /** Format: decimal */
-            total_amount: string;
-        };
-        "Organization::CompletionSnapshotIndexRequestDto": {
-            company_id?: number | null;
-            project_id?: number | null;
-            project_version_id?: number | null;
-        };
-        "Organization::CompletionSnapshotIndexResponseDto": {
-            results: components["schemas"]["Organization::CompletionSnapshotDto"][];
-        };
-        "Organization::CompletionSnapshotItems::ExtendedDto": {
-            /** Format: decimal */
-            completion_percentage: string;
-            item_id: number;
-        };
-        "Organization::CompletionSnapshots::CompactDto": {
-            id: number;
-            description?: string | null;
-            /** @enum {string} */
-            status: "draft" | "cancelled" | "published";
-            project_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** Format: date-time */
-            created_at: string;
-        };
-        "Organization::CompletionSnapshots::ExtendedDto": {
-            id: number;
-            /** @enum {string} */
-            status: "draft" | "cancelled" | "published";
-            project_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshotItems::ExtendedDto"][];
-            invoice: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            /** Format: date-time */
-            created_at: string;
-        };
-        "Organization::ProjectVersions::ExtendedDto": {
-            id: number;
-            number: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: decimal */
-            retention_guarantee_rate: string;
-            ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
-            item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
-            items: components["schemas"]["Organization::Items::ExtendedDto"][];
-        };
-        "Organization::Items::ExtendedDto": {
-            id: number;
-            original_item_uuid: string;
-            position: number;
-            name: string;
-            description?: string | null;
-            quantity: number;
-            unit: string;
-            /** Format: decimal */
-            unit_price_amount: string;
-            item_group_id?: number | null;
-        };
-        "Organization::ItemGroups::ExtendedDto": {
-            id: number;
-            position: number;
-            name: string;
-            description?: string | null;
-            grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
-        };
-        "Organization::Invoices::BaseExtendedDto::Line": {
-            holder_id: string;
-            /** Format: decimal */
-            excl_tax_amount: string;
-        };
-        "Organization::Invoices::BaseExtendedDto::Detail": {
-            /** Format: date-time */
-            delivery_date: string;
-            seller_name: string;
-            seller_registration_number: string;
-            seller_address_zipcode: string;
-            seller_address_street: string;
-            seller_address_city: string;
-            seller_vat_number: string;
-            seller_phone: string;
-            seller_email: string;
-            client_name: string;
-            client_registration_number: string;
-            client_address_zipcode: string;
-            client_address_street: string;
-            client_address_city: string;
-            client_vat_number: string;
-            client_phone: string;
-            client_email: string;
-            delivery_name: string;
-            delivery_registration_number: string;
-            delivery_address_zipcode: string;
-            delivery_address_street: string;
-            delivery_address_city: string;
-            delivery_phone: string;
-            delivery_email: string;
-            purchase_order_number: string;
-            /** Format: date-time */
-            due_date: string;
-        };
-        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
-            original_item_uuid: string;
-            group_id: number;
-            name: string;
-            description?: string | null;
-            quantity: number;
-            unit: string;
-            /** Format: decimal */
-            unit_price_amount: string;
-            /** Format: decimal */
-            tax_rate: string;
-            /** Format: decimal */
-            previously_billed_amount: string;
-        };
-        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup": {
-            id: number;
-            name: string;
-            description?: string | null;
-        };
-        "Organization::Invoices::BaseExtendedDto::Context": {
-            /** Format: decimal */
-            project_version_retention_guarantee_rate: string;
-            project_version_number: number;
-            project_version_date: string;
-            /** Format: decimal */
-            project_total_amount: string;
-            /** Format: decimal */
-            project_total_previously_billed_amount: string;
-            project_version_items: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"][];
-            project_version_item_groups: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"][];
-        };
-        "Organization::Invoices::BaseExtendedDto": {
-            id: number;
-            /** @enum {string} */
-            status: "draft" | "posted" | "cancelled" | "voided";
-            number?: string | null;
-            /** Format: date-time */
-            updated_at: string;
-            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
-            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
-            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
-            pdf_url?: string | null;
-        };
-        "Organization::Invoices::ExtendedDto": {
-            id: number;
-            /** @enum {string} */
-            status: "draft" | "posted" | "cancelled" | "voided";
-            number?: string | null;
-            /** Format: date-time */
-            updated_at: string;
-            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
-            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
-            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
-            pdf_url?: string | null;
-            credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
-        };
-        "Organization::CompletionSnapshots::IndexDto": {
-            results: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectVersion": {
-            /** Format: date-time */
-            date: string;
-            number: number;
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectContext": {
-            name: string;
-            version: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectVersion"];
-            /** Format: decimal */
-            total_amount: string;
-            /** Format: decimal */
-            previously_billed_amount: string;
-            /** Format: decimal */
-            remaining_amount: string;
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Item": {
-            id: number;
-            original_item_uuid: string;
-            name: string;
-            description?: string | null;
-            item_group_id: number;
-            quantity: number;
-            unit: string;
-            /** Format: decimal */
-            unit_price_amount: string;
-            /** Format: decimal */
-            total_amount: string;
-            /** Format: decimal */
-            previously_invoiced_amount: string;
-            /** Format: decimal */
-            completion_percentage: string;
-            /** Format: decimal */
-            completion_amount: string;
-            /** Format: decimal */
-            invoice_amount: string;
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ItemGroup": {
-            id: number;
-            name: string;
-            position: number;
-            description?: string | null;
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Transaction": {
-            /** Format: decimal */
-            total_excl_tax_amount: string;
-            /** Format: decimal */
-            tax_rate: string;
-            /** Format: decimal */
-            tax_amount: string;
-            /** Format: decimal */
-            retention_guarantee_amount: string;
-            /** Format: decimal */
-            retention_guarantee_rate: string;
-            items: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Item"][];
-            item_groups: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ItemGroup"][];
-            /** Format: decimal */
-            invoice_total_amount: string;
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Payload": {
-            project_context: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::ProjectContext"];
-            transaction: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Transaction"];
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice": {
-            payload: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice::Payload"];
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot": {
-            invoice: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftInvoice"];
-        };
-        "Organization::CompletionSnapshots::NewCompletionSnapshotDataDto": {
-            result: components["schemas"]["Organization::CompletionSnapshots::NewCompletionSnapshotDataDto::DraftCompletionSnapshot"];
-        };
-        "Organization::CompletionSnapshots::PreviousDto": {
-            result?: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-        };
-        "Organization::CompletionSnapshots::ShowDto": {
-            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
-        };
-        "Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem": {
-            completion_percentage: string;
-            item_id: number;
-        };
-        "Organization::CompletionSnapshots::UpdateDto": {
-            description?: string | null;
-            completion_snapshot_items: components["schemas"]["Organization::CompletionSnapshots::UpdatableCompletionSnapshotItem"][];
-        };
-        "Organization::CreateCompletionSnapshotItemDto": {
-            completion_percentage: string;
-            item_id: number;
-        };
-        "Organization::CreateCompletionSnapshotDto": {
-            description?: string | null;
-            completion_snapshot_items: components["schemas"]["Organization::CreateCompletionSnapshotItemDto"][];
         };
         "Organization::CreateProjecItemDto": {
             name: string;
@@ -1672,25 +1720,121 @@ export interface components {
             total_amount: string;
             lines: components["schemas"]["Organization::Invoices::CompactDto::Line"][];
         };
-        "Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount": {
-            original_item_uuid: string;
+        "Organization::Invoices::BaseExtendedDto::Line": {
+            holder_id: string;
             /** Format: decimal */
-            invoice_amount: string;
+            excl_tax_amount: string;
         };
-        "Organization::Invoices::CompletionSnapshots::CreateDto": {
-            invoice_amounts: components["schemas"]["Organization::Invoices::CompletionSnapshots::CreateDto::InvoiceAmount"][];
+        "Organization::Invoices::BaseExtendedDto::Detail": {
+            /** Format: date-time */
+            delivery_date: string;
+            seller_name: string;
+            seller_registration_number: string;
+            seller_address_zipcode: string;
+            seller_address_street: string;
+            seller_address_city: string;
+            seller_vat_number: string;
+            seller_phone: string;
+            seller_email: string;
+            client_name: string;
+            client_registration_number: string;
+            client_address_zipcode: string;
+            client_address_street: string;
+            client_address_city: string;
+            client_vat_number: string;
+            client_phone: string;
+            client_email: string;
+            delivery_name: string;
+            delivery_registration_number: string;
+            delivery_address_zipcode: string;
+            delivery_address_street: string;
+            delivery_address_city: string;
+            delivery_phone: string;
+            delivery_email: string;
+            purchase_order_number: string;
+            /** Format: date-time */
+            due_date: string;
         };
-        "Organization::Invoices::CompletionSnapshots::ExtendedDto": {
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
+            original_item_uuid: string;
+            group_id: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+        };
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup": {
             id: number;
+            name: string;
+            description?: string | null;
         };
-        "Organization::Invoices::CompletionSnapshots::ShowDto": {
-            result: components["schemas"]["Organization::Invoices::CompletionSnapshots::ExtendedDto"];
+        "Organization::Invoices::BaseExtendedDto::Context": {
+            /** Format: decimal */
+            project_version_retention_guarantee_rate: string;
+            project_version_number: number;
+            project_version_date: string;
+            /** Format: decimal */
+            project_total_amount: string;
+            /** Format: decimal */
+            project_total_previously_billed_amount: string;
+            project_version_items: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"][];
+            project_version_item_groups: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"][];
+        };
+        "Organization::Invoices::BaseExtendedDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number?: string | null;
+            /** Format: date-time */
+            updated_at: string;
+            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
+            pdf_url?: string | null;
+        };
+        "Organization::Invoices::ExtendedDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number?: string | null;
+            /** Format: date-time */
+            updated_at: string;
+            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
+            pdf_url?: string | null;
+            credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
         };
         "Organization::Invoices::IndexDto": {
             results: components["schemas"]["Organization::Invoices::CompactDto"][];
         };
         "Organization::Invoices::ShowDto": {
             result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+        };
+        "Organization::ItemGroups::ExtendedDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
+        "Organization::Items::ExtendedDto": {
+            id: number;
+            original_item_uuid: string;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            item_group_id?: number | null;
         };
         "Organization::ProjectDtoItemDto": {
             id: number;
@@ -1721,71 +1865,6 @@ export interface components {
             description?: string | null;
             client_id: number;
             versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
-        };
-        "Organization::ProjectIndexResponseProjectClientDto": {
-            id: number;
-            name: string;
-        };
-        "Organization::ProjectIndexResponseProjectDto": {
-            id: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::ProjectIndexResponseProjectClientDto"];
-            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-        };
-        "Organization::ProjectIndexResponseDto": {
-            results: components["schemas"]["Organization::ProjectIndexResponseProjectDto"][];
-        };
-        "Organization::ProjectShowResponseProjectClientDto": {
-            id: number;
-            name: string;
-            email: string;
-            phone: string;
-        };
-        "Organization::ProjectShowResponseProjectItemDto": {
-            id: number;
-            original_item_uuid: string;
-            position: number;
-            name: string;
-            description?: string | null;
-            quantity: number;
-            unit: string;
-            /** Format: decimal */
-            unit_price_amount: string;
-        };
-        "Organization::ProjectShowResponseProjectItemGroupDto": {
-            id: number;
-            position: number;
-            name: string;
-            description?: string | null;
-            grouped_items: components["schemas"]["Organization::ProjectShowResponseProjectItemDto"][];
-        };
-        "Organization::ProjectShowResponseProjectLastVersionDto": {
-            id: number;
-            number: number;
-            /** Format: decimal */
-            total_amount: string;
-            /** Format: date-time */
-            created_at: string;
-            completion_snapshots: components["schemas"]["Organization::CompletionSnapshots::CompactDto"][];
-            ungrouped_items: components["schemas"]["Organization::ProjectShowResponseProjectItemDto"][];
-            item_groups: components["schemas"]["Organization::ProjectShowResponseProjectItemGroupDto"][];
-        };
-        "Organization::ProjectShowResponseProjectDto": {
-            id: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::ProjectShowResponseProjectClientDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-            /** Format: decimal */
-            invoiced_amount: string;
-            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-        };
-        "Organization::ProjectShowResponseDto": {
-            result: components["schemas"]["Organization::ProjectShowResponseProjectDto"];
         };
         "Organization::ProjectVersionIndexResponseProjectDto": {
             id: number;
@@ -1827,8 +1906,47 @@ export interface components {
         "Organization::ProjectVersionShowResponseDto": {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
         };
+        "Organization::ProjectVersions::CompactDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_amount: string;
+        };
+        "Organization::ProjectVersions::ExtendedDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+            item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+            items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+        };
+        "Organization::Projects::BaseCompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::BaseExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
         "Organization::Projects::CompactDto": {
             id: number;
@@ -1838,6 +1956,17 @@ export interface components {
             /** Format: decimal */
             invoiced_amount: string;
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::ExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            /** Format: decimal */
+            invoiced_amount: string;
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             /** @enum {string} */
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
@@ -1852,8 +1981,61 @@ export interface components {
         "Organization::Projects::InvoicedItemsDto": {
             results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
         };
-        "Organization::ShowCompletionSnapshotResponseDto": {
-            result: components["schemas"]["Organization::CompletionSnapshots::ExtendedDto"];
+        "Organization::Projects::Orders::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
+        "Organization::Projects::Orders::ExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            original_quote_version_id: number;
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
+        "Organization::Projects::Orders::IndexDto": {
+            results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
+        };
+        "Organization::Projects::Orders::ShowDto": {
+            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+        };
+        "Organization::Projects::Quotes::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::Quotes::ExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::Quotes::IndexDto": {
+            results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
+        };
+        "Organization::Projects::Quotes::ShowDto": {
+            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+        };
+        "Organization::Projects::ShowDto": {
+            result: components["schemas"]["Organization::Projects::ExtendedDto"];
         };
         QueryParamsDto: {
             limit?: number | null;
