@@ -21,10 +21,10 @@ const VersionSelect = ({
   const { t } = useTranslation();
   const { data: { results: versions } = { results: [] } } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions",
+    "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions",
     {
       params: {
-        path: { company_id: companyId, project_id: orderId },
+        path: { company_id: companyId, order_id: orderId },
       },
     }
   );

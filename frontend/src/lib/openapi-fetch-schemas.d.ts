@@ -999,27 +999,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
+    "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List all the project's versions */
+        /** List all the order's versions */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
                     company_id: number;
-                    project_id: number;
+                    order_id: number;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description list company's projects */
+                /** @description list company's orders */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1054,28 +1054,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}": {
+    "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Show the project version details */
+        /** Show the order version details */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
                     company_id: number;
-                    project_id: number;
+                    order_id: number;
                     id: number;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description show project version details */
+                /** @description show order version details */
                 200: {
                     headers: {
                         [name: string]: unknown;
