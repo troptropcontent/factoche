@@ -3,12 +3,12 @@ require 'swagger_helper'
 require_relative "shared_examples/an_authenticated_endpoint"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
 RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
-  path '/api/v1/organization/projects/{project_id}/invoices' do
-    get 'Lists invoices for a project' do
+  path '/api/v1/organization/orders/{order_id}/invoices' do
+    get 'Lists invoices for an order' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
       produces 'application/json'
-      parameter name: :project_id, in: :path, type: :integer
+      parameter name: :order_id, in: :path, type: :integer
       parameter name: 'status',
           in: :query,
           schema: {
@@ -20,7 +20,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           }
 
 
-      let(:project_id) { project.id }
+      let(:order_id) { order.id }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       include_context 'a company with a project with three items'
@@ -29,19 +29,19 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
         schema Organization::Invoices::IndexDto.to_schema
 
-        context "when there is no invoices attached to the project" do
-          run_test!("it return an empty array") do
+        context "when there are no invoices attached to the order" do
+          run_test!("it returns an empty array") do
             parsed_response = JSON.parse(response.body)
             expect(parsed_response["results"]).to eq([])
           end
         end
 
-        context "when there is invoices attached to the project" do
+        context "when there are invoices attached to the order" do
          let!(:previous_invoice) {
           ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
         }
 
-          run_test!("it return the invoices") do
+          run_test!("it returns the invoices") do
             parsed_response = JSON.parse(response.body)
             expect(parsed_response.dig("results", 0)).to include({ "id"=> previous_invoice.id })
           end
@@ -57,7 +57,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
             FactoryBot.create(:invoice, :cancelled, company_id: 1, holder_id: project_version.id, number: "INV-2024-00002")
           end
 
-          run_test!("it return the filtered invoices") do
+          run_test!("it returns the filtered invoices") do
             parsed_response = JSON.parse(response.body)
             expect(parsed_response.dig("results", 0, "number")).to eq("PRO-2024-00002")
             expect(parsed_response.dig("results").length).to eq(1)
@@ -65,8 +65,8 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         end
       end
 
-      response '404', 'project not found' do
-        describe "when the project does npot belong to a company the user is a member of" do
+      response '404', 'order not found' do
+        describe "when the order does not belong to a company the user is a member of" do
           run_test!
         end
       end
@@ -80,7 +80,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       produces 'application/json'
       consumes 'application/json'
 
-      parameter name: :project_id, in: :path, type: :integer, required: true
+      parameter name: :order_id, in: :path, type: :integer, required: true
       parameter name: :body, in: :body, required: true, schema: {
         type: :object,
         required: [ :invoice_amounts ],
@@ -99,7 +99,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         }
       }
 
-      let(:project_id) { 1 }
+      let(:order_id) { 1 }
       let(:body) { }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
@@ -110,10 +110,10 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         schema Organization::Invoices::ShowDto.to_schema
         let!(:member) { FactoryBot.create(:member, user:, company:) }
 
-        let(:project_id) { project.id }
+        let(:order_id) { order.id }
         let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.5" } ] } }
 
-        it("creates a invoice, its detail and its line and returns it") do |example|
+        it("creates an invoice, its detail and its line and returns it") do |example|
           expect { submit_request(example.metadata) }.to change(Accounting::Invoice, :count).by(1)
           .and change(Accounting::FinancialTransactionDetail, :count).by(1)
           .and change(Accounting::FinancialTransactionLine, :count).by(1)
@@ -125,7 +125,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
 
       response '404', 'not_found' do
-        let(:project_id) { project.id }
+        let(:order_id) { order.id }
 
         schema ApiError.schema
 
@@ -135,17 +135,17 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       end
     end
   end
-  path '/api/v1/organization/projects/{project_id}/invoices/{id}' do
+  path '/api/v1/organization/orders/{order_id}/invoices/{id}' do
     get 'Show invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
       produces 'application/json'
-      parameter name: :project_id, in: :path, type: :integer
+      parameter name: :order_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
 
       let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
       let(:id) { invoice.id }
-      let(:project_id) { project.id }
+      let(:order_id) { order.id }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       include_context 'a company with a project with three items'
@@ -158,7 +158,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       end
 
       response '404', 'invoice not found' do
-        describe "when the project does npot belong to a company the user is a member of" do
+        describe "when the order does not belong to a company the user is a member of" do
           run_test!
         end
       end
@@ -171,7 +171,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       security [ bearerAuth: [] ]
       produces 'application/json'
       consumes 'application/json'
-      parameter name: :project_id, in: :path, type: :integer
+      parameter name: :order_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
       parameter name: :body, in: :body, required: true, schema: {
         type: :object,
@@ -195,7 +195,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
       }
       let(:id) { invoice.id }
-      let(:project_id) { project.id }
+      let(:order_id) { order.id }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "1" } ] } }
@@ -220,7 +220,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           expect(parsed_response.dig("result", "number")).to end_with("002")
         end
 
-        context "when the client have changed" do
+        context "when the client has changed" do
           before { client.update(name: "New Client Name") }
 
           it "Updates the invoice details accordingly" do |example|
@@ -236,7 +236,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       end
 
       response '404', 'invoice not found' do
-        describe "when the project does npot belong to a company the user is a member of" do
+        describe "when the order does not belong to a company the user is a member of" do
           run_test!
         end
       end
@@ -244,20 +244,20 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       response '422', 'unprocessable entity' do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
 
-        context "when the invoice is not draftf" do
+        context "when the invoice is not draft" do
           before { invoice.update(status: :posted, number: "INV-2024-00001") }
 
           run_test!
         end
 
-        context "when the invoice_amount would exceed the total amount allowed in the project for the item" do
+        context "when the invoice_amount would exceed the total amount allowed in the order for the item" do
           let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "100000" } ] } }
 
           run_test!
         end
 
-        context "when the original_item_item does not belong to the project" do
-          let(:body) { { invoice_amounts: [ { original_item_uuid: "antoher_id", invoice_amount: "1" } ] } }
+        context "when the original_item_uuid does not belong to the order" do
+          let(:body) { { invoice_amounts: [ { original_item_uuid: "another_id", invoice_amount: "1" } ] } }
 
           run_test!
         end
@@ -277,14 +277,14 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       security [ bearerAuth: [] ]
       produces 'application/json'
       consumes 'application/json'
-      parameter name: :project_id, in: :path, type: :integer
+      parameter name: :order_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
 
       let!(:invoice) {
         ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
       }
       let(:id) { invoice.id }
-      let(:project_id) { project.id }
+      let(:order_id) { order.id }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
@@ -311,7 +311,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       end
 
       response '404', 'invoice not found' do
-        describe "when the project does npot belong to a company the user is a member of" do
+        describe "when the order does not belong to a company the user is a member of" do
           run_test!
         end
       end
@@ -319,7 +319,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       response '422', 'unprocessable entity' do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
 
-        context "when the invoice is not draftf" do
+        context "when the invoice is not draft" do
           before { invoice.update(status: :posted, number: "INV-2024-00001") }
 
           run_test!
@@ -334,7 +334,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       security [ bearerAuth: [] ]
       produces 'application/json'
 
-      parameter name: :project_id, in: :path, type: :integer, required: true
+      parameter name: :order_id, in: :path, type: :integer, required: true
       parameter name: :id, in: :path, type: :integer, required: true
 
       let(:invoice) {
@@ -345,7 +345,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         }).data
       }
       let(:id) { invoice.id }
-      let(:project_id) { project.id }
+      let(:order_id) { order.id }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       include_context 'a company with a project with three items'
@@ -366,7 +366,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       response '404', 'not found' do
         schema ApiError.schema
 
-        context "when the project does not belong to a company the user is a member of" do
+        context "when the order does not belong to a company the user is a member of" do
           run_test!
         end
 
@@ -397,13 +397,13 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
     end
   end
 
-  path '/api/v1/organization/projects/{project_id}/invoices/{id}/cancel' do
+  path '/api/v1/organization/orders/{order_id}/invoices/{id}/cancel' do
     post 'Cancels an invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
       produces 'application/json'
 
-      parameter name: :project_id, in: :path, type: :integer, required: true
+      parameter name: :order_id, in: :path, type: :integer, required: true
       parameter name: :id, in: :path, type: :integer, required: true
 
       let(:invoice) {
@@ -415,7 +415,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         Accounting::Invoices::Post.call(draft.id).data
       }
       let(:id) { invoice.id }
-      let(:project_id) { project.id }
+      let(:order_id) { order.id }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       include_context 'a company with a project with three items'
@@ -437,7 +437,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       response '404', 'not found' do
         schema ApiError.schema
 
-        context "when the project does not belong to a company the user is a member of" do
+        context "when the order does not belong to a company the user is a member of" do
           run_test!
         end
 
