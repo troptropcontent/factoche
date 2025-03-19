@@ -423,15 +423,15 @@ paths:
                     - details
                 required:
                 - error
-  "/api/v1/organization/projects/{project_id}/invoices":
+  "/api/v1/organization/orders/{order_id}/invoices":
     get:
-      summary: Lists invoices for a project
+      summary: Lists invoices for an order
       tags:
       - Invoices
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -462,7 +462,7 @@ paths:
                     items:
                       "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
         '404':
-          description: project not found
+          description: order not found
         '403':
           description: forbiden
     post:
@@ -472,7 +472,7 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -541,7 +541,7 @@ paths:
                         type: string
                         format: decimal
         required: true
-  "/api/v1/organization/projects/{project_id}/invoices/{id}":
+  "/api/v1/organization/orders/{order_id}/invoices/{id}":
     get:
       summary: Show invoice
       tags:
@@ -549,7 +549,7 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -582,7 +582,7 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -639,7 +639,7 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -674,7 +674,7 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -754,7 +754,7 @@ paths:
                 - error
         '403':
           description: forbiden
-  "/api/v1/organization/projects/{project_id}/invoices/{id}/cancel":
+  "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel":
     post:
       summary: Cancels an invoice
       tags:
@@ -762,7 +762,7 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -896,6 +896,37 @@ paths:
                     "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
         '404':
           description: order not found
+  "/api/v1/organization/orders/{id}/invoiced_items":
+    get:
+      summary: invoiced amount for each item
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
+        '404':
+          description: not_found
+        '403':
+          description: forbiden
   "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
     get:
       summary: List all the project's versions
@@ -1112,7 +1143,7 @@ paths:
           description: not authorised
         '404':
           description: not found
-  "/api/v1/organization/projects/{id}/invoiced_items":
+  "/api/v1/organization/orders/{id}/invoiced_items":
     get:
       summary: invoiced amount for each item
       tags:
