@@ -38,7 +38,7 @@ export function AppSidebar() {
     },
     {
       title: "Devis",
-      url: `orders`,
+      url: `quotes`,
       icon: FileText,
     },
     {

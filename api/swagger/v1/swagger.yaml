@@ -2576,10 +2576,8 @@ components:
         status:
           type: string
           enum:
-          - new
-          - invoicing_in_progress
-          - invoiced
-          - canceled
+          - draft
+          - validated
     Organization::Projects::Quotes::IndexDto:
       type: object
       required:

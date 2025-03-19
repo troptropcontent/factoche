@@ -303,6 +303,24 @@ i18n
                                     }
                                 }
                             },
+                            "quotes": {
+                                "status": {
+                                    "draft": "Brouillon",
+                                    "validated": "Validé",
+                                },
+                                "index": {
+                                    "title": "Mes devis",
+                                    "add_quote": "Ajouter un devis",
+                                    "table": {
+                                        "columns": {
+                                            "name": "Nom",
+                                            "client": "Client",
+                                            "amount": "Montant",
+                                            "status": "Status",
+                                        }
+                                    }
+                                }
+                            },
                             "clients": {
                                 "index": {
                                     "title": "Mes clients",
