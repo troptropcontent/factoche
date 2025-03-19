@@ -1856,7 +1856,7 @@ export interface components {
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            status: "draft" | "validated";
         };
         "Organization::Projects::Quotes::IndexDto": {
             results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
