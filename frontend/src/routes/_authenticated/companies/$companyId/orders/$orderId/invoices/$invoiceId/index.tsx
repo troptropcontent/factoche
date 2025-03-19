@@ -13,10 +13,10 @@ export const Route = createFileRoute(
     queryClient.ensureQueryData(
       Api.queryOptions(
         "get",
-        "/api/v1/organization/projects/{project_id}/invoices/{id}",
+        "/api/v1/organization/orders/{order_id}/invoices/{id}",
         {
           params: {
-            path: { id: Number(invoiceId), project_id: Number(orderId) },
+            path: { id: Number(invoiceId), order_id: Number(orderId) },
           },
         }
       )

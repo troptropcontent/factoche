@@ -15,13 +15,13 @@ import {
 } from "@/components/ui/table";
 import { useTranslation } from "react-i18next";
 
-import { NewCompletionSnapshotButton } from "./new-completion-snapshot-button";
 import { useNavigate } from "@tanstack/react-router";
 import { TrafficCone } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { StatusBadge } from "../../invoices/private/status-badge";
+import { NewInvoiceButton } from "../private/new-invoice-button";
 
 const InvoicesSummary = ({
   companyId,
@@ -32,10 +32,10 @@ const InvoicesSummary = ({
 }) => {
   const { data: projectInvoices } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices",
+    "/api/v1/organization/orders/{order_id}/invoices",
     {
       params: {
-        path: { project_id: orderId },
+        path: { order_id: orderId },
         query: { status: ["cancelled", "draft", "posted"] },
       },
     },
@@ -161,7 +161,7 @@ const InvoicesSummary = ({
       </CardContent>
       {projectInvoices.length > 0 && (
         <CardFooter>
-          <NewCompletionSnapshotButton {...{ companyId, orderId }} />
+          <NewInvoiceButton {...{ companyId, orderId }} />
         </CardFooter>
       )}
     </Card>

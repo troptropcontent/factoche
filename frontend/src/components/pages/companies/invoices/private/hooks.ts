@@ -14,10 +14,10 @@ const useInvoiceContentData = ({
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: orderId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -38,7 +38,7 @@ const useInvoiceContentData = ({
 
   const { data: previouslyInvoicedAmounts } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: {
         path: { id: orderId },
@@ -134,10 +134,10 @@ const useInvoicingSummaryCardData = ({
 
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: orderId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }

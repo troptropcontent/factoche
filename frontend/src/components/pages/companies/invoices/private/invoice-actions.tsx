@@ -58,10 +58,10 @@ const DownloadInvoicePdfButton = ({
   const { t } = useTranslation();
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: orderId as number, id: invoiceId as number },
+        path: { order_id: orderId as number, id: invoiceId as number },
       },
     },
     {
@@ -105,7 +105,7 @@ const DestroyButton = ({
   const { t } = useTranslation();
   const { mutate: voidInvoiceMutation } = Api.useMutation(
     "delete",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
@@ -138,7 +138,7 @@ const DestroyButton = ({
 
     voidInvoiceMutation(
       {
-        params: { path: { id: invoiceId, project_id: orderId } },
+        params: { path: { id: invoiceId, order_id: orderId } },
       },
       {
         onSuccess,
@@ -168,7 +168,7 @@ const CancelButton = ({
   const { t } = useTranslation();
   const { mutate: cancelInvoiceMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}/cancel"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel"
   );
   const navigate = useNavigate();
 
@@ -201,7 +201,7 @@ const CancelButton = ({
 
     cancelInvoiceMutation(
       {
-        params: { path: { id: invoiceId, project_id: orderId } },
+        params: { path: { id: invoiceId, order_id: orderId } },
       },
       {
         onSuccess,
@@ -231,7 +231,7 @@ const PostButton = ({
   const { t } = useTranslation();
   const { mutate: postInvoiceMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
@@ -264,7 +264,7 @@ const PostButton = ({
 
     postInvoiceMutation(
       {
-        params: { path: { id: invoiceId, project_id: orderId } },
+        params: { path: { id: invoiceId, order_id: orderId } },
       },
       {
         onSuccess,
@@ -327,10 +327,10 @@ const CancelledInvoiceActions = ({
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: orderId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -389,10 +389,10 @@ const InvoiceActions = ({
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: orderId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }

@@ -21,7 +21,7 @@ const FormProjectSummary = ({ orderId }: { orderId: number }) => {
   );
   const { data: invoicedItemsData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: { path: { id: Number(orderId) } },
     }

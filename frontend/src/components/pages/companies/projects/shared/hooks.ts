@@ -38,7 +38,7 @@ const useProjectPreviouslyInvoicedTotalAmount = ({
 }) => {
   const { data: invoicedAmounts } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: {
         path: { id: orderId },

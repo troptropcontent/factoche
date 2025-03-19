@@ -25,7 +25,7 @@ function RouteComponent() {
 
   const { data: { results: invoicedItems } = { results: [] } } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: { path: { id: Number(orderId) } },
     }
@@ -33,10 +33,10 @@ function RouteComponent() {
 
   const { data: invoiceAmounts } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: Number(orderId), id: Number(invoiceId) },
+        path: { order_id: Number(orderId), id: Number(invoiceId) },
       },
     },
     { select: ({ result: { lines } }) => lines }

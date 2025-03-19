@@ -31,7 +31,7 @@ const useCompletionSnapshotInvoiceItemRow = ({
   const rowTotal = item.quantity * item.unit_price_amount;
   const { data: previouslyInvoicedAmount } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: { path: { id: orderId } },
     },

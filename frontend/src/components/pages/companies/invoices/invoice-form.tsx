@@ -57,6 +57,7 @@ const InvoiceForm = ({
   );
 
   console.log({ formInitialValues });
+
   const form = useForm<z.infer<typeof invoiceFormSchema>>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: formInitialValues,
@@ -68,11 +69,11 @@ const InvoiceForm = ({
 
   const { mutate: createNewInvoice } = Api.useMutation(
     "post",
-    "/api/v1/organization/projects/{project_id}/invoices"
+    "/api/v1/organization/orders/{order_id}/invoices"
   );
   const { mutate: updateNewInvoice } = Api.useMutation(
     "put",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
 
   const queryClient = useQueryClient();
@@ -102,10 +103,10 @@ const InvoiceForm = ({
       queryClient.refetchQueries(
         Api.queryOptions(
           "get",
-          "/api/v1/organization/projects/{project_id}/invoices/{id}",
+          "/api/v1/organization/orders/{order_id}/invoices/{id}",
           {
             params: {
-              path: { project_id: Number(orderId), id: Number(invoiceId) },
+              path: { order_id: Number(orderId), id: Number(invoiceId) },
             },
           }
         )
@@ -138,7 +139,7 @@ const InvoiceForm = ({
     if (invoiceId) {
       updateNewInvoice(
         {
-          params: { path: { project_id: orderId, id: invoiceId } },
+          params: { path: { order_id: orderId, id: invoiceId } },
           body,
         },
         mutationOptions
@@ -146,7 +147,7 @@ const InvoiceForm = ({
     } else {
       createNewInvoice(
         {
-          params: { path: { project_id: orderId } },
+          params: { path: { order_id: orderId } },
           body,
         },
         mutationOptions
