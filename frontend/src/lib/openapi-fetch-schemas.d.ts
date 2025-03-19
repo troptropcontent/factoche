@@ -4,188 +4,1407 @@
  */
 
 export interface paths {
-  "/api/v1/auth/login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Creates a session */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        session?: {
+                            /** @example user@example.com */
+                            email: string;
+                            /** @example password123 */
+                            password: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description session created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            access_token: string;
+                            refresh_token: string;
+                        };
+                    };
+                };
+                /** @description invalid credentials */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Creates a session */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            session?: {
-              /** @example user@example.com */
-              email: string;
-              /** @example password123 */
-              password: string;
-            };
-          };
+    "/api/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description session created */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              access_token: string;
-              refresh_token: string;
+        get?: never;
+        put?: never;
+        /** Refresh the access token */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
+            requestBody?: never;
+            responses: {
+                /** @description access token refreshed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            access_token: string;
+                        };
+                    };
+                };
+                /** @description expired token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
         };
-        /** @description invalid credentials */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists clients for a company */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description clients found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["client"][];
+                    };
+                };
+                /** @description unauthorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description company not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Creates a client for a company */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        registration_number: string;
+                        email: string;
+                        phone: string;
+                        address_street: string;
+                        address_city: string;
+                        address_zipcode: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description client created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["client"];
+                    };
+                };
+                /** @description user can not create a client within this company */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description company not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description client is invalid */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/clients/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show client */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description client's details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Clients::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists user companies */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description successfully lists user's companies */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            name: string;
+                            registration_number: string;
+                            email: string;
+                            phone: string;
+                            address_city: string;
+                            address_street: string;
+                            address_zipcode: string;
+                        }[];
+                    };
+                };
+                /** @description forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Shows a specific company */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description successfully shows the company */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: number;
+                            name: string;
+                            registration_number: string;
+                            email: string;
+                            phone: string;
+                            address_city: string;
+                            address_street: string;
+                            address_zipcode: string;
+                        };
+                    };
+                };
+                /** @description forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{order_id}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists invoices for an order */
+        get: {
+            parameters: {
+                query?: {
+                    status?: ("draft" | "posted" | "cancelled" | "voided")[];
+                };
+                header?: never;
+                path: {
+                    order_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoices found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Invoices::CompactDto"][];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description order not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /** Creates an invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    order_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        invoice_amounts: {
+                            original_item_uuid: string;
+                            /** Format: decimal */
+                            invoice_amount: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description successfully creates completion snapshot invoice */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not_found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{order_id}/invoices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show invoice */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    order_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoice found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invoice not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /** Update invoice */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    order_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        invoice_amounts: {
+                            original_item_uuid: string;
+                            /** Format: decimal */
+                            invoice_amount: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description invoice updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invoice not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /** Post invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    order_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoice posted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description invoice not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /** Voids an invoice */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    order_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoice voided */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancels an invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    order_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoice cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the company's quotes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's orders */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show order details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show order details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description order not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{id}/invoiced_items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** invoiced amount for each item */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not_found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the project's versions */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    project_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's projects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::ProjectVersionIndexResponseProjectDto"][];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show the project version details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    project_id: number;
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show project version details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description not authorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the company's quotes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's projects */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/quotes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show quote details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show quote details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description quote not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new quote for a client */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                    client_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        description?: string;
+                        retention_guarantee_rate: number;
+                        items: {
+                            group_uuid?: string;
+                            name: string;
+                            description?: string;
+                            quantity: number;
+                            unit: string;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        groups?: {
+                            uuid: string;
+                            name: string;
+                            description?: string;
+                            position: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description quote created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description client not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/quotes/{id}/convert_to_order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Convert a quote to an order */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description quote converted to order */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description quote not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
+export type webhooks = Record<string, never>;
+export interface components {
+    schemas: {
+        client: {
+            id: number;
+            name: string;
+            registration_number: string;
+            email: string;
+            phone: string;
+            address_city: string;
+            address_street: string;
+            address_zipcode: string;
+        };
+        create_project_with_item_groups: {
+            name: string;
+            description?: string;
+            client_id?: string;
+            project_versions_attributes: {
+                retention_guarantee_rate: number;
+                item_groups_attributes: {
+                    name: string;
+                    description?: string;
+                    position: number;
+                    items_attributes: {
+                        name: string;
+                        description?: string;
+                        position: number;
+                        quantity: number;
+                        unit_price_cents: number;
+                        unit: string;
+                    }[];
+                }[];
+            }[];
+        };
+        create_project_with_items: {
+            name: string;
+            client_id?: string;
+            description?: string;
+            project_versions_attributes: {
+                retention_guarantee_rate: number;
+                items_attributes: {
+                    name: string;
+                    description?: string;
+                    position: number;
+                    quantity: number;
+                    unit_price_cents: number;
+                    unit: string;
+                }[];
+            }[];
+        };
+        error: {
+            error: {
                 status: string;
                 code: number;
                 message: string;
                 details: Record<string, never>;
-              };
             };
-          };
         };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/auth/refresh": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Refresh the access token */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description access token refreshed */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              access_token: string;
-            };
-          };
-        };
-        /** @description expired token */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/clients": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Lists clients for a company */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description clients found */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["client"][];
-          };
-        };
-        /** @description unauthorised */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-        /** @description company not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-      };
-    };
-    put?: never;
-    /** Creates a client for a company */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
+        "Organization::Clients::ExtendedDto": {
+            id: number;
             name: string;
             registration_number: string;
             email: string;
@@ -193,1919 +1412,470 @@ export interface paths {
             address_street: string;
             address_city: string;
             address_zipcode: string;
-          };
         };
-      };
-      responses: {
-        /** @description client created */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["client"];
-          };
-        };
-        /** @description user can not create a client within this company */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description company not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-        /** @description client is invalid */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/clients/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Show client */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description client's details */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Clients::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Lists user companies */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description successfully lists user's companies */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              id: number;
-              name: string;
-              registration_number: string;
-              email: string;
-              phone: string;
-              address_city: string;
-              address_street: string;
-              address_zipcode: string;
-            }[];
-          };
-        };
-        /** @description forbidden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Shows a specific company */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description successfully shows the company */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              id: number;
-              name: string;
-              registration_number: string;
-              email: string;
-              phone: string;
-              address_city: string;
-              address_street: string;
-              address_zipcode: string;
-            };
-          };
-        };
-        /** @description forbidden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/orders/{order_id}/invoices": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Lists invoices for an order */
-    get: {
-      parameters: {
-        query?: {
-          status?: ("draft" | "posted" | "cancelled" | "voided")[];
-        };
-        header?: never;
-        path: {
-          order_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description invoices found */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::Invoices::CompactDto"][];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description order not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Creates an invoice */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          order_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            invoice_amounts: {
-              original_item_uuid: string;
-              /** Format: decimal */
-              invoice_amount: string;
-            }[];
-          };
-        };
-      };
-      responses: {
-        /** @description successfully creates completion snapshot invoice */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not_found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/orders/{order_id}/invoices/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Show invoice */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          order_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description invoice found */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description invoice not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Update invoice */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          order_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            invoice_amounts: {
-              original_item_uuid: string;
-              /** Format: decimal */
-              invoice_amount: string;
-            }[];
-          };
-        };
-      };
-      responses: {
-        /** @description invoice updated */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description invoice not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Post invoice */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          order_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description invoice posted */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description invoice not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    /** Voids an invoice */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          order_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description invoice voided */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Cancels an invoice */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          order_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description invoice cancelled */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              error: {
-                status: string;
-                code: number;
-                message: string;
-                details: Record<string, never>;
-              };
-            };
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/orders": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List all the company's quotes */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description list company's orders */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
-            };
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/orders/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Show order details */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description show order details */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
-            };
-          };
-        };
-        /** @description order not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/orders/{id}/invoiced_items": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** invoiced amount for each item */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description ok */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not_found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List all the project's versions */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-          project_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description list company's projects */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::ProjectVersionIndexResponseProjectDto"][];
-            };
-          };
-        };
-        /** @description not authorised */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Show the project version details */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-          project_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description show project version details */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-            };
-          };
-        };
-        /** @description not authorised */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/projects": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List all the company's project */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description list company's projects */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::Projects::CompactDto"][];
-            };
-          };
-        };
-        /** @description not authorised */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /** Creates a new project and its descendants */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
+        "Organization::Clients::ShowDto": {
+            result: components["schemas"]["Organization::Clients::ExtendedDto"];
+        };
+        "Organization::CreateProjecItemDto": {
+            name: string;
+            description?: string | null;
+            position: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            quantity: number;
+        };
+        "Organization::CreateProjectItemGroupDto": {
+            name: string;
+            description?: string | null;
+            position: number;
+            items: components["schemas"]["Organization::CreateProjecItemDto"][];
+        };
+        "Organization::CreateProjectDto": {
             name: string;
             description?: string | null;
             client_id: number;
             retention_guarantee_rate: number;
-            items:
-              | components["schemas"]["Organization::CreateProjecItemDto"][]
-              | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
-          };
+            items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
         };
-      };
-      responses: {
-        /** @description project created */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              id: number;
-              name: string;
-              description?: string | null;
-              client_id: number;
-              versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
-            };
-          };
+        "Organization::CreditNotes::ExtendedDto::DocumentInfo": {
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            original_invoice_date: string;
+            original_invoice_number: string;
         };
-        /** @description not authorised */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
+        "Organization::CreditNotes::ExtendedDto::Address": {
+            city: string;
+            street: string;
+            zip: string;
         };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["error"];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/projects/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Show the project details */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description list company's projects */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Projects::ExtendedDto"];
-            };
-          };
-        };
-        /** @description not authorised */
-        401: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/orders/{id}/invoiced_items": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** invoiced amount for each item */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description ok */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description not_found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/quotes": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** List all the company's quotes */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description list company's projects */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
-            };
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/quotes/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Show quote details */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description show quote details */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
-            };
-          };
-        };
-        /** @description quote not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Create a new quote for a client */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          company_id: number;
-          client_id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
+        "Organization::CreditNotes::ExtendedDto::Seller": {
             name: string;
-            description?: string;
-            retention_guarantee_rate: number;
-            items: {
-              group_uuid?: string;
-              name: string;
-              description?: string;
-              quantity: number;
-              unit: string;
-              unit_price_amount: number;
-              position: number;
-              tax_rate: number;
-            }[];
-            groups?: {
-              uuid: string;
-              name: string;
-              description?: string;
-              position: number;
-            }[];
-          };
+            address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
+            phone: string;
+            siret: string;
+            legal_form: string;
+            /** Format: decimal */
+            capital_amount: string;
+            vat_number: string;
+            rcs_city: string;
+            rcs_number: string;
         };
-      };
-      responses: {
-        /** @description quote created */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description client not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/v1/organization/quotes/{id}/convert_to_order": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Convert a quote to an order */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description quote converted to order */
-        201: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
-            };
-          };
-        };
-        /** @description forbiden */
-        403: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description quote not found */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-        /** @description unprocessable entity */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-}
-export type webhooks = Record<string, never>;
-export interface components {
-  schemas: {
-    client: {
-      id: number;
-      name: string;
-      registration_number: string;
-      email: string;
-      phone: string;
-      address_city: string;
-      address_street: string;
-      address_zipcode: string;
-    };
-    create_project_with_item_groups: {
-      name: string;
-      description?: string;
-      client_id?: string;
-      project_versions_attributes: {
-        retention_guarantee_rate: number;
-        item_groups_attributes: {
-          name: string;
-          description?: string;
-          position: number;
-          items_attributes: {
+        "Organization::CreditNotes::ExtendedDto::BillingAddress": {
             name: string;
-            description?: string;
-            position: number;
+            address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
+        };
+        "Organization::CreditNotes::ExtendedDto::ProjectVersion": {
+            /** Format: date-time */
+            date: string;
+            number: number;
+        };
+        "Organization::CreditNotes::ExtendedDto::ProjectContext": {
+            name: string;
+            version: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectVersion"];
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+            /** Format: decimal */
+            remaining_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Item": {
+            id: number;
+            original_item_uuid: string;
+            name: string;
+            description?: string | null;
+            item_group_id: number;
             quantity: number;
-            unit_price_cents: number;
             unit: string;
-          }[];
-        }[];
-      }[];
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            credit_note_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::ItemGroup": {
+            id: number;
+            name: string;
+            position: number;
+            description?: string | null;
+        };
+        "Organization::CreditNotes::ExtendedDto::Transaction": {
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            tax_amount: string;
+            /** Format: decimal */
+            retention_guarantee_amount: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_incl_tax_amount: string;
+            items: components["schemas"]["Organization::CreditNotes::ExtendedDto::Item"][];
+            item_groups: components["schemas"]["Organization::CreditNotes::ExtendedDto::ItemGroup"][];
+            /** Format: decimal */
+            credit_note_total_amount: string;
+        };
+        "Organization::CreditNotes::ExtendedDto::Payload": {
+            document_info: components["schemas"]["Organization::CreditNotes::ExtendedDto::DocumentInfo"];
+            seller: components["schemas"]["Organization::CreditNotes::ExtendedDto::Seller"];
+            billing_address: components["schemas"]["Organization::CreditNotes::ExtendedDto::BillingAddress"];
+            project_context: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectContext"];
+            transaction: components["schemas"]["Organization::CreditNotes::ExtendedDto::Transaction"];
+        };
+        "Organization::CreditNotes::ExtendedDto": {
+            pdf_url?: string | null;
+            payload: components["schemas"]["Organization::CreditNotes::ExtendedDto::Payload"];
+            /** @enum {string} */
+            status: "draft" | "published";
+        };
+        "Organization::Invoices::CompactDto::Line": {
+            holder_id: string;
+            /** Format: decimal */
+            excl_tax_amount: string;
+        };
+        "Organization::Invoices::CompactDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number?: string | null;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+            lines: components["schemas"]["Organization::Invoices::CompactDto::Line"][];
+        };
+        "Organization::Invoices::BaseExtendedDto::Line": {
+            holder_id: string;
+            /** Format: decimal */
+            excl_tax_amount: string;
+        };
+        "Organization::Invoices::BaseExtendedDto::Detail": {
+            /** Format: date-time */
+            delivery_date: string;
+            seller_name: string;
+            seller_registration_number: string;
+            seller_address_zipcode: string;
+            seller_address_street: string;
+            seller_address_city: string;
+            seller_vat_number: string;
+            seller_phone: string;
+            seller_email: string;
+            client_name: string;
+            client_registration_number: string;
+            client_address_zipcode: string;
+            client_address_street: string;
+            client_address_city: string;
+            client_vat_number: string;
+            client_phone: string;
+            client_email: string;
+            delivery_name: string;
+            delivery_registration_number: string;
+            delivery_address_zipcode: string;
+            delivery_address_street: string;
+            delivery_address_city: string;
+            delivery_phone: string;
+            delivery_email: string;
+            purchase_order_number: string;
+            /** Format: date-time */
+            due_date: string;
+        };
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
+            original_item_uuid: string;
+            group_id: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            /** Format: decimal */
+            tax_rate: string;
+            /** Format: decimal */
+            previously_billed_amount: string;
+        };
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup": {
+            id: number;
+            name: string;
+            description?: string | null;
+        };
+        "Organization::Invoices::BaseExtendedDto::Context": {
+            /** Format: decimal */
+            project_version_retention_guarantee_rate: string;
+            project_version_number: number;
+            project_version_date: string;
+            /** Format: decimal */
+            project_total_amount: string;
+            /** Format: decimal */
+            project_total_previously_billed_amount: string;
+            project_version_items: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"][];
+            project_version_item_groups: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"][];
+        };
+        "Organization::Invoices::BaseExtendedDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number?: string | null;
+            /** Format: date-time */
+            updated_at: string;
+            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
+            pdf_url?: string | null;
+        };
+        "Organization::Invoices::ExtendedDto": {
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number?: string | null;
+            /** Format: date-time */
+            updated_at: string;
+            lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
+            detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
+            context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
+            pdf_url?: string | null;
+            credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
+        };
+        "Organization::Invoices::IndexDto": {
+            results: components["schemas"]["Organization::Invoices::CompactDto"][];
+        };
+        "Organization::Invoices::ShowDto": {
+            result: components["schemas"]["Organization::Invoices::ExtendedDto"];
+        };
+        "Organization::ItemGroups::ExtendedDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
+        "Organization::Items::ExtendedDto": {
+            id: number;
+            original_item_uuid: string;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+            item_group_id?: number | null;
+        };
+        "Organization::ProjectDtoItemDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+        };
+        "Organization::ProjectDtoItemGroupDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            position: number;
+            items: components["schemas"]["Organization::ProjectDtoItemDto"][];
+        };
+        "Organization::ProjectDtoProjectVersionDto": {
+            id: number;
+            retention_rate_guarantee: number;
+            number: number;
+            items: components["schemas"]["Organization::ProjectDtoItemDto"][] | components["schemas"]["Organization::ProjectDtoItemGroupDto"][];
+        };
+        "Organization::ProjectDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client_id: number;
+            versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
+        };
+        "Organization::ProjectVersionIndexResponseProjectDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        "Organization::ProjectVersionIndexResponseDto": {
+            results: components["schemas"]["Organization::ProjectVersionIndexResponseProjectDto"][];
+        };
+        "Organization::ProjectVersionShowProjectVersionItemDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            quantity: number;
+            unit: string;
+            /** Format: decimal */
+            unit_price_amount: string;
+        };
+        "Organization::ProjectVersionShowProjectVersionItemGroupDto": {
+            id: number;
+            position: number;
+            name: string;
+            description?: string | null;
+            grouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
+        };
+        "Organization::ProjectVersionShowResponseProjectVersionDto": {
+            id: number;
+            number: number;
+            is_last_version: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            ungrouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
+            item_groups: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemGroupDto"][];
+        };
+        "Organization::ProjectVersionShowResponseDto": {
+            result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
+        };
+        "Organization::ProjectVersions::CompactDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_amount: string;
+        };
+        "Organization::ProjectVersions::ExtendedDto": {
+            id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
+            item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+            items: components["schemas"]["Organization::Items::ExtendedDto"][];
+        };
+        "Organization::ProjectVersions::ShowDto": {
+            result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+        };
+        "Organization::Projects::BaseCompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::BaseExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            /** Format: decimal */
+            invoiced_amount: string;
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::ExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            /** Format: decimal */
+            invoiced_amount: string;
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::IndexDto": {
+            results: components["schemas"]["Organization::Projects::CompactDto"][];
+        };
+        "Organization::Projects::InvoicedItemDto": {
+            original_item_uuid: string;
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
+        "Organization::Projects::InvoicedItemsDto": {
+            results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
+        };
+        "Organization::Projects::Orders::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
+        "Organization::Projects::Orders::ExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            original_quote_version_id: number;
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
+        "Organization::Projects::Orders::IndexDto": {
+            results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
+        };
+        "Organization::Projects::Orders::ShowDto": {
+            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+        };
+        "Organization::Projects::Quotes::CompactDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::Quotes::ExtendedDto": {
+            id: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::Quotes::IndexDto": {
+            results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
+        };
+        "Organization::Projects::Quotes::ShowDto": {
+            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+        };
+        "Organization::Projects::ShowDto": {
+            result: components["schemas"]["Organization::Projects::ExtendedDto"];
+        };
+        QueryParamsDto: {
+            limit?: number | null;
+        };
     };
-    create_project_with_items: {
-      name: string;
-      client_id?: string;
-      description?: string;
-      project_versions_attributes: {
-        retention_guarantee_rate: number;
-        items_attributes: {
-          name: string;
-          description?: string;
-          position: number;
-          quantity: number;
-          unit_price_cents: number;
-          unit: string;
-        }[];
-      }[];
-    };
-    error: {
-      error: {
-        status: string;
-        code: number;
-        message: string;
-        details: Record<string, never>;
-      };
-    };
-    "Organization::Clients::ExtendedDto": {
-      id: number;
-      name: string;
-      registration_number: string;
-      email: string;
-      phone: string;
-      address_street: string;
-      address_city: string;
-      address_zipcode: string;
-    };
-    "Organization::Clients::ShowDto": {
-      result: components["schemas"]["Organization::Clients::ExtendedDto"];
-    };
-    "Organization::CreateProjecItemDto": {
-      name: string;
-      description?: string | null;
-      position: number;
-      unit: string;
-      /** Format: decimal */
-      unit_price_amount: string;
-      quantity: number;
-    };
-    "Organization::CreateProjectItemGroupDto": {
-      name: string;
-      description?: string | null;
-      position: number;
-      items: components["schemas"]["Organization::CreateProjecItemDto"][];
-    };
-    "Organization::CreateProjectDto": {
-      name: string;
-      description?: string | null;
-      client_id: number;
-      retention_guarantee_rate: number;
-      items:
-        | components["schemas"]["Organization::CreateProjecItemDto"][]
-        | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
-    };
-    "Organization::CreditNotes::ExtendedDto::DocumentInfo": {
-      number: string;
-      /** Format: date-time */
-      issue_date: string;
-      /** Format: date-time */
-      original_invoice_date: string;
-      original_invoice_number: string;
-    };
-    "Organization::CreditNotes::ExtendedDto::Address": {
-      city: string;
-      street: string;
-      zip: string;
-    };
-    "Organization::CreditNotes::ExtendedDto::Seller": {
-      name: string;
-      address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
-      phone: string;
-      siret: string;
-      legal_form: string;
-      /** Format: decimal */
-      capital_amount: string;
-      vat_number: string;
-      rcs_city: string;
-      rcs_number: string;
-    };
-    "Organization::CreditNotes::ExtendedDto::BillingAddress": {
-      name: string;
-      address: components["schemas"]["Organization::CreditNotes::ExtendedDto::Address"];
-    };
-    "Organization::CreditNotes::ExtendedDto::ProjectVersion": {
-      /** Format: date-time */
-      date: string;
-      number: number;
-    };
-    "Organization::CreditNotes::ExtendedDto::ProjectContext": {
-      name: string;
-      version: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectVersion"];
-      /** Format: decimal */
-      total_amount: string;
-      /** Format: decimal */
-      previously_billed_amount: string;
-      /** Format: decimal */
-      remaining_amount: string;
-    };
-    "Organization::CreditNotes::ExtendedDto::Item": {
-      id: number;
-      original_item_uuid: string;
-      name: string;
-      description?: string | null;
-      item_group_id: number;
-      quantity: number;
-      unit: string;
-      /** Format: decimal */
-      unit_price_amount: string;
-      /** Format: decimal */
-      credit_note_amount: string;
-    };
-    "Organization::CreditNotes::ExtendedDto::ItemGroup": {
-      id: number;
-      name: string;
-      position: number;
-      description?: string | null;
-    };
-    "Organization::CreditNotes::ExtendedDto::Transaction": {
-      /** Format: decimal */
-      total_excl_tax_amount: string;
-      /** Format: decimal */
-      tax_rate: string;
-      /** Format: decimal */
-      tax_amount: string;
-      /** Format: decimal */
-      retention_guarantee_amount: string;
-      /** Format: decimal */
-      retention_guarantee_rate: string;
-      /** Format: decimal */
-      total_incl_tax_amount: string;
-      items: components["schemas"]["Organization::CreditNotes::ExtendedDto::Item"][];
-      item_groups: components["schemas"]["Organization::CreditNotes::ExtendedDto::ItemGroup"][];
-      /** Format: decimal */
-      credit_note_total_amount: string;
-    };
-    "Organization::CreditNotes::ExtendedDto::Payload": {
-      document_info: components["schemas"]["Organization::CreditNotes::ExtendedDto::DocumentInfo"];
-      seller: components["schemas"]["Organization::CreditNotes::ExtendedDto::Seller"];
-      billing_address: components["schemas"]["Organization::CreditNotes::ExtendedDto::BillingAddress"];
-      project_context: components["schemas"]["Organization::CreditNotes::ExtendedDto::ProjectContext"];
-      transaction: components["schemas"]["Organization::CreditNotes::ExtendedDto::Transaction"];
-    };
-    "Organization::CreditNotes::ExtendedDto": {
-      pdf_url?: string | null;
-      payload: components["schemas"]["Organization::CreditNotes::ExtendedDto::Payload"];
-      /** @enum {string} */
-      status: "draft" | "published";
-    };
-    "Organization::Invoices::CompactDto::Line": {
-      holder_id: string;
-      /** Format: decimal */
-      excl_tax_amount: string;
-    };
-    "Organization::Invoices::CompactDto": {
-      id: number;
-      /** @enum {string} */
-      status: "draft" | "posted" | "cancelled" | "voided";
-      number?: string | null;
-      /** Format: date-time */
-      issue_date: string;
-      /** Format: date-time */
-      updated_at: string;
-      /** Format: decimal */
-      total_amount: string;
-      lines: components["schemas"]["Organization::Invoices::CompactDto::Line"][];
-    };
-    "Organization::Invoices::BaseExtendedDto::Line": {
-      holder_id: string;
-      /** Format: decimal */
-      excl_tax_amount: string;
-    };
-    "Organization::Invoices::BaseExtendedDto::Detail": {
-      /** Format: date-time */
-      delivery_date: string;
-      seller_name: string;
-      seller_registration_number: string;
-      seller_address_zipcode: string;
-      seller_address_street: string;
-      seller_address_city: string;
-      seller_vat_number: string;
-      seller_phone: string;
-      seller_email: string;
-      client_name: string;
-      client_registration_number: string;
-      client_address_zipcode: string;
-      client_address_street: string;
-      client_address_city: string;
-      client_vat_number: string;
-      client_phone: string;
-      client_email: string;
-      delivery_name: string;
-      delivery_registration_number: string;
-      delivery_address_zipcode: string;
-      delivery_address_street: string;
-      delivery_address_city: string;
-      delivery_phone: string;
-      delivery_email: string;
-      purchase_order_number: string;
-      /** Format: date-time */
-      due_date: string;
-    };
-    "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
-      original_item_uuid: string;
-      group_id: number;
-      name: string;
-      description?: string | null;
-      quantity: number;
-      unit: string;
-      /** Format: decimal */
-      unit_price_amount: string;
-      /** Format: decimal */
-      tax_rate: string;
-      /** Format: decimal */
-      previously_billed_amount: string;
-    };
-    "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup": {
-      id: number;
-      name: string;
-      description?: string | null;
-    };
-    "Organization::Invoices::BaseExtendedDto::Context": {
-      /** Format: decimal */
-      project_version_retention_guarantee_rate: string;
-      project_version_number: number;
-      project_version_date: string;
-      /** Format: decimal */
-      project_total_amount: string;
-      /** Format: decimal */
-      project_total_previously_billed_amount: string;
-      project_version_items: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"][];
-      project_version_item_groups: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"][];
-    };
-    "Organization::Invoices::BaseExtendedDto": {
-      id: number;
-      /** @enum {string} */
-      status: "draft" | "posted" | "cancelled" | "voided";
-      number?: string | null;
-      /** Format: date-time */
-      updated_at: string;
-      lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
-      detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
-      context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
-      pdf_url?: string | null;
-    };
-    "Organization::Invoices::ExtendedDto": {
-      id: number;
-      /** @enum {string} */
-      status: "draft" | "posted" | "cancelled" | "voided";
-      number?: string | null;
-      /** Format: date-time */
-      updated_at: string;
-      lines: components["schemas"]["Organization::Invoices::BaseExtendedDto::Line"][];
-      detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
-      context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
-      pdf_url?: string | null;
-      credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
-    };
-    "Organization::Invoices::IndexDto": {
-      results: components["schemas"]["Organization::Invoices::CompactDto"][];
-    };
-    "Organization::Invoices::ShowDto": {
-      result: components["schemas"]["Organization::Invoices::ExtendedDto"];
-    };
-    "Organization::ItemGroups::ExtendedDto": {
-      id: number;
-      position: number;
-      name: string;
-      description?: string | null;
-      grouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
-    };
-    "Organization::Items::ExtendedDto": {
-      id: number;
-      original_item_uuid: string;
-      position: number;
-      name: string;
-      description?: string | null;
-      quantity: number;
-      unit: string;
-      /** Format: decimal */
-      unit_price_amount: string;
-      item_group_id?: number | null;
-    };
-    "Organization::ProjectDtoItemDto": {
-      id: number;
-      position: number;
-      name: string;
-      description?: string | null;
-      quantity: number;
-      unit: string;
-      /** Format: decimal */
-      unit_price_amount: string;
-    };
-    "Organization::ProjectDtoItemGroupDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      position: number;
-      items: components["schemas"]["Organization::ProjectDtoItemDto"][];
-    };
-    "Organization::ProjectDtoProjectVersionDto": {
-      id: number;
-      retention_rate_guarantee: number;
-      number: number;
-      items:
-        | components["schemas"]["Organization::ProjectDtoItemDto"][]
-        | components["schemas"]["Organization::ProjectDtoItemGroupDto"][];
-    };
-    "Organization::ProjectDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client_id: number;
-      versions: components["schemas"]["Organization::ProjectDtoProjectVersionDto"][];
-    };
-    "Organization::ProjectVersionIndexResponseProjectDto": {
-      id: number;
-      number: number;
-      /** Format: date-time */
-      created_at: string;
-    };
-    "Organization::ProjectVersionIndexResponseDto": {
-      results: components["schemas"]["Organization::ProjectVersionIndexResponseProjectDto"][];
-    };
-    "Organization::ProjectVersionShowProjectVersionItemDto": {
-      id: number;
-      position: number;
-      name: string;
-      description?: string | null;
-      quantity: number;
-      unit: string;
-      /** Format: decimal */
-      unit_price_amount: string;
-    };
-    "Organization::ProjectVersionShowProjectVersionItemGroupDto": {
-      id: number;
-      position: number;
-      name: string;
-      description?: string | null;
-      grouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
-    };
-    "Organization::ProjectVersionShowResponseProjectVersionDto": {
-      id: number;
-      number: number;
-      is_last_version: boolean;
-      /** Format: date-time */
-      created_at: string;
-      /** Format: decimal */
-      retention_guarantee_rate: string;
-      ungrouped_items: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemDto"][];
-      item_groups: components["schemas"]["Organization::ProjectVersionShowProjectVersionItemGroupDto"][];
-    };
-    "Organization::ProjectVersionShowResponseDto": {
-      result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
-    };
-    "Organization::ProjectVersions::CompactDto": {
-      id: number;
-      number: number;
-      /** Format: date-time */
-      created_at: string;
-      /** Format: decimal */
-      retention_guarantee_rate: string;
-      /** Format: decimal */
-      total_amount: string;
-    };
-    "Organization::ProjectVersions::ExtendedDto": {
-      id: number;
-      number: number;
-      /** Format: date-time */
-      created_at: string;
-      /** Format: decimal */
-      retention_guarantee_rate: string;
-      ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
-      item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
-      items: components["schemas"]["Organization::Items::ExtendedDto"][];
-    };
-    "Organization::ProjectVersions::ShowDto": {
-      result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-    };
-    "Organization::Projects::BaseCompactDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-    };
-    "Organization::Projects::BaseExtendedDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-    };
-    "Organization::Projects::CompactDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      /** Format: decimal */
-      invoiced_amount: string;
-      last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-    };
-    "Organization::Projects::ExtendedDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      /** Format: decimal */
-      invoiced_amount: string;
-      last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-    };
-    "Organization::Projects::IndexDto": {
-      results: components["schemas"]["Organization::Projects::CompactDto"][];
-    };
-    "Organization::Projects::InvoicedItemDto": {
-      original_item_uuid: string;
-      /** Format: decimal */
-      invoiced_amount: string;
-    };
-    "Organization::Projects::InvoicedItemsDto": {
-      results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
-    };
-    "Organization::Projects::Orders::CompactDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-      /** Format: decimal */
-      invoiced_amount: string;
-    };
-    "Organization::Projects::Orders::ExtendedDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-      original_quote_version_id: number;
-      /** Format: decimal */
-      invoiced_amount: string;
-    };
-    "Organization::Projects::Orders::IndexDto": {
-      results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
-    };
-    "Organization::Projects::Orders::ShowDto": {
-      result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
-    };
-    "Organization::Projects::Quotes::CompactDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-    };
-    "Organization::Projects::Quotes::ExtendedDto": {
-      id: number;
-      name: string;
-      description?: string | null;
-      client: components["schemas"]["Organization::Clients::ExtendedDto"];
-      last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-      /** @enum {string} */
-      status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-    };
-    "Organization::Projects::Quotes::IndexDto": {
-      results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
-    };
-    "Organization::Projects::Quotes::ShowDto": {
-      result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
-    };
-    "Organization::Projects::ShowDto": {
-      result: components["schemas"]["Organization::Projects::ExtendedDto"];
-    };
-    QueryParamsDto: {
-      limit?: number | null;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

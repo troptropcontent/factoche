@@ -30,7 +30,7 @@ const Step3 = ({
   const { t } = useTranslation();
   const { mutate } = Api.useMutation(
     "post",
-    "/api/v1/organization/companies/{company_id}/projects"
+    "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes"
   );
 
   const { data: clients = [] } = Api.useQuery(
@@ -49,12 +49,14 @@ const Step3 = ({
     (client) => client.id == previousStepsData.client_id
   );
 
-  const createNewProject = () => {
+  const createNewProject = (clientId: number) => {
     const apiRequestBody = buildApiRequestBody(previousStepsData);
     mutate(
       {
         body: apiRequestBody,
-        params: { path: { company_id: Number(companyId) } },
+        params: {
+          path: { company_id: Number(companyId), client_id: clientId },
+        },
       },
       {
         onSuccess: ({ id }) =>
