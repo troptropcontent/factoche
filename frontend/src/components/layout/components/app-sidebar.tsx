@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   ReceiptText,
   Settings,
+  FileText,
 } from "lucide-react";
 
 export function AppSidebar() {
@@ -31,9 +32,14 @@ export function AppSidebar() {
       icon: LayoutDashboard,
     },
     {
-      title: "Projets",
-      url: `projects`,
+      title: "Commandes",
+      url: `orders`,
       icon: Cuboid,
+    },
+    {
+      title: "Devis",
+      url: `orders`,
+      icon: FileText,
     },
     {
       title: "Factures",

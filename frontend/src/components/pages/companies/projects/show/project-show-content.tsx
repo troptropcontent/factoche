@@ -5,12 +5,12 @@ import { InvoicesSummary } from "./invoices-summary";
 
 const ProjectShowContent = ({
   companyId,
-  projectId,
+  orderId,
   client,
   initialVersionId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
   initialVersionId: number;
   lastVersionId: number;
   client: { name: string; phone: string; email: string };
@@ -18,13 +18,13 @@ const ProjectShowContent = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
       <div className="md:col-span-1">
-        <ProjectSummary routeParams={{ companyId, projectId }} />
+        <ProjectSummary routeParams={{ orderId }} />
         <ClientInfo client={client} />
-        <InvoicesSummary companyId={companyId} projectId={projectId} />
+        <InvoicesSummary companyId={companyId} orderId={orderId} />
       </div>
       <div className="md:col-span-2">
         <ProjectVersionComposition
-          routeParams={{ companyId, projectId }}
+          routeParams={{ companyId, orderId }}
           initialVersionId={initialVersionId}
         />
       </div>

@@ -6,33 +6,29 @@ import { useTranslation } from "react-i18next";
 import { InvoiceForm } from "@/components/pages/companies/invoices/invoice-form";
 
 export const Route = createFileRoute(
-  "/_authenticated/companies/$companyId/projects/$projectId/invoices/new"
+  "/_authenticated/companies/$companyId/orders/$orderId/invoices/new"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { companyId, projectId } }) =>
+  loader: ({ context: { queryClient }, params: { orderId } }) =>
     queryClient.ensureQueryData(
-      Api.queryOptions(
-        "get",
-        "/api/v1/organization/companies/{company_id}/projects/{id}",
-        {
-          params: {
-            path: { company_id: Number(companyId), id: Number(projectId) },
-          },
-        }
-      )
+      Api.queryOptions("get", "/api/v1/organization/orders/{id}", {
+        params: {
+          path: { id: Number(orderId) },
+        },
+      })
     ),
 });
 
 function RouteComponent() {
   const { result: projectData } = Route.useLoaderData();
-  const { companyId, projectId } = Route.useParams();
+  const { companyId, orderId } = Route.useParams();
   const { t } = useTranslation();
 
   const { data: { results: invoicedItems } = { results: [] } } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
-      params: { path: { id: Number(projectId) } },
+      params: { path: { id: Number(orderId) } },
     }
   );
 
@@ -63,7 +59,7 @@ function RouteComponent() {
       <Layout.Content>
         <InvoiceForm
           companyId={Number(companyId)}
-          projectId={Number(projectId)}
+          orderId={Number(orderId)}
           itemGroups={projectData.last_version.item_groups}
           items={projectData.last_version.items.map((item) => ({
             ...item,

@@ -9,6 +9,8 @@ RSpec.shared_context 'a company with a project with three item groups' do
   let(:quote_version) { FactoryBot.create(:project_version, project: quote, retention_guarantee_rate: project_version_retention_guarantee_rate) }
   let(:project) { FactoryBot.create(:order, client: client, original_quote_version: quote_version) }
   let(:project_version) { FactoryBot.create(:project_version, project: project, retention_guarantee_rate: project_version_retention_guarantee_rate) }
+  let(:order) { project }
+  let(:order_version) { project_version }
   let(:project_version_retention_guarantee_rate) { 0.05 }
   ordinals = [ "first", "second", "third" ]
 

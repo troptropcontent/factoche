@@ -6,17 +6,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_authenticated/companies/$companyId/projects/$projectId/invoices/$invoiceId/"
+  "/_authenticated/companies/$companyId/orders/$orderId/invoices/$invoiceId/"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { invoiceId, projectId } }) =>
+  loader: ({ context: { queryClient }, params: { invoiceId, orderId } }) =>
     queryClient.ensureQueryData(
       Api.queryOptions(
         "get",
-        "/api/v1/organization/projects/{project_id}/invoices/{id}",
+        "/api/v1/organization/orders/{order_id}/invoices/{id}",
         {
           params: {
-            path: { id: Number(invoiceId), project_id: Number(projectId) },
+            path: { id: Number(invoiceId), order_id: Number(orderId) },
           },
         }
       )
@@ -25,7 +25,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { result: invoice } = Route.useLoaderData();
-  const { companyId, invoiceId, projectId } = Route.useParams();
+  const { companyId, invoiceId, orderId } = Route.useParams();
   const { t } = useTranslation();
 
   return (
@@ -46,7 +46,7 @@ function RouteComponent() {
           routeParams={{
             companyId: Number(companyId),
             invoiceId: Number(invoiceId),
-            projectId: Number(projectId),
+            orderId: Number(orderId),
           }}
         />
       </Layout.Content>

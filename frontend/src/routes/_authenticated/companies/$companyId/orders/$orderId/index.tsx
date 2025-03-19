@@ -5,21 +5,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_authenticated/companies/$companyId/projects/$projectId/"
+  "/_authenticated/companies/$companyId/orders/$orderId/"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { companyId, projectId } }) =>
+  loader: ({ context: { queryClient }, params: { companyId, orderId } }) =>
     queryClient
       .ensureQueryData(
-        Api.queryOptions(
-          "get",
-          "/api/v1/organization/companies/{company_id}/projects/{id}",
-          {
-            params: {
-              path: { company_id: Number(companyId), id: Number(projectId) },
-            },
-          }
-        )
+        Api.queryOptions("get", "/api/v1/organization/orders/{id}", {
+          params: {
+            path: { id: Number(orderId) },
+          },
+        })
       )
       .then(async (projectData) => {
         await queryClient.ensureQueryData(
@@ -30,7 +26,7 @@ export const Route = createFileRoute(
               params: {
                 path: {
                   company_id: Number(companyId),
-                  project_id: Number(projectId),
+                  project_id: Number(orderId),
                   id: projectData.result.last_version.id,
                 },
               },
@@ -44,7 +40,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { result: project } = Route.useLoaderData();
-  const { companyId, projectId } = Route.useParams();
+  const { companyId, orderId } = Route.useParams();
   const { t } = useTranslation();
   return (
     <Layout.Root>
@@ -56,7 +52,7 @@ function RouteComponent() {
       <Layout.Content>
         <ProjectShowContent
           companyId={Number(companyId)}
-          projectId={Number(projectId)}
+          orderId={Number(orderId)}
           client={project.client}
           lastVersionId={project.last_version.id}
           initialVersionId={project.last_version.id}

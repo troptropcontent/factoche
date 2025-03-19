@@ -57,7 +57,8 @@ Rails.application.routes.draw do
           end
         end
         resources :clients, only: [ :show ]
-        resources :projects do
+        resources :prints, only: [ :show ]
+        resources :orders, only: [ :show ] do
           resources :invoices, only: [ :index, :show, :update, :create, :destroy ] do
             member do
               post "", action: :post
@@ -68,7 +69,6 @@ Rails.application.routes.draw do
             get :invoiced_items
           end
         end
-        resources :prints, only: [ :show ]
         resources :quotes, only: [ :show ] do
           member do
             post "convert_to_order"

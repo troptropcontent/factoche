@@ -7,20 +7,20 @@ import { InvoiceContent } from "./private/invoice-content";
 import { InvoiceActions } from "./private/invoice-actions";
 
 const InvoiceShowContent = ({
-  routeParams: { companyId, projectId, invoiceId },
+  routeParams: { companyId, orderId, invoiceId },
 }: {
   routeParams: {
     companyId: number;
-    projectId: number;
+    orderId: number;
     invoiceId: number;
   };
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -30,8 +30,8 @@ const InvoiceShowContent = ({
 
   const { data: projectData } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{id}",
-    { params: { path: { company_id: companyId, id: projectId } } }
+    "/api/v1/organization/orders/{id}",
+    { params: { path: { id: orderId } } }
   );
 
   const isProjectDataLoaded = projectData != undefined;
@@ -55,7 +55,7 @@ const InvoiceShowContent = ({
     invoiceData.status === "draft"
       ? {
           companyId: companyId,
-          projectId: projectId,
+          orderId: orderId,
         }
       : {
           name: "toto",
@@ -70,7 +70,7 @@ const InvoiceShowContent = ({
         <ClientSummaryCard {...clientSummaryCardProps} />
         <InvoiceActions
           companyId={companyId}
-          projectId={projectId}
+          orderId={orderId}
           invoiceId={invoiceId}
         />
       </div>
@@ -79,14 +79,10 @@ const InvoiceShowContent = ({
           <CardContent className="mt-6 space-y-6">
             <ProjectInvoicingSummaryCard
               companyId={companyId}
-              projectId={projectId}
+              orderId={orderId}
               invoiceId={invoiceId}
             />
-            <InvoiceContent
-              companyId={companyId}
-              invoiceId={invoiceId}
-              projectId={projectId}
-            />
+            <InvoiceContent invoiceId={invoiceId} orderId={orderId} />
           </CardContent>
         </Card>
       </div>

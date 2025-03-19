@@ -8,28 +8,22 @@ import { useTranslation } from "react-i18next";
 import { invoiceFormSchema } from "./schemas";
 import { z } from "zod";
 
-const FormProjectSummary = ({
-  companyId,
-  projectId,
-}: {
-  companyId: number;
-  projectId: number;
-}) => {
+const FormProjectSummary = ({ orderId }: { orderId: number }) => {
   const { t } = useTranslation();
   const { data: projectData } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{id}",
+    "/api/v1/organization/orders/{id}",
     {
       params: {
-        path: { company_id: companyId, id: projectId },
+        path: { id: orderId },
       },
     }
   );
   const { data: invoicedItemsData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
-      params: { path: { id: Number(projectId) } },
+      params: { path: { id: Number(orderId) } },
     }
   );
 

@@ -4,47 +4,44 @@ import { Trans, useTranslation } from "react-i18next";
 
 type ProjectSummaryCardProps =
   | {
-      companyId: number;
-      projectId: number;
+      orderId: number;
       name?: never;
       version_number?: never;
       version_date?: never;
     }
   | {
-      companyId?: never;
-      projectId?: never;
+      orderId?: never;
       name: string;
       version_number: number;
       version_date: string;
     };
 
 export function ProjectSummaryCard({
-  companyId,
   name,
-  projectId,
+  orderId,
   version_date,
   version_number,
 }: ProjectSummaryCardProps) {
   const { t } = useTranslation();
   const { data } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{id}",
+    "/api/v1/organization/orders/{id}",
     {
       params: {
-        path: { company_id: Number(companyId), id: Number(projectId) },
+        path: { id: Number(orderId) },
       },
     },
     {
-      enabled: projectId !== undefined,
+      enabled: orderId !== undefined,
     }
   );
 
-  if (projectId !== undefined && data == undefined) {
+  if (orderId !== undefined && data == undefined) {
     return null;
   }
 
   const projectData =
-    projectId !== undefined
+    orderId !== undefined
       ? {
           name: data!.result.name,
           version_number: data!.result.last_version.number,

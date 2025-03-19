@@ -15,27 +15,27 @@ import {
 } from "@/components/ui/table";
 import { useTranslation } from "react-i18next";
 
-import { NewCompletionSnapshotButton } from "./new-completion-snapshot-button";
 import { useNavigate } from "@tanstack/react-router";
 import { TrafficCone } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { StatusBadge } from "../../invoices/private/status-badge";
+import { NewInvoiceButton } from "../private/new-invoice-button";
 
 const InvoicesSummary = ({
   companyId,
-  projectId,
+  orderId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
 }) => {
   const { data: projectInvoices } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices",
+    "/api/v1/organization/orders/{order_id}/invoices",
     {
       params: {
-        path: { project_id: projectId },
+        path: { order_id: orderId },
         query: { status: ["cancelled", "draft", "posted"] },
       },
     },
@@ -51,11 +51,11 @@ const InvoicesSummary = ({
     invoice: NonNullable<typeof projectInvoices>[number]
   ) => {
     navigate({
-      to: "/companies/$companyId/projects/$projectId/invoices/$invoiceId",
+      to: "/companies/$companyId/orders/$orderId/invoices/$invoiceId",
       params: {
         companyId: companyId.toString(),
         invoiceId: invoice.id.toString(),
-        projectId: projectId.toString(),
+        orderId: orderId.toString(),
       },
     });
   };
@@ -148,10 +148,10 @@ const InvoicesSummary = ({
             )}
             onAction={() => {
               navigate({
-                to: "/companies/$companyId/projects/$projectId/invoices/new",
+                to: "/companies/$companyId/orders/$orderId/invoices/new",
                 params: {
                   companyId: companyId.toString(),
-                  projectId: projectId.toString(),
+                  orderId: orderId.toString(),
                 },
               });
             }}
@@ -161,7 +161,7 @@ const InvoicesSummary = ({
       </CardContent>
       {projectInvoices.length > 0 && (
         <CardFooter>
-          <NewCompletionSnapshotButton {...{ companyId, projectId }} />
+          <NewInvoiceButton {...{ companyId, orderId }} />
         </CardFooter>
       )}
     </Card>

@@ -7,19 +7,17 @@ import { useInvoiceTotalAmount } from "../shared/hooks";
 
 const useInvoiceContentData = ({
   invoiceId,
-  projectId,
-  companyId,
+  orderId,
 }: {
   invoiceId: number;
-  projectId: number;
-  companyId: number;
+  orderId: number;
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -27,10 +25,10 @@ const useInvoiceContentData = ({
 
   const { data: projectData } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{id}",
+    "/api/v1/organization/orders/{id}",
     {
       params: {
-        path: { company_id: companyId, id: projectId },
+        path: { id: orderId },
       },
     },
     {
@@ -40,10 +38,10 @@ const useInvoiceContentData = ({
 
   const { data: previouslyInvoicedAmounts } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: {
-        path: { id: projectId },
+        path: { id: orderId },
       },
     },
     {
@@ -125,34 +123,31 @@ const useInvoiceContentData = ({
 
 const useInvoicingSummaryCardData = ({
   invoiceId,
-  projectId,
-  companyId,
+  orderId,
 }: {
   invoiceId: number;
-  projectId: number;
-  companyId: number;
+  orderId: number;
 }) => {
   const { projectTotalAmount } = useProjectTotalAmount({
-    companyId,
-    projectId,
+    orderId,
   });
 
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
   );
 
   const { projectPreviouslyInvoicedTotalAmount } =
-    useProjectPreviouslyInvoicedTotalAmount({ projectId });
+    useProjectPreviouslyInvoicedTotalAmount({ orderId });
 
   const { invoiceTotalAmount } = useInvoiceTotalAmount({
-    projectId,
+    orderId,
     invoiceId,
   });
 

@@ -1,19 +1,13 @@
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { computeProjectVersionTotalAmount } from "../../project-versions/shared/utils";
 
-const useProjectTotalAmount = ({
-  companyId,
-  projectId,
-}: {
-  companyId: number;
-  projectId: number;
-}) => {
+const useProjectTotalAmount = ({ orderId }: { orderId: number }) => {
   const { data: projectData } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/projects/{id}",
+    "/api/v1/organization/orders/{id}",
     {
       params: {
-        path: { company_id: companyId, id: projectId },
+        path: { id: orderId },
       },
     },
     {
@@ -38,16 +32,16 @@ const useProjectTotalAmount = ({
 };
 
 const useProjectPreviouslyInvoicedTotalAmount = ({
-  projectId,
+  orderId,
 }: {
-  projectId: number;
+  orderId: number;
 }) => {
   const { data: invoicedAmounts } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{id}/invoiced_items",
+    "/api/v1/organization/orders/{id}/invoiced_items",
     {
       params: {
-        path: { id: projectId },
+        path: { id: orderId },
       },
     },
     {

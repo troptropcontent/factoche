@@ -7,21 +7,21 @@ import { useTranslation } from "react-i18next";
 
 const EditButton = ({
   invoiceId,
-  projectId,
+  orderId,
   companyId,
 }: {
   invoiceId: number;
-  projectId: number;
+  orderId: number;
   companyId: number;
 }) => {
   const { t } = useTranslation();
   return (
     <Button asChild variant="outline">
       <Link
-        to="/companies/$companyId/projects/$projectId/invoices/$invoiceId/update"
+        to="/companies/$companyId/orders/$orderId/invoices/$invoiceId/update"
         params={{
           invoiceId: invoiceId.toString(),
-          projectId: projectId.toString(),
+          orderId: orderId.toString(),
           companyId: companyId.toString(),
         }}
       >
@@ -40,33 +40,33 @@ type DownloadInvoicePdfButtonProps = {
   | {
       url?: string;
       invoiceId?: never;
-      projectId?: never;
+      orderId?: never;
     }
   | {
       url?: never;
       invoiceId: number;
-      projectId: number;
+      orderId: number;
     }
 );
 
 const DownloadInvoicePdfButton = ({
   invoiceId,
-  projectId,
+  orderId,
   type,
   url,
 }: DownloadInvoicePdfButtonProps) => {
   const { t } = useTranslation();
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId as number, id: invoiceId as number },
+        path: { order_id: orderId as number, id: invoiceId as number },
       },
     },
     {
       select: ({ result }) => result,
-      enabled: projectId != undefined && invoiceId != undefined,
+      enabled: orderId != undefined && invoiceId != undefined,
     }
   );
 
@@ -95,17 +95,17 @@ const DownloadInvoicePdfButton = ({
 
 const DestroyButton = ({
   invoiceId,
-  projectId,
+  orderId,
   companyId,
 }: {
   invoiceId: number;
-  projectId: number;
+  orderId: number;
   companyId: number;
 }) => {
   const { t } = useTranslation();
   const { mutate: voidInvoiceMutation } = Api.useMutation(
     "delete",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
@@ -120,10 +120,10 @@ const DestroyButton = ({
         ),
       });
       navigate({
-        to: "/companies/$companyId/projects/$projectId",
+        to: "/companies/$companyId/orders/$orderId",
         params: {
           companyId: companyId.toString(),
-          projectId: projectId.toString(),
+          orderId: orderId.toString(),
         },
       });
     };
@@ -138,7 +138,7 @@ const DestroyButton = ({
 
     voidInvoiceMutation(
       {
-        params: { path: { id: invoiceId, project_id: projectId } },
+        params: { path: { id: invoiceId, order_id: orderId } },
       },
       {
         onSuccess,
@@ -158,17 +158,17 @@ const DestroyButton = ({
 
 const CancelButton = ({
   invoiceId,
-  projectId,
+  orderId,
   companyId,
 }: {
   invoiceId: number;
-  projectId: number;
+  orderId: number;
   companyId: number;
 }) => {
   const { t } = useTranslation();
   const { mutate: cancelInvoiceMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}/cancel"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel"
   );
   const navigate = useNavigate();
 
@@ -183,10 +183,10 @@ const CancelButton = ({
         ),
       });
       navigate({
-        to: "/companies/$companyId/projects/$projectId",
+        to: "/companies/$companyId/orders/$orderId",
         params: {
           companyId: companyId.toString(),
-          projectId: projectId.toString(),
+          orderId: orderId.toString(),
         },
       });
     };
@@ -201,7 +201,7 @@ const CancelButton = ({
 
     cancelInvoiceMutation(
       {
-        params: { path: { id: invoiceId, project_id: projectId } },
+        params: { path: { id: invoiceId, order_id: orderId } },
       },
       {
         onSuccess,
@@ -221,17 +221,17 @@ const CancelButton = ({
 
 const PostButton = ({
   invoiceId,
-  projectId,
+  orderId,
   companyId,
 }: {
   invoiceId: number;
-  projectId: number;
+  orderId: number;
   companyId: number;
 }) => {
   const { t } = useTranslation();
   const { mutate: postInvoiceMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}"
+    "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
@@ -246,10 +246,10 @@ const PostButton = ({
         ),
       });
       navigate({
-        to: "/companies/$companyId/projects/$projectId",
+        to: "/companies/$companyId/orders/$orderId",
         params: {
           companyId: companyId.toString(),
-          projectId: projectId.toString(),
+          orderId: orderId.toString(),
         },
       });
     };
@@ -264,7 +264,7 @@ const PostButton = ({
 
     postInvoiceMutation(
       {
-        params: { path: { id: invoiceId, project_id: projectId } },
+        params: { path: { id: invoiceId, order_id: orderId } },
       },
       {
         onSuccess,
@@ -284,32 +284,32 @@ const PostButton = ({
 
 const DraftInvoiceActions = ({
   companyId,
-  projectId,
+  orderId,
   invoiceId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
   invoiceId: number;
 }) => {
   return (
     <>
       <EditButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         companyId={companyId}
       />
       <DownloadInvoicePdfButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         type="proforma"
       />
       <PostButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         companyId={companyId}
       />
       <DestroyButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         companyId={companyId}
       />
@@ -318,19 +318,19 @@ const DraftInvoiceActions = ({
 };
 
 const CancelledInvoiceActions = ({
-  projectId,
+  orderId,
   invoiceId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
   invoiceId: number;
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -343,7 +343,7 @@ const CancelledInvoiceActions = ({
   return (
     <>
       <DownloadInvoicePdfButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         type="invoice"
       />
@@ -355,22 +355,22 @@ const CancelledInvoiceActions = ({
 
 const PostedInvoiceActions = ({
   companyId,
-  projectId,
+  orderId,
   invoiceId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
   invoiceId: number;
 }) => {
   return (
     <>
       <DownloadInvoicePdfButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         type="invoice"
       />
       <CancelButton
-        projectId={projectId}
+        orderId={orderId}
         invoiceId={invoiceId}
         companyId={companyId}
       />
@@ -380,19 +380,19 @@ const PostedInvoiceActions = ({
 
 const InvoiceActions = ({
   companyId,
-  projectId,
+  orderId,
   invoiceId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
   invoiceId: number;
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices/{id}",
+    "/api/v1/organization/orders/{order_id}/invoices/{id}",
     {
       params: {
-        path: { project_id: projectId, id: invoiceId },
+        path: { order_id: orderId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -410,7 +410,7 @@ const InvoiceActions = ({
             return (
               <DraftInvoiceActions
                 companyId={companyId}
-                projectId={projectId}
+                orderId={orderId}
                 invoiceId={invoiceId}
               />
             );
@@ -418,7 +418,7 @@ const InvoiceActions = ({
             return (
               <PostedInvoiceActions
                 companyId={companyId}
-                projectId={projectId}
+                orderId={orderId}
                 invoiceId={invoiceId}
               />
             );
@@ -426,7 +426,7 @@ const InvoiceActions = ({
             return (
               <CancelledInvoiceActions
                 companyId={companyId}
-                projectId={projectId}
+                orderId={orderId}
                 invoiceId={invoiceId}
               />
             );

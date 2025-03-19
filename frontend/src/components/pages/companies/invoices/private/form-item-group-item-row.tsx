@@ -13,13 +13,10 @@ interface FormItemGroupItemRowProps {
     unit: string;
     original_item_uuid: string;
   };
-  projectId: number;
+  orderId: number;
 }
 
-const FormItemGroupItemRow = ({
-  item,
-  projectId,
-}: FormItemGroupItemRowProps) => {
+const FormItemGroupItemRow = ({ item, orderId }: FormItemGroupItemRowProps) => {
   const { t } = useTranslation();
   const {
     rowTotal,
@@ -30,7 +27,7 @@ const FormItemGroupItemRow = ({
     newInvoiceAmount,
     newInvoicePercentage,
     isLoading: isCompletionSnapshotInvoiceItemRowLoading,
-  } = useCompletionSnapshotInvoiceItemRow({ item, projectId });
+  } = useCompletionSnapshotInvoiceItemRow({ item, orderId });
 
   if (isCompletionSnapshotInvoiceItemRowLoading == true) {
     return null;

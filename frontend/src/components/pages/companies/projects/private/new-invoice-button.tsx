@@ -16,17 +16,17 @@ const ButtonContent = () => {
   );
 };
 
-const NewCompletionSnapshotButton = ({
+const NewInvoiceButton = ({
   companyId,
-  projectId,
+  orderId,
 }: {
   companyId: number;
-  projectId: number;
+  orderId: number;
 }) => {
   const { data: projectInvoices } = Api.useQuery(
     "get",
-    "/api/v1/organization/projects/{project_id}/invoices",
-    { params: { path: { project_id: projectId } } },
+    "/api/v1/organization/orders/{order_id}/invoices",
+    { params: { path: { order_id: orderId } } },
     { select: ({ results }) => results }
   );
   const isButtonEnable =
@@ -42,10 +42,10 @@ const NewCompletionSnapshotButton = ({
       >
         {isButtonEnable ? (
           <Link
-            to={`/companies/$companyId/projects/$projectId/invoices/new`}
+            to={`/companies/$companyId/orders/$orderId/invoices/new`}
             params={{
               companyId: companyId.toString(),
-              projectId: projectId.toString(),
+              orderId: orderId.toString(),
             }}
           >
             <ButtonContent />
@@ -65,4 +65,4 @@ const NewCompletionSnapshotButton = ({
   );
 };
 
-export { NewCompletionSnapshotButton };
+export { NewInvoiceButton };
