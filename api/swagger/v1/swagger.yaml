@@ -927,9 +927,9 @@ paths:
           description: not_found
         '403':
           description: forbiden
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
+  "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions":
     get:
-      summary: List all the project's versions
+      summary: List all the order's versions
       tags:
       - Project versions
       security:
@@ -940,14 +940,14 @@ paths:
         required: true
         schema:
           type: integer
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
           type: integer
       responses:
         '200':
-          description: list company's projects
+          description: list company's orders
           content:
             application/json:
               schema:
@@ -963,9 +963,9 @@ paths:
           description: not authorised
         '404':
           description: not found
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}":
+  "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}":
     get:
-      summary: Show the project version details
+      summary: Show the order version details
       tags:
       - Project versions
       security:
@@ -976,7 +976,7 @@ paths:
         required: true
         schema:
           type: integer
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
@@ -988,7 +988,7 @@ paths:
           type: integer
       responses:
         '200':
-          description: show project version details
+          description: show order version details
           content:
             application/json:
               schema:
