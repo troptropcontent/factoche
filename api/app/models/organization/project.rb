@@ -1,4 +1,5 @@
 class Organization::Project < ApplicationRecord
+  belongs_to :company, class_name: "Organization::Company"
   belongs_to :client, class_name: "Organization::Client"
   has_many :versions, dependent: :destroy, class_name: "Organization::ProjectVersion", foreign_key: "project_id"
 
