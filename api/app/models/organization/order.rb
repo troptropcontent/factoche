@@ -1,5 +1,6 @@
 module Organization
   class Order < Project
+    NUMBER_PREFIX = "ORD".freeze
     belongs_to :original_quote_version,
                class_name: "Organization::ProjectVersion",
                foreign_key: :original_quote_version_id

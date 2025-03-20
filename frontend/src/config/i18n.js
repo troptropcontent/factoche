@@ -211,13 +211,13 @@ i18n
                                         "email": "<strong>Email :</strong> {{email}}"
                                     },
                                     "project_summary": {
-                                        "title": "Information projet",
+                                        "title": "Information sur la commande",
                                         "name": "<strong>Nom :</strong> {{name}}",
                                         "description": "<strong>Description :</strong> {{description}}",
                                         "version_label": "<strong>Version :</strong> N°{{number}} du {{createdAt, datetime}}",
                                     },
                                     "project_composition": {
-                                        "title": "Composition du project",
+                                        "title": "Composition de la commande",
                                         "project_total": "Total:"
                                     },
                                     "new_completion_snapshot": "Nouvelle situation de travaux",
@@ -312,6 +312,20 @@ i18n
                                 }
                             },
                             "quotes": {
+                                "show": {
+                                    "title": "Devis N°{{number}}",
+                                    "actions": {
+                                        "download_quote_pdf": "Télécharger le devis",
+                                        "quote_pdf_unavailable": "Devis en cours de génération",
+                                        "update_quote": "Modifier le devis",
+                                        "convert_to_order": "Convertir en commande",
+                                        "convert_to_order_success_toast_title": "Devis converti en commande",
+                                        "convert_to_order_success_toast_description": "Le devis a bien été converti en commande",
+                                        "convert_to_order_error_toast_title": "Une erreur est survenue",
+                                        "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion du devis en commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible",
+                                        "go_order": "Voir la commande liée"
+                                    }
+                                },
                                 "new": {
                                     "title": "Nouveau devis",
                                 },
@@ -321,9 +335,10 @@ i18n
                                 },
                                 "index": {
                                     "title": "Mes devis",
-                                    "add_quote": "Ajouter un devis",
+                                    "add_quote": "Créer un devis",
                                     "table": {
                                         "columns": {
+                                            "number": "Numéro",
                                             "name": "Nom",
                                             "client": "Client",
                                             "amount": "Montant",

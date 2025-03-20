@@ -10,21 +10,19 @@ import { VersionSelect } from "./version-select";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ProjectVersionComposition = ({
-  routeParams: { companyId, orderId },
+  routeParams: { companyId, projectId },
   initialVersionId,
 }: {
-  routeParams: { companyId: number; orderId: number };
+  routeParams: { companyId: number; projectId: number };
   initialVersionId: number;
 }) => {
   const [currentVersionId, setCurrentVersionId] = useState(initialVersionId);
   const { data } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}",
+    "/api/v1/organization/project_versions/{id}",
     {
       params: {
         path: {
-          company_id: companyId,
-          order_id: orderId,
           id: currentVersionId,
         },
       },
@@ -34,19 +32,13 @@ const ProjectVersionComposition = ({
   const handleVersionChange = async (value: string) => {
     // Preload the query needed in the component to avoid blink loading
     await queryClient.ensureQueryData(
-      Api.queryOptions(
-        "get",
-        "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}",
-        {
-          params: {
-            path: {
-              company_id: companyId,
-              order_id: orderId,
-              id: Number.parseInt(value, 10),
-            },
+      Api.queryOptions("get", "/api/v1/organization/project_versions/{id}", {
+        params: {
+          path: {
+            id: Number.parseInt(value, 10),
           },
-        }
-      )
+        },
+      })
     );
     setCurrentVersionId(Number.parseInt(value, 10));
   };
@@ -84,11 +76,11 @@ const ProjectVersionComposition = ({
   return (
     <Card>
       <CardHeader className="flex-row space-y-0">
-        <CardTitle className="flex-grow my-auto">
+        <CardTitle className="flex-grow my-auto text-xl">
           {t("pages.companies.projects.show.project_composition.title")}
         </CardTitle>
         <VersionSelect
-          routeParams={{ companyId, orderId }}
+          routeParams={{ companyId, orderId: projectId }}
           onValueChange={handleVersionChange}
           versionId={currentVersionId}
         />
@@ -113,7 +105,8 @@ const ProjectVersionComposition = ({
                   description={item_group.name}
                   items={item_group.grouped_items.map((item) => ({
                     ...item,
-                    unit_price: Number(item.unit_price_amount),
+                    unit_price_amount: Number(item.unit_price_amount),
+                    tax_rate: Number(item.tax_rate),
                   }))}
                 />
               )),

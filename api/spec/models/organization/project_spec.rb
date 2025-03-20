@@ -5,7 +5,7 @@ RSpec.describe Organization::Project, type: :model do
     it { is_expected.to validate_presence_of(:name) }
 
     describe("unique name within client scope") do
-      subject { FactoryBot.build(:quote, name: taken_name, client:) }
+      subject { FactoryBot.build(:quote, name: taken_name, client:, company: company) }
 
       let(:company) { FactoryBot.create(:company) }
       let(:client) { FactoryBot.create(:client, company:) }

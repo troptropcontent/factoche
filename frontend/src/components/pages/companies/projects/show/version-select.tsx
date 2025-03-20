@@ -29,6 +29,10 @@ const VersionSelect = ({
     }
   );
 
+  if (versions.length <= 1) {
+    return null;
+  }
+
   return (
     <Select value={versionId.toString()} onValueChange={onValueChange}>
       <SelectTrigger className="w-auto">

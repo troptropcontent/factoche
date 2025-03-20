@@ -4,7 +4,7 @@ RSpec.describe Organization::Quote, type: :model do
   describe 'validations' do
     let(:company) { FactoryBot.create(:company) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:quote) { FactoryBot.build(:quote, client: client) }
+    let(:quote) { FactoryBot.build(:quote, client: client, company: company) }
 
     it 'is valid without original_quote_version_id' do
       expect(quote).to be_valid
@@ -12,7 +12,7 @@ RSpec.describe Organization::Quote, type: :model do
 
     it 'is invalid with original_quote_version_id', :aggregate_failures do
       # Create a project version to reference
-      other_quote = FactoryBot.create(:quote, client: client)
+      other_quote = FactoryBot.create(:quote, client: client, company: company)
       version = FactoryBot.create(:project_version, project: other_quote)
 
       quote.original_quote_version_id = version.id

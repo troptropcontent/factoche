@@ -2,12 +2,13 @@ module Organization
   module Quotes
     class ConvertToOrder
       class << self
-        def call(quote_version_id)
-          quote_version = ProjectVersion.find_by(id: quote_version_id)
-          return ServiceResult.failure("Quote version not found") unless quote_version
+        def call(quote_id)
+          quote = Quote.find(quote_id)
 
-          quote = quote_version.project
-          return ServiceResult.failure("Project is not a quote") unless quote.is_a?(Quote)
+          quote_version = quote.last_version
+          return ServiceResult.failure("Quote have no version recorded, it's likely a bug") unless quote_version
+
+          ensure_quote_have_not_been_converted_already!(quote)
 
           ActiveRecord::Base.transaction do
             order = create_order!(quote, quote_version)
@@ -26,7 +27,7 @@ module Organization
           Order.create!(
             quote.attributes.except(
               "id", "type", "created_at", "updated_at", "original_quote_version_id"
-            ).merge(original_quote_version: quote_version)
+            ).merge(original_quote_version: quote_version, number: find_next_order_number!(quote.company_id))
           )
         end
 
@@ -76,6 +77,17 @@ module Organization
           source_version.items.where(item_group_id: nil).order(:position).each do |source_item|
             create_item!(source_item, target_version)
           end
+        end
+
+        def find_next_order_number!(company_id)
+          r = Projects::FindNextNumber.call(company_id, Quote)
+          raise r.error if r.failure?
+
+          r.data
+        end
+
+        def ensure_quote_have_not_been_converted_already!(quote)
+          raise Error::UnprocessableEntityError, "Quote has already been converted to an order" if quote.orders.any?
         end
       end
     end

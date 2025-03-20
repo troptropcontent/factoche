@@ -234,13 +234,15 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       let(:user) { FactoryBot.create(:user) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-      let(:quote) { FactoryBot.create(:quote, client: client) }
+
       let(:id) { quote.id }
 
       include_context 'a company with a project with three item groups'
 
       response "201", "quote converted to order" do
         schema Organization::Projects::Orders::ShowDto.to_schema
+        before { order.destroy }
+
         run_test! do
           parsed_response = JSON.parse(response.body)
           expect(parsed_response.dig("result", "original_quote_version_id")).to eq(quote.last_version.id)
@@ -256,12 +258,10 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       end
 
       response "422", "unprocessable entity" do
-        before do
-          allow(::Organization::Quotes::ConvertToOrder).to receive(:call).and_return(ServiceResult.failure("Conversion failed"))
-        end
-
-        run_test! do
-          expect(response.body).to include("Conversion failed")
+        context "when the quote have already been converted" do
+          run_test! do
+            expect(response.body).to include("Quote has already been converted to an order")
+          end
         end
       end
 

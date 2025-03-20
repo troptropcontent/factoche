@@ -8,9 +8,9 @@ export function ClientInfo({
 }) {
   const { t } = useTranslation();
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="text-xl">
           {t("pages.companies.projects.show.client_info.title")}
         </CardTitle>
       </CardHeader>

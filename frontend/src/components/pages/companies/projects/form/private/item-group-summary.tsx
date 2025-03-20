@@ -24,7 +24,6 @@ const ItemGroupSummary = ({
   name: string;
   description?: string | null;
   items: Array<{
-    uuid: string;
     position: number;
     name: string;
     description?: string | null;
