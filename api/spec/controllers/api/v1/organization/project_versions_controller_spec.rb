@@ -73,14 +73,12 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
     end
   end
 
-  path "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}" do
+  path "/api/v1/organization/project_versions/{id}" do
     get "Show the order version details" do
       tags "Project versions"
       security [ bearerAuth: [] ]
       consumes "application/json"
       produces "application/json"
-      parameter name: :company_id, in: :path, type: :integer
-      parameter name: :order_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
 
       let(:user) { FactoryBot.create(:user) }
@@ -106,32 +104,16 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
         }
       end
 
-      response "401", "not authorised" do
+      response "404", "not found" do
         context "when the user is not a member of the company" do
           let(:another_user) { FactoryBot.create(:user) }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
 
           run_test!
         end
-      end
 
-      response "404", "not found" do
-        context "when the company does not exists" do
-          let(:company_id) { 123123123123123123123123 }
-          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-
-          run_test!
-        end
-
-        context "when the order does not exists" do
-          let(:order_id) { 123123123123123123123123 }
-          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-
-          run_test!
-        end
-
-        context "when the id does not exists within the order versions" do
-          let(:order_id) { another_company_project_version.id }
+        context "when the project_version does not exists" do
+          let(:id) { 123123123123123123123123 }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
           run_test!

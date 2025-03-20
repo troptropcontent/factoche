@@ -8,4 +8,5 @@ class Organization::Items::ExtendedDto < OpenApiDto
   field "unit", :string
   field "unit_price_amount", :decimal
   field "item_group_id", :integer, required: false
+  field "tax_rate", :decimal
 end
