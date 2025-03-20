@@ -2,12 +2,13 @@ module Organization
   module Quotes
     class ConvertToOrder
       class << self
-        def call(quote_version_id)
-          quote_version = ProjectVersion.find_by(id: quote_version_id)
-          return ServiceResult.failure("Quote version not found") unless quote_version
+        def call(quote_id)
+          quote = Quote.find(quote_id)
 
-          quote = quote_version.project
-          return ServiceResult.failure("Project is not a quote") unless quote.is_a?(Quote)
+          quote_version = quote.last_version
+          return ServiceResult.failure("Quote have no version recorded, it's likely a bug") unless quote_version
+
+          ensure_quote_have_not_been_converted_already!(quote)
 
           ActiveRecord::Base.transaction do
             order = create_order!(quote, quote_version)
@@ -83,6 +84,10 @@ module Organization
           raise r.error if r.failure?
 
           r.data
+        end
+
+        def ensure_quote_have_not_been_converted_already!(quote)
+          raise Error::UnprocessableEntityError, "Quote has already been converted to an order" if quote.orders.any?
         end
       end
     end

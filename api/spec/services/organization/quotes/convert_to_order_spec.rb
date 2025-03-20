@@ -8,7 +8,7 @@ module Organization
         let(:company) { FactoryBot.create(:company) }
         let(:client) { FactoryBot.create(:client, company: company) }
         let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
-        let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
+        let!(:quote_version) { FactoryBot.create(:project_version, project: quote) }
 
         context 'when successful' do
           before {  # Create groups
@@ -57,7 +57,7 @@ module Organization
           ) }
 
           it 'creates an order with the same structure as the quote' do
-            result = described_class.call(quote_version.id)
+            result = described_class.call(quote.id)
 
             expect(result).to be_success
             order = result.data
@@ -83,7 +83,7 @@ module Organization
           end
 
           it 'preserves all item attributes' do
-            result = described_class.call(quote_version.id)
+            result = described_class.call(quote.id)
             order_version = result.data.versions.first
 
             quote_version.items.each do |quote_item|
@@ -99,26 +99,21 @@ module Organization
           end
         end
 
-        context 'when quote version not found' do
+        context 'when quote not found' do
           it 'returns failure' do
             result = described_class.call(-1)
             expect(result).to be_failure
-            expect(result.error).to eq("Quote version not found")
+            expect(result.error).to eq("Failed to convert quote to order: Couldn't find Organization::Quote with 'id'=-1")
           end
         end
 
-        context 'when project is not a quote' do
-          let(:other_order) {
-            quote= FactoryBot.create(:quote, client: client, company: company)
-            quote_version= FactoryBot.create(:project_version, project: quote)
-            FactoryBot.create(:order, client: client, company: company, original_quote_version: quote_version)
-          }
-          let(:order_version) { FactoryBot.create(:project_version, project: other_order) }
+        context 'when quote have already been converted' do
+          before { described_class.call(quote.id) }
 
           it 'returns failure' do
-            result = described_class.call(order_version.id)
+            result = described_class.call(quote.id)
             expect(result).to be_failure
-            expect(result.error).to eq("Project is not a quote")
+            expect(result.error).to eq("Failed to convert quote to order: Quote has already been converted to an order")
           end
         end
 
