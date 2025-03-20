@@ -8,7 +8,7 @@ export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/orders/$orderId/"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { companyId, orderId } }) =>
+  loader: ({ context: { queryClient }, params: { orderId } }) =>
     queryClient
       .ensureQueryData(
         Api.queryOptions("get", "/api/v1/organization/orders/{id}", {
@@ -21,12 +21,10 @@ export const Route = createFileRoute(
         await queryClient.ensureQueryData(
           Api.queryOptions(
             "get",
-            "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}",
+            "/api/v1/organization/project_versions/{id}",
             {
               params: {
                 path: {
-                  company_id: Number(companyId),
-                  order_id: Number(orderId),
                   id: projectData.result.last_version.id,
                 },
               },
@@ -51,8 +49,9 @@ function RouteComponent() {
       </Layout.Header>
       <Layout.Content>
         <ProjectShowContent
+          type="order"
           companyId={Number(companyId)}
-          orderId={Number(orderId)}
+          projectId={Number(orderId)}
           client={project.client}
           lastVersionId={project.last_version.id}
           initialVersionId={project.last_version.id}

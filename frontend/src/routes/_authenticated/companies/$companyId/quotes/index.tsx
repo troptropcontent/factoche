@@ -62,6 +62,9 @@ function RouteComponent() {
             <TableHeader>
               <TableRow>
                 <TableHead>
+                  {t("pages.companies.quotes.index.table.columns.number")}
+                </TableHead>
+                <TableHead>
                   {t("pages.companies.quotes.index.table.columns.name")}
                 </TableHead>
                 <TableHead>
@@ -90,7 +93,8 @@ function RouteComponent() {
                     }
                   }}
                 >
-                  <TableCell className="font-medium">{quote.name}</TableCell>
+                  <TableCell className="font-medium">{quote.number}</TableCell>
+                  <TableCell title={quote.name}>{quote.name}</TableCell>
                   <TableCell>{quote.client.name}</TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {

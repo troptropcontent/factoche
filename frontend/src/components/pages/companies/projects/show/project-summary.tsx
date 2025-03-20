@@ -3,17 +3,19 @@ import { Api } from "@/lib/openapi-fetch-query-client";
 import { Trans, useTranslation } from "react-i18next";
 
 export function ProjectSummary({
-  routeParams: { orderId },
+  routeParams: { projectId },
+  type,
 }: {
-  routeParams: { orderId: number };
+  routeParams: { projectId: number };
+  type: "quote" | "order";
 }) {
   const { t } = useTranslation();
   const { data, isLoading } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{id}",
+    `/api/v1/organization/${type}s/{id}`,
     {
       params: {
-        path: { id: Number(orderId) },
+        path: { id: Number(projectId) },
       },
     }
   );
@@ -25,7 +27,7 @@ export function ProjectSummary({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="text-xl">
           {t("pages.companies.projects.show.project_summary.title")}
         </CardTitle>
       </CardHeader>
