@@ -1,0 +1,67 @@
+<% I18n.with_locale(@locale) do %>
+  <header class="header text-xs">
+    <div class="flex justify-between">
+      <%= image_tag("images/logo_cheyere.png") %>
+      <table>
+        <tbody>
+          <tr>
+            <th colspan="2" class="px-2 bg-gray-200 border-1 rounded rounded-b-none text-2xl">
+              <%= if @project.is_a?(Organization::Quote)
+                    t("views.organization.quote.title") 
+                  elsif @project.is_a?(Organization::Order)
+                    t("views.organization.order.title")
+                  end %>
+            </th>
+          </tr>
+          <% [{
+            label: t("views.organization.quote.number"),
+            data: @project.number
+          }, {
+            label: t("views.organization.quote.version.number"),
+            data: @project_version.number
+          }, {
+            label: t("views.organization.quote.issue_date"), 
+            data: l(@project_version.created_at, format: :short)
+          }].each_with_index do |row, index| %>
+            <tr class="group">
+              <th class="text-left px-2 bg-gray-200 border-1 border-t-0 group-[:last-child]:rounded-bl">
+                <%= row[:label] %>
+              </th>
+              <td class="px-2 text-right border-1 border-t-0 border-l-0 group-[:last-child]:rounded-br">
+                <%= row[:data] %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </header>
+
+  <main class="text-xs">
+    <section class="mb-8">
+      <table class="w-full">
+            <tbody>
+                <tr>
+                    <th colspan="2" class="px-2 py-1 bg-gray-200 border rounded rounded-b-none">
+                        <%= t("views.organization.quote.context.title") %>
+                    </th>
+                </tr>
+                <tr>
+                    <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+                    <%= t("views.organization.quote.context.name_html",
+                            name: @project.name) %>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <section class="mb-8">
+      <% @project_version.item_groups.each do |group| %>
+        <%= render "project_group", group: group, items: group.grouped_items %>
+      <% end %>
+    </section>
+    <section class="mb-8">
+      <%= render "project_total", project_version_total_excl_tax_amount: @project_version_total_excl_tax_amount, project_version_vat_amount: @project_version_vat_amount %>
+    </section>
+  </main>
+<% end %>
