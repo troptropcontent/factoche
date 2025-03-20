@@ -1,12 +1,8 @@
-import { z } from "zod";
-import { step1FormSchema, step2FormSchema } from "./project-form.schema";
-
 const newItemGroup = (position: number) => {
   return {
     name: "",
     description: "",
     position: position,
-    type: "group" as const,
     items: [],
   };
 };
@@ -48,56 +44,4 @@ const computeItemsTotal = (items: Array<SingleItem | ItemGroup>) => {
   }, 0);
 };
 
-const buildApiRequestBody = ({
-  name,
-  client_id,
-  items,
-  retention_guarantee_rate,
-  description,
-}: z.infer<typeof step1FormSchema> & z.infer<typeof step2FormSchema>) => {
-  const simpleItems = items
-    .filter((item) => item.type == "item")
-    .map(({ name, description, position, quantity, unit, unit_price }) => ({
-      name,
-      description,
-      position,
-      quantity,
-      unit,
-      unit_price_cents: Math.round(unit_price * 100),
-    }));
-  const groupItems = items
-    .filter((item) => item.type == "group")
-    .map(({ name, description, position, items }) => ({
-      name,
-      description,
-      position,
-      items: items.map(
-        ({ name, description, position, quantity, unit, unit_price }) => ({
-          name,
-          description,
-          position,
-          quantity,
-          unit,
-          unit_price_cents: Math.round(unit_price * 100),
-        })
-      ),
-    }));
-
-  const mappedItems = simpleItems.length > 1 ? simpleItems : groupItems;
-
-  return {
-    name,
-    description,
-    retention_guarantee_rate: Math.round(retention_guarantee_rate * 100),
-    client_id,
-    items: mappedItems,
-  };
-};
-
-export {
-  newItem,
-  newItemGroup,
-  findNextPosition,
-  computeItemsTotal,
-  buildApiRequestBody,
-};
+export { newItem, newItemGroup, findNextPosition, computeItemsTotal };

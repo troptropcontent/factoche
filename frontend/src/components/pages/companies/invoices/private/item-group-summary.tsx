@@ -22,7 +22,7 @@ const ItemGroupSummary = ({
   >["items"];
 }) => {
   const { t } = useTranslation();
-  console.log({ items });
+
   return (
     <Card className="mb-4 last:mb-0">
       <CardHeader>

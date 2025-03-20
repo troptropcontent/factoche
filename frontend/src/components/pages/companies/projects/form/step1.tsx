@@ -178,13 +178,18 @@ const Step1 = ({
                   "pages.companies.projects.form.basic_info_step.retention_guarantee_rate_input_label"
                 )}
               </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
-              </FormControl>
+              <div className="relative w-24">
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  />
+                </FormControl>
+                <span className="absolute inset-y-0 right-6 flex items-center pr-2 pointer-events-none">
+                  %
+                </span>
+              </div>
               <FormDescription>
                 {t(
                   "pages.companies.projects.form.basic_info_step.retention_guarantee_rate_input_description"
