@@ -11,6 +11,8 @@ class Organization::ProjectVersion < ApplicationRecord
 
   has_many :completion_snapshots, class_name: "Organization::CompletionSnapshot"
 
+  has_one :order, class_name: "Organization::Order", foreign_key: :original_quote_version_id
+
   validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   validates :number, presence: true, uniqueness: { scope: :project_id }
