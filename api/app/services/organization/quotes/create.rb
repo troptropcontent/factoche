@@ -33,7 +33,7 @@ module Organization
           Organization::Quote.create!(
             company_id: company_id,
             client_id: client_id,
-            number: 1,
+            number: find_next_quote_number!(company_id),
             name: validated_params[:name],
             description: validated_params[:description]
           )
@@ -121,6 +121,13 @@ module Organization
               "Found empty groups with no items: #{unused_group_names}"
             )
           end
+        end
+
+        def find_next_quote_number!(company_id)
+          r = Projects::FindNextNumber.call(company_id, Quote)
+          raise r.error if r.failure?
+
+          r.data
         end
       end
     end

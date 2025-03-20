@@ -26,7 +26,7 @@ module Organization
           Order.create!(
             quote.attributes.except(
               "id", "type", "created_at", "updated_at", "original_quote_version_id"
-            ).merge(original_quote_version: quote_version)
+            ).merge(original_quote_version: quote_version, number: find_next_order_number!(quote.company_id))
           )
         end
 
@@ -76,6 +76,13 @@ module Organization
           source_version.items.where(item_group_id: nil).order(:position).each do |source_item|
             create_item!(source_item, target_version)
           end
+        end
+
+        def find_next_order_number!(company_id)
+          r = Projects::FindNextNumber.call(company_id, Quote)
+          raise r.error if r.failure?
+
+          r.data
         end
       end
     end
