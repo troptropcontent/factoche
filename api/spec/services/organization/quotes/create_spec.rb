@@ -50,7 +50,7 @@ RSpec.describe Organization::Quotes::Create do
     end
 
     context 'when params are valid' do
-      subject(:result) { described_class.call(client.id, valid_params) }
+      subject(:result) { described_class.call(company.id, client.id, valid_params) }
 
       it 'creates a quote with all associated records' do
         expect { result }.to change(Organization::Quote, :count).by(1)
@@ -110,7 +110,7 @@ RSpec.describe Organization::Quotes::Create do
       end
 
       it 'creates items without groups', :aggregate_failures do
-        result = described_class.call(client.id, params_without_groups)
+        result = described_class.call(company.id, client.id, params_without_groups)
 
         expect(result).to be_success
         expect(result.data.versions.first.items.count).to eq(1)
@@ -123,7 +123,7 @@ RSpec.describe Organization::Quotes::Create do
         let(:invalid_params) { valid_params.except(:name) }
 
         it 'returns failure with validation errors', :aggregate_failures do
-          result = described_class.call(client.id, invalid_params)
+          result = described_class.call(company.id, client.id, invalid_params)
 
           expect(result).to be_failure
           expect(result.error).to be_a(Error::UnprocessableEntityError)
@@ -132,7 +132,7 @@ RSpec.describe Organization::Quotes::Create do
 
       context 'with invalid client_id' do
         it 'returns failure', :aggregate_failures do
-          result = described_class.call(-1, valid_params)
+          result = described_class.call(company.id, -1, valid_params)
 
           expect(result).to be_failure
           expect(result.error).to be_a(StandardError)
@@ -148,7 +148,7 @@ RSpec.describe Organization::Quotes::Create do
 
         it 'rolls back the transaction' do
           expect {
-            described_class.call(client.id, params_with_invalid_group)
+            described_class.call(company.id, client.id, params_with_invalid_group)
           }.not_to change(Organization::Quote, :count)
         end
       end
@@ -161,12 +161,12 @@ RSpec.describe Organization::Quotes::Create do
 
       it 'rolls back all changes' do
         expect {
-          described_class.call(client.id, valid_params)
+          described_class.call(company.id, client.id, valid_params)
         }.not_to change(Organization::Quote, :count)
       end
 
       it 'returns failure', :aggregate_failures do
-        result = described_class.call(client.id, valid_params)
+        result = described_class.call(company.id, client.id, valid_params)
 
         expect(result).to be_failure
         expect(result.error).to be_a(ActiveRecord::RecordInvalid)

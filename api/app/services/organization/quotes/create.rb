@@ -2,7 +2,7 @@ module Organization
   module Quotes
     class Create
       class << self
-        def call(client_id, params)
+        def call(company_id, client_id, params)
           validated_params = validate_params!(params)
 
           ensure_valid_item_group_uuid!(validated_params)
@@ -10,7 +10,7 @@ module Organization
           ensure_each_group_is_used!(validated_params)
 
           ActiveRecord::Base.transaction do
-            quote = create_quote(client_id, validated_params)
+            quote = create_quote(company_id, client_id, validated_params)
             version = create_version(quote, validated_params)
             create_items_structure(version, validated_params)
 
@@ -29,9 +29,11 @@ module Organization
           result.to_h
         end
 
-        def create_quote(client_id, validated_params)
+        def create_quote(company_id, client_id, validated_params)
           Organization::Quote.create!(
+            company_id: company_id,
             client_id: client_id,
+            number: 1,
             name: validated_params[:name],
             description: validated_params[:description]
           )
