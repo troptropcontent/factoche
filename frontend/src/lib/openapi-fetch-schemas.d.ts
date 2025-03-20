@@ -1054,7 +1054,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}": {
+    "/api/v1/organization/project_versions/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1067,8 +1067,6 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    company_id: number;
-                    order_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -1085,13 +1083,6 @@ export interface paths {
                             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
                         };
                     };
-                };
-                /** @description not authorised */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description not found */
                 404: {
@@ -1665,6 +1656,8 @@ export interface components {
             /** Format: decimal */
             unit_price_amount: string;
             item_group_id?: number | null;
+            /** Format: decimal */
+            tax_rate: string;
         };
         "Organization::ProjectDtoItemDto": {
             id: number;
@@ -1762,6 +1755,7 @@ export interface components {
         };
         "Organization::Projects::BaseCompactDto": {
             id: number;
+            number: number;
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
@@ -1771,6 +1765,7 @@ export interface components {
         };
         "Organization::Projects::BaseExtendedDto": {
             id: number;
+            number: number;
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
@@ -1813,6 +1808,7 @@ export interface components {
         };
         "Organization::Projects::Orders::CompactDto": {
             id: number;
+            number: number;
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
@@ -1824,6 +1820,7 @@ export interface components {
         };
         "Organization::Projects::Orders::ExtendedDto": {
             id: number;
+            number: number;
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
@@ -1842,21 +1839,24 @@ export interface components {
         };
         "Organization::Projects::Quotes::CompactDto": {
             id: number;
+            number: number;
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            status: "draft" | "validated";
         };
         "Organization::Projects::Quotes::ExtendedDto": {
             id: number;
+            number: number;
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
             /** @enum {string} */
             status: "draft" | "validated";
+            orders: components["schemas"]["Organization::Projects::Orders::ExtendedDto"][];
         };
         "Organization::Projects::Quotes::IndexDto": {
             results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];

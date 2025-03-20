@@ -963,7 +963,7 @@ paths:
           description: not authorised
         '404':
           description: not found
-  "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions/{id}":
+  "/api/v1/organization/project_versions/{id}":
     get:
       summary: Show the order version details
       tags:
@@ -971,16 +971,6 @@ paths:
       security:
       - bearerAuth: []
       parameters:
-      - name: company_id
-        in: path
-        required: true
-        schema:
-          type: integer
-      - name: order_id
-        in: path
-        required: true
-        schema:
-          type: integer
       - name: id
         in: path
         required: true
@@ -998,8 +988,6 @@ paths:
                 properties:
                   result:
                     "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-        '401':
-          description: not authorised
         '404':
           description: not found
   "/api/v1/organization/companies/{company_id}/quotes":
@@ -2018,6 +2006,7 @@ components:
       - quantity
       - unit
       - unit_price_amount
+      - tax_rate
       properties:
         id:
           type: integer
@@ -2040,6 +2029,9 @@ components:
         item_group_id:
           type: integer
           nullable: true
+        tax_rate:
+          type: string
+          format: decimal
     Organization::ProjectDtoItemDto:
       type: object
       required:
@@ -2304,12 +2296,15 @@ components:
       type: object
       required:
       - id
+      - number
       - name
       - client
       - last_version
       - status
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2331,12 +2326,15 @@ components:
       type: object
       required:
       - id
+      - number
       - name
       - client
       - last_version
       - status
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2449,6 +2447,7 @@ components:
       type: object
       required:
       - id
+      - number
       - name
       - client
       - last_version
@@ -2456,6 +2455,8 @@ components:
       - invoiced_amount
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2480,6 +2481,7 @@ components:
       type: object
       required:
       - id
+      - number
       - name
       - client
       - last_version
@@ -2488,6 +2490,8 @@ components:
       - invoiced_amount
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2530,12 +2534,15 @@ components:
       type: object
       required:
       - id
+      - number
       - name
       - client
       - last_version
       - status
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2549,20 +2556,22 @@ components:
         status:
           type: string
           enum:
-          - new
-          - invoicing_in_progress
-          - invoiced
-          - canceled
+          - draft
+          - validated
     Organization::Projects::Quotes::ExtendedDto:
       type: object
       required:
       - id
+      - number
       - name
       - client
       - last_version
       - status
+      - orders
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2578,6 +2587,10 @@ components:
           enum:
           - draft
           - validated
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
     Organization::Projects::Quotes::IndexDto:
       type: object
       required:
