@@ -5,7 +5,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
 
   let(:company) { FactoryBot.create(:company) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:project) { FactoryBot.create(:quote, client: client) }
+  let(:project) { FactoryBot.create(:quote, client: client, company: company) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -95,7 +95,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
       before {
         FactoryBot.create(:project_version, project: project)
         FactoryBot.create(:project_version, project: project)
-        another_project = FactoryBot.create(:quote, client: client, name: "AnotherProject")
+        another_project = FactoryBot.create(:quote, client: client, company: company, name: "AnotherProject")
         FactoryBot.create(:project_version, project: another_project)
         FactoryBot.create(:project_version, project: another_project)
         FactoryBot.create(:project_version, project: another_project)

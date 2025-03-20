@@ -7,7 +7,7 @@ module Organization
       describe '.call', :aggregate_failures do
         let(:company) { FactoryBot.create(:company) }
         let(:client) { FactoryBot.create(:client, company: company) }
-        let(:quote) { FactoryBot.create(:quote, client: client) }
+        let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
         let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
 
         context 'when successful' do
@@ -109,9 +109,9 @@ module Organization
 
         context 'when project is not a quote' do
           let(:other_order) {
-            quote= FactoryBot.create(:quote, client: client)
+            quote= FactoryBot.create(:quote, client: client, company: company)
             quote_version= FactoryBot.create(:project_version, project: quote)
-            FactoryBot.create(:order, client: client, original_quote_version: quote_version)
+            FactoryBot.create(:order, client: client, company: company, original_quote_version: quote_version)
           }
           let(:order_version) { FactoryBot.create(:project_version, project: other_order) }
 

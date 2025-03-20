@@ -5,9 +5,9 @@ RSpec.shared_context 'a company with a project with three item groups' do
   let(:company) { FactoryBot.create(:company) }
   let!(:company_config) { FactoryBot.create(:company_config, company: company) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:quote) { FactoryBot.create(:quote, client: client) }
+  let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
   let(:quote_version) { FactoryBot.create(:project_version, project: quote, retention_guarantee_rate: project_version_retention_guarantee_rate) }
-  let(:project) { FactoryBot.create(:order, client: client, original_quote_version: quote_version) }
+  let(:project) { FactoryBot.create(:order, client: client, company: company, original_quote_version: quote_version) }
   let(:project_version) { FactoryBot.create(:project_version, project: project, retention_guarantee_rate: project_version_retention_guarantee_rate) }
   let(:order) { project }
   let(:order_version) { project_version }

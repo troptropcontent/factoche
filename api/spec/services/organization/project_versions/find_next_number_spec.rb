@@ -4,7 +4,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
   describe '.call' do
     let(:company) { FactoryBot.create(:company) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:quote) { FactoryBot.create(:quote, client: client) }
+    let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
     let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
     let(:project) { quote }
 
@@ -29,7 +29,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
     end
 
     context 'when the project is a order' do
-      let(:project) { FactoryBot.create(:order, original_quote_version: quote_version, client: client) }
+      let(:project) { FactoryBot.create(:order, original_quote_version: quote_version, client: client, company: company) }
 
       it 'returns the first version number with the relevant prefix', :aggregate_failures do
         result = described_class.call(project)

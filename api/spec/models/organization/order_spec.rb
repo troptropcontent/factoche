@@ -4,9 +4,9 @@ RSpec.describe Organization::Order, type: :model do
   describe 'validations' do
     let(:company) { FactoryBot.create(:company) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:original_quote) { FactoryBot.create(:quote, client: client) }
+    let(:original_quote) { FactoryBot.create(:quote, client: client, company: company) }
     let(:original_quote_version) { FactoryBot.create(:project_version, project: original_quote) }
-    let(:order) { FactoryBot.build(:order, client: client, original_quote_version: original_quote_version) }
+    let(:order) { FactoryBot.build(:order, client: client, company: company, original_quote_version: original_quote_version) }
 
     it 'is valid with original_quote_version_id' do
       expect(order).to be_valid
@@ -28,9 +28,9 @@ RSpec.describe Organization::Order, type: :model do
   describe 'associations' do
     let(:company) { FactoryBot.create(:company) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:original_quote) { FactoryBot.create(:quote, client: client) }
+    let(:original_quote) { FactoryBot.create(:quote, client: client, company: company) }
     let(:original_quote_version) { FactoryBot.create(:project_version, project: original_quote) }
-    let(:order) { FactoryBot.create(:order, client: client, original_quote_version: original_quote_version) }
+    let(:order) { FactoryBot.create(:order, client: client, original_quote_version: original_quote_version, company: company) }
 
     it 'belongs to original_quote_version' do
       expect(order.original_quote_version).to eq(original_quote_version)
