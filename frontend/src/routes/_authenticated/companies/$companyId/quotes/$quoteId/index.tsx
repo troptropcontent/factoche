@@ -1,13 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
-  '/_authenticated/companies/$companyId/quotes/$quoteId/',
+  "/_authenticated/companies/$companyId/quotes/$quoteId/"
 )({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   return (
-    <div>Hello "/_authenticated/companies/$companyId/quotes/$quoteId/"!</div>
-  )
+    <>
+      <div>Hello "/_authenticated/companies/$companyId/quotes/$quoteId/"!</div>
+    </>
+  );
 }

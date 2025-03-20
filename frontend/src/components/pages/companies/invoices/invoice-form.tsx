@@ -56,8 +56,6 @@ const InvoiceForm = ({
     [initialValues, items]
   );
 
-  console.log({ formInitialValues });
-
   const form = useForm<z.infer<typeof invoiceFormSchema>>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: formInitialValues,

@@ -7,30 +7,29 @@ const step1FormSchema = z.object({
   retention_guarantee_rate: z.number(),
 });
 
-const baseItemSchema = z.object({
-  name: z.string().min(1),
-  position: z.number().min(0),
-  description: z.string().optional(),
-});
-
-const itemSchema = baseItemSchema.and(
-  z.object({
-    type: z.literal("item"),
-    unit: z.string().min(1),
-    quantity: z.number().min(1),
-    unit_price: z.number().min(0.01),
-  })
-);
-
-const itemGroupSchema = baseItemSchema.and(
-  z.object({
-    type: z.literal("group"),
-    items: itemSchema.array().min(1),
-  })
-);
-
 const step2FormSchema = z.object({
-  items: z.union([itemSchema, itemGroupSchema]).array().min(1),
+  items: z
+    .object({
+      group_uuid: z.string().optional(),
+      uuid: z.string(),
+      name: z.string().min(1),
+      position: z.number().min(0),
+      description: z.string().optional(),
+      unit: z.string().min(1),
+      quantity: z.number().min(1),
+      unit_price_amount: z.number().min(0.01),
+      tax_rate: z.number(),
+    })
+    .array()
+    .min(1),
+  groups: z
+    .object({
+      uuid: z.string(),
+      name: z.string().min(1),
+      position: z.number().min(0),
+      description: z.string().optional(),
+    })
+    .array(),
 });
 
 const formSchema = step1FormSchema.and(step2FormSchema);

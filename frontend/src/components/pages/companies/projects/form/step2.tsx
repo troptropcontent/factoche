@@ -7,15 +7,14 @@ import { z } from "zod";
 import { step2FormSchema } from "./project-form.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { findNextPosition, newItemGroup } from "./project-form.utils";
-import { useMemo } from "react";
+import { findNextPosition } from "./project-form.utils";
 import { Form } from "@/components/ui/form";
 import { useTranslation } from "react-i18next";
 import { ProjectFormItemsTotal } from "./private/project-form-items-total";
 import { ItemGroup } from "./private/item-group";
-import { Item } from "./private/item";
 import { FileDiff, Plus } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { newGroupInput } from "./private/utils";
 
 const Step2 = ({
   send,
@@ -29,23 +28,21 @@ const Step2 = ({
     resolver: zodResolver(step2FormSchema),
     defaultValues: initialValues,
   });
+
   const {
-    fields: items,
-    append: appendItems,
-    remove: removeItemWithIndex,
+    fields: groups,
+    append: appendGroups,
+    remove: removeGroupWithIndex,
   } = useFieldArray({
     control: form.control,
-    name: "items",
+    name: "groups",
   });
 
-  const addNewItemGroupToItemGroups = () => {
-    appendItems(newItemGroup(findNextPosition(items)));
+  const addNewGroupInput = () => {
+    appendGroups(newGroupInput(findNextPosition(groups)));
   };
 
-  const positionnedItems = useMemo(
-    () => items.sort((a, b) => a.position - b.position),
-    [items]
-  );
+  const positionnedGroups = groups.sort((a, b) => a.position - b.position);
 
   const onSubmit: SubmitHandler<z.infer<typeof step2FormSchema>> = (data) => {
     send({
@@ -60,30 +57,20 @@ const Step2 = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="px-6 flex flex-col flex-grow"
       >
-        {}
-        {positionnedItems.length > 0 ? (
+        {positionnedGroups.length > 0 ? (
           <>
-            {positionnedItems.map((item, index) =>
-              item.type == "group" ? (
-                <ItemGroup
-                  key={item.id}
-                  index={index}
-                  remove={() => removeItemWithIndex(index)}
-                />
-              ) : (
-                <Item
-                  key={item.id}
-                  index={index}
-                  parentFieldName="items"
-                  remove={() => removeItemWithIndex(index)}
-                />
-              )
-            )}
+            {positionnedGroups.map((group, index) => (
+              <ItemGroup
+                uuid={group.uuid}
+                key={group.id}
+                remove={() => removeGroupWithIndex(index)}
+              />
+            ))}
             <div className="flex flex-row-reverse justify-between pb-4">
               <Button
                 variant="outline"
                 type="button"
-                onClick={addNewItemGroupToItemGroups}
+                onClick={addNewGroupInput}
               >
                 <Plus /> {t("pages.companies.projects.form.add_item_group")}
               </Button>
@@ -101,7 +88,7 @@ const Step2 = ({
             actionLabel={t(
               "pages.companies.projects.form.composition_step.empty_state.action_label"
             )}
-            onAction={addNewItemGroupToItemGroups}
+            onAction={addNewGroupInput}
             className="flex-grow mb-4"
           />
         )}
@@ -117,7 +104,7 @@ const Step2 = ({
             {t("pages.companies.projects.form.previous_button_label")}
           </Button>
           <ProjectFormItemsTotal />
-          <Button type="submit" disabled={items.length == 0}>
+          <Button type="submit" disabled={groups.length == 0}>
             {t("pages.companies.projects.form.next_button_label")}
           </Button>
         </div>

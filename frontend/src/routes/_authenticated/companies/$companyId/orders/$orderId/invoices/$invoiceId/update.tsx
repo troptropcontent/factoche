@@ -70,8 +70,6 @@ function RouteComponent() {
           }),
         };
 
-  console.log({ formInitialValues });
-
   return (
     <Layout.Root>
       <Layout.Header>

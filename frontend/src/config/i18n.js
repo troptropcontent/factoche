@@ -124,23 +124,23 @@ i18n
                                 "form": {
                                     "next_button_label": "Suivant", 
                                     "previous_button_label": "Précédent",
-                                    "submit_button_label": "Créer le projet",
+                                    "submit_button_label": "Enregistrer",
                                     "basic_info_step": {
                                         "progress_bar_label": "Informations de base",
                                         "client_id_input_label": "Client",
                                         "client_id_input_placeholder": "Sélectionner un client",
                                         "client_id_input_description": "Vous pouvez ajouter un client dans votre section <a >clients</a>",
                                         "retention_guarantee_rate_input_label": "Retenue de garantie (%)",
-                                        "retention_guarantee_rate_input_description": "Retenue de garantie (%) qui sera appliquée sur le projet.",
+                                        "retention_guarantee_rate_input_description": "Retenue de garantie (%) qui sera appliquée sur les factures de situation.",
                                         "name_input_label": "Nom",
-                                        "name_input_placeholder": "Nom du projet",
-                                        "name_input_description": "Nom que vous souhaitez donner à votre projet qui sera affiché dans l'application.",
+                                        "name_input_placeholder": "Nom de la commande",
+                                        "name_input_description": "Nom que vous souhaitez donner à la commande qui sera affiché dans l'application et sur les factures.",
                                         "description_input_label": "Description",
-                                        "description_input_placeholder": "Description du projet",
-                                        "description_input_description": "Description du projet qui sera affiché dans l'application, optionnel.",
+                                        "description_input_placeholder": "Description de la commande",
+                                        "description_input_description": "Description de la commande qui sera affiché dans l'application, optionnel.",
                                     },
                                     "composition_step": {
-                                        "progress_bar_label": "Composition du projet",
+                                        "progress_bar_label": "Composition de la commande",
                                         "item_name_input_label": "Nom",
                                         "item_name_input_placeholder": "Nom de l'élément",
                                         "item_name_input_description": "Nom de l'élément, ce nom sera repris dans les factures.",
@@ -163,6 +163,8 @@ i18n
                                         "no_items_error": "Vous devez ajouter au moins un élément au projet",
                                         "no_items_in_group_error": "Vous devez ajouter au moins un élément au groupe",
                                         "items_total_label": "Total des différents éléments: {{total}}",
+                                        "tax_rate_input_label": "Taux de TVA",
+                                        "tax_rate_input_description": "Taux de TVA appliqué à l'élément",
                                         "empty_state": {
                                             "title": "Aucun élément trouvé",
                                             "description": "Ajouter un premier groupe d'éléments pour commencer",
@@ -171,11 +173,17 @@ i18n
                                     },
                                     "confirmation_step": {
                                         "progress_bar_label": "Confirmation",
-                                        "total_project_amount_label": "Total du projet: {{total}}",
+                                        "total_project_amount_label": "Total de la commande: {{total}}",
                                         "group_total_label": "Total du groupe: {{total}}",
+                                        "toast": {
+                                            "success_toast_title": "Devis enregistré",
+                                            "success_toast_description": "Le devis a été enregistré avec succès",
+                                            "error_toast_title": "Une erreur est survenue",
+                                            "error_toast_description": "Une erreur est survenue lors de l'enregistrement du devis, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
+                                        },
                                         "item": "Element",
                                     },
-                                    "project_composition": "Composition du projet",
+                                    "project_composition": "Composition de la commande",
                                     "project_confirmation": "Confirmation",
                                     "add_item": "Ajouter un élément",
                                     "add_item_group": "Ajouter un groupe d'éléments",
@@ -304,6 +312,9 @@ i18n
                                 }
                             },
                             "quotes": {
+                                "new": {
+                                    "title": "Nouveau devis",
+                                },
                                 "status": {
                                     "draft": "Brouillon",
                                     "validated": "Validé",
