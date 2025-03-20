@@ -2,9 +2,10 @@ module Organization
   class Quote < Project
     NUMBER_PREFIX = "QUO".freeze
     validates :original_quote_version_id, absence: true
+    has_many :orders, through: :versions
 
     def status
-      Order.where(original_quote_version_id: versions.pluck(:id)).exists? ? "validated" : "draft"
+      orders.any? ? "validated" : "draft"
     end
   end
 end
