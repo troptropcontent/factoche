@@ -123,3 +123,19 @@ fr:
             previously_invoiced_label_html: "Déjà facturé"
             new_completion_label_html: "Avancement"
             new_invoice_label_html: "À facturer"
+      quote:
+        title: "Devis"
+        number: "Numéro du devis"
+        issue_date: "Date de création"
+        context:
+          title: "Contexte"
+          name_html: "<strong>Designation :</strong> %{name}"
+        version:
+          title: "Version du devis"
+          number: "Numéro de version"
+          groups:
+            columns:
+              name: "Désignation"
+              quantity: "Quantité"
+              unit_price: "Prix unitaire"
+              total: "Total"

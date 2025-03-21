@@ -728,6 +728,10 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
+  .border-0 {
+    border-style: var(--tw-border-style);
+    border-width: 0px;
+  }
   .border-1 {
     border-style: var(--tw-border-style);
     border-width: 1px;
@@ -735,10 +739,6 @@
   .border-t-0 {
     border-top-style: var(--tw-border-style);
     border-top-width: 0px;
-  }
-  .border-t-1 {
-    border-top-style: var(--tw-border-style);
-    border-top-width: 1px;
   }
   .border-b-1 {
     border-bottom-style: var(--tw-border-style);
@@ -756,6 +756,9 @@
   }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
+  }
+  .py-0 {
+    padding-block: calc(var(--spacing) * 0);
   }
   .py-0\.5 {
     padding-block: calc(var(--spacing) * 0.5);
@@ -923,6 +926,42 @@
   .select-all {
     -webkit-user-select: all;
     user-select: all;
+  }
+  .group-\[\:first-child\]\:rounded-tl {
+    &:is(:where(.group):is(:first-child) *) {
+      border-top-left-radius: 0.25rem;
+    }
+  }
+  .group-\[\:first-child\]\:rounded-tr {
+    &:is(:where(.group):is(:first-child) *) {
+      border-top-right-radius: 0.25rem;
+    }
+  }
+  .group-\[\:first-child\]\:border-t-1 {
+    &:is(:where(.group):is(:first-child) *) {
+      border-top-style: var(--tw-border-style);
+      border-top-width: 1px;
+    }
+  }
+  .group-\[\:last-child\]\:rounded {
+    &:is(:where(.group):is(:last-child) *) {
+      border-radius: 0.25rem;
+    }
+  }
+  .group-\[\:last-child\]\:rounded-br {
+    &:is(:where(.group):is(:last-child) *) {
+      border-bottom-right-radius: 0.25rem;
+    }
+  }
+  .group-\[\:last-child\]\:rounded-bl {
+    &:is(:where(.group):is(:last-child) *) {
+      border-bottom-left-radius: 0.25rem;
+    }
+  }
+  .group-\[\:last-child_\&\]\:rounded {
+    &:is(:last-child :where(.group) *) {
+      border-radius: 0.25rem;
+    }
   }
   .last\:mb-0 {
     &:last-child {

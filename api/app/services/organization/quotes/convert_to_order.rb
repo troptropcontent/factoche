@@ -3,6 +3,7 @@ module Organization
     class ConvertToOrder
       class << self
         def call(quote_id)
+          return ServiceResult.failure("quote_id must be an integer") unless quote_id.is_a?(Integer)
           quote = Quote.find(quote_id)
 
           quote_version = quote.last_version

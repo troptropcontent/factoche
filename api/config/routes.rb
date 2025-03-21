@@ -18,6 +18,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :prints, only: [] do
+    collection do
+      get "quotes/:quote_id/quote_versions/:id", action: :quote_version, as: :quote
+    end
+  end
+
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       namespace :auth do

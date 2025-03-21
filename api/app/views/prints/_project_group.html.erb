@@ -1,0 +1,45 @@
+<div class="break-inside-avoid last:mb-0 w-full border-1 rounded mb-8">
+  <p class="bg-gray-200 p-2 rounded-t font-bold text-center border-b-1">
+    <%= group.name %>
+  </p>
+
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th scope="col" class="p-2 border-b-1 align-top text-left w-[30%]">
+          <%= t("views.organization.quote.version.groups.columns.name") %>
+        </th>
+        <th scope="col" class="p-2 border-b-1 align-top text-center w-[17.5%]">
+          <%= t("views.organization.quote.version.groups.columns.quantity") %><br>
+          <p class="text-[calc(var(--text-xs)*0.80)] font-light text-center">(A)</p>
+        </th>
+        <th scope="col" class="p-2 border-b-1 text-center w-[17.5%]">
+          <%= t("views.organization.quote.version.groups.columns.unit_price") %><br>
+          <p class="text-[calc(var(--text-xs)*0.80)] font-light text-center">(B)</p>
+        </th>
+        <th scope="col" class="p-2 border-b-1 text-center w-[17.5%]">
+          <%= t("views.organization.quote.version.groups.columns.total") %><br>
+          <p class="text-[calc(var(--text-xs)*0.80)] font-light text-center">(A x B)</p>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.map do |item| %>
+        <tr>
+            <th scope="row" class="text-left p-2">
+              <%= item["name"] %><br>
+            </th>
+            <td class="text-center p-2">
+              <%= item.quantity %>
+            </td>
+            <td class="text-center p-2">
+              <%= number_to_currency(item.unit_price_amount) %>
+            </td>
+            <td class="text-center p-2">
+              <%= number_to_currency(item.quantity * item.unit_price_amount) %>
+            </td>
+          </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

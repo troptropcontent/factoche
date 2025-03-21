@@ -1,4 +1,6 @@
 class Organization::ProjectVersion < ApplicationRecord
+  include PdfAttachable
+
   belongs_to :project, class_name: "Organization::Project"
 
   has_many :items, dependent: :destroy, class_name: "Organization::Item"
