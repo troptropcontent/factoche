@@ -26,11 +26,12 @@ const QuoteSpecificSection = ({
     "post",
     "/api/v1/organization/quotes/{id}/convert_to_order"
   );
-  const documentUrl = undefined;
 
   if (quote == undefined) {
     return null;
   }
+
+  const documentUrl = quote.last_version.pdf_url;
 
   const order = quote.orders[0];
   const convertToOrder = () => {
