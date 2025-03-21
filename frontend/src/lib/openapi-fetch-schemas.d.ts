@@ -1749,6 +1749,7 @@ export interface components {
             ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
             item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
             items: components["schemas"]["Organization::Items::ExtendedDto"][];
+            pdf_url?: string | null;
         };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
