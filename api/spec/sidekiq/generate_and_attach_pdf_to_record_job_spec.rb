@@ -1,7 +1,7 @@
 require 'rails_helper'
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
 # rubocop:disable RSpec/MultipleMemoizedHelpers
-RSpec.describe GenerateAndAttachPdfJob do
+RSpec.describe GenerateAndAttachPdfToRecordJob do
   describe '#perform' do
     include_context 'a company with a project with three items'
 

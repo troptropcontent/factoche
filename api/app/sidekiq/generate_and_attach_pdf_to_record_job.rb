@@ -1,5 +1,5 @@
 
-class GenerateAndAttachPdfJob
+class GenerateAndAttachPdfToRecordJob
   include Sidekiq::Job
 
   def perform(args)
