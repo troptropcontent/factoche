@@ -9,13 +9,15 @@ module Organization
 
           ensure_each_group_is_used!(validated_params)
 
-          ActiveRecord::Base.transaction do
+          quote, version = ActiveRecord::Base.transaction do
             quote = create_quote(company_id, client_id, validated_params)
             version = create_version(quote, validated_params)
             create_items_structure(version, validated_params)
-
-            ServiceResult.success(quote)
+            [ quote, version ]
           end
+
+          enqueue_pdf_generation_job!(version)
+          ServiceResult.success(quote)
         rescue StandardError => e
           ServiceResult.failure(e)
         end
@@ -128,6 +130,10 @@ module Organization
           raise r.error if r.failure?
 
           r.data
+        end
+
+        def enqueue_pdf_generation_job!(version)
+          ProjectVersions::GeneratePdfJob.perform_async({ "project_version_id"=>version.id })
         end
       end
     end
