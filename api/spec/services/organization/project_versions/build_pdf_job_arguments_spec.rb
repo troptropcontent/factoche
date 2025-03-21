@@ -24,7 +24,7 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
           "url" => "http://example.com/prints/quotes/#{version.project.id}/quote_versions/#{version.id}",
           "class_name" => version.class.name,
           "id" => version.id,
-          "file_name" => "#{version_identifier}.pdf"
+          "file_name" => "#{version_identifier}"
         )
       end
     end

@@ -12,7 +12,7 @@ module Organization
             "url" => find_print_url(version),
             "class_name" => version.class.name,
             "id" => version.id,
-            "file_name" => "#{version_identifier}.pdf"
+            "file_name" => "#{version_identifier}"
           })
         rescue StandardError => e
           ServiceResult.failure(e)
