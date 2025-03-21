@@ -33,6 +33,9 @@ class HeadlessBrowserPdfGenerator
     page = browser.create_page
     page.go_to(@url)
     wait_for_page_load(page)
+    if page.network.status != 200
+      raise Error::UnprocessableEntityError, "Failed to load page: print server responded with a #{page.network.status}"
+    end
     page.pdf(path: temp_pdf.path)
     page.close
   ensure

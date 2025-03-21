@@ -1,10 +1,12 @@
 require 'rails_helper'
-
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe HeadlessBrowserPdfGenerator do
   describe '.call' do
     let(:url) { 'https://example.com/invoice' }
     let(:browser_double) { instance_double(Ferrum::Browser) }
     let(:page_double) { instance_double(Ferrum::Page) }
+    let(:network_double) { instance_double(Ferrum::Network) }
+    let(:print_server_status) { 200 }
     let(:temp_file) { instance_double(Tempfile, path: '/tmp/test.pdf') }
 
     before do
@@ -13,6 +15,8 @@ RSpec.describe HeadlessBrowserPdfGenerator do
       allow(browser_double).to receive(:create_page).and_return(page_double)
       allow(browser_double).to receive(:quit)
       allow(page_double).to receive(:go_to)
+      allow(page_double).to receive(:network).and_return(network_double)
+      allow(network_double).to receive(:status).and_return(print_server_status)
       allow(page_double).to receive(:pdf)
       allow(page_double).to receive(:close)
     end
@@ -53,6 +57,7 @@ RSpec.describe HeadlessBrowserPdfGenerator do
       HTML
     end
 
+    let(:response_status) { 200 }
     let(:server_port) { 3999 } # Use a fixed port
     let(:url) { "http://app:#{server_port}" }
     let(:server) do
@@ -67,6 +72,7 @@ RSpec.describe HeadlessBrowserPdfGenerator do
     before do
       server.mount_proc '/' do |_, response|
         response.content_type = 'text/html'
+        response.status = response_status
         response.body = test_html
       end
 
@@ -79,18 +85,30 @@ RSpec.describe HeadlessBrowserPdfGenerator do
       server.shutdown
     end
 
-    it 'generates a valid PDF file from a real web page', :aggregate_failures do
-      result = described_class.call(url)
 
-      expect(result).to be_a(Tempfile)
-      expect(File.exist?(result.path)).to be true
+    context "when the server responde with a 200" do
+      it 'generates a valid PDF file from a real web page', :aggregate_failures do
+        result = described_class.call(url)
 
-      # Verify it's a valid PDF
-      pdf_content = File.read(result.path, mode: 'rb')
-      expect(pdf_content[0..3]).to eq('%PDF')
+        expect(result).to be_a(Tempfile)
+        expect(File.exist?(result.path)).to be true
 
-      result.close
-      result.unlink
+        # Verify it's a valid PDF
+        pdf_content = File.read(result.path, mode: 'rb')
+        expect(pdf_content[0..3]).to eq('%PDF')
+
+        result.close
+        result.unlink
+      end
+    end
+
+    context "when the server responde with a non 200" do
+      let(:response_status) { 404 }
+
+      it 'raises an error', :aggregate_failures do
+        expect { described_class.call(url) }.to raise_error('Failed to load page: print server responded with a 404')
+      end
     end
   end
 end
+# rubocop:enable RSpec/MultipleMemoizedHelpers
