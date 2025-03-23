@@ -12,9 +12,32 @@ import { Form } from "@/components/ui/form";
 import { useTranslation } from "react-i18next";
 import { ProjectFormItemsTotal } from "./private/project-form-items-total";
 import { ItemGroup } from "./private/item-group";
-import { FileDiff, Plus } from "lucide-react";
+import { FileDiff, Plus, Pointer } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { newGroupInput } from "./private/utils";
+import { ImportItemsFromCsvModal } from "./private/import-items-from-csv-modal";
+import { useEffect, useState } from "react";
+
+const EmptyStateActions = ({
+  setInitialFormValues,
+}: {
+  setInitialFormValues: (
+    initialFormValues: z.infer<typeof step2FormSchema>
+  ) => void;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex gap-4">
+      <Button variant="outline">
+        <Pointer />
+        {t(
+          "pages.companies.projects.form.composition_step.empty_state.action_label"
+        )}
+      </Button>
+      <ImportItemsFromCsvModal setInitialFormValues={setInitialFormValues} />
+    </div>
+  );
+};
 
 const Step2 = ({
   send,
@@ -24,10 +47,16 @@ const Step2 = ({
   initialValues: z.infer<typeof step2FormSchema>;
 }) => {
   const { t } = useTranslation();
+  const [initialFormValues, setInitialFormValues] = useState(initialValues);
+
   const form = useForm<z.infer<typeof step2FormSchema>>({
     resolver: zodResolver(step2FormSchema),
-    defaultValues: initialValues,
+    defaultValues: initialFormValues,
   });
+
+  useEffect(() => {
+    form.reset(initialFormValues);
+  }, [initialFormValues, form]);
 
   const {
     fields: groups,
@@ -85,9 +114,9 @@ const Step2 = ({
             description={t(
               "pages.companies.projects.form.composition_step.empty_state.description"
             )}
-            actionLabel={t(
-              "pages.companies.projects.form.composition_step.empty_state.action_label"
-            )}
+            action={
+              <EmptyStateActions setInitialFormValues={setInitialFormValues} />
+            }
             onAction={addNewGroupInput}
             className="flex-grow mb-4"
           />

@@ -148,7 +148,7 @@ const Step3 = ({
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           {inputs.groups.map((group) => (
             <ItemGroupSummary
               key={group.uuid}

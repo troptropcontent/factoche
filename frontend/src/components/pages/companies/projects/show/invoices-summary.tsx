@@ -143,7 +143,7 @@ const InvoicesSummary = ({
             description={t(
               "pages.companies.projects.show.completion_snapshot_invoices_summary.empty_state.description"
             )}
-            actionLabel={t(
+            action={t(
               "pages.companies.projects.show.completion_snapshot_invoices_summary.empty_state.action_label"
             )}
             onAction={() => {
