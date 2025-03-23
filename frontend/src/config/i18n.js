@@ -156,6 +156,88 @@ i18n
                                         "item_total_label": "Total",
                                         "item_total_description": "Total de la ligne",
                                         "add_item_group": "Ajouter un groupe d'éléments",
+                                        "import_csv": "Importer un fichier csv",
+                                        "import_csv_modal": {
+                                            "title": "Importer un fichier csv",
+                                            "description": "Importer un fichier csv pour commencer",
+                                            "errors": {
+                                                "parsing_error": "Une erreur est survenue lors de l'analyse du fichier csv",
+                                                "csv_file_required": "Seul les fichiers csv sont supportés",
+                                                "title": "Une erreur est survenue",
+                                                "file_required": "Veuillez d'abord sélectionner un fichier",
+                                                "no_headers_detected": "Aucun en-tête de colonne détecté",
+                                                "missing_fields": "Colonnes manquantes: {{missingFields}}",
+                                                "no_items_detected": "Aucun élément détecté",
+                                                "missing_data": "La ligne {{line}} ne possède pas de donnée dans la colonne {{column}}.",
+                                                "invalid_number_data": "La ligne {{line}} possède une valeur invalide dans la colonne {{column}}. La valeur doit être un nombre.",
+                                                "invalid_percentage_data": "La ligne {{line}} possède une valeur invalide dans la colonne {{column}}. La valeur doit être un nombre entre 0 et 100.",
+                                            },
+                                            "debug_info": {
+                                                "title": "Informations de débogage",
+                                                "detected_fields": "Colonnes détectées: {{headers}}",
+                                                "detected_groups": "Groupes détectés: {{count}} ",
+                                                "detected_items": "Éléments détectés: {{count}} ",
+                                            },
+                                            "tabs": {
+                                                "upload": {
+                                                    "label": "Import",
+                                                    "drop_zone_title": "Importer un fichier csv",
+                                                    "drop_zone_label": "Glisser et déposer un fichier csv ici ou cliquer pour télécharger",
+                                                    "drop_zone_upload_button_label": "Télécharger un fichier csv",
+                                                    "drop_zone_download_template_button_label": "Télécharger un modèle",
+                                                    "expected_columns": {
+                                                        "label": "Colonnes attendues",
+                                                        "description": "Colonnes attendues dans le fichier csv",
+                                                        "name": "Désignation",
+                                                        "group": "Groupe",
+                                                        "quantity": "Quantité",
+                                                        "unit": "Unité",
+                                                        "unit_price_amount": "Prix unitaire",
+                                                        "tax_rate": "Taux de TVA"
+                                                    },
+                                                    "template": {
+                                                        "line1": {
+                                                            "group": "Groupe 1",
+                                                            "name": "Élément 1",
+                                                            "quantity": "1",
+                                                            "unit": "Unité",
+                                                            "unit_price_amount": "100",
+                                                            "tax_rate": "0.2"
+                                                        },
+                                                        "line2": {
+                                                            "group": "Groupe 1",
+                                                            "name": "Élément 2",
+                                                            "quantity": "1",
+                                                            "unit": "Unité",
+                                                            "unit_price_amount": "100",
+                                                            "tax_rate": "0.2"
+                                                        }
+                                                    }
+                                                },
+                                                "mapping": {
+                                                    "label": "Mapping",
+                                                    "title": "Mapping des colonnes",
+                                                    "description": "Associer les colonnes du fichier csv aux colonnes attendues",
+                                                    "placeholder": "Sélectionner une colonne"
+                                                },
+                                                "preview": {
+                                                    "label": "Prévisualisation",
+                                                    "title": "Les éléments suivants seront importés",
+                                                    "description": "Voir les éléments qui seront importés",
+                                                    "only_first_five_rows": "Seules les 5 premières lignes sont affichées",
+                                                    "total_excl_vat_label": "Total HT",
+                                                    "number_of_element_imported_one": "{{count}} élément sera importé",
+                                                    "number_of_element_imported_other": "{{count}} éléments seront importés"
+                                                },
+                                                "actions": {
+                                                    "continue_button_label": "Continuer",
+                                                    "back_button_label": "Retour",
+                                                    "import_button_label": "Importer les éléments",
+                                                    "importing_button_label": "Importation en cours...",
+                                                    "processing_button_label": "Analyse en cours...",
+                                                }
+                                            }
+                                        },
                                         "item_group_name_input_label": "Nom du groupe d'éléments",
                                         "item_group_name_input_placeholder": "Nom du groupe d'éléments",
                                         "item_group_name_input_description": "Nom du groupe d'éléments, par exemple : \"Bâtiment\", \"Mécanique\", \"Électricité\", etc.",
@@ -167,7 +249,7 @@ i18n
                                         "tax_rate_input_description": "Taux de TVA appliqué à l'élément",
                                         "empty_state": {
                                             "title": "Aucun élément trouvé",
-                                            "description": "Ajouter un premier groupe d'éléments pour commencer",
+                                            "description": "Ajouter un premier groupe d'éléments ou importer un fichier csv pour commencer",
                                             "action_label": "Ajouter un groupe d'éléments"
                                         }
                                     },

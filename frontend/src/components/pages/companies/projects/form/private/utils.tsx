@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { step2FormSchema } from "../project-form.schema";
-import { DEFAULT_TAX_RATE } from "./constants";
+import { CSV_FIELDS, DEFAULT_TAX_RATE } from "./constants";
+import { useTranslation } from "react-i18next";
 
 const newGroupInput = (
   position: number
@@ -49,4 +50,38 @@ const computeTotal = (
   }, 0);
 };
 
-export { newGroupInput, newItemInput, findNextPosition, computeTotal };
+const buildCsvTemplateData = (
+  t: ReturnType<typeof useTranslation>["t"],
+  reverseMapping: Record<keyof typeof CSV_FIELDS, string>
+) => {
+  const headers = Object.values(reverseMapping).join(",");
+  const buildLine = (lineNumber: number) => {
+    return Object.keys(reverseMapping)
+      .map((key) => {
+        const value = t(
+          `pages.companies.projects.form.composition_step.import_csv_modal.tabs.upload.template.line${lineNumber}.${key}`,
+          { defaultValue: "not_found" }
+        );
+        if (value === "not_found") {
+          throw new Error(
+            `Translation not found for field ${key} line ${lineNumber}`
+          );
+        }
+        return value;
+      })
+      .join(",");
+  };
+  const line1 = buildLine(1);
+  const line2 = buildLine(2);
+  return `${headers}
+${line1}
+${line2}`;
+};
+
+export {
+  newGroupInput,
+  newItemInput,
+  findNextPosition,
+  computeTotal,
+  buildCsvTemplateData,
+};
