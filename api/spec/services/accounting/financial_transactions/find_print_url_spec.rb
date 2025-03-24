@@ -17,7 +17,7 @@ module Accounting
               expect(result.data).to eq(
                 Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
                   invoice.id,
-                  { host: ENV.fetch("FABATI_PRINT_MICROSERVICE_HOST"), port: ENV.fetch("FABATI_PRINT_MICROSERVICE_PORT") }
+                  { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
                 )
               )
             end
@@ -33,7 +33,7 @@ module Accounting
               expect(result.data).to eq(
                 Rails.application.routes.url_helpers.accounting_prints_published_invoice_url(
                   invoice.id,
-                  { host: ENV.fetch("FABATI_PRINT_MICROSERVICE_HOST"), port: ENV.fetch("FABATI_PRINT_MICROSERVICE_PORT") }
+                  { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
                 )
               )
             end
@@ -51,7 +51,7 @@ module Accounting
             expect(result.data).to eq(
               Rails.application.routes.url_helpers.accounting_prints_credit_note_url(
                 credit_note.id,
-                { host: ENV.fetch("FABATI_PRINT_MICROSERVICE_HOST"), port: ENV.fetch("FABATI_PRINT_MICROSERVICE_PORT") }
+                { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
               )
             )
           end

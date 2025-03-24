@@ -6,7 +6,7 @@ module Accounting
           raise ArgumentError, "Financial transaction ID is required" if financial_transaction_id.blank?
 
           financial_transaction = FinancialTransaction.find(financial_transaction_id)
-          route_args = [ financial_transaction.id, { host: ENV.fetch("FABATI_PRINT_MICROSERVICE_HOST"), port: ENV.fetch("FABATI_PRINT_MICROSERVICE_PORT") } ]
+          route_args = [ financial_transaction.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") } ]
 
           url = case financial_transaction
           when CreditNote
