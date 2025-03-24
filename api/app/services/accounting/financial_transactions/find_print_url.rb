@@ -2,12 +2,11 @@ module Accounting
   module FinancialTransactions
     class FindPrintUrl
       class << self
-        def call(financial_transaction_id, host)
+        def call(financial_transaction_id)
           raise ArgumentError, "Financial transaction ID is required" if financial_transaction_id.blank?
-          raise ArgumentError, "Host is required" if host.blank?
 
           financial_transaction = FinancialTransaction.find(financial_transaction_id)
-          route_args = [ financial_transaction.id, { host: host } ]
+          route_args = [ financial_transaction.id, { host: ENV.fetch("FABATI_PRINT_MICROSERVICE_HOST"), port: ENV.fetch("FABATI_PRINT_MICROSERVICE_PORT") } ]
 
           url = case financial_transaction
           when CreditNote
