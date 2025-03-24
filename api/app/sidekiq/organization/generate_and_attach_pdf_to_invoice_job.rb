@@ -32,7 +32,7 @@ class Organization::GenerateAndAttachPdfToInvoiceJob
 
     Rails.application.routes.url_helpers.api_v1_organization_invoice_url(
       @completion_snapshot,
-      { host: ENV.fetch("FABATI_PRINT_MICROSERVICE_HOST"), port: ENV.fetch("FABATI_PRINT_MICROSERVICE_PORT") }
+      { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
     )
   end
 
