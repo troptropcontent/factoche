@@ -14,7 +14,7 @@ RSpec.shared_examples "an authenticated endpoint" do |parameter|
 
     describe "when the token is expired" do
       let(:Authorization) {
-        travel_to 3.day.before { "Bearer #{JwtAuth.generate_access_token(user.id)}"  }
+        travel_to(3.day.before) { "Bearer #{JwtAuth.generate_access_token(user.id)}"  }
       }
 
       run_test!

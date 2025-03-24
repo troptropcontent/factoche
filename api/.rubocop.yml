@@ -5,11 +5,16 @@ inherit_gem:
 require:
   - rubocop-rspec
 
+AllCops:
+  Exclude:
+    - "sorbet/**/*"
+
 RSpec:
   Enabled: true
 
 RSpec/MultipleMemoizedHelpers:
-  Max: 20
+  Exclude:
+    - "spec/controllers/**/*"
 
 RSpec/VariableName:
   Exclude:
@@ -31,3 +36,7 @@ RSpec/ExampleLength:
 
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/ScatteredSetup:
+  Exclude:
+    - "spec/controllers/**/*"

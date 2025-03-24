@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 export function ClientInfo({
   client,
@@ -8,16 +8,31 @@ export function ClientInfo({
 }) {
   const { t } = useTranslation();
   return (
-    <Card className="mb-6">
+    <Card>
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="text-xl">
           {t("pages.companies.projects.show.client_info.title")}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <p className="font-semibold">{client.name}</p>
-        <p>{client.phone}</p>
-        <p>{client.email}</p>
+      <CardContent className="space-y-3">
+        <p>
+          <Trans
+            i18nKey="pages.companies.projects.show.client_info.name"
+            values={{ name: client.name }}
+          />
+        </p>
+        <p>
+          <Trans
+            i18nKey="pages.companies.projects.show.client_info.phone"
+            values={{ phone: client.phone }}
+          />
+        </p>
+        <p>
+          <Trans
+            i18nKey="pages.companies.projects.show.client_info.email"
+            values={{ email: client.email }}
+          />
+        </p>
       </CardContent>
     </Card>
   );

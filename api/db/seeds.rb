@@ -8,99 +8,249 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-user = User.create!(email: 'test@example.com', password: 'password123')
-company = Organization::Company.create!({
-  name: "Company Test",
-  email: 'contact@testcompany.fr',
-  phone: '+33623456789',
-  registration_number: "123456789",
-  address_street: "12 rue des mouettes",
-  address_city: "Biarritz",
-  address_zipcode: "64200"
-})
-Organization::Member.create({ user_id: user.id, company_id: company.id })
-client = Organization::Client.create!({ "id"=>2,
-"company"=>company,
-"name"=>"Syndicat de Copropriété ORGEVAL COLOMBIER",
-"registration_number"=>"91811564300010",
-"email"=>"syndic-copro-orgeval-colombier@example.com",
-"phone"=>"+33612345678",
-"address_street"=>"26 Cours De L'exemple",
-"address_city"=>"Reims Cedex",
-"address_zipcode"=>"51723" })
+ActiveRecord::Base.transaction do
+  user = User.create!(
+    email: 'test@example.com',
+    password: 'password123'
+  )
 
-project = Organization::Project.create!({
-  name: "Rénovation énergétique de 41 logements 1 et 3 rue Hugues Kraft",
-  client: client
-})
+  company = Organization::Company.create!(
+    name: "Company Test",
+    email: 'contact@testcompany.fr',
+    phone: '+33623456789',
+    registration_number: "123456789",
+    address_street: "12 rue des mouettes",
+    address_city: "Biarritz",
+    address_zipcode: "64200",
+    rcs_city: "REIMS",
+    rcs_number: "12345678",
+    vat_number: "1234567",
+    capital_amount: 12345600
+  )
 
-build_item_groups_params_proc = ->(version) {
-  [
-    {
-      name: "Préparation des travaux",
-      position: 0,
-      grouped_items_attributes: [
-        { name: "Etudes d'execution des ouvrages", quantity: 1, unit: "ENS", project_version_id: version.id, unit_price_cents: 123500 * (1 + ((version.number - 1) / 100)), position: 0 },
-        { name: "Installation de chantier", quantity: 1, unit: "ENS", project_version_id: version.id, unit_price_cents: 134500 * (1 + ((version.number - 1) / 100)), position: 1 },
-        { name: "Travaux de déposes", quantity: 1, unit: "ENS", project_version_id: version.id, unit_price_cents: 200000 * (1 + ((version.number - 1) / 100)), position: 2 }
-      ]
-    },
-    {
-      name: "Menuiserie en acier",
-      position: 1,
-      grouped_items_attributes: [
-        { name: "Ensemble menuiserie des halls en acier compris butée en position ouverte", quantity: 2, unit: "U", project_version_id: version.id, unit_price_cents: 725000 * (1 + ((version.number - 1) / 100)), position: 0 },
-        { name: "Signalisation PMR", quantity: 2, unit: "ENS", project_version_id: version.id, unit_price_cents: 22300 * (1 + ((version.number - 1) / 100)), position: 1 }
-      ]
-    },
-    {
-      name: "Garde corps en facades",
-      position: 2,
-      grouped_items_attributes: [
-        { name: "Gardes corps a remplissage filant passant devant nez de dalle", quantity: 100, unit: "ML", project_version_id: version.id, unit_price_cents: 44500 * (1 + ((version.number - 1) / 100)), position: 0 },
-        { name: "Garde corps a remplissage filant type HORIZAL AREAL entre tableau des menuiseries", quantity: 27, unit: "ML", project_version_id: version.id, unit_price_cents: 39500 * (1 + ((version.number - 1) / 100)), position: 1 },
-        { name: "Garde corps a remplissage filant type HORIZAL AREAL", quantity: 42, unit: "ML", project_version_id: version.id, unit_price_cents: 41200 * (1 + ((version.number - 1) / 100)), position: 2 }
-      ]
-    },
-    {
-      name: "Séparatif de terrasse",
-      position: 3,
-      grouped_items_attributes: [
-        { name: "Séparatif de terrasse", quantity: 5, unit: "U", project_version_id: version.id, unit_price_cents: 75300 * (1 + ((version.number - 1) / 100)), position: 0 }
-      ]
-    },
-    {
-      name: "Habillages exterieurs",
-      position: 4,
-      grouped_items_attributes: [
-        { name: "Hanillage en toile des moucharabieh des cages", quantity: 2, unit: "U", project_version_id: version.id, unit_price_cents: 896000 * (1 + ((version.number - 1) / 100)), position: 0 },
-        { name: "Cadre d'habillage en toile et bardage metallique des chassis des logements facade nord est", quantity: 5, unit: "U", project_version_id: version.id, unit_price_cents: 414400 * (1 + ((version.number - 1) / 100)), position: 1 },
-        { name: "Cadre d'habillage en tole et bardage métallique des chassis", quantity: 20, unit: "U", project_version_id: version.id, unit_price_cents: 368500 * (1 + ((version.number - 1) / 100)), position: 2 }
-      ]
-    },
-    {
-      name: "Ouvrages divers",
-      position: 5,
-      grouped_items_attributes: [
-        { name: "Couvertines", quantity: 46, unit: "ML", project_version_id: version.id, unit_price_cents: 9200 * (1 + ((version.number - 1) / 100)), position: 0 },
-        { name: "Numéros de voiries", quantity: 2, unit: "ENS", project_version_id: version.id, unit_price_cents: 22700 * (1 + ((version.number - 1) / 100)), position: 1 }
-      ]
-    },
-    {
-      name: "Options",
-      position: 6,
-      grouped_items_attributes: [
-        { name: "Boites aux lettres", quantity: 2, unit: "ENS", project_version_id: version.id, unit_price_cents: 225000 * (1 + ((version.number - 1) / 100)), position: 0 },
-        { name: "Dépose garde corps existant facade arrière", quantity: 1, unit: "ENS", project_version_id: version.id, unit_price_cents: 845000 * (1 + ((version.number - 1) / 100)), position: 1 }
-      ]
-    }
-  ]
-}
+  Organization::CompanyConfig.create!(company: company)
 
-3.times do |index|
-  version = Organization::ProjectVersion.create!(project: project, retention_guarantee_rate: 500)
-  item_groups_params = build_item_groups_params_proc.call(version)
-  item_groups_params.each do |p|
-    version.item_groups.create!(p)
+  Organization::Member.create!(
+    user_id: user.id,
+    company_id: company.id
+  )
+
+  client = Organization::Client.create!(
+    id: 2,
+    company: company,
+    name: "Syndicat de Copropriété ORGEVAL COLOMBIER",
+    registration_number: "91811564300010",
+    email: "syndic-copro-orgeval-colombier@example.com",
+    phone: "+33612345678",
+    address_street: "26 Cours De L'exemple",
+    address_city: "Reims Cedex",
+    address_zipcode: "51723",
+    vat_number: "1234"
+  )
+
+  result = Organization::Quotes::Create.call(company.id, client.id, {
+    name: "Rénovation énergétique de 41 logements 1 et 3 rue Hugues Kraft",
+    retention_guarantee_rate: 0.05,
+    groups: [
+      group_1 = {
+        uuid: SecureRandom.uuid,
+        name: "Préparation des travaux",
+        position: 0
+      },
+      group_2 = {
+        uuid: SecureRandom.uuid,
+        name: "Menuiserie en acier",
+        position: 1
+      },
+      group_3 = {
+        uuid: SecureRandom.uuid,
+        name: "Garde corps en facades",
+        position: 2
+      },
+      group_4 = {
+        uuid: SecureRandom.uuid,
+        name: "Séparatif de terrasse",
+        position: 3
+      },
+      group_5 = {
+        uuid: SecureRandom.uuid,
+        name: "Habillages exterieurs",
+        position: 4
+      },
+      group_6 = {
+        uuid: SecureRandom.uuid,
+        name: "Ouvrages divers",
+        position: 5
+      },
+      group_7 = {
+        uuid: SecureRandom.uuid,
+        name: "Options",
+        position: 6
+      }
+    ],
+    items: [
+      # Group 1 items
+      {
+        name: "Etudes d'execution des ouvrages",
+        quantity: 1,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("1235.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_1[:uuid]
+      },
+      {
+        name: "Installation de chantier",
+        quantity: 1,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("1345.00"),
+        position: 1,
+        tax_rate: "0.20",
+        group_uuid: group_1[:uuid]
+      },
+      {
+        name: "Travaux de déposes",
+        quantity: 1,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("2000.00"),
+        position: 2,
+        tax_rate: "0.20",
+        group_uuid: group_1[:uuid]
+      },
+      # Group 2 items
+      {
+        name: "Ensemble menuiserie des halls en acier compris butée en position ouverte",
+        quantity: 2,
+        unit: "U",
+        unit_price_amount: BigDecimal("7250.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_2[:uuid]
+      },
+      {
+        name: "Signalisation PMR",
+        quantity: 2,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("223.00"),
+        position: 1,
+        tax_rate: "0.20",
+        group_uuid: group_2[:uuid]
+      },
+      # Group 3 items
+      {
+        name: "Gardes corps a remplissage filant passant devant nez de dalle",
+        quantity: 100,
+        unit: "ML",
+        unit_price_amount: BigDecimal("445.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_3[:uuid]
+      },
+      {
+        name: "Garde corps a remplissage filant type HORIZAL AREAL entre tableau des menuiseries",
+        quantity: 27,
+        unit: "ML",
+        unit_price_amount: BigDecimal("395.00"),
+        position: 1,
+        tax_rate: "0.20",
+        group_uuid: group_3[:uuid]
+      },
+      {
+        name: "Garde corps a remplissage filant type HORIZAL AREAL",
+        quantity: 42,
+        unit: "ML",
+        unit_price_amount: BigDecimal("412.00"),
+        position: 2,
+        tax_rate: "0.20",
+        group_uuid: group_3[:uuid]
+      },
+      # Group 4 items
+      {
+        name: "Séparatif de terrasse",
+        quantity: 5,
+        unit: "U",
+        unit_price_amount: BigDecimal("753.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_4[:uuid]
+      },
+      # Group 5 items
+      {
+        name: "Hanillage en toile des moucharabieh des cages",
+        quantity: 2,
+        unit: "U",
+        unit_price_amount: BigDecimal("8960.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_5[:uuid]
+      },
+      {
+        name: "Cadre d'habillage en toile et bardage metallique des chassis des logements facade nord est",
+        quantity: 5,
+        unit: "U",
+        unit_price_amount: BigDecimal("4144.00"),
+        position: 1,
+        tax_rate: "0.20",
+        group_uuid: group_5[:uuid]
+      },
+      {
+        name: "Cadre d'habillage en tole et bardage métallique des chassis",
+        quantity: 20,
+        unit: "U",
+        unit_price_amount: BigDecimal("3685.00"),
+        position: 2,
+        tax_rate: "0.20",
+        group_uuid: group_5[:uuid]
+      },
+      # Group 6 items
+      {
+        name: "Couvertines",
+        quantity: 46,
+        unit: "ML",
+        unit_price_amount: BigDecimal("92.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_6[:uuid]
+      },
+      {
+        name: "Numéros de voiries",
+        quantity: 2,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("227.00"),
+        position: 1,
+        tax_rate: "0.20",
+        group_uuid: group_6[:uuid]
+      },
+      # Group 7 items
+      {
+        name: "Boites aux lettres",
+        quantity: 2,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("2250.00"),
+        position: 0,
+        tax_rate: "0.20",
+        group_uuid: group_7[:uuid]
+      },
+      {
+        name: "Dépose garde corps existant facade arrière",
+        quantity: 1,
+        unit: "ENS",
+        unit_price_amount: BigDecimal("8450.00"),
+        position: 1,
+        tax_rate: "0.20",
+        group_uuid: group_7[:uuid]
+      }
+    ]
+  })
+
+  if result.failure?
+    raise "Unable to create quote : #{r.error}"
+  end
+
+  quote = result.data
+
+  r = Organization::Quotes::ConvertToOrder.call(quote.versions.last.id)
+  if r.failure?
+    raise "Unable to convert quote into order : #{r.error}"
   end
 end

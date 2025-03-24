@@ -12,6 +12,7 @@ const formInitialValues: z.infer<typeof formSchema> = {
   client_id: 0,
   retention_guarantee_rate: 0,
   items: [],
+  groups: [],
 };
 
 const projectFormMachine = setup({

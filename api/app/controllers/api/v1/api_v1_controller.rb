@@ -11,8 +11,8 @@ class Api::V1::ApiV1Controller < ApplicationController
     @current_user
   end
 
-  def load_and_authorise_resource(name, class_name: nil)
-    id = params["#{name}_id"]
+  def load_and_authorise_resource(name, class_name: nil, param_key: nil)
+    id = params[param_key || "#{name}_id"]
     klass = (class_name || name.camelize).constantize
     instance_variable_set("@#{name}", klass.find(id))
 

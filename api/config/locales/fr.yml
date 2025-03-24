@@ -1,0 +1,141 @@
+fr:
+  number:
+    currency:
+      format:
+        # Where is the currency sign? %u is the currency unit, %n is the number (default: $5.00)
+        format: "%n %u"
+        negative_format: "-%n %u"
+        unit: "€"
+        # These six are to override number.format and are optional
+        separator: "."
+        delimiter: " "
+        precision: 2
+        # round_mode:
+        significant: false
+        strip_insignificant_zeros: false
+
+  time:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d/%m/%Y"
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d/%m/%Y"
+  common:
+    address:
+      label: "Adresse"
+      value: "%{street} %{zip} %{city}"
+  views:
+    accounting:
+      invoice:
+        shared:
+          number: "Numéro"
+          billing_date: "Date de facturation"
+          delivery_date: "Date de livraison"
+          payment_term:
+            days_label: "Délai de paiement"
+            days_value:
+              one: "%{count} jour"
+              other: "%{count} jours"
+          context:
+            project_html: "<strong>Projet :</strong> %{name}"
+            project_version_html: "<strong>Version du projet :</strong> N° %{version_number} du %{version_date}"
+            project_total_html: "<strong>Total HT du projet :</strong> %{total}"
+            project_previously_billed_html: "<strong>Total HT des précédentes factures :</strong> %{previously_billed}"
+          groups:
+            columns:
+              details: "Désignation"
+              total_excl_tax_label: "Total HT"
+              total_previously_billed_label: "Déja facturé"
+              completion: "Avancement"
+              invoice: "A facturer"
+          totals:
+            total_excl_tax_label: "Total HT"
+            vat_amount_label: "TVA"
+            total_incl_tax_label: "Total TTC"
+            retention_guarantee_label: "Retenue garantie (%{percentage})"
+            total_to_pay_label: "Total à payer"
+          conditions:
+            title: "Conditions générales de ventes"
+        unpublished:
+          title: "Facture proforma"
+          number: "Numéro de facture proforma"
+        published:
+          title: "Facture de situation"
+          number: "Numéro de facture"
+        credit_note:
+          title: "Avoir"
+          number: "Numéro d'avoir"
+          original_invoice_number: "Numéro de la facture initiale"
+    organization:
+      completion_snapshots:
+        invoice:
+          title: "Facture de situation"
+          issue_date: "Date de facturation"
+          delivery_date: "Date de livraison"
+          number: "Numéro de facture"
+          payment_term:
+            days_label: "Délai de paiement"
+            days_value:
+              one: "%{count} jour"
+              other: "%{count} jours"
+            accepted_methods_label:
+              one: "Méthode de paiement"
+              other: "Méthodes de paiement"
+            accepted_methods_value:
+              transfer: "Virement"
+              check: "Chèque"
+              cash: "Espèces"
+              card: "Carte bancaire"
+              bank_card: "Carte bancaire"
+              bank_transfer: "Virement bancaire"
+              bank_check: "Chèque bancaire"
+          seller_details:
+            legal_form:
+              sasu: "SASU au capital de %{capital_amount}"
+              sas: "SAS au capital de %{capital_amount}"
+              eurl: "EURL au capital de %{capital_amount}"
+              sa: "SA au capital de %{capital_amount}"
+              auto_entrepreneur: "Auto-entrepreneur"
+            rcs: "RCS %{city} %{number}"
+            siret_label: "SIRET"
+            vat_number: "NºTVA FR %{number}"
+            title: "Vendeur"
+            name_label: "Nom"
+            address_label: "Adresse"
+            address_value: "%{street} %{zip} %{city}"
+            phone_label: "Téléphone"
+          billing_address:
+            title: "Adresse de facturation"
+          delivery_address:
+            title: "Adresse de livraison"
+          context:
+            title: "Contexte"
+            project_html: "<strong>Projet :</strong> %{name}"
+            project_version_html: "<strong>Version du projet :</strong> N° %{version_number} du %{version_date}"
+            project_total_html: "<strong>Total HT du projet :</strong> %{total}"
+            project_previously_billed_html: "<strong>Total HT des précédentes factures :</strong> %{previously_billed}"
+            project_remaining_html: "<strong>Total HT du projet restant à facturer :</strong> %{remaining}"
+          items:
+            designation_label: "Désignation"
+            total_label: "Total HT"
+            previously_invoiced_label_html: "Déjà facturé"
+            new_completion_label_html: "Avancement"
+            new_invoice_label_html: "À facturer"
+      quote:
+        title: "Devis"
+        number: "Numéro du devis"
+        issue_date: "Date de création"
+        context:
+          title: "Contexte"
+          name_html: "<strong>Designation :</strong> %{name}"
+        version:
+          title: "Version du devis"
+          number: "Numéro de version"
+          groups:
+            columns:
+              name: "Désignation"
+              quantity: "Quantité"
+              unit_price: "Prix unitaire"
+              total: "Total"

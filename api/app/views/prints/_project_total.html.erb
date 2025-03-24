@@ -1,0 +1,23 @@
+<table class="ml-auto break-inside-avoid">
+  <tbody>
+    <% [{
+      label: t("views.accounting.invoice.shared.totals.total_excl_tax_label"),
+      data: number_to_currency(project_version_total_excl_tax_amount)
+    }, {
+      label: t("views.accounting.invoice.shared.totals.vat_amount_label"),
+      data: number_to_currency(project_version_vat_amount)
+    }, {
+      label: t("views.accounting.invoice.shared.totals.total_incl_tax_label"),
+      data: number_to_currency(project_version_total_excl_tax_amount + project_version_vat_amount)
+    }].each_with_index do |row, index| %>
+      <tr class="group">
+        <th class="p-2 text-left px-2 bg-gray-200 border-1 border-t-0 group-[:first-child]:border-t-1 group-[:first-child]:rounded-tl group-[:last-child]:rounded-bl">
+          <%= row[:label] %>
+        </th>
+        <td class="px-2 text-right border-1 border-t-0 border-l-0 group-[:first-child]:border-t-1 group-[:first-child]:rounded-tr group-[:last-child]:rounded-br">
+          <%= row[:data] %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

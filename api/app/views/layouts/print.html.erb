@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Invoice</title>
+    <%= stylesheet_link_tag 'stylesheets/invoice'%>
+    <%= stylesheet_link_tag 'tailwind/output' %>
+    </head>
+    <body class="relative">
+        <%= yield %>
+    </body>
+    <%= javascript_include_tag "js/pagedPolyfill" %>
+    <% if @proforma %>
+    <style>
+        .pagedjs_page {
+            position: relative;  /* Ensure relative positioning for absolute children */
+        }
+        .pagedjs_page::before {
+        content: "PROFORMA";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 100px;
+        color: rgba(200, 200, 200, 0.3);
+        z-index: -1;
+        pointer-events: none;
+        }
+    </style>
+    <% end %>
+</html>

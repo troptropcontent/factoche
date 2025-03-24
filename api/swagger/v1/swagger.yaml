@@ -138,14 +138,16 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/client"
-        '401':
-          description: unauthorized
+        '403':
+          description: forbiden
+        '404':
+          description: company not found
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/error"
-        '404':
-          description: company not found
+        '401':
+          description: user can not create a client within this company
           content:
             application/json:
               schema:
@@ -213,7 +215,38 @@ paths:
               schema:
                 "$ref": "#/components/schemas/error"
         '401':
-          description: unauthorized
+          description: unauthorised
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+  "/api/v1/organization/clients/{id}":
+    get:
+      summary: Show client
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '403':
+          description: forbiden
+        '200':
+          description: client's details
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        '404':
+          description: not found
           content:
             application/json:
               schema:
@@ -260,8 +293,8 @@ paths:
                   - address_city
                   - address_street
                   - address_zipcode
-        '401':
-          description: unauthorized
+        '403':
+          description: forbidden
           content:
             application/json:
               schema:
@@ -334,8 +367,8 @@ paths:
                 - address_city
                 - address_street
                 - address_zipcode
-        '401':
-          description: unauthorized
+        '403':
+          description: forbidden
           content:
             application/json:
               schema:
@@ -390,27 +423,63 @@ paths:
                     - details
                 required:
                 - error
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/completion_snapshots":
-    post:
-      summary: Create a new completion snapshot on the project's last version
+  "/api/v1/organization/orders/{order_id}/invoices":
+    get:
+      summary: Lists invoices for an order
       tags:
-      - Completion snapshot
+      - Invoices
       security:
       - bearerAuth: []
       parameters:
-      - name: company_id
+      - name: order_id
         in: path
         required: true
         schema:
           type: integer
-      - name: project_id
+      - name: status
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - draft
+            - posted
+            - cancelled
+            - voided
+      responses:
+        '200':
+          description: invoices found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+        '404':
+          description: order not found
+        '403':
+          description: forbiden
+    post:
+      summary: Creates an invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: order_id
         in: path
         required: true
         schema:
           type: integer
       responses:
         '200':
-          description: completion snapshot successfully created
+          description: successfully creates completion snapshot invoice
           content:
             application/json:
               schema:
@@ -419,11 +488,126 @@ paths:
                 - result
                 properties:
                   result:
-                    "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '403':
+          description: forbiden
+        '404':
+          description: not_found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - invoice_amounts
+              properties:
+                invoice_amounts:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - original_item_uuid
+                    - invoice_amount
+                    properties:
+                      original_item_uuid:
+                        type: string
+                      invoice_amount:
+                        type: string
+                        format: decimal
+        required: true
+  "/api/v1/organization/orders/{order_id}/invoices/{id}":
+    get:
+      summary: Show invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoice found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '404':
+          description: invoice not found
+        '403':
+          description: forbiden
+    put:
+      summary: Update invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoice updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '404':
+          description: invoice not found
         '422':
           description: unprocessable entity
-        '401':
-          description: unauthorised
         '403':
           description: forbiden
       requestBody:
@@ -432,18 +616,320 @@ paths:
             schema:
               type: object
               required:
-              - completion_snapshot_items
+              - invoice_amounts
               properties:
-                description:
-                  type: string
-                  nullable: true
-                completion_snapshot_items:
+                invoice_amounts:
                   type: array
                   items:
-                    "$ref": "#/components/schemas/Organization::CreateCompletionSnapshotItemDto"
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions":
+                    type: object
+                    required:
+                    - original_item_uuid
+                    - invoice_amount
+                    properties:
+                      original_item_uuid:
+                        type: string
+                      invoice_amount:
+                        type: string
+                        format: decimal
+        required: true
+    post:
+      summary: Post invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoice posted
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '404':
+          description: invoice not found
+        '422':
+          description: unprocessable entity
+        '403':
+          description: forbiden
+    delete:
+      summary: Voids an invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoice voided
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '403':
+          description: forbiden
+  "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel":
+    post:
+      summary: Cancels an invoice
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoice cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '403':
+          description: forbiden
+  "/api/v1/organization/companies/{company_id}/orders":
     get:
-      summary: List all the project's versions
+      summary: List all the company's quotes
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list company's orders
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Projects::Orders::CompactDto"
+  "/api/v1/organization/orders/{id}":
+    get:
+      summary: Show order details
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: show order details
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+        '404':
+          description: order not found
+  "/api/v1/organization/orders/{id}/invoiced_items":
+    get:
+      summary: invoiced amount for each item
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
+        '404':
+          description: not_found
+        '403':
+          description: forbiden
+  "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions":
+    get:
+      summary: List all the order's versions
       tags:
       - Project versions
       security:
@@ -454,14 +940,14 @@ paths:
         required: true
         schema:
           type: integer
-      - name: project_id
+      - name: order_id
         in: path
         required: true
         schema:
           type: integer
       responses:
         '200':
-          description: list company's projects
+          description: list company's orders
           content:
             application/json:
               schema:
@@ -477,24 +963,14 @@ paths:
           description: not authorised
         '404':
           description: not found
-  "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}":
+  "/api/v1/organization/project_versions/{id}":
     get:
-      summary: Show the project version details
+      summary: Show the order version details
       tags:
       - Project versions
       security:
       - bearerAuth: []
       parameters:
-      - name: company_id
-        in: path
-        required: true
-        schema:
-          type: integer
-      - name: project_id
-        in: path
-        required: true
-        schema:
-          type: integer
       - name: id
         in: path
         required: true
@@ -502,7 +978,7 @@ paths:
           type: integer
       responses:
         '200':
-          description: show project version details
+          description: show order version details
           content:
             application/json:
               schema:
@@ -511,92 +987,14 @@ paths:
                 - result
                 properties:
                   result:
-                    "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
-        '401':
-          description: not authorised
+                    "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         '404':
           description: not found
-  "/api/v1/organization/companies/{company_id}/projects":
-    post:
-      summary: Creates a new project and its descendants
-      tags:
-      - Projects
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: company_id
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: project created
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - id
-                - name
-                - client_id
-                - versions
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  description:
-                    type: string
-                    nullable: true
-                  client_id:
-                    type: integer
-                  versions:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/Organization::ProjectDtoProjectVersionDto"
-        '404':
-          description: not found
-        '401':
-          description: not authorised
-        '422':
-          description: unprocessable entity
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - name
-              - client_id
-              - retention_guarantee_rate
-              - items
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-                  nullable: true
-                client_id:
-                  type: integer
-                retention_guarantee_rate:
-                  type: integer
-                items:
-                  oneOf:
-                  - type: array
-                    items:
-                      "$ref": "#/components/schemas/Organization::CreateProjecItemDto"
-                  - type: array
-                    items:
-                      "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+  "/api/v1/organization/companies/{company_id}/quotes":
     get:
-      summary: List all the company's project
+      summary: List all the company's quotes
       tags:
-      - Projects
+      - Quotes
       security:
       - bearerAuth: []
       parameters:
@@ -618,24 +1016,15 @@ paths:
                   results:
                     type: array
                     items:
-                      "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectDto"
-        '401':
-          description: not authorised
-        '404':
-          description: not found
-  "/api/v1/organization/companies/{company_id}/projects/{id}":
+                      "$ref": "#/components/schemas/Organization::Projects::Quotes::CompactDto"
+  "/api/v1/organization/quotes/{id}":
     get:
-      summary: Show the project details
+      summary: Show quote details
       tags:
-      - Projects
+      - Quotes
       security:
       - bearerAuth: []
       parameters:
-      - name: company_id
-        in: path
-        required: true
-        schema:
-          type: integer
       - name: id
         in: path
         required: true
@@ -643,7 +1032,7 @@ paths:
           type: integer
       responses:
         '200':
-          description: list company's projects
+          description: show quote details
           content:
             application/json:
               schema:
@@ -652,11 +1041,137 @@ paths:
                 - result
                 properties:
                   result:
-                    "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectDto"
-        '401':
-          description: not authorised
+                    "$ref": "#/components/schemas/Organization::Projects::Quotes::ExtendedDto"
         '404':
-          description: not found
+          description: quote not found
+  "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes":
+    post:
+      summary: Create a new quote for a client
+      tags:
+      - Quotes
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: quote created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Quotes::ExtendedDto"
+        '422':
+          description: unprocessable entity
+        '404':
+          description: client not found
+        '403':
+          description: forbiden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                retention_guarantee_rate:
+                  type: number
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit:
+                        type: string
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - name
+                    - quantity
+                    - unit
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                groups:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      position:
+                        type: integer
+                    required:
+                    - uuid
+                    - name
+                    - position
+              required:
+              - name
+              - retention_guarantee_rate
+              - items
+  "/api/v1/organization/quotes/{id}/convert_to_order":
+    post:
+      summary: Convert a quote to an order
+      tags:
+      - Quotes
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: quote converted to order
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+        '404':
+          description: quote not found
+        '422':
+          description: unprocessable entity
+        '403':
+          description: forbiden
 components:
   schemas:
     client:
@@ -816,61 +1331,48 @@ components:
           - details
       required:
       - error
-    Organization::CompletionSnapshotDtoItemDto:
-      type: object
-      required:
-      - completion_percentage
-      - item_id
-      properties:
-        completion_percentage:
-          type: string
-          format: decimal
-        item_id:
-          type: integer
-    Organization::CompletionSnapshotDto:
+    Organization::Clients::ExtendedDto:
       type: object
       required:
       - id
-      - completion_snapshot_items
+      - name
+      - registration_number
+      - email
+      - phone
+      - address_street
+      - address_city
+      - address_zipcode
       properties:
         id:
           type: integer
-        description:
+        name:
           type: string
-          nullable: true
-        completion_snapshot_items:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::CompletionSnapshotDtoItemDto"
-    Organization::CreateCompletionSnapshotItemDto:
+        registration_number:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address_street:
+          type: string
+        address_city:
+          type: string
+        address_zipcode:
+          type: string
+    Organization::Clients::ShowDto:
       type: object
       required:
-      - completion_percentage
-      - item_id
+      - result
       properties:
-        completion_percentage:
-          type: string
-        item_id:
-          type: integer
-    Organization::CreateCompletionSnapshotDto:
-      type: object
-      required:
-      - completion_snapshot_items
-      properties:
-        description:
-          type: string
-          nullable: true
-        completion_snapshot_items:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::CreateCompletionSnapshotItemDto"
+        result:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
     Organization::CreateProjecItemDto:
       type: object
       required:
       - name
       - position
       - unit
-      - unit_price_cents
+      - unit_price_amount
       - quantity
       properties:
         name:
@@ -882,8 +1384,9 @@ components:
           type: integer
         unit:
           type: string
-        unit_price_cents:
-          type: integer
+        unit_price_amount:
+          type: string
+          format: decimal
         quantity:
           type: integer
     Organization::CreateProjectItemGroupDto:
@@ -929,6 +1432,606 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+    Organization::CreditNotes::ExtendedDto::DocumentInfo:
+      type: object
+      required:
+      - number
+      - issue_date
+      - original_invoice_date
+      - original_invoice_number
+      properties:
+        number:
+          type: string
+        issue_date:
+          type: string
+          format: date-time
+        original_invoice_date:
+          type: string
+          format: date-time
+        original_invoice_number:
+          type: string
+    Organization::CreditNotes::ExtendedDto::Address:
+      type: object
+      required:
+      - city
+      - street
+      - zip
+      properties:
+        city:
+          type: string
+        street:
+          type: string
+        zip:
+          type: string
+    Organization::CreditNotes::ExtendedDto::Seller:
+      type: object
+      required:
+      - name
+      - address
+      - phone
+      - siret
+      - legal_form
+      - capital_amount
+      - vat_number
+      - rcs_city
+      - rcs_number
+      properties:
+        name:
+          type: string
+        address:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::Address"
+        phone:
+          type: string
+        siret:
+          type: string
+        legal_form:
+          type: string
+        capital_amount:
+          type: string
+          format: decimal
+        vat_number:
+          type: string
+        rcs_city:
+          type: string
+        rcs_number:
+          type: string
+    Organization::CreditNotes::ExtendedDto::BillingAddress:
+      type: object
+      required:
+      - name
+      - address
+      properties:
+        name:
+          type: string
+        address:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::Address"
+    Organization::CreditNotes::ExtendedDto::ProjectVersion:
+      type: object
+      required:
+      - date
+      - number
+      properties:
+        date:
+          type: string
+          format: date-time
+        number:
+          type: integer
+    Organization::CreditNotes::ExtendedDto::ProjectContext:
+      type: object
+      required:
+      - name
+      - version
+      - total_amount
+      - previously_billed_amount
+      - remaining_amount
+      properties:
+        name:
+          type: string
+        version:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::ProjectVersion"
+        total_amount:
+          type: string
+          format: decimal
+        previously_billed_amount:
+          type: string
+          format: decimal
+        remaining_amount:
+          type: string
+          format: decimal
+    Organization::CreditNotes::ExtendedDto::Item:
+      type: object
+      required:
+      - id
+      - original_item_uuid
+      - name
+      - item_group_id
+      - quantity
+      - unit
+      - unit_price_amount
+      - credit_note_amount
+      properties:
+        id:
+          type: integer
+        original_item_uuid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        item_group_id:
+          type: integer
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_amount:
+          type: string
+          format: decimal
+        credit_note_amount:
+          type: string
+          format: decimal
+    Organization::CreditNotes::ExtendedDto::ItemGroup:
+      type: object
+      required:
+      - id
+      - name
+      - position
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        position:
+          type: integer
+        description:
+          type: string
+          nullable: true
+    Organization::CreditNotes::ExtendedDto::Transaction:
+      type: object
+      required:
+      - total_excl_tax_amount
+      - tax_rate
+      - tax_amount
+      - retention_guarantee_amount
+      - retention_guarantee_rate
+      - total_incl_tax_amount
+      - items
+      - item_groups
+      - credit_note_total_amount
+      properties:
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        tax_rate:
+          type: string
+          format: decimal
+        tax_amount:
+          type: string
+          format: decimal
+        retention_guarantee_amount:
+          type: string
+          format: decimal
+        retention_guarantee_rate:
+          type: string
+          format: decimal
+        total_incl_tax_amount:
+          type: string
+          format: decimal
+        items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::Item"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::ItemGroup"
+        credit_note_total_amount:
+          type: string
+          format: decimal
+    Organization::CreditNotes::ExtendedDto::Payload:
+      type: object
+      required:
+      - document_info
+      - seller
+      - billing_address
+      - project_context
+      - transaction
+      properties:
+        document_info:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::DocumentInfo"
+        seller:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::Seller"
+        billing_address:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::BillingAddress"
+        project_context:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::ProjectContext"
+        transaction:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::Transaction"
+    Organization::CreditNotes::ExtendedDto:
+      type: object
+      required:
+      - payload
+      - status
+      properties:
+        pdf_url:
+          type: string
+          nullable: true
+        payload:
+          "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto::Payload"
+        status:
+          type: string
+          enum:
+          - draft
+          - published
+    Organization::Invoices::CompactDto::Line:
+      type: object
+      required:
+      - holder_id
+      - excl_tax_amount
+      properties:
+        holder_id:
+          type: string
+        excl_tax_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::CompactDto:
+      type: object
+      required:
+      - id
+      - status
+      - issue_date
+      - updated_at
+      - total_amount
+      - lines
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+          - voided
+        number:
+          type: string
+          nullable: true
+        issue_date:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        total_amount:
+          type: string
+          format: decimal
+        lines:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::CompactDto::Line"
+    Organization::Invoices::BaseExtendedDto::Line:
+      type: object
+      required:
+      - holder_id
+      - excl_tax_amount
+      properties:
+        holder_id:
+          type: string
+        excl_tax_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::BaseExtendedDto::Detail:
+      type: object
+      required:
+      - delivery_date
+      - seller_name
+      - seller_registration_number
+      - seller_address_zipcode
+      - seller_address_street
+      - seller_address_city
+      - seller_vat_number
+      - seller_phone
+      - seller_email
+      - client_name
+      - client_registration_number
+      - client_address_zipcode
+      - client_address_street
+      - client_address_city
+      - client_vat_number
+      - client_phone
+      - client_email
+      - delivery_name
+      - delivery_registration_number
+      - delivery_address_zipcode
+      - delivery_address_street
+      - delivery_address_city
+      - delivery_phone
+      - delivery_email
+      - purchase_order_number
+      - due_date
+      properties:
+        delivery_date:
+          type: string
+          format: date-time
+        seller_name:
+          type: string
+        seller_registration_number:
+          type: string
+        seller_address_zipcode:
+          type: string
+        seller_address_street:
+          type: string
+        seller_address_city:
+          type: string
+        seller_vat_number:
+          type: string
+        seller_phone:
+          type: string
+        seller_email:
+          type: string
+        client_name:
+          type: string
+        client_registration_number:
+          type: string
+        client_address_zipcode:
+          type: string
+        client_address_street:
+          type: string
+        client_address_city:
+          type: string
+        client_vat_number:
+          type: string
+        client_phone:
+          type: string
+        client_email:
+          type: string
+        delivery_name:
+          type: string
+        delivery_registration_number:
+          type: string
+        delivery_address_zipcode:
+          type: string
+        delivery_address_street:
+          type: string
+        delivery_address_city:
+          type: string
+        delivery_phone:
+          type: string
+        delivery_email:
+          type: string
+        purchase_order_number:
+          type: string
+        due_date:
+          type: string
+          format: date-time
+    Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem:
+      type: object
+      required:
+      - original_item_uuid
+      - group_id
+      - name
+      - quantity
+      - unit
+      - unit_price_amount
+      - tax_rate
+      - previously_billed_amount
+      properties:
+        original_item_uuid:
+          type: string
+        group_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_amount:
+          type: string
+          format: decimal
+        tax_rate:
+          type: string
+          format: decimal
+        previously_billed_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+    Organization::Invoices::BaseExtendedDto::Context:
+      type: object
+      required:
+      - project_version_retention_guarantee_rate
+      - project_version_number
+      - project_version_date
+      - project_total_amount
+      - project_total_previously_billed_amount
+      - project_version_items
+      - project_version_item_groups
+      properties:
+        project_version_retention_guarantee_rate:
+          type: string
+          format: decimal
+        project_version_number:
+          type: integer
+        project_version_date:
+          type: string
+        project_total_amount:
+          type: string
+          format: decimal
+        project_total_previously_billed_amount:
+          type: string
+          format: decimal
+        project_version_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"
+        project_version_item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"
+    Organization::Invoices::BaseExtendedDto:
+      type: object
+      required:
+      - id
+      - status
+      - updated_at
+      - lines
+      - detail
+      - context
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+          - voided
+        number:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        lines:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Line"
+        detail:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Detail"
+        context:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context"
+        pdf_url:
+          type: string
+          nullable: true
+    Organization::Invoices::ExtendedDto:
+      type: object
+      required:
+      - id
+      - status
+      - updated_at
+      - lines
+      - detail
+      - context
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+          - voided
+        number:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        lines:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Line"
+        detail:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Detail"
+        context:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context"
+        pdf_url:
+          type: string
+          nullable: true
+        credit_note:
+          "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
+          nullable: true
+    Organization::Invoices::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+    Organization::Invoices::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Invoices::ExtendedDto"
+    Organization::ItemGroups::ExtendedDto:
+      type: object
+      required:
+      - id
+      - position
+      - name
+      - grouped_items
+      properties:
+        id:
+          type: integer
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        grouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+    Organization::Items::ExtendedDto:
+      type: object
+      required:
+      - id
+      - original_item_uuid
+      - position
+      - name
+      - quantity
+      - unit
+      - unit_price_amount
+      - tax_rate
+      properties:
+        id:
+          type: integer
+        original_item_uuid:
+          type: string
+        position:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quantity:
+          type: integer
+        unit:
+          type: string
+        unit_price_amount:
+          type: string
+          format: decimal
+        item_group_id:
+          type: integer
+          nullable: true
+        tax_rate:
+          type: string
+          format: decimal
     Organization::ProjectDtoItemDto:
       type: object
       required:
@@ -937,7 +2040,7 @@ components:
       - name
       - quantity
       - unit
-      - unit_price_cents
+      - unit_price_amount
       properties:
         id:
           type: integer
@@ -952,8 +2055,9 @@ components:
           type: integer
         unit:
           type: string
-        unit_price_cents:
-          type: integer
+        unit_price_amount:
+          type: string
+          format: decimal
     Organization::ProjectDtoItemGroupDto:
       type: object
       required:
@@ -1018,169 +2122,6 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ProjectDtoProjectVersionDto"
-    Organization::ProjectIndexResponseProjectClientDto:
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-    Organization::ProjectIndexResponseProjectDto:
-      type: object
-      required:
-      - id
-      - name
-      - client
-      - status
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        client:
-          "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectClientDto"
-        status:
-          type: string
-          enum:
-          - new
-          - invoicing_in_progress
-          - invoiced
-          - canceled
-    Organization::ProjectIndexResponseDto:
-      type: object
-      required:
-      - results
-      properties:
-        results:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::ProjectIndexResponseProjectDto"
-    Organization::ProjectShowResponseProjectClientDto:
-      type: object
-      required:
-      - id
-      - name
-      - email
-      - phone
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-    Organization::ProjectShowResponseProjectItemDto:
-      type: object
-      required:
-      - id
-      - position
-      - name
-      - quantity
-      - unit
-      - unit_price_cents
-      properties:
-        id:
-          type: integer
-        position:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        quantity:
-          type: integer
-        unit:
-          type: string
-        unit_price_cents:
-          type: integer
-    Organization::ProjectShowResponseProjectItemGroupDto:
-      type: object
-      required:
-      - id
-      - position
-      - name
-      - grouped_items
-      properties:
-        id:
-          type: integer
-        position:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        grouped_items:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectItemDto"
-    Organization::ProjectShowResponseProjectLastVersionDto:
-      type: object
-      required:
-      - id
-      - number
-      - created_at
-      - ungrouped_items
-      - item_groups
-      properties:
-        id:
-          type: integer
-        number:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        ungrouped_items:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectItemDto"
-        item_groups:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectItemGroupDto"
-    Organization::ProjectShowResponseProjectDto:
-      type: object
-      required:
-      - id
-      - name
-      - client
-      - status
-      - last_version
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        client:
-          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectClientDto"
-        status:
-          type: string
-          enum:
-          - new
-          - invoicing_in_progress
-          - invoiced
-          - canceled
-        last_version:
-          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectLastVersionDto"
-    Organization::ProjectShowResponseDto:
-      type: object
-      required:
-      - result
-      properties:
-        result:
-          "$ref": "#/components/schemas/Organization::ProjectShowResponseProjectDto"
     Organization::ProjectVersionIndexResponseProjectDto:
       type: object
       required:
@@ -1212,7 +2153,7 @@ components:
       - name
       - quantity
       - unit
-      - unit_price_cents
+      - unit_price_amount
       properties:
         id:
           type: integer
@@ -1227,8 +2168,9 @@ components:
           type: integer
         unit:
           type: string
-        unit_price_cents:
-          type: integer
+        unit_price_amount:
+          type: string
+          format: decimal
     Organization::ProjectVersionShowProjectVersionItemGroupDto:
       type: object
       required:
@@ -1255,6 +2197,7 @@ components:
       required:
       - id
       - number
+      - is_last_version
       - created_at
       - retention_guarantee_rate
       - ungrouped_items
@@ -1264,11 +2207,14 @@ components:
           type: integer
         number:
           type: integer
+        is_last_version:
+          type: boolean
         created_at:
           type: string
           format: date-time
         retention_guarantee_rate:
-          type: integer
+          type: string
+          format: decimal
         ungrouped_items:
           type: array
           items:
@@ -1284,13 +2230,400 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
-    Organization::ShowCompletionSnapshotResponseDto:
+    Organization::ProjectVersions::CompactDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      - retention_guarantee_rate
+      - total_amount
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        retention_guarantee_rate:
+          type: string
+          format: decimal
+        total_amount:
+          type: string
+          format: decimal
+    Organization::ProjectVersions::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - created_at
+      - retention_guarantee_rate
+      - ungrouped_items
+      - item_groups
+      - items
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        retention_guarantee_rate:
+          type: string
+          format: decimal
+        ungrouped_items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+        item_groups:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
+        items:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Items::ExtendedDto"
+        pdf_url:
+          type: string
+          nullable: true
+    Organization::ProjectVersions::ShowDto:
       type: object
       required:
       - result
       properties:
         result:
-          "$ref": "#/components/schemas/Organization::CompletionSnapshotDto"
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+    Organization::Projects::BaseCompactDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::BaseExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::CompactDto:
+      type: object
+      required:
+      - id
+      - name
+      - client
+      - invoiced_amount
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        invoiced_amount:
+          type: string
+          format: decimal
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::ExtendedDto:
+      type: object
+      required:
+      - id
+      - name
+      - client
+      - invoiced_amount
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        invoiced_amount:
+          type: string
+          format: decimal
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::CompactDto"
+    Organization::Projects::InvoicedItemDto:
+      type: object
+      required:
+      - original_item_uuid
+      - invoiced_amount
+      properties:
+        original_item_uuid:
+          type: string
+        invoiced_amount:
+          type: string
+          format: decimal
+    Organization::Projects::InvoicedItemsDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
+    Organization::Projects::Orders::CompactDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      - invoiced_amount
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+        invoiced_amount:
+          type: string
+          format: decimal
+    Organization::Projects::Orders::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      - original_quote_version_id
+      - invoiced_amount
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+        original_quote_version_id:
+          type: integer
+        invoiced_amount:
+          type: string
+          format: decimal
+    Organization::Projects::Orders::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Orders::CompactDto"
+    Organization::Projects::Orders::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+    Organization::Projects::Quotes::CompactDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        status:
+          type: string
+          enum:
+          - draft
+          - validated
+    Organization::Projects::Quotes::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      - orders
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        status:
+          type: string
+          enum:
+          - draft
+          - validated
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+    Organization::Projects::Quotes::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Quotes::CompactDto"
+    Organization::Projects::Quotes::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Projects::Quotes::ExtendedDto"
+    Organization::Projects::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Projects::ExtendedDto"
+    QueryParamsDto:
+      type: object
+      required: []
+      properties:
+        limit:
+          type: integer
+          nullable: true
   securitySchemes:
     bearerAuth:
       type: http

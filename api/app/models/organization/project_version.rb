@@ -1,5 +1,7 @@
 class Organization::ProjectVersion < ApplicationRecord
-  belongs_to :project
+  include PdfAttachable
+
+  belongs_to :project, class_name: "Organization::Project"
 
   has_many :items, dependent: :destroy, class_name: "Organization::Item"
 
@@ -11,10 +13,22 @@ class Organization::ProjectVersion < ApplicationRecord
 
   has_many :completion_snapshots, class_name: "Organization::CompletionSnapshot"
 
-  validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10000 }
+  has_one :order, class_name: "Organization::Order", foreign_key: :original_quote_version_id
+
+  validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   validates :number, presence: true, uniqueness: { scope: :project_id }
   before_validation :set_number_to_next_available_number, on: :create
+
+  scope :lasts, -> { joins("JOIN (SELECT MAX(number), project_id FROM organization_project_versions GROUP BY project_id) as max_project_version_numbers ON organization_project_versions.project_id = max_project_version_numbers.project_id").where("max_project_version_numbers.max = organization_project_versions.number") }
+
+  def is_last_version?
+    self.class.lasts.exists?(id)
+  end
+
+  def total_amount
+    items.sum("(quantity * unit_price_amount)").to_d
+  end
 
   private
 

@@ -5,15 +5,15 @@ RSpec.describe Organization::Project, type: :model do
     it { is_expected.to validate_presence_of(:name) }
 
     describe("unique name within client scope") do
-      subject { FactoryBot.build(:project, name: taken_name, client:) }
+      subject { FactoryBot.build(:quote, name: taken_name, client:, company: company) }
 
       let(:company) { FactoryBot.create(:company) }
       let(:client) { FactoryBot.create(:client, company:) }
       let(:taken_name) { "taken_name" }
-      let(:already_existing_project) { FactoryBot.create(:project, client:, name: taken_name) }
+      let(:already_existing_project) { FactoryBot.create(:quote, client:, name: taken_name) }
 
 
-      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:client_id) }
+      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:client_id, :type) }
     end
   end
 

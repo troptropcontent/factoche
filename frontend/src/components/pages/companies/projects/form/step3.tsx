@@ -4,7 +4,6 @@ import { EventFromLogic } from "xstate";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { step1FormSchema, step2FormSchema } from "./project-form.schema";
-import { buildApiRequestBody, computeItemsTotal } from "./project-form.utils";
 import {
   Card,
   CardContent,
@@ -12,15 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ItemSummary } from "./private/item-summary";
 import { ItemGroupSummary } from "./private/item-group-summary";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { useNavigate } from "@tanstack/react-router";
+import { computeTotal } from "./private/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const Step3 = ({
   send,
   companyId,
-  previousStepsData,
+  previousStepsData: inputs,
 }: {
   send: (e: EventFromLogic<typeof projectFormMachine>) => void;
   companyId: string;
@@ -30,7 +30,7 @@ const Step3 = ({
   const { t } = useTranslation();
   const { mutate } = Api.useMutation(
     "post",
-    "/api/v1/organization/companies/{company_id}/projects"
+    "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes"
   );
 
   const { data: clients = [] } = Api.useQuery(
@@ -43,25 +43,53 @@ const Step3 = ({
     }
   );
 
+  const { toast } = useToast();
   const navigate = useNavigate();
 
-  const client = clients.find(
-    (client) => client.id == previousStepsData.client_id
-  );
+  const client = clients.find((client) => client.id == inputs.client_id);
 
-  const createNewProject = () => {
-    const apiRequestBody = buildApiRequestBody(previousStepsData);
+  const createNewProject = (clientId: number) => {
     mutate(
       {
-        body: apiRequestBody,
-        params: { path: { company_id: Number(companyId) } },
+        body: {
+          ...inputs,
+          retention_guarantee_rate: inputs.retention_guarantee_rate / 100,
+          items: inputs.items.map((input) => ({
+            ...input,
+            tax_rate: input.tax_rate / 100,
+          })),
+        },
+        params: {
+          path: { company_id: Number(companyId), client_id: clientId },
+        },
       },
       {
-        onSuccess: ({ id }) =>
+        onSuccess: ({ result: { id } }) => {
+          toast({
+            variant: "success",
+            title: t(
+              "pages.companies.projects.form.confirmation_step.toast.success_toast_title"
+            ),
+            description: t(
+              "pages.companies.projects.form.confirmation_step.toast.success_toast_description"
+            ),
+          });
           navigate({
-            to: "/companies/$companyId/projects/$projectId",
-            params: { companyId: companyId, projectId: id.toString() },
-          }),
+            to: "/companies/$companyId/quotes/$quoteId",
+            params: { companyId: companyId, quoteId: id.toString() },
+          });
+        },
+        onError: () => {
+          toast({
+            variant: "destructive",
+            title: t(
+              "pages.companies.projects.form.confirmation_step.toast.error_toast_title"
+            ),
+            description: t(
+              "pages.companies.projects.form.confirmation_step.toast.error_toast_description"
+            ),
+          });
+        },
       }
     );
   };
@@ -83,13 +111,13 @@ const Step3 = ({
                 field: t(
                   "pages.companies.projects.form.basic_info_step.name_input_label"
                 ),
-                value: previousStepsData.name,
+                value: inputs.name,
               },
               {
                 field: t(
                   "pages.companies.projects.form.basic_info_step.description_input_label"
                 ),
-                value: previousStepsData.description,
+                value: inputs.description,
               },
               {
                 field: t(
@@ -101,7 +129,7 @@ const Step3 = ({
                 field: t(
                   "pages.companies.projects.form.basic_info_step.retention_guarantee_rate_input_label"
                 ),
-                value: previousStepsData.retention_guarantee_rate,
+                value: inputs.retention_guarantee_rate,
               },
             ].map((data) => (
               <div>
@@ -120,14 +148,16 @@ const Step3 = ({
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          {previousStepsData.items.map((item, index) =>
-            "items" in item ? (
-              <ItemGroupSummary key={index} {...item} />
-            ) : (
-              <ItemSummary key={index} {...item} />
-            )
-          )}
+        <CardContent className="space-y-4">
+          {inputs.groups.map((group) => (
+            <ItemGroupSummary
+              key={group.uuid}
+              {...group}
+              items={inputs.items.filter(
+                (item) => item.group_uuid == group.uuid
+              )}
+            />
+          ))}
         </CardContent>
         <CardFooter className="justify-end">
           <div className="text-right font-semibold text-lg">
@@ -135,7 +165,7 @@ const Step3 = ({
               "pages.companies.projects.form.confirmation_step.total_project_amount_label",
               {
                 total: t("common.number_in_currency", {
-                  amount: computeItemsTotal(previousStepsData.items),
+                  amount: computeTotal(inputs.items),
                 }),
               }
             )}
@@ -152,7 +182,7 @@ const Step3 = ({
         >
           {t("pages.companies.projects.form.previous_button_label")}
         </Button>
-        <Button onClick={createNewProject}>
+        <Button onClick={() => createNewProject(inputs.client_id)}>
           {t("pages.companies.projects.form.submit_button_label")}
         </Button>
       </div>

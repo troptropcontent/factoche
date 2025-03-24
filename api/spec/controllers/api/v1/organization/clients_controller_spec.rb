@@ -1,5 +1,6 @@
 require 'rails_helper'
 require 'swagger_helper'
+require_relative "shared_examples/an_authenticated_endpoint"
 
 RSpec.describe Api::V1::Organization::ClientsController, type: :request do
   path '/api/v1/organization/companies/{company_id}/clients' do
@@ -23,11 +24,13 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
         required: [ 'name', 'registration_number', 'email', 'phone', 'address_street', 'address_city', 'address_zipcode' ]
       }
 
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:company_id) { company.id }
+      let(:client) { {} }
+
       response '200', 'client created' do
-        let(:user) { FactoryBot.create(:user) }
-        let(:company) { FactoryBot.create(:company) }
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
-        let(:company_id) { company.id }
         let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
         let(:client) do
           {
@@ -37,7 +40,8 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
             phone: '+33326567890',
             address_street: 'Test Street 123',
             address_city: 'Test City',
-            address_zipcode: '12345'
+            address_zipcode: '12345',
+            vat_number: '1234'
           }
         end
 
@@ -50,24 +54,7 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
         end
       end
 
-      response '401', 'unauthorized' do
-        let(:company_id) { 1 }
-        let(:client) { valid_client_payload }
-
-        describe 'with invalid token format' do
-          let(:Authorization) { 'invalid_token' }
-
-          schema '$ref' => '#/components/schemas/error'
-          run_test!
-        end
-
-        describe 'with expired token' do
-          let(:Authorization) { travel_to 1.day.before { "Bearer #{JwtAuth.generate_access_token(1)} " } }
-
-          schema '$ref' => '#/components/schemas/error'
-          run_test!
-        end
-      end
+      it_behaves_like "an authenticated endpoint"
 
       response '404', 'company not found' do
         let(:user) { FactoryBot.create(:user) }
@@ -80,14 +67,15 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
+      end
 
-        describe "when the user is not authorized to create client within this company" do
-          let(:company) { FactoryBot.create(:company) }
-          let(:company_id) { company.id }
+      response '401', 'user can not create a client within this company' do
+        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+        let(:another_company) { FactoryBot.create(:company) }
+        let(:company_id) { another_company.id }
 
-          schema '$ref' => '#/components/schemas/error'
-          run_test!
-        end
+        schema '$ref' => '#/components/schemas/error'
+        run_test!
       end
 
       response '422', 'client is invalid' do
@@ -132,14 +120,14 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
       produces 'application/json'
       parameter name: :company_id, in: :path, type: :integer
 
-      response '200', 'clients found' do
-        let(:user) { FactoryBot.create(:user) }
-        let(:company) { FactoryBot.create(:company) }
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
-        let(:company_id) { company.id }
-        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-        let!(:clients) { FactoryBot.create_list(:client, 3, company:) }
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:company_id) { company.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      let!(:clients) { FactoryBot.create_list(:client, 3, company:) }
 
+      response '200', 'clients found' do
         schema type: :array, items: { '$ref' => '#/components/schemas/client' }
         run_test! do |response|
           expect(JSON.parse(response.body).length).to eq(3)
@@ -147,32 +135,60 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
       end
 
       response '404', 'company not found' do
-        let(:user) { FactoryBot.create(:user) }
-        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-
         describe "when the company does not exist" do
           let(:company_id) { 999999 }
 
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
+      end
 
+      response '401', 'unauthorised' do
         describe "when the user is not authorized to view clients within this company" do
-          let(:company) { FactoryBot.create(:company) }
-          let(:company_id) { company.id }
+          let(:another_company) { FactoryBot.create(:company) }
+          let(:company_id) { another_company.id }
 
           schema '$ref' => '#/components/schemas/error'
           run_test!
         end
       end
+    end
+  end
+  path '/api/v1/organization/clients/{id}' do
+    get 'Show client' do
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      parameter name: :id, in: :path, type: :integer
 
-      response '401', 'unauthorized' do
-        let(:company) { FactoryBot.create(:company) }
-        let(:company_id) { company.id }
-        let(:Authorization) { nil }
+      let(:user) { FactoryBot.create(:user) }
+      let(:company) { FactoryBot.create(:company) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+      let(:client) { FactoryBot.create(:client, company:) }
+      let(:id) { client.id }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
-        schema '$ref' => '#/components/schemas/error'
+      it_behaves_like "an authenticated endpoint"
+
+      response "200", "client's details" do
+        schema Organization::Clients::ShowDto.to_schema
+
         run_test!
+      end
+
+      response "404", "not found" do
+        schema '$ref' => '#/components/schemas/error'
+
+        context "when the client does not exists" do
+          let(:id) { 123412341234134 }
+
+          run_test!
+        end
+
+        context "when the client does not belong to a company of wich the user is a member" do
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(FactoryBot.create(:user).id)}" }
+
+          run_test!
+        end
       end
     end
   end

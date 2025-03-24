@@ -11,12 +11,44 @@ services:
     command: sleep infinity
     env_file:
       - ../.env
-      - ../backend/.env.development
     networks:
       - development
     depends_on:
       - db
-
+  sidekiq_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/factoche:cached
+    networks:
+      - development
+    working_dir: /factoche/api
+    command: bundle exec sidekiq
+    env_file:
+      - ../.env
+    depends_on:
+      - redis
+      - db
+  html_pdf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RAILS_HTML_PDF_ENABLED=true
+      - RAILS_PRINT_MICROSERVICE=true
+    volumes:
+      - ..:/factoche:cached
+    env_file:
+      - ../.env
+    networks:
+      - development
+    depends_on:
+      - db
+    ports:
+      - "8081:8081"
+    working_dir: /factoche/api
+    command: bundle exec rails s -p 8081 -b 0.0.0.0
   db:
     image: postgres:15.4
     restart: unless-stopped
@@ -28,9 +60,28 @@ services:
       POSTGRES_DB: factoche_development
     networks:
       - development
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - development
+  chromium:
+    image: browserless/chrome:latest # Using browserless/chrome instead of alpine-chrome
+    restart: unless-stopped
+    ports:
+      - "9222:3000" # browserless/chrome uses port 3000 by default
+    environment:
+      CONNECTION_TIMEOUT: -1
+      TOKEN: 6R0W53R135510
+      DEFAULT_LAUNCH_ARGS: '["--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]'
+    networks:
+      - development
 
 volumes:
   postgres-data:
+
 
 networks:
   development:

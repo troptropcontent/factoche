@@ -78,7 +78,7 @@ RSpec.describe 'Auth API', type: :request do
         schema ApiError.schema
 
         let(:user) { FactoryBot.create(:user, email: 'test@example.com', password: 'password123') }
-        let(:token) { travel_to 1.day.before { JwtAuth.generate_refresh_token(user.id) } }
+        let(:token) { travel_to (JwtAuth::REFRESH_TOKEN_EXPIRATION_TIME.before) { JwtAuth.generate_refresh_token(user.id) } }
         let(:Authorization) { "Bearer #{token}" }
 
         run_test!

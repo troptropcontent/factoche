@@ -17,6 +17,7 @@ const ProjectForm = ({ companyId }: { companyId: string }) => {
           client_id,
           description,
           items,
+          groups,
         },
       },
     },
@@ -60,7 +61,7 @@ const ProjectForm = ({ companyId }: { companyId: string }) => {
               />
             );
           case "step2":
-            return <Step2 send={send} initialValues={{ items }} />;
+            return <Step2 send={send} initialValues={{ items, groups }} />;
           case "completed":
             return (
               <Step3
@@ -72,6 +73,7 @@ const ProjectForm = ({ companyId }: { companyId: string }) => {
                   client_id,
                   description,
                   items,
+                  groups,
                 }}
               />
             );

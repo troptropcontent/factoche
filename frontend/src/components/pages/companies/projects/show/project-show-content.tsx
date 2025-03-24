@@ -1,67 +1,39 @@
-import { useState } from "react";
 import { ClientInfo } from "./client-info";
-import { Api } from "@/lib/openapi-fetch-query-client";
-import { ProjectComposition } from "./project-composition";
-import { useQueryClient } from "@tanstack/react-query";
-import { VersionSelect } from "./version-select";
+import { ProjectVersionComposition } from "./project-version-composition";
+import { ProjectSummary } from "./project-summary";
+import { OrderSpecificSection } from "./private/order-specific-section";
+import { QuoteSpecificSection } from "./private/quote-specific-section";
 
 const ProjectShowContent = ({
   companyId,
   projectId,
   client,
   initialVersionId,
+  type,
 }: {
   companyId: number;
   projectId: number;
   initialVersionId: number;
+  lastVersionId: number;
   client: { name: string; phone: string; email: string };
+  type: "quote" | "order";
 }) => {
-  const [currentVersionId, setCurrentVersionId] = useState(initialVersionId);
-  const { data: { results: versions } = { results: [] } } = Api.useQuery(
-    "get",
-    "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions",
-    {
-      params: {
-        path: { company_id: companyId, project_id: projectId },
-      },
-    }
-  );
-  const queryClient = useQueryClient();
-  const handleVersionChange = async (value: string) => {
-    // Preload the query needed in the component to avoid blink loading
-    await queryClient.ensureQueryData(
-      Api.queryOptions(
-        "get",
-        "/api/v1/organization/companies/{company_id}/projects/{project_id}/versions/{id}",
-        {
-          params: {
-            path: {
-              company_id: companyId,
-              project_id: projectId,
-              id: Number.parseInt(value, 10),
-            },
-          },
-        }
-      )
-    );
-    setCurrentVersionId(Number.parseInt(value, 10));
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-      <div className="md:col-span-1">
+      <div className="md:col-span-1 flex flex-col gap-6">
+        <ProjectSummary routeParams={{ projectId }} type={type} />
         <ClientInfo client={client} />
-        <VersionSelect
-          onValueChange={handleVersionChange}
-          versionId={currentVersionId.toString()}
-          versions={versions}
-        />
+        {type == "order" && (
+          <OrderSpecificSection companyId={companyId} orderId={projectId} />
+        )}
+        {type == "quote" && (
+          <QuoteSpecificSection companyId={companyId} quoteId={projectId} />
+        )}
       </div>
       <div className="md:col-span-2">
-        <ProjectComposition
-          companyId={companyId}
-          projectId={projectId}
-          versionId={currentVersionId}
+        <ProjectVersionComposition
+          routeParams={{ companyId, projectId }}
+          initialVersionId={initialVersionId}
         />
       </div>
     </div>

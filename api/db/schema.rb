@@ -10,9 +10,87 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_20_084751) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pgcrypto"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "accounting_financial_transaction_status", ["draft", "voided", "posted", "cancelled"]
+  create_enum "credit_note_status", ["draft", "published"]
+  create_enum "invoice_status", ["draft", "published", "cancelled"]
+  create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
+
+  create_table "accounting_financial_transaction_details", force: :cascade do |t|
+    t.bigint "financial_transaction_id", null: false
+    t.datetime "delivery_date", null: false
+    t.string "seller_name", null: false
+    t.string "seller_registration_number", null: false
+    t.string "seller_address_zipcode", null: false
+    t.string "seller_address_street", null: false
+    t.string "seller_address_city", null: false
+    t.string "seller_vat_number", null: false
+    t.string "client_name", null: false
+    t.string "client_registration_number", null: false
+    t.string "client_address_zipcode", null: false
+    t.string "client_address_street", null: false
+    t.string "client_address_city", null: false
+    t.string "client_vat_number", null: false
+    t.string "delivery_name", null: false
+    t.string "delivery_registration_number", null: false
+    t.string "delivery_address_zipcode", null: false
+    t.string "delivery_address_street", null: false
+    t.string "delivery_address_city", null: false
+    t.string "purchase_order_number", null: false
+    t.datetime "due_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "seller_phone", null: false
+    t.string "seller_email", null: false
+    t.string "client_phone", null: false
+    t.string "client_email", null: false
+    t.string "delivery_phone", null: false
+    t.string "delivery_email", null: false
+    t.enum "seller_legal_form", null: false, enum_type: "legal_form"
+    t.decimal "seller_capital_amount", precision: 10, scale: 2, null: false
+    t.string "seller_rcs_city", null: false
+    t.string "seller_rcs_number", null: false
+    t.integer "payment_term_days", null: false
+    t.string "payment_term_accepted_methods", default: [], null: false, array: true
+    t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_a3f0028db5"
+  end
+
+  create_table "accounting_financial_transaction_lines", force: :cascade do |t|
+    t.string "holder_id", null: false
+    t.bigint "financial_transaction_id", null: false
+    t.string "unit", null: false
+    t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
+    t.decimal "quantity", precision: 15, scale: 6, null: false
+    t.decimal "tax_rate", precision: 15, scale: 2, null: false
+    t.decimal "excl_tax_amount", precision: 15, scale: 2, null: false
+    t.bigint "group_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_7c8e3e3158"
+    t.index ["group_id"], name: "index_accounting_financial_transaction_lines_on_group_id"
+    t.index ["holder_id"], name: "index_accounting_financial_transaction_lines_on_holder_id"
+  end
+
+  create_table "accounting_financial_transactions", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "holder_id", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "accounting_financial_transaction_status"
+    t.string "number"
+    t.string "type", null: false
+    t.datetime "issue_date", null: false
+    t.jsonb "context", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_accounting_financial_transactions_on_company_id"
+    t.index ["context"], name: "index_accounting_financial_transactions_on_context", using: :gin
+    t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -42,16 +120,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "organization_accounting_documents", force: :cascade do |t|
-    t.bigint "completion_snapshot_id", null: false
-    t.string "type", null: false
-    t.integer "total_amount_cents", null: false
-    t.datetime "date", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["completion_snapshot_id"], name: "idx_on_completion_snapshot_id_672fa29972"
-  end
-
   create_table "organization_clients", force: :cascade do |t|
     t.bigint "company_id", null: false
     t.string "name", null: false
@@ -63,6 +131,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.string "address_zipcode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "vat_number", null: false
     t.index ["company_id"], name: "index_organization_clients_on_company_id"
     t.index ["registration_number", "company_id"], name: "idx_on_registration_number_company_id_fc061ed019", unique: true
   end
@@ -77,7 +146,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.string "address_zipcode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "legal_form", default: "sas", null: false, enum_type: "legal_form"
+    t.string "rcs_city", null: false
+    t.string "rcs_number", null: false
+    t.string "vat_number", null: false
+    t.decimal "capital_amount", precision: 15, scale: 2, null: false
     t.index ["registration_number"], name: "index_organization_companies_on_registration_number", unique: true
+  end
+
+  create_table "organization_company_configs", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.jsonb "settings", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_organization_company_configs_on_company_id"
+    t.index ["settings"], name: "index_organization_company_configs_on_settings", using: :gin
   end
 
   create_table "organization_completion_snapshot_items", force: :cascade do |t|
@@ -95,16 +178,46 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "invoice_id"
-    t.bigint "credit_note_id"
-    t.index ["credit_note_id"], name: "index_organization_completion_snapshots_on_credit_note_id"
-    t.index ["invoice_id"], name: "index_organization_completion_snapshots_on_invoice_id"
     t.index ["project_version_id"], name: "index_organization_completion_snapshots_on_project_version_id"
+  end
+
+  create_table "organization_credit_notes", force: :cascade do |t|
+    t.string "number", null: false
+    t.datetime "issue_date", null: false
+    t.decimal "tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "total_amount", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "credit_note_status"
+    t.bigint "original_invoice_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["original_invoice_id"], name: "index_organization_credit_notes_on_original_invoice_id"
+    t.index ["payload"], name: "index_organization_credit_notes_on_payload", using: :gin
+  end
+
+  create_table "organization_invoices", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "number", null: false
+    t.datetime "issue_date", null: false
+    t.datetime "delivery_date", null: false
+    t.decimal "tax_amount", precision: 15, scale: 2, null: false
+    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
+    t.datetime "due_date"
+    t.decimal "total_amount", null: false
+    t.enum "status", default: "draft", null: false, enum_type: "invoice_status"
+    t.bigint "completion_snapshot_id"
+    t.index ["completion_snapshot_id"], name: "index_organization_invoices_on_completion_snapshot_id"
+    t.index ["payload"], name: "index_organization_invoices_on_payload", using: :gin
   end
 
   create_table "organization_item_groups", force: :cascade do |t|
     t.bigint "project_version_id", null: false
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position", null: false
@@ -118,13 +231,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.string "description"
     t.integer "quantity", null: false
     t.string "unit", null: false
-    t.integer "unit_price_cents", null: false
+    t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "project_version_id", null: false
     t.bigint "item_group_id"
     t.integer "position", null: false
+    t.uuid "original_item_uuid", null: false
+    t.decimal "tax_rate", precision: 5, scale: 2, null: false
     t.index ["item_group_id"], name: "index_organization_items_on_item_group_id"
+    t.index ["original_item_uuid"], name: "index_organization_items_on_original_item_uuid"
     t.index ["project_version_id"], name: "index_organization_items_on_project_version_id"
   end
 
@@ -143,7 +259,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.integer "number", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "retention_guarantee_rate"
+    t.decimal "retention_guarantee_rate", precision: 3, scale: 2
     t.index ["project_id"], name: "index_organization_project_versions_on_project_id"
   end
 
@@ -153,8 +269,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "description"
+    t.string "type", null: false
+    t.bigint "original_quote_version_id"
+    t.bigint "company_id", null: false
+    t.integer "number", null: false
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
-    t.index ["name", "client_id"], name: "index_organization_projects_on_name_and_client_id", unique: true
+    t.index ["company_id", "type", "number"], name: "index_organization_projects_on_company_id_and_type_and_number", unique: true
+    t.index ["company_id"], name: "index_organization_projects_on_company_id"
+    t.index ["name", "client_id", "type"], name: "index_organization_projects_on_name_and_client_id_and_type", unique: true
+    t.index ["original_quote_version_id"], name: "index_organization_projects_on_original_quote_version_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -166,15 +289,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "accounting_financial_transaction_details", "accounting_financial_transactions", column: "financial_transaction_id"
+  add_foreign_key "accounting_financial_transaction_lines", "accounting_financial_transactions", column: "financial_transaction_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "organization_accounting_documents", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
+  add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
-  add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "credit_note_id"
-  add_foreign_key "organization_completion_snapshots", "organization_accounting_documents", column: "invoice_id"
   add_foreign_key "organization_completion_snapshots", "organization_project_versions", column: "project_version_id"
+  add_foreign_key "organization_credit_notes", "organization_invoices", column: "original_invoice_id"
+  add_foreign_key "organization_invoices", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
   add_foreign_key "organization_items", "organization_project_versions", column: "project_version_id"
@@ -182,4 +307,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_27_134758) do
   add_foreign_key "organization_members", "users"
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"
   add_foreign_key "organization_projects", "organization_clients", column: "client_id"
+  add_foreign_key "organization_projects", "organization_companies", column: "company_id"
+  add_foreign_key "organization_projects", "organization_project_versions", column: "original_quote_version_id"
 end

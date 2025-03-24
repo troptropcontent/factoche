@@ -28,5 +28,16 @@ module Api
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # To enable sidekiq web
+    config.session_store :cookie_store, key: "_your_app_session"
+
+    # Required for all session management (regardless of session_store)
+    config.middleware.use ActionDispatch::Cookies
+
+    config.middleware.use config.session_store, config.session_options
+
+    # Load headless_browser configs
+    config.headless_browser = config_for(:headless_browser)
   end
 end

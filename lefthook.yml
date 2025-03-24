@@ -1,7 +1,7 @@
 pre-commit:
   parallel: true
   jobs:
-    - run: pnpmx eslint {staged_files}
+    - run: pnpm exec eslint {staged_files}
       root: "frontend/"
       glob: "*.{js,ts,jsx,tsx}"
 

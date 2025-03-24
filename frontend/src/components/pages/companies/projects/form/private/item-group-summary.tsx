@@ -13,8 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { computeItemsTotal } from "../project-form.utils";
 import { useTranslation } from "react-i18next";
+import { computeTotal } from "./utils";
 
 const ItemGroupSummary = ({
   name,
@@ -24,18 +24,20 @@ const ItemGroupSummary = ({
   name: string;
   description?: string | null;
   items: Array<{
+    position: number;
     name: string;
     description?: string | null;
     quantity: number;
-    unit_price: number;
+    unit_price_amount: number;
+    tax_rate: number;
     unit: string;
   }>;
 }) => {
-  const groupTotal = computeItemsTotal(items);
+  const groupTotal = computeTotal(items);
   const { t } = useTranslation();
 
   return (
-    <Card className="mb-4">
+    <Card>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <p className="text-sm text-gray-600">{description}</p>
@@ -92,12 +94,12 @@ const ItemGroupSummary = ({
                   <TableCell>{item.unit}</TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {
-                      amount: item.unit_price,
+                      amount: item.unit_price_amount,
                     })}
                   </TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {
-                      amount: item.quantity * item.unit_price,
+                      amount: item.quantity * item.unit_price_amount,
                     })}
                   </TableCell>
                 </TableRow>

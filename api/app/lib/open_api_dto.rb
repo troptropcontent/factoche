@@ -9,6 +9,12 @@ class OpenApiDto
   class << self
     attr_reader :registered_dto_schemas
 
+    def inherited(subclass)
+      self.fields.each { |name, data|
+        subclass.field(name, data[:type], subtype: data[:subtype], required: data[:required])
+      }
+    end
+
     def register_schema(name, schema)
       @registered_dto_schemas[name] = schema
     end
@@ -23,7 +29,9 @@ class OpenApiDto
       validate_enum_subtype!(name, type, subtype) if type == :enum
 
       fields[name] = { type: type, subtype: subtype, required: required }
-      attr_reader name
+
+      define_getters(name)
+
       define_setter(name, type, subtype)
 
       OpenApiDto.register_schema(self.name, self.to_schema())
@@ -38,7 +46,7 @@ class OpenApiDto
         type: :object,
         required: fields.select { |_, info| info[:required] }.keys.map(&:to_s),
         properties: fields.transform_values do |info|
-          case info[:type]
+          base_type = case info[:type]
           when :array
             array_field_schema(info)
           when :object
@@ -59,8 +67,10 @@ class OpenApiDto
               format: "decimal"
             }
           else
-            { type: info[:type] }.merge(info[:required] ? {} : { nullable: true })
+            { type: info[:type] }
           end
+
+          base_type.merge(info[:required] ? {} : { nullable: true })
         end
       }
     end
@@ -108,6 +118,15 @@ class OpenApiDto
         end
       end
     end
+
+    def define_getters(name)
+      define_method(name) do
+        instance_variable_get("@#{name}")
+      end
+      define_method("[]") do |arg|
+        send(arg)
+      end
+    end
   end
 
   def initialize(base_object)
@@ -118,7 +137,7 @@ class OpenApiDto
       end
     elsif base_object.class < ActiveRecord::Base || base_object.class < ActiveRecord::Relation
       self.class.fields.each do |field_name, info|
-        value = base_object.send(field_name)
+        value = load_value_from_object(base_object, field_name, info)
         send("#{field_name}=", value)
       end
     else
@@ -126,7 +145,16 @@ class OpenApiDto
     end
   end
 
+  def fetch(attribute)
+    send(attribute)
+  end
+
   private
+
+  def load_value_from_object(base_object, field_name, info)
+    return base_object.send("#{field_name}?") if info[:type] == :boolean && field_name.starts_with?("is_")
+    base_object.send(field_name)
+  end
 
   def validate_field_value!(field_name, field_type, field_subtype, field_value)
     validated_field_value = nil
@@ -178,12 +206,13 @@ class OpenApiDto
   end
 
   def validate_integer_value!(value, field_name)
-    if is_field_required?(field_name)
-      raise ArgumentError, "Expected Integer for #{field_name}, got #{value.class}" unless value.is_a?(Integer)
-    else
-      raise ArgumentError, "Expected Integer or Nil for #{field_name}, got #{value.class}" unless value.is_a?(Integer) || value.nil?
+    return value if value.is_a?(Integer)
+    begin
+      return Integer(value, 10) if value.is_a?(String)
+    rescue ArgumentError
+      raise ArgumentError, "Expected an instance of Integer or a integer parsable instance of String for #{field_name}, got #{value}"
     end
-    value
+    raise ArgumentError, "Expected an instance of Integer or a integer parsable instance of String for #{field_name}, got an instance #{value.class}"
   end
 
   def validate_float_value!(value, field_name)
@@ -205,13 +234,31 @@ class OpenApiDto
   end
 
   def validate_decimal_value!(value, field_name)
-    raise ArgumentError, "Expected an instance of BigDecimal for #{field_name}, got an instance of #{value.class}" unless value.is_a?(BigDecimal)
-    value.to_s
+    return value if value.is_a?(BigDecimal)
+
+    if value.is_a?(String)
+      begin
+        return BigDecimal(value)
+      rescue ArgumentError
+        raise ArgumentError, "Invalid decimal format for #{field_name}: #{value}"
+      end
+    end
+
+    raise ArgumentError, "Expected BigDecimal or string parsable as BigDecimal for #{field_name}, got #{value.class}"
   end
 
   def validate_timestamp_value!(value, field_name)
-    raise ArgumentError, "Expected an instance of ActiveSupport::TimeWithZone for #{field_name}, got an instance of #{value.class}" unless value.is_a?(ActiveSupport::TimeWithZone)
-    value
+    return value if value.is_a?(ActiveSupport::TimeWithZone)
+
+    if value.is_a?(String)
+      begin
+        return Time.zone.parse(value)
+      rescue ArgumentError
+        raise ArgumentError, "Invalid timestamp format for #{field_name}: #{value}"
+      end
+    end
+
+    raise ArgumentError, "Expected ActiveSupport::TimeWithZone or timestamp string for #{field_name}, got #{value.class}"
   end
 
   def validate_array_value!(value, field_name, subtype)
@@ -262,7 +309,7 @@ class OpenApiDto
 
   def validate_enum_value!(value, field_name, subtype)
     if is_field_required?(field_name)
-      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}" unless value.is_a?(String) && subtype.include?(value)
+      raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} for #{field_name}, got an instance of #{value.class}#{value.is_a?(String) ? " with value #{value}":""}" unless value.is_a?(String) && subtype.include?(value)
     else
       raise ArgumentError, "Expected an instance of String of one of the following values #{subtype.join(", ")} or nil for #{field_name}, got an instance of #{value.class}" unless (value.is_a?(String) && subtype.include?(value)) || value.nil?
     end
