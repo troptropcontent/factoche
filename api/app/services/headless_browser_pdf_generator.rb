@@ -25,8 +25,10 @@ class HeadlessBrowserPdfGenerator
   end
 
   def create_browser
-    browser_configs = Rails.application.credentials.headless_browser.fetch(Rails.env.to_sym)
-    Ferrum::Browser.new(browser_configs)
+    Ferrum::Browser.new({
+      ws_url: "#{ENV.fetch("HEADLESS_BROWSER_WS")}?token=#{ENV.fetch("HEADLESS_BROWSER_TOKEN")}",
+      process: false
+    })
   end
 
   def generate_pdf_with_browser(browser, temp_pdf)
