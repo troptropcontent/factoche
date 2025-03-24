@@ -89,6 +89,8 @@ accessories:
   chromium:
     image: browserless/chrome:latest
     port: "9222:3000"
+    options:
+      restart: unless-stopped
     env:
       secret:
         - HEADLESS_BROWSER_TOKEN
@@ -97,6 +99,7 @@ accessories:
         DEFAULT_LAUNCH_ARGS: '["--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]'
     roles:
       - job
+      - web
 #   db:
 #     image: mysql:8.0
 #     host: 192.168.0.2

@@ -1,20 +1,24 @@
 server:
-	rm -f tmp/pids/server.pid && bundle exec rails server -p 8080
+	rm -f tmp/pids/server.pid && bundle exec dotenv -f config/.env.development rails server -p 8080
 deploy:
 	bundle exec dotenv -f config/.env.production kamal deploy -d production
+boot_chromium:
+	bundle exec dotenv -f config/.env.production kamal accessory boot -d production chromium
+production:
+	bundle exec dotenv -f config/.env.production kamal app exec -d production -r web -i --reuse "bin/rails console"
 rswag:
-	bundle exec rails rswag:specs:swaggerize PATTERN="spec/controllers/**/*_spec.rb"
+	bundle exec dotenv -f config/.env.development rails rswag:specs:swaggerize PATTERN="spec/controllers/**/*_spec.rb"
 rspecf:
-	bundle exec rspec --tag focus
+	bundle exec dotenv -f config/.env.development rspec --tag focus
 rspec:
-	bundle exec rspec
+	bundle exec dotenv -f config/.env.development rspec
 frontend:
 	(cd ../frontend && pnpm run dev)
 tailwindcss:
 	pnpm exec tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css --watch
 guard:
-	bundle exec guard
+	bundle exec dotenv -f config/.env.development guard
 sidekiq:
-	bundle exec sidekiq
+	bundle exec dotenv -f config/.env.development sidekiq
 console:
-	bundle exec rails console
+	bundle exec dotenv -f config/.env.development rails console
