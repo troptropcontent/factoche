@@ -60,14 +60,18 @@ const ClientForm = ({
     createClientMutationOptions(parseInt(companyId))
   );
 
+  // @ts-expect-error Type 'any' for details parameter is expected since API error response type is not strictly typed
   const setFieldErrors = (details) => {
     Object.entries(details).forEach(([field, issues]) => {
+      // @ts-expect-error issues array type is unknown since it comes from API error response
       issues.forEach((issue) =>
+        // @ts-expect-error field parameter may not match form field names exactly
         form.setError(field, { message: t(`form.validation.${issue.type}`) })
       );
     });
   };
 
+  // @ts-expect-error handleError parameter type is any since it handles various API error responses
   const handleError = (e) => {
     if (typeof e.response.data == "object") {
       setFieldErrors(e.response.data.details);

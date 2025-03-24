@@ -30,7 +30,7 @@ module Accounting
       def find_financial_transaction_url!(financial_transaction)
         validate_browser_config!
 
-        r = Accounting::FinancialTransactions::FindPrintUrl.call(financial_transaction.id, browser_config.fetch(:app_host))
+        r = Accounting::FinancialTransactions::FindPrintUrl.call(financial_transaction.id)
 
         raise r.error unless r.success?
         r.data

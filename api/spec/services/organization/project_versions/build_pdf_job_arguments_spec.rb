@@ -21,7 +21,7 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
 
         expect(result).to be_success
         expect(result.data).to include(
-          "url" => "http://example.com/prints/quotes/#{version.project.id}/quote_versions/#{version.id}",
+          "url" => "http://html_pdf:8081/prints/quotes/#{version.project.id}/quote_versions/#{version.id}",
           "class_name" => version.class.name,
           "id" => version.id,
           "file_name" => "#{version_identifier}"
@@ -38,16 +38,6 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
         expect(result).to be_failure
 
         expect(result.error.message).to eq('Failed to compute version number')
-      end
-    end
-
-    context 'when headless browser config are not set' do
-      before do
-        allow(Rails.configuration).to receive(:headless_browser).and_return(nil)
-      end
-
-      it 'returns a failure result' do
-        expect(result).to be_failure
       end
     end
   end

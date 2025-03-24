@@ -1,5 +1,7 @@
 server:
 	rm -f tmp/pids/server.pid && bundle exec rails server -p 8080
+deploy:
+	bundle exec dotenv -f config/.env.production kamal deploy -d production
 rswag:
 	bundle exec rails rswag:specs:swaggerize PATTERN="spec/controllers/**/*_spec.rb"
 rspecf:

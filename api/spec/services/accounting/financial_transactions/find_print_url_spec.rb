@@ -4,7 +4,6 @@ module Accounting
   module FinancialTransactions
     RSpec.describe FindPrintUrl do
       describe '.call', :aggregate_failures do
-        let(:host) { "http://example.com" }
         let(:invoice) { FactoryBot.create(:invoice, company_id: 1, holder_id: 1, number: "PRO-2024-00001") }
 
         context 'when financial transaction is an invoice' do
@@ -12,13 +11,13 @@ module Accounting
 
           context 'with draft status' do
             it 'returns unpublished invoice URL' do
-              result = described_class.call(financial_transaction_id, host)
+              result = described_class.call(financial_transaction_id)
 
               expect(result).to be_success
               expect(result.data).to eq(
                 Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
                   invoice.id,
-                  host: host
+                  { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
                 )
               )
             end
@@ -28,13 +27,13 @@ module Accounting
             before { invoice.update!(status: :posted, number: 'INV-2024-0001') }
 
             it 'returns published invoice URL' do
-              result = described_class.call(financial_transaction_id, host)
+              result = described_class.call(financial_transaction_id)
 
               expect(result).to be_success
               expect(result.data).to eq(
                 Rails.application.routes.url_helpers.accounting_prints_published_invoice_url(
                   invoice.id,
-                  host: host
+                  { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
                 )
               )
             end
@@ -46,13 +45,13 @@ module Accounting
           let(:financial_transaction_id) { credit_note.id }
 
           it 'returns credit note URL' do
-            result = described_class.call(financial_transaction_id, host)
+            result = described_class.call(financial_transaction_id)
 
             expect(result).to be_success
             expect(result.data).to eq(
               Rails.application.routes.url_helpers.accounting_prints_credit_note_url(
                 credit_note.id,
-                host: host
+                { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") }
               )
             )
           end
@@ -63,22 +62,10 @@ module Accounting
             let(:financial_transaction_id) { nil }
 
             it 'returns failure' do
-              result = described_class.call(financial_transaction_id, host)
+              result = described_class.call(financial_transaction_id)
 
               expect(result).to be_failure
               expect(result.error).to include("Financial transaction ID is required")
-            end
-          end
-
-          context 'when host is blank' do
-            let(:host) { nil }
-            let(:financial_transaction_id) { invoice.id }
-
-            it 'returns failure' do
-              result = described_class.call(financial_transaction_id, host)
-
-              expect(result).to be_failure
-              expect(result.error).to include("Host is required")
             end
           end
         end
@@ -87,7 +74,7 @@ module Accounting
           let(:financial_transaction_id) { -1 }
 
           it 'returns failure' do
-            result = described_class.call(financial_transaction_id, host)
+            result = described_class.call(financial_transaction_id)
 
             expect(result).to be_failure
             expect(result.error).to include("Couldn't find Accounting::FinancialTransaction")
@@ -103,7 +90,7 @@ module Accounting
           let(:financial_transaction_id) { 1 }
 
           it 'returns failure' do
-            result = described_class.call(financial_transaction_id, host)
+            result = described_class.call(financial_transaction_id)
 
             expect(result).to be_failure
             expect(result.error).to include("Unsupported financial transaction type")

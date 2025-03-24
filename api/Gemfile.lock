@@ -445,6 +445,7 @@ DEPENDENCIES
   byebug (~> 11.1)
   database_cleaner-active_record
   debug
+  dotenv
   dry-validation (~> 1.11)
   factory_bot_rails
   ferrum

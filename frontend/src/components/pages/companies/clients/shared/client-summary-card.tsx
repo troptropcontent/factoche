@@ -14,7 +14,7 @@ export function ClientSummaryCard({
     "get",
     "/api/v1/organization/clients/{id}",
     {
-      params: { path: { id: clientId } },
+      params: { path: { id: clientId! } },
     },
     {
       enabled: clientId !== undefined,

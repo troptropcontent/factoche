@@ -21,8 +21,7 @@ module Organization
         private
 
         def find_print_url(version)
-          host = Rails.configuration.headless_browser.fetch(:app_host)
-          Rails.application.routes.url_helpers.quote_prints_url(version.project.id, version.id, { host: host })
+          Rails.application.routes.url_helpers.quote_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), port: ENV.fetch("PRINT_MICROSERVICE_PORT") })
         end
       end
     end
