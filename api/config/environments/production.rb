@@ -77,7 +77,8 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
-    "www.fabati.fr"
+    "api.fabati.fr",
+    "print.fabati.fr"
   ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
