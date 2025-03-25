@@ -39,14 +39,13 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-
-# Copy application code
-COPY . .
-
 # tailwindcss
 RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 && \
     chmod +x tailwindcss-linux-x64 && \
     mv tailwindcss-linux-x64 tailwindcss
+
+# Copy application code
+COPY . .
 
 # Remove output.css if it exists
 RUN rm -rf app/assets/tailwind/output.css
