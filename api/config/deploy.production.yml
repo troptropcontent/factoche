@@ -50,6 +50,8 @@ env:
     - PRINT_MICROSERVICE_URL
     - PRINT_MICROSERVICE_HOST
     - PRINT_MICROSERVICE_PORT
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
