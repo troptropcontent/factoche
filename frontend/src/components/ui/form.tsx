@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "react-i18next";
+import { Button } from "./button";
 
 const Form = FormProvider;
 
@@ -171,6 +172,25 @@ const FormMessage = React.forwardRef<
 });
 FormMessage.displayName = "FormMessage";
 
+const FormSubmit = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentPropsWithoutRef<typeof Button>
+>(({ disabled, ...props }, ref) => {
+  const {
+    formState: { isSubmitting },
+  } = useFormContext();
+  console.log({ isSubmitting });
+  return (
+    <Button
+      ref={ref}
+      type="submit"
+      disabled={isSubmitting || disabled}
+      {...props}
+    />
+  );
+});
+FormSubmit.displayName = "FormSubmit";
+
 export {
   useFormField,
   Form,
@@ -179,5 +199,6 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
+  FormSubmit,
   FormField,
 };
