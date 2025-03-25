@@ -45,14 +45,15 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-
-
+# Precompile assets and tailwindcss
+RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 && \
+    chmod +x tailwindcss-linux-x64 && \
+    mv tailwindcss-linux-x64 tailwindcss
+RUN bundle exec rails assets:precompile && \
+    pnpm exec tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css
 
 # Final stage for app image
 FROM base
-
-# Print the DATABASE_URL for debugging
-RUN echo $DATABASE_URL
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
