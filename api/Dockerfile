@@ -43,7 +43,7 @@ RUN bundle install && \
 RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 && \
     chmod +x tailwindcss-linux-x64 && \
     mv tailwindcss-linux-x64 tailwindcss
-RUN pnpm exec tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css
+RUN ./tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css
 
 # Copy application code
 COPY . .
