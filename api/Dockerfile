@@ -47,6 +47,11 @@ COPY . .
 RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 && \
     chmod +x tailwindcss-linux-x64 && \
     mv tailwindcss-linux-x64 tailwindcss
+
+# Remove output.css if it exists
+RUN rm -rf app/assets/tailwind/output.css
+
+# Generate output.css
 RUN ./tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css
 
 # Precompile assets, use fake redis url and key to be able to precompile assets
