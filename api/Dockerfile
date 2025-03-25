@@ -50,7 +50,7 @@ RUN curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/downlo
 RUN ./tailwindcss -i app/assets/tailwind/input.css -o app/assets/tailwind/output.css
 
 # Precompile assets
-RUN REDIS_URL='fake_just_for_precompile' bundle exec rails assets:precompile
+RUN REDIS_URL='fake_just_for_precompile' RAILS_MASTER_KEY='fake_just_for_precompile' bundle exec rails assets:precompile
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
