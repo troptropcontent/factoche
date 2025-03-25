@@ -88,3 +88,5 @@ gem "dry-validation", "~> 1.11"
 # Rswag
 gem "rswag-api"
 gem "rswag-ui"
+
+gem "aws-sdk-s3", require: false

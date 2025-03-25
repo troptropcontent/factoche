@@ -22,3 +22,9 @@ sidekiq:
 	bundle exec dotenv -f config/.env.development sidekiq
 console:
 	bundle exec dotenv -f config/.env.development rails console
+seed:
+	bundle exec dotenv -f config/.env.development rails db:seed
+reset:
+	bundle exec dotenv -f config/.env.development rails db:reset
+flush_sidekiq:
+	bundle exec dotenv -f config/.env.development rails runner "Sidekiq.redis(&:flushdb)"

@@ -24,7 +24,7 @@ services:
     networks:
       - development
     working_dir: /factoche/api
-    command: bundle exec sidekiq
+    command: bundle exec dotenv -f config/.env.development sidekiq
     env_file:
       - ../.env
     depends_on:
@@ -48,7 +48,7 @@ services:
     ports:
       - "8081:8081"
     working_dir: /factoche/api
-    command: bundle exec rails s -p 8081 -b 0.0.0.0
+    command: bundle exec dotenv -f config/.env.development rails s -p 8081 -b 0.0.0.0
   db:
     image: postgres:15.4
     restart: unless-stopped
