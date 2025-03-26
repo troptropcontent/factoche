@@ -2,19 +2,17 @@ module Api
   module V1
     module Organization
       class InvoicesController < ApiV1Controller
-        # GET /api/v1/organization/orders/:order_id/invoices
+        # GET    /api/v1/organization/companies/:company_id/invoices
         def index
-          order = policy_scope(::Organization::Project).where(type: "Organization::Order").find(params[:order_id])
-
-          invoices = Accounting::Invoice
+          invoices = policy_scope(Accounting::Invoice).where(company_id: params[:company_id])
             .left_outer_joins(:lines)
             .select(
               "accounting_financial_transactions.*, " \
               "SUM(COALESCE(accounting_financial_transaction_lines.quantity, 0) * " \
               "COALESCE(accounting_financial_transaction_lines.unit_price_amount, 0)) as total_amount"
             )
-            .where(holder_id: order.versions.pluck(:id))
             .then { |invoices| filter_by_status(invoices) }
+            .then { |invoices| filter_by_order(invoices) }
             .group("accounting_financial_transactions.id")
 
           render json: ::Organization::Invoices::IndexDto.new({ results: invoices })
@@ -115,6 +113,12 @@ module Api
 
           statuses = Array(params[:status])
           invoices.where(status: statuses)
+        end
+
+        def filter_by_order(invoices)
+          return invoices unless params[:order_id].present?
+          order_version_ids = ::Organization::ProjectVersion.where(project_id: params[:order_id]).pluck(:id)
+          invoices.where(holder_id: order_version_ids)
         end
       end
     end

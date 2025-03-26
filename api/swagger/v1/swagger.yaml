@@ -424,47 +424,6 @@ paths:
                 required:
                 - error
   "/api/v1/organization/orders/{order_id}/invoices":
-    get:
-      summary: Lists invoices for an order
-      tags:
-      - Invoices
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: order_id
-        in: path
-        required: true
-        schema:
-          type: integer
-      - name: status
-        in: query
-        schema:
-          type: array
-          items:
-            type: string
-            enum:
-            - draft
-            - posted
-            - cancelled
-            - voided
-      responses:
-        '200':
-          description: invoices found
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                - results
-                properties:
-                  results:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
-        '404':
-          description: order not found
-        '403':
-          description: forbiden
     post:
       summary: Creates an invoice
       tags:
@@ -541,6 +500,50 @@ paths:
                         type: string
                         format: decimal
         required: true
+  "/api/v1/organization/companies/{company_id}/invoices":
+    get:
+      summary: Lists invoices for an order
+      tags:
+      - Invoices
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - draft
+            - posted
+            - cancelled
+            - voided
+      - name: order_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: invoices found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+        '403':
+          description: forbiden
   "/api/v1/organization/orders/{order_id}/invoices/{id}":
     get:
       summary: Show invoice
