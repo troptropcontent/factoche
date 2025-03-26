@@ -10,6 +10,7 @@ RSpec.describe Organization::Client, type: :model do
 
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:registration_number) }
+    it { is_expected.to validate_presence_of(:vat_number) }
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_presence_of(:phone) }
     it { is_expected.to validate_presence_of(:address_street) }
@@ -30,6 +31,16 @@ RSpec.describe Organization::Client, type: :model do
 
 
       it { is_expected.to validate_uniqueness_of(:registration_number).scoped_to(:company_id) }
+    end
+
+    describe "uniqueness of name scoped on company_id" do
+      subject { FactoryBot.build(:client, name: already_existing_client.name, company:) }
+
+      let(:company) { FactoryBot.create(:company) }
+      let!(:already_existing_client) { FactoryBot.create(:client, company:) }
+
+
+      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:company_id) }
     end
   end
 end
