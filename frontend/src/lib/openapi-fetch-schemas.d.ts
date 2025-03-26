@@ -451,47 +451,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Lists invoices for an order */
-        get: {
-            parameters: {
-                query?: {
-                    status?: ("draft" | "posted" | "cancelled" | "voided")[];
-                };
-                header?: never;
-                path: {
-                    order_id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description invoices found */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            results: components["schemas"]["Organization::Invoices::CompactDto"][];
-                        };
-                    };
-                };
-                /** @description forbiden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description order not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
+        get?: never;
         put?: never;
         /** Creates an invoice */
         post: {
@@ -551,6 +511,56 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists invoices for an order */
+        get: {
+            parameters: {
+                query?: {
+                    status?: ("draft" | "posted" | "cancelled" | "voided")[];
+                    order_id?: number;
+                };
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoices found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Invoices::CompactDto"][];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
