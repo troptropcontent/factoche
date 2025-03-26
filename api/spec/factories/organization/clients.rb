@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :client, class: 'Organization::Client' do
-    name { "Super Client" }
+    sequence(:name) { |n| "Super Client #{n}" }
     sequence(:registration_number) { |n| "REG#{n.to_s.rjust(9, '0')}" }
     sequence(:vat_number) { |n| "VAT#{n.to_s.rjust(9, '0')}" }
     email { "super@client.com" }
