@@ -11,7 +11,7 @@ rswag:
 rspecf:
 	bundle exec dotenv -f config/.env.development rspec --tag focus
 rspec:
-	bundle exec dotenv -f config/.env.development rspec
+	bundle exec dotenv -f config/.env.development rspec $(filter-out $@,$(MAKECMDGOALS))
 frontend:
 	(cd ../frontend && pnpm run dev)
 tailwindcss:
