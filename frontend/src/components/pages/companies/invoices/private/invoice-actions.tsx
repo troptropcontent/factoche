@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { Button, LoadingButton } from "@/components/ui/button";
+
 import { toast } from "@/hooks/use-toast";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -103,13 +104,13 @@ const DestroyButton = ({
   companyId: number;
 }) => {
   const { t } = useTranslation();
-  const { mutate: voidInvoiceMutation } = Api.useMutation(
+  const { mutateAsync: voidInvoiceMutation } = Api.useMutation(
     "delete",
     "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
-  const voidInvoice = () => {
+  const voidInvoice = async () => {
     const onSuccess = () => {
       toast({
         title: t(
@@ -136,7 +137,7 @@ const DestroyButton = ({
       });
     };
 
-    voidInvoiceMutation(
+    await voidInvoiceMutation(
       {
         params: { path: { id: invoiceId, order_id: orderId } },
       },
@@ -148,11 +149,11 @@ const DestroyButton = ({
   };
 
   return (
-    <Button variant="destructive" onClick={voidInvoice}>
+    <LoadingButton variant="destructive" onClick={voidInvoice}>
       {t(
         "pages.companies.projects.invoices.completion_snapshot.show.actions.void"
       )}
-    </Button>
+    </LoadingButton>
   );
 };
 
@@ -166,13 +167,13 @@ const CancelButton = ({
   companyId: number;
 }) => {
   const { t } = useTranslation();
-  const { mutate: cancelInvoiceMutation } = Api.useMutation(
+  const { mutateAsync: cancelInvoiceMutation } = Api.useMutation(
     "post",
     "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel"
   );
   const navigate = useNavigate();
 
-  const cancelInvoice = () => {
+  const cancelInvoice = async () => {
     const onSuccess = () => {
       toast({
         title: t(
@@ -199,7 +200,7 @@ const CancelButton = ({
       });
     };
 
-    cancelInvoiceMutation(
+    await cancelInvoiceMutation(
       {
         params: { path: { id: invoiceId, order_id: orderId } },
       },
@@ -211,11 +212,11 @@ const CancelButton = ({
   };
 
   return (
-    <Button variant="destructive" onClick={cancelInvoice}>
+    <LoadingButton variant="destructive" onClick={cancelInvoice}>
       {t(
         "pages.companies.projects.invoices.completion_snapshot.show.actions.cancel"
       )}
-    </Button>
+    </LoadingButton>
   );
 };
 
@@ -229,13 +230,13 @@ const PostButton = ({
   companyId: number;
 }) => {
   const { t } = useTranslation();
-  const { mutate: postInvoiceMutation } = Api.useMutation(
+  const { mutateAsync: postInvoiceMutation } = Api.useMutation(
     "post",
     "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
-  const postInvoice = () => {
+  const postInvoice = async () => {
     const onSuccess = () => {
       toast({
         title: t(
@@ -262,7 +263,7 @@ const PostButton = ({
       });
     };
 
-    postInvoiceMutation(
+    await postInvoiceMutation(
       {
         params: { path: { id: invoiceId, order_id: orderId } },
       },
@@ -274,11 +275,11 @@ const PostButton = ({
   };
 
   return (
-    <Button variant="default" onClick={postInvoice}>
+    <LoadingButton variant="default" onClick={postInvoice}>
       {t(
         "pages.companies.projects.invoices.completion_snapshot.show.actions.post"
       )}
-    </Button>
+    </LoadingButton>
   );
 };
 
