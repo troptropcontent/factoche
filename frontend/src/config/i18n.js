@@ -474,6 +474,8 @@ i18n
                                     "address_city_placeholder": "Ville du client",
                                     "address_zipcode": "Code postal",
                                     "address_zipcode_placeholder": "Code postal du client",
+                                    "vat_number": "Numéro de TVA",
+                                    "vat_number_placeholder": "Numéro de TVA du client",
                                     "submit": "Ajouter"
                                 }
                             }

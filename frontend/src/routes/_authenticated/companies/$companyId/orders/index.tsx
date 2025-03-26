@@ -1,6 +1,5 @@
 import { Layout } from "@/components/pages/companies/layout";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -11,8 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Api } from "@/lib/openapi-fetch-query-client";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { PlusCircle } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { useTranslation } from "react-i18next";
 
@@ -61,15 +59,6 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold">
             {t("pages.companies.projects.index.title")}
           </h1>
-          <Button asChild>
-            <Link
-              to={`/companies/$companyId/orders/new`}
-              params={{ companyId }}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              {t("pages.companies.projects.index.add_project")}
-            </Link>
-          </Button>
         </div>
       </Layout.Header>
       <Layout.Content>

@@ -65,18 +65,18 @@ const InvoiceForm = ({
     form.reset(formInitialValues);
   }, [formInitialValues, form]);
 
-  const { mutate: createNewInvoice } = Api.useMutation(
+  const { mutateAsync: createNewInvoice } = Api.useMutation(
     "post",
     "/api/v1/organization/orders/{order_id}/invoices"
   );
-  const { mutate: updateNewInvoice } = Api.useMutation(
+  const { mutateAsync: updateNewInvoice } = Api.useMutation(
     "put",
     "/api/v1/organization/orders/{order_id}/invoices/{id}"
   );
 
   const queryClient = useQueryClient();
 
-  const mutateFunction = (data: z.infer<typeof invoiceFormSchema>) => {
+  const mutateFunction = async (data: z.infer<typeof invoiceFormSchema>) => {
     const body = {
       invoice_amounts: data.invoice_amounts.reduce<
         Array<{
@@ -135,7 +135,7 @@ const InvoiceForm = ({
     const mutationOptions = { onError, onSuccess };
 
     if (invoiceId) {
-      updateNewInvoice(
+      await updateNewInvoice(
         {
           params: { path: { order_id: orderId, id: invoiceId } },
           body,
@@ -143,7 +143,7 @@ const InvoiceForm = ({
         mutationOptions
       );
     } else {
-      createNewInvoice(
+      await createNewInvoice(
         {
           params: { path: { order_id: orderId } },
           body,
@@ -157,8 +157,8 @@ const InvoiceForm = ({
   const { toast } = useToast();
   const { t } = useTranslation();
 
-  const onSubmit = (data: z.infer<typeof invoiceFormSchema>) => {
-    mutateFunction(data);
+  const onSubmit = async (data: z.infer<typeof invoiceFormSchema>) => {
+    await mutateFunction(data);
   };
 
   return (
