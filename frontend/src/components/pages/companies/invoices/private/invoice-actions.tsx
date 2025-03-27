@@ -76,7 +76,10 @@ const DownloadInvoicePdfButton = ({
   return (
     <Button asChild variant="outline">
       {documentUrl ? (
-        <Link to={`${import.meta.env.VITE_API_BASE_URL}${documentUrl}`}>
+        <Link
+          to={`${import.meta.env.VITE_API_BASE_URL}${documentUrl}`}
+          target="_blank"
+        >
           <Download className="mr-2 h-4 w-4" />
           {t(
             `pages.companies.projects.invoices.completion_snapshot.show.actions.download_${type}_pdf`
