@@ -15,7 +15,11 @@ module Api
             .then { |invoices| filter_by_order(invoices) }
             .group("accounting_financial_transactions.id")
 
-          render json: ::Organization::Invoices::IndexDto.new({ results: invoices })
+          order_versions = ::Organization::ProjectVersion.where(id: invoices.pluck(:holder_id))
+
+          orders = ::Organization::Order.where(id: order_versions.pluck(:project_id))
+
+          render json: ::Organization::Invoices::IndexDto.new({ results: invoices, meta: { order_versions: order_versions, orders: orders } })
         end
 
         # GET /api/v1/organization/orders/:order_id/invoices/:id
