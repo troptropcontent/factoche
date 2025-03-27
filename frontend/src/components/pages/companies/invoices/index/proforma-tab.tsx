@@ -16,20 +16,20 @@ import { DocumentTable } from "./private/document-table";
 const TAB_VALUE = "proforma" as const;
 
 const Trigger = ({ companyId }: { companyId: string }) => {
-  const { data: invoices } = useProformaQuery(companyId);
+  const { data: invoicesData } = useProformaQuery(companyId);
   const { t } = useTranslation();
   return (
     <TabsTrigger value={TAB_VALUE}>
       {t("pages.companies.projects.invoices.index.tabs.proforma.title")}
       <Badge variant="outline" className="ml-2">
-        {invoices === undefined ? <Loader /> : invoices.length}
+        {invoicesData === undefined ? <Loader /> : invoicesData.results.length}
       </Badge>
     </TabsTrigger>
   );
 };
 
 const Content = ({ companyId }: { companyId: string }) => {
-  const { data: invoices } = useProformaQuery(companyId);
+  const { data: invoicesData } = useProformaQuery(companyId);
   const { t } = useTranslation();
   return (
     <TabsContent value={TAB_VALUE}>
@@ -46,7 +46,18 @@ const Content = ({ companyId }: { companyId: string }) => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <DocumentTable documents={invoices} tab={TAB_VALUE} />
+            <DocumentTable
+              documentsData={
+                invoicesData
+                  ? {
+                      invoices: invoicesData.results,
+                      orders: invoicesData.meta.orders,
+                      orderVersions: invoicesData.meta.order_versions,
+                    }
+                  : undefined
+              }
+              tab={TAB_VALUE}
+            />
           </div>
         </CardContent>
       </Card>

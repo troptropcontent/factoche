@@ -398,6 +398,8 @@ i18n
                                             "table": {
                                                 "columns": {
                                                     "number": "Numéro",
+                                                    "client": "Client",
+                                                    "order": "Commande",
                                                     "date": "Date",
                                                     "status": "Status",
                                                     "amount": "Montant",

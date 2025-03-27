@@ -8,66 +8,36 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import {} from "@/components/ui/table";
-import { Link } from "@tanstack/react-router";
-import { StatusBadge } from "../../private/status-badge";
-import { Button } from "@/components/ui/button";
-import { Download, Eye, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { InvoiceCompact } from "../../shared/types";
 import { Tab } from "../shared/types";
 import { t } from "i18next";
+import { ProjectVersionCompact } from "../../../project-versions/shared/types";
+import { OrderCompact } from "../../../projects/shared/types";
+import { DocumentTableRow } from "./document-table-row";
 
 const LoadedTableBody = ({
   documents,
+  orderVersions,
+  orders,
   tab,
 }: {
   documents: InvoiceCompact[];
+  orderVersions: ProjectVersionCompact[];
+  orders: OrderCompact[];
   tab: Tab;
 }) => {
   const { t } = useTranslation();
+
   return (
     <TableBody>
       {documents.length > 0 ? (
         documents.map((document) => (
-          <TableRow key={document.id}>
-            <TableCell className="font-medium">{document.number}</TableCell>
-            <TableCell>
-              {t("common.date", {
-                date: Date.parse(document.issue_date),
-              })}
-            </TableCell>
-            <TableCell>
-              {t("common.number_in_currency", {
-                amount: document.total_amount,
-              })}
-            </TableCell>
-            <TableCell>
-              <StatusBadge status={document.status} />
-            </TableCell>
-            <TableCell className="text-right">
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={`/invoices/${document.id}`}>
-                    <Eye />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  {document.pdf_url ? (
-                    <Link
-                      to={`${import.meta.env.VITE_API_BASE_URL}${document.pdf_url}`}
-                      target="_blank"
-                    >
-                      <Download />
-                    </Link>
-                  ) : (
-                    <Link disabled>
-                      <Loader2 className="animate-spin" />
-                    </Link>
-                  )}
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
+          <DocumentTableRow
+            document={document}
+            orderVersions={orderVersions}
+            orders={orders}
+          />
         ))
       ) : (
         <TableRow>
@@ -115,10 +85,16 @@ const LoadingTableBody = () => {
 };
 
 const DocumentTable = ({
-  documents,
+  documentsData,
   tab,
 }: {
-  documents: InvoiceCompact[] | undefined;
+  documentsData:
+    | {
+        invoices: InvoiceCompact[];
+        orders: OrderCompact[];
+        orderVersions: ProjectVersionCompact[];
+      }
+    | undefined;
   tab: Tab;
 }) => {
   return (
@@ -128,6 +104,16 @@ const DocumentTable = ({
           <TableHead>
             {t(
               "pages.companies.projects.invoices.index.tabs.table.columns.number"
+            )}
+          </TableHead>
+          <TableHead>
+            {t(
+              "pages.companies.projects.invoices.index.tabs.table.columns.client"
+            )}
+          </TableHead>
+          <TableHead>
+            {t(
+              "pages.companies.projects.invoices.index.tabs.table.columns.order"
             )}
           </TableHead>
           <TableHead>
@@ -152,10 +138,15 @@ const DocumentTable = ({
           </TableHead>
         </TableRow>
       </TableHeader>
-      {documents == undefined ? (
+      {documentsData == undefined ? (
         <LoadingTableBody />
       ) : (
-        <LoadedTableBody documents={documents} tab={tab} />
+        <LoadedTableBody
+          documents={documentsData.invoices}
+          orderVersions={documentsData.orderVersions}
+          orders={documentsData.orders}
+          tab={tab}
+        />
       )}
     </Table>
   );
