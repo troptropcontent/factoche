@@ -177,4 +177,35 @@ const useInvoicingSummaryCardData = ({
   };
 };
 
-export { useInvoiceContentData, useInvoicingSummaryCardData };
+const useProformaQuery = (companyId: string) =>
+  Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/invoices",
+    {
+      params: {
+        path: { company_id: Number(companyId) },
+        query: { status: ["draft", "voided"] },
+      },
+    },
+    { select: (data) => data.results }
+  );
+
+const useInvoicesQuery = (companyId: string) =>
+  Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/invoices",
+    {
+      params: {
+        path: { company_id: Number(companyId) },
+        query: { status: ["posted", "cancelled"] },
+      },
+    },
+    { select: (data) => data.results }
+  );
+
+export {
+  useInvoiceContentData,
+  useInvoicingSummaryCardData,
+  useProformaQuery,
+  useInvoicesQuery,
+};
