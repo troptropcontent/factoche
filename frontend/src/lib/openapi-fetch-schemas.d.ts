@@ -1550,6 +1550,7 @@ export interface components {
             /** Format: decimal */
             total_amount: string;
             lines: components["schemas"]["Organization::Invoices::CompactDto::Line"][];
+            pdf_url?: string | null;
         };
         "Organization::Invoices::BaseExtendedDto::Line": {
             holder_id: string;

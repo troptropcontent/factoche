@@ -13,6 +13,7 @@ module Organization
       field "updated_at", :timestamp
       field "total_amount", :decimal
       field "lines", :array, subtype: Line
+      field "pdf_url", :string, required: false
     end
   end
 end

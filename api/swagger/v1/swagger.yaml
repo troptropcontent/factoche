@@ -1713,6 +1713,9 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Invoices::CompactDto::Line"
+        pdf_url:
+          type: string
+          nullable: true
     Organization::Invoices::BaseExtendedDto::Line:
       type: object
       required:
