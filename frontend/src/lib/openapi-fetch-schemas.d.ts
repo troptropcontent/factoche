@@ -547,6 +547,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             results: components["schemas"]["Organization::Invoices::CompactDto"][];
+                            meta: components["schemas"]["Organization::Invoices::Meta"];
                         };
                     };
                 };
@@ -1539,6 +1540,7 @@ export interface components {
             excl_tax_amount: string;
         };
         "Organization::Invoices::CompactDto": {
+            holder_id: number;
             id: number;
             /** @enum {string} */
             status: "draft" | "posted" | "cancelled" | "voided";
@@ -1643,8 +1645,46 @@ export interface components {
             pdf_url?: string | null;
             credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
         };
+        "Organization::ProjectVersions::CompactDto": {
+            id: number;
+            project_id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_amount: string;
+        };
+        "Organization::Invoices::Meta": {
+            order_versions: components["schemas"]["Organization::ProjectVersions::CompactDto"][];
+            orders: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
+        };
+        "Organization::Projects::BaseCompactDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::Orders::CompactDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            /** Format: decimal */
+            invoiced_amount: string;
+        };
         "Organization::Invoices::IndexDto": {
             results: components["schemas"]["Organization::Invoices::CompactDto"][];
+            meta: components["schemas"]["Organization::Invoices::Meta"];
         };
         "Organization::Invoices::ShowDto": {
             result: components["schemas"]["Organization::Invoices::ExtendedDto"];
@@ -1740,16 +1780,6 @@ export interface components {
         "Organization::ProjectVersionShowResponseDto": {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
         };
-        "Organization::ProjectVersions::CompactDto": {
-            id: number;
-            number: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: decimal */
-            retention_guarantee_rate: string;
-            /** Format: decimal */
-            total_amount: string;
-        };
         "Organization::ProjectVersions::ExtendedDto": {
             id: number;
             number: number;
@@ -1764,16 +1794,6 @@ export interface components {
         };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-        };
-        "Organization::Projects::BaseCompactDto": {
-            id: number;
-            number: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::Clients::ExtendedDto"];
-            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
         "Organization::Projects::BaseExtendedDto": {
             id: number;
@@ -1817,18 +1837,6 @@ export interface components {
         };
         "Organization::Projects::InvoicedItemsDto": {
             results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
-        };
-        "Organization::Projects::Orders::CompactDto": {
-            id: number;
-            number: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::Clients::ExtendedDto"];
-            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-            /** Format: decimal */
-            invoiced_amount: string;
         };
         "Organization::Projects::Orders::ExtendedDto": {
             id: number;

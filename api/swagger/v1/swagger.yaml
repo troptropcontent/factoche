@@ -537,11 +537,14 @@ paths:
                 type: object
                 required:
                 - results
+                - meta
                 properties:
                   results:
                     type: array
                     items:
                       "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+                  meta:
+                    "$ref": "#/components/schemas/Organization::Invoices::Meta"
         '403':
           description: forbiden
   "/api/v1/organization/orders/{order_id}/invoices/{id}":
@@ -1681,6 +1684,7 @@ components:
     Organization::Invoices::CompactDto:
       type: object
       required:
+      - holder_id
       - id
       - status
       - issue_date
@@ -1688,6 +1692,8 @@ components:
       - total_amount
       - lines
       properties:
+        holder_id:
+          type: integer
         id:
           type: integer
         status:
@@ -1965,15 +1971,121 @@ components:
         credit_note:
           "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
           nullable: true
+    Organization::ProjectVersions::CompactDto:
+      type: object
+      required:
+      - id
+      - project_id
+      - number
+      - created_at
+      - retention_guarantee_rate
+      - total_amount
+      properties:
+        id:
+          type: integer
+        project_id:
+          type: integer
+        number:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        retention_guarantee_rate:
+          type: string
+          format: decimal
+        total_amount:
+          type: string
+          format: decimal
+    Organization::Invoices::Meta:
+      type: object
+      required:
+      - order_versions
+      - orders
+      properties:
+        order_versions:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Orders::CompactDto"
+    Organization::Projects::BaseCompactDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::Orders::CompactDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - status
+      - invoiced_amount
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+        invoiced_amount:
+          type: string
+          format: decimal
     Organization::Invoices::IndexDto:
       type: object
       required:
       - results
+      - meta
       properties:
         results:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+        meta:
+          "$ref": "#/components/schemas/Organization::Invoices::Meta"
     Organization::Invoices::ShowDto:
       type: object
       required:
@@ -2236,28 +2348,6 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectVersionShowResponseProjectVersionDto"
-    Organization::ProjectVersions::CompactDto:
-      type: object
-      required:
-      - id
-      - number
-      - created_at
-      - retention_guarantee_rate
-      - total_amount
-      properties:
-        id:
-          type: integer
-        number:
-          type: integer
-        created_at:
-          type: string
-          format: date-time
-        retention_guarantee_rate:
-          type: string
-          format: decimal
-        total_amount:
-          type: string
-          format: decimal
     Organization::ProjectVersions::ExtendedDto:
       type: object
       required:
@@ -2301,36 +2391,6 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-    Organization::Projects::BaseCompactDto:
-      type: object
-      required:
-      - id
-      - number
-      - name
-      - client
-      - last_version
-      - status
-      properties:
-        id:
-          type: integer
-        number:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        client:
-          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
-        last_version:
-          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
-        status:
-          type: string
-          enum:
-          - new
-          - invoicing_in_progress
-          - invoiced
-          - canceled
     Organization::Projects::BaseExtendedDto:
       type: object
       required:
@@ -2452,40 +2512,6 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
-    Organization::Projects::Orders::CompactDto:
-      type: object
-      required:
-      - id
-      - number
-      - name
-      - client
-      - last_version
-      - status
-      - invoiced_amount
-      properties:
-        id:
-          type: integer
-        number:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        client:
-          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
-        last_version:
-          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
-        status:
-          type: string
-          enum:
-          - new
-          - invoicing_in_progress
-          - invoiced
-          - canceled
-        invoiced_amount:
-          type: string
-          format: decimal
     Organization::Projects::Orders::ExtendedDto:
       type: object
       required:

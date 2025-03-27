@@ -6,6 +6,7 @@ module Organization
         field "excl_tax_amount", :decimal
       end
 
+      field "holder_id", :integer
       field "id", :integer
       field "status", :enum, subtype: [ "draft", "posted", "cancelled", "voided" ]
       field "number", :string, required: false
