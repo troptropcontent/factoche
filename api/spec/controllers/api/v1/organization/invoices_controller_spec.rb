@@ -316,6 +316,23 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         describe "when the company is not a company the user is a member of" do
           run_test!
         end
+
+        describe "when the invoice does not belong to company" do
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+          let(:another_company) { FactoryBot.create(:company, :with_config) }
+          let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
+          let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
+          let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
+          let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
+          let!(:another_company_invoice) {
+            ::Organization::Invoices::Create.call(another_company_project_version.id, { invoice_amounts: [ { original_item_uuid: another_company_project_version_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
+          }
+          let(:id) { another_company_invoice.id }
+
+          run_test!
+        end
       end
 
       it_behaves_like "an authenticated endpoint"
@@ -397,6 +414,8 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         end
 
         describe "when the invoice does not belong to company" do
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+
           let(:another_company) { FactoryBot.create(:company, :with_config) }
           let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
           let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
