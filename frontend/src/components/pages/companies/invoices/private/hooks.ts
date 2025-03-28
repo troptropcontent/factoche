@@ -193,9 +193,22 @@ const useInvoicesQuery = (companyId: string) =>
     },
   });
 
+const useCreditNotesQuery = (companyId: string) =>
+  Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/credit_notes",
+    {
+      params: {
+        path: { company_id: Number(companyId) },
+      },
+    },
+    { select: ({ results }) => results }
+  );
+
 export {
   useInvoiceContentData,
   useInvoicingSummaryCardData,
   useProformaQuery,
   useInvoicesQuery,
+  useCreditNotesQuery,
 };
