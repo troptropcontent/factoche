@@ -43,6 +43,7 @@ Rails.application.routes.draw do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
           resources :invoices, only: [ :index ]
+          resources :credit_notes, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
           member do
