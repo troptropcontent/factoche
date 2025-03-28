@@ -101,7 +101,7 @@ const DocumentTable = ({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>
+          <TableHead className="w-[150px]">
             {t(
               "pages.companies.projects.invoices.index.tabs.table.columns.number"
             )}
@@ -126,7 +126,7 @@ const DocumentTable = ({
               "pages.companies.projects.invoices.index.tabs.table.columns.amount"
             )}
           </TableHead>
-          <TableHead>
+          <TableHead className="w-[100px]">
             {t(
               "pages.companies.projects.invoices.index.tabs.table.columns.status"
             )}
