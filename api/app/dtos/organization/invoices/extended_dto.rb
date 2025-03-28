@@ -71,6 +71,9 @@ module Organization
       field "detail", :object, subtype: Detail
       field "context", :object, subtype: Context
       field "pdf_url", :string, required: false
+      field "total_excl_tax_amount", :decimal
+      field "total_including_tax_amount", :decimal
+      field "total_excl_retention_guarantee_amount", :decimal
     end
     class ExtendedDto < BaseExtendedDto
       field "credit_note", :object, subtype: BaseExtendedDto, required: false
