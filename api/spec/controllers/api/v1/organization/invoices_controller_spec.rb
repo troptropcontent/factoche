@@ -165,64 +165,6 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
-  path '/api/v1/organization/orders/{order_id}/invoices/{id}' do
-    post 'Post invoice' do
-      tags 'Invoices'
-      security [ bearerAuth: [] ]
-      produces 'application/json'
-      consumes 'application/json'
-      parameter name: :order_id, in: :path, type: :integer
-      parameter name: :id, in: :path, type: :integer
-
-      let!(:invoice) {
-        ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
-      }
-      let(:id) { invoice.id }
-      let(:order_id) { order.id }
-      let(:user) { FactoryBot.create(:user) }
-      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-
-      include_context 'a company with a project with three items'
-
-      response '200', 'invoice posted' do
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
-        schema Organization::Invoices::ShowDto.to_schema
-
-        it "Posts the invoice by voiding the invoice and creating a new posted one", :aggregate_failures do |example|
-          expect { submit_request(example.metadata) }
-            .to change(Accounting::Invoice, :count).by(1)
-            .and change(Accounting::FinancialTransactionDetail, :count).by(1)
-            .and change(Accounting::FinancialTransactionLine, :count).by(2)
-
-          assert_response_matches_metadata(example.metadata)
-
-          parsed_response = JSON.parse(response.body)
-
-          expect(parsed_response.dig("result", "id")).not_to eq(invoice.id)
-          expect(parsed_response.dig("result", "status")).to eq("posted")
-          expect(parsed_response.dig("result", "number")).to end_with("001")
-        end
-      end
-
-      response '404', 'invoice not found' do
-        describe "when the order does not belong to a company the user is a member of" do
-          run_test!
-        end
-      end
-
-      response '422', 'unprocessable entity' do
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
-
-        context "when the invoice is not draft" do
-          before { invoice.update(status: :posted, number: "INV-2024-00001") }
-
-          run_test!
-        end
-      end
-
-      it_behaves_like "an authenticated endpoint"
-    end
-  end
   path '/api/v1/organization/companies/{company_id}/invoices/{id}' do
     get 'Show invoice' do
       tags 'Invoices'
@@ -474,6 +416,87 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           run_test! do |response|
             expect(response.body).to include("Cannot void invoice that is not in draft status")
           end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+    post 'Post invoice' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      consumes 'application/json'
+      parameter name: :company_id, in: :path, type: :integer
+      parameter name: :id, in: :path, type: :integer
+
+      let!(:invoice) {
+        ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
+      }
+      let(:id) { invoice.id }
+      let(:company_id) { company.id }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+      include_context 'a company with a project with three items'
+
+      response '200', 'invoice posted' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Invoices::ShowDto.to_schema
+
+        it "Posts the invoice by voiding the invoice and creating a new posted one", :aggregate_failures do |example|
+          expect { submit_request(example.metadata) }
+            .to change(Accounting::Invoice, :count).by(1)
+            .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+            .and change(Accounting::FinancialTransactionLine, :count).by(2)
+
+          assert_response_matches_metadata(example.metadata)
+
+          parsed_response = JSON.parse(response.body)
+
+          expect(parsed_response.dig("result", "id")).not_to eq(invoice.id)
+          expect(parsed_response.dig("result", "status")).to eq("posted")
+          expect(parsed_response.dig("result", "number")).to end_with("001")
+        end
+      end
+
+      response '404', 'invoice not found' do
+        context "when the company is not a company the user is a member of" do
+          run_test!
+        end
+
+        context "when the invoice does not exist" do
+          let(:id) { -1 }
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+          run_test!
+        end
+
+        describe "when the invoice does not belong to company" do
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+          let(:another_company) { FactoryBot.create(:company, :with_config) }
+          let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
+          let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
+          let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
+          let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
+          let!(:another_company_invoice) {
+            ::Organization::Invoices::Create.call(another_company_project_version.id, { invoice_amounts: [ { original_item_uuid: another_company_project_version_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
+          }
+          let(:id) { another_company_invoice.id }
+
+          run_test!
+        end
+      end
+
+      response '422', 'unprocessable entity' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+        context "when the invoice is not draft" do
+          before { invoice.update(status: :posted, number: "INV-2024-00001") }
+
+          run_test!
         end
       end
 
