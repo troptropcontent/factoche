@@ -1,16 +1,6 @@
 import { zodValidator } from "@tanstack/zod-adapter";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsList } from "@/components/ui/tabs";
-import { Search, Download, Filter } from "lucide-react";
 import { z } from "zod";
 import { InvoicesTab } from "@/components/pages/companies/invoices/index/invoices-tab";
 import { Layout } from "@/components/pages/companies/layout";
@@ -49,40 +39,13 @@ function RouteComponent() {
   return (
     <Layout.Root>
       <Layout.Header>
-        <h1>{t("pages.companies.show.title")}</h1>
+        <div className="flex flex-grow justify-between items-center">
+          <h1 className="text-3xl font-bold">
+            {t("pages.companies.projects.invoices.index.title")}
+          </h1>
+        </div>
       </Layout.Header>
       <Layout.Content>
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Recherche et filtres</CardTitle>
-            <CardDescription>
-              Recherchez et filtrez vos documents
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Rechercher par client ou numéro..."
-                  className="pl-8"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filtres
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  Exporter
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         <Tabs
           value={activeTab}
           onValueChange={handleTabChange}
