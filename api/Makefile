@@ -10,6 +10,12 @@ rswag:
 	bundle exec dotenv -f config/.env.development rails rswag:specs:swaggerize PATTERN="spec/controllers/**/*_spec.rb"
 rspecf:
 	bundle exec dotenv -f config/.env.development rspec --tag focus
+migration:
+	bundle exec dotenv -f config/.env.development rails g migration $(filter-out $@,$(MAKECMDGOALS))
+migrate:
+	bundle exec dotenv -f config/.env.development rails db:migrate
+rollback:
+	bundle exec dotenv -f config/.env.development rails db:rollback
 rspec:
 	bundle exec dotenv -f config/.env.development rspec $(filter-out $@,$(MAKECMDGOALS))
 frontend:
