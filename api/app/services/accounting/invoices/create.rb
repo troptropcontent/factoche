@@ -43,7 +43,7 @@ module Accounting
         def call(company, client, project, project_version, new_invoice_items, issue_date = Time.current)
           invoice = ActiveRecord::Base.transaction do
             # Create invoice record
-            base_draft_invoice_attributes = build_draft_invoice_attributes!(company.fetch(:id), project, project_version, issue_date)
+            base_draft_invoice_attributes = build_draft_invoice_attributes!(company.fetch(:id), project, project_version, new_invoice_items, issue_date)
             draft_invoice_number = find_next_available_unpublished_invoice_number!(company.fetch(:id), issue_date)
             draft_invoice = Accounting::Invoice.create!(base_draft_invoice_attributes.merge({ number: draft_invoice_number }))
 
@@ -54,6 +54,10 @@ module Accounting
             # Create invoice details records
             draft_invoice_detail_attributes = build_invoice_detail_attributes!(company, client, project_version, issue_date)
             draft_invoice.create_detail!(draft_invoice_detail_attributes)
+
+            # Verify that totals recorded in draft_invoice are in line with its lines as this is crucial, better be safe than sorry
+            ensure_totals_are_correct!(draft_invoice)
+
             draft_invoice
           end
 
@@ -66,8 +70,8 @@ module Accounting
 
         private
 
-        def build_draft_invoice_attributes!(company_id, project, project_version, issue_date)
-          result = BuildAttributes.call(company_id, project, project_version, issue_date)
+        def build_draft_invoice_attributes!(company_id, project, project_version, new_invoice_items, issue_date)
+          result = BuildAttributes.call(company_id, project, project_version, new_invoice_items, issue_date)
 
           raise result.error if result.failure?
           result.data
@@ -92,6 +96,23 @@ module Accounting
 
           raise result.error if result.failure?
           result.data
+        end
+
+        def ensure_totals_are_correct!(draft_invoice)
+          expected_total_excl_tax_amount = draft_invoice.lines.sum("quantity * unit_price_amount")
+          unless (expected_total_excl_tax_amount - draft_invoice.total_excl_tax_amount).round(2).zero?
+            raise Error::UnprocessableEntityError, "Total excluding tax amount mismatch: expected #{expected_total_excl_tax_amount}, got #{draft_invoice.total_excl_tax_amount}"
+          end
+
+          expected_total_including_tax_amount = draft_invoice.lines.sum("quantity * unit_price_amount * (1 + tax_rate)")
+          unless (draft_invoice.total_including_tax_amount - expected_total_including_tax_amount).round(2).zero?
+            raise Error::UnprocessableEntityError, "Total including tax amount mismatch: expected #{expected_total_including_tax_amount}, got #{draft_invoice.total_including_tax_amount}"
+          end
+
+          expected_total_excl_retention_guarantee_amount = expected_total_including_tax_amount * (1 - draft_invoice.context.fetch("project_version_retention_guarantee_rate").to_d)
+          unless (draft_invoice.total_excl_retention_guarantee_amount - expected_total_excl_retention_guarantee_amount).round(2).zero?
+            raise StandardError, "Total excluding retention guarantee amount mismatch: expected #{expected_total_excl_retention_guarantee_amount}, got #{draft_invoice.total_excl_retention_guarantee_amount}"
+          end
         end
       end
     end

@@ -3,6 +3,9 @@ FactoryBot.define do
   factory :invoice, class: "Accounting::Invoice" do
     issue_date { Time.current }
     status { "draft" }
+    total_excl_tax_amount { 0.0 }
+    total_including_tax_amount { 0.0 }
+    total_excl_retention_guarantee_amount { 0.0 }
 
     context do
       {

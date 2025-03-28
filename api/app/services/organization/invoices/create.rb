@@ -117,7 +117,7 @@ module Organization
             id: project_version.id,
             number: project_version.number,
             created_at: project_version.created_at,
-            retention_guarantee_rate: project_version.retention_guarantee_rate / 10000.to_d,
+            retention_guarantee_rate: project_version.retention_guarantee_rate,
             items: project_version.items.map { |item|
               {
                 original_item_uuid: item.original_item_uuid,
