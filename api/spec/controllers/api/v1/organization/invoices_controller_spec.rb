@@ -166,36 +166,6 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
     end
   end
   path '/api/v1/organization/orders/{order_id}/invoices/{id}' do
-    get 'Show invoice' do
-      tags 'Invoices'
-      security [ bearerAuth: [] ]
-      produces 'application/json'
-      parameter name: :order_id, in: :path, type: :integer
-      parameter name: :id, in: :path, type: :integer
-
-      let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
-      let(:id) { invoice.id }
-      let(:order_id) { order.id }
-      let(:user) { FactoryBot.create(:user) }
-      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-      include_context 'a company with a project with three items'
-
-      response '200', 'invoice found' do
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
-        schema Organization::Invoices::ShowDto.to_schema
-
-        run_test!
-      end
-
-      response '404', 'invoice not found' do
-        describe "when the order does not belong to a company the user is a member of" do
-          run_test!
-        end
-      end
-
-      it_behaves_like "an authenticated endpoint"
-    end
-
     put 'Update invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
@@ -426,7 +396,37 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
+  path '/api/v1/organization/companies/{company_id}/invoices/{id}' do
+    get 'Show invoice' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      parameter name: :company_id, in: :path, type: :integer
+      parameter name: :id, in: :path, type: :integer
 
+      let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+      let(:id) { invoice.id }
+      let(:company_id) { company.id }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      include_context 'a company with a project with three items'
+
+      response '200', 'invoice found' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Invoices::ShowDto.to_schema
+
+        run_test!
+      end
+
+      response '404', 'invoice not found' do
+        describe "when the company is not a company the user is a member of" do
+          run_test!
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+  end
   path '/api/v1/organization/orders/{order_id}/invoices/{id}/cancel' do
     post 'Cancels an invoice' do
       tags 'Invoices'

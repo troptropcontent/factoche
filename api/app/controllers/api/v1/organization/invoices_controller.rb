@@ -16,11 +16,9 @@ module Api
           render json: ::Organization::Invoices::IndexDto.new({ results: invoices, meta: { order_versions: order_versions, orders: orders } })
         end
 
-        # GET /api/v1/organization/orders/:order_id/invoices/:id
+        # GET    /api/v1/organization/companies/:company_id/invoices/:id
         def show
-          order = policy_scope(::Organization::Project).where(type: "Organization::Order").find(params[:order_id])
-
-          invoice = Accounting::Invoice.where(holder_id: order.versions.pluck(:id)).includes(:lines).find(params[:id])
+          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
 
           render json: ::Organization::Invoices::ShowDto.new({ result: invoice })
         end
