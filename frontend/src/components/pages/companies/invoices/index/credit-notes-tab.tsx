@@ -1,4 +1,4 @@
-import { TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 
 import {
   Card,
@@ -8,28 +8,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { Loader } from "lucide-react";
-import { useInvoicesQuery } from "../private/hooks";
-import { Badge } from "@/components/ui/badge";
-import { DocumentTable } from "./private/document-table";
+import { useCreditNotesQuery } from "../private/hooks";
+import { CreditNotesTable } from "./private/credit-notes-table";
+import { TabTrigger } from "./private/tab-trigger";
 
 const TAB_VALUE = "creditNotes" as const;
 
 const Trigger = ({ companyId }: { companyId: string }) => {
-  const { data: invoicesData } = useInvoicesQuery(companyId);
-  const { t } = useTranslation();
-  return (
-    <TabsTrigger value={TAB_VALUE}>
-      {t("pages.companies.projects.invoices.index.tabs.creditNotes.label")}
-      <Badge variant="outline" className="ml-2">
-        {invoicesData === undefined ? <Loader /> : invoicesData.results.length}
-      </Badge>
-    </TabsTrigger>
-  );
+  const { data: creditNotes } = useCreditNotesQuery(companyId);
+  return <TabTrigger documents={creditNotes} tab={TAB_VALUE} />;
 };
 
 const Content = ({ companyId }: { companyId: string }) => {
-  const { data: invoicesData } = useInvoicesQuery(companyId);
+  const { data: creditNotes } = useCreditNotesQuery(companyId);
   const { t } = useTranslation();
   return (
     <TabsContent value={TAB_VALUE}>
@@ -48,18 +39,7 @@ const Content = ({ companyId }: { companyId: string }) => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <DocumentTable
-              documentsData={
-                invoicesData
-                  ? {
-                      invoices: invoicesData.results,
-                      orders: invoicesData.meta.orders,
-                      orderVersions: invoicesData.meta.order_versions,
-                    }
-                  : undefined
-              }
-              tab={TAB_VALUE}
-            />
+            <CreditNotesTable creditNotes={creditNotes} />
           </div>
         </CardContent>
       </Card>

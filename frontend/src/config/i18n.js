@@ -400,6 +400,7 @@ i18n
                                                     "number": "Numéro",
                                                     "client": "Client",
                                                     "order": "Commande",
+                                                    "invoice_number": "Facture originale",
                                                     "date": "Date",
                                                     "status": "Status",
                                                     "amount": "Montant",
