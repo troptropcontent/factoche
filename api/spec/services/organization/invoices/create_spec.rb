@@ -1,19 +1,34 @@
 require 'rails_helper'
 
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
-
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe Organization::Invoices::Create do
   include_context 'a company with a project with three item groups'
 
   describe '.call' do
-    subject(:result) { described_class.call(project_version.id, params) }
+    subject(:result) {
+      described_class.call(project_version.id, params)
+    }
+
+    let(:project_version_first_item_group_item_unit_price_amount) { 123 }
+    let(:project_version_first_item_group_item_unit_quantity) { 2 }
+    let(:project_version_first_item_group_item_tax_rate) { 0.10 }
+
+    let(:project_version_second_item_group_item_unit_price_amount) { 232 }
+    let(:project_version_second_item_group_item_unit_quantity) { 40 }
+    let(:project_version_second_item_group_item_tax_rate) { 0.20 }
+
+    let(:project_version_retention_guarantee_rate) { 0.04 }
 
     let(:params) do
       {
         invoice_amounts: [
           {
             original_item_uuid: first_item.original_item_uuid,
-            invoice_amount: first_item.quantity % 3 * first_item.unit_price_amount
+            invoice_amount: 20
+          }, {
+            original_item_uuid: second_item.original_item_uuid,
+            invoice_amount: 123
           }
         ]
       }
@@ -28,7 +43,26 @@ RSpec.describe Organization::Invoices::Create do
         expect { result }
           .to change(Accounting::Invoice, :count).by(1)
           .and change(Accounting::FinancialTransactionDetail, :count).by(1)
-          .and change(Accounting::FinancialTransactionLine, :count).by(1)
+          .and change(Accounting::FinancialTransactionLine, :count).by(2)
+
+          # Calculate the expected total excluding tax amount
+          # For the first item: 20 (invoice_amount) = 20
+          # For the second item: 123 (invoice_amount) = 123
+          # Total excluding tax amount = 20 + 123 = 143
+          expect(result.data.total_excl_tax_amount).to eq(143)
+
+          # Calculate the expected total including tax amount
+          # first item has a tax rate of 0.10 (10%), second item has a tax rate of 0.20 (20%)
+          # Total including tax for first item = 20 + (20 * 0.10) = 22
+          # Total including tax for second item = 123 + (123 * 0.20) = 147.6
+          # Total including tax amount = 22 + 147.6 = 169.6
+          expect(result.data.total_including_tax_amount).to eq(169.6)
+
+          # Calculate the expected total excluding retention guarantee amount
+          # Retention guarantee rate is 0.04 (4%)
+          # Total excluding retention guarantee = Total including tax amount * (1 - retention guarantee rate)
+          # = 169.6 * (1 - 0.04) = 162.82
+          expect(result.data.total_excl_retention_guarantee_amount).to eq(162.82)
       end
     end
 
@@ -103,3 +137,4 @@ RSpec.describe Organization::Invoices::Create do
     end
   end
 end
+# rubocop:enable RSpec/MultipleMemoizedHelpers
