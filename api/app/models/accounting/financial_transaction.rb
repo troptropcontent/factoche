@@ -21,6 +21,10 @@ module Accounting
                 message: "has already been taken for this company"
               }
 
+    def total_amount
+      total_excl_tax_amount
+    end
+
     private
 
     def valid_context?
