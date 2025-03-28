@@ -2,13 +2,18 @@ module Accounting
   module Invoices
     class BuildAttributes
       class << self
-        def call(company_id, project, project_version, issue_date)
+        def call(company_id, project, project_version, new_invoice_items, issue_date)
+          totals = compute_totals(project_version, new_invoice_items)
+
           attributes = {
             company_id: company_id,
             holder_id: project_version.fetch(:id),
             status: :draft,
             issue_date: issue_date,
-            context: build_draft_invoice_context(project, project_version, issue_date)
+            context: build_draft_invoice_context(project, project_version, issue_date),
+            total_excl_tax_amount: totals.fetch(:total_excl_tax_amount),
+            total_including_tax_amount: totals.fetch(:total_including_tax_amount),
+            total_excl_retention_guarantee_amount: totals.fetch(:total_excl_retention_guarantee_amount)
           }
 
           ServiceResult.success(attributes)
@@ -84,6 +89,28 @@ module Accounting
             .select("original_item_uuid")
             .sum("excl_tax_amount")
             .group("9aa7263b-be27-4642-8c1f-aca123ed4aaa")
+        end
+
+        def compute_totals(project_version, new_invoice_items)
+          retention_guarantee_rate = project_version.fetch(:retention_guarantee_rate).to_d
+          new_invoice_items.each_with_object({
+            total_excl_tax_amount: 0,
+            total_including_tax_amount: 0,
+            total_excl_retention_guarantee_amount: 0
+          }) do |new_invoice_item, totals|
+            project_version_item = project_version.fetch(:items).find { |item|
+              item.fetch(:original_item_uuid) == new_invoice_item.with_indifferent_access.fetch(:original_item_uuid)
+            }
+            project_version_item_tax_rate = project_version_item.fetch(:tax_rate).to_d
+
+            new_invoice_item_excl_tax_amount = new_invoice_item.with_indifferent_access.fetch(:invoice_amount).to_d
+            new_invoice_item_including_tax_amount = new_invoice_item_excl_tax_amount * (1 + project_version_item_tax_rate)
+            new_invoice_item_excl_retention_guarantee_amount = new_invoice_item_including_tax_amount * (1 - retention_guarantee_rate)
+
+            totals[:total_excl_tax_amount] += new_invoice_item_excl_tax_amount
+            totals[:total_including_tax_amount] += new_invoice_item_including_tax_amount
+            totals[:total_excl_retention_guarantee_amount] += new_invoice_item_excl_retention_guarantee_amount
+          end.transform_values { |total| total.round(2) }
         end
       end
     end
