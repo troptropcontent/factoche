@@ -37,12 +37,10 @@ module Api
           render json: ::Organization::Invoices::ShowDto.new({ result: result.data })
         end
 
-        # PUT /api/v1/organization/orders/:order_id/invoices/:id
-        # PATCH /api/v1/organization/orders/:order_id/invoices/:id
+        # PATCH  /api/v1/organization/companies/:company_id/invoices/:id
+        # PUT  /api/v1/organization/companies/:company_id/invoices/:id
         def update
-          order = policy_scope(::Organization::Project).where(type: "Organization::Order").find(params[:order_id])
-
-          invoice = Accounting::Invoice.where(holder_id: order.versions.pluck(:id)).includes(:lines).find(params[:id])
+          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
 
           result = ::Organization::Invoices::Update.call(invoice.id, invoice_params.to_h)
 

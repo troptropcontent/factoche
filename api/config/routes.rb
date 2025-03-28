@@ -42,7 +42,7 @@ Rails.application.routes.draw do
           resources :orders, only: [ :index ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
-          resources :invoices, only: [ :index, :show ]
+          resources :invoices, only: [ :index, :show, :update ]
           resources :credit_notes, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
@@ -68,7 +68,7 @@ Rails.application.routes.draw do
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
         resources :orders, only: [ :show ] do
-          resources :invoices, only: [ :update, :create, :destroy ] do
+          resources :invoices, only: [ :create, :destroy ] do
             member do
               post "", action: :post
               post "cancel", action: :cancel
