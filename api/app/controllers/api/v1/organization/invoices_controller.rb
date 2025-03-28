@@ -2,6 +2,7 @@ module Api
   module V1
     module Organization
       class InvoicesController < ApiV1Controller
+        before_action :load_invoice!, except: [ :index, :create ]
         # GET    /api/v1/organization/companies/:company_id/invoices
         def index
           invoices = policy_scope(Accounting::Invoice).where(company_id: params[:company_id])
@@ -18,9 +19,7 @@ module Api
 
         # GET    /api/v1/organization/companies/:company_id/invoices/:id
         def show
-          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
-
-          render json: ::Organization::Invoices::ShowDto.new({ result: invoice })
+          render json: ::Organization::Invoices::ShowDto.new({ result: @invoice })
         end
 
         # POST /api/v1/organization/orders/:order_id/invoices
@@ -40,9 +39,7 @@ module Api
         # PATCH  /api/v1/organization/companies/:company_id/invoices/:id
         # PUT  /api/v1/organization/companies/:company_id/invoices/:id
         def update
-          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
-
-          result = ::Organization::Invoices::Update.call(invoice.id, invoice_params.to_h)
+          result = ::Organization::Invoices::Update.call(@invoice.id, invoice_params.to_h)
 
           if result.failure?
             raise Error::UnprocessableEntityError, "Failed to update invoice: #{result.error}"
@@ -53,9 +50,7 @@ module Api
 
         # DELETE /api/v1/organization/companies/:company_id/invoices/:id
         def destroy
-          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
-
-          result = ::Accounting::Invoices::Void.call(invoice.id)
+          result = ::Accounting::Invoices::Void.call(@invoice.id)
 
           if result.failure?
             raise Error::UnprocessableEntityError, "Failed to void invoice: #{result.error}"
@@ -66,9 +61,7 @@ module Api
 
         # POST   /api/v1/organization/companies/:company_id/invoices/:id/cancel
         def cancel
-          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
-
-          result = ::Accounting::Invoices::Cancel.call(invoice.id)
+          result = ::Accounting::Invoices::Cancel.call(@invoice.id)
 
           if result.failure?
             raise Error::UnprocessableEntityError, "Failed to cancel invoice: #{result.error}"
@@ -79,9 +72,7 @@ module Api
 
         # POST   /api/v1/organization/companies/:company_id/invoices/:id
         def post
-          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
-
-          result = ::Accounting::Invoices::Post.call(invoice.id)
+          result = ::Accounting::Invoices::Post.call(@invoice.id)
 
           if result.failure?
             raise Error::UnprocessableEntityError, "Failed to post invoice: #{result.error}"
@@ -91,6 +82,10 @@ module Api
         end
 
         private
+
+        def load_invoice!
+          @invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
+        end
 
         def invoice_params
           params.require(:invoice).permit(invoice_amounts: [ :original_item_uuid, :invoice_amount ])
