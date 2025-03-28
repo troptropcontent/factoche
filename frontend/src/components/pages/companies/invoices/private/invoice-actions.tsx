@@ -42,15 +42,18 @@ type DownloadInvoicePdfButtonProps = {
       url?: string;
       invoiceId?: never;
       orderId?: never;
+      companyId?: never;
     }
   | {
       url?: never;
       invoiceId: number;
       orderId: number;
+      companyId: number;
     }
 );
 
 const DownloadInvoicePdfButton = ({
+  companyId,
   invoiceId,
   orderId,
   type,
@@ -59,10 +62,10 @@ const DownloadInvoicePdfButton = ({
   const { t } = useTranslation();
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId as number, id: invoiceId as number },
+        path: { company_id: companyId as number, id: invoiceId as number },
       },
     },
     {
@@ -109,7 +112,7 @@ const DestroyButton = ({
   const { t } = useTranslation();
   const { mutateAsync: voidInvoiceMutation } = Api.useMutation(
     "delete",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}"
+    "/api/v1/organization/companies/{company_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
@@ -142,7 +145,7 @@ const DestroyButton = ({
 
     await voidInvoiceMutation(
       {
-        params: { path: { id: invoiceId, order_id: orderId } },
+        params: { path: { id: invoiceId, company_id: companyId } },
       },
       {
         onSuccess,
@@ -172,7 +175,7 @@ const CancelButton = ({
   const { t } = useTranslation();
   const { mutateAsync: cancelInvoiceMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel"
+    "/api/v1/organization/companies/{company_id}/invoices/{id}/cancel"
   );
   const navigate = useNavigate();
 
@@ -205,7 +208,7 @@ const CancelButton = ({
 
     await cancelInvoiceMutation(
       {
-        params: { path: { id: invoiceId, order_id: orderId } },
+        params: { path: { id: invoiceId, company_id: companyId } },
       },
       {
         onSuccess,
@@ -235,7 +238,7 @@ const PostButton = ({
   const { t } = useTranslation();
   const { mutateAsync: postInvoiceMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}"
+    "/api/v1/organization/companies/{company_id}/invoices/{id}"
   );
   const navigate = useNavigate();
 
@@ -268,7 +271,7 @@ const PostButton = ({
 
     await postInvoiceMutation(
       {
-        params: { path: { id: invoiceId, order_id: orderId } },
+        params: { path: { id: invoiceId, company_id: companyId } },
       },
       {
         onSuccess,
@@ -303,6 +306,7 @@ const DraftInvoiceActions = ({
         companyId={companyId}
       />
       <DownloadInvoicePdfButton
+        companyId={companyId}
         orderId={orderId}
         invoiceId={invoiceId}
         type="proforma"
@@ -321,7 +325,29 @@ const DraftInvoiceActions = ({
   );
 };
 
+const VoidedInvoiceActions = ({
+  companyId,
+  orderId,
+  invoiceId,
+}: {
+  companyId: number;
+  orderId: number;
+  invoiceId: number;
+}) => {
+  return (
+    <>
+      <DownloadInvoicePdfButton
+        companyId={companyId}
+        orderId={orderId}
+        invoiceId={invoiceId}
+        type="proforma"
+      />
+    </>
+  );
+};
+
 const CancelledInvoiceActions = ({
+  companyId,
   orderId,
   invoiceId,
 }: {
@@ -331,10 +357,10 @@ const CancelledInvoiceActions = ({
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -347,6 +373,7 @@ const CancelledInvoiceActions = ({
   return (
     <>
       <DownloadInvoicePdfButton
+        companyId={companyId}
         orderId={orderId}
         invoiceId={invoiceId}
         type="invoice"
@@ -369,6 +396,7 @@ const PostedInvoiceActions = ({
   return (
     <>
       <DownloadInvoicePdfButton
+        companyId={companyId}
         orderId={orderId}
         invoiceId={invoiceId}
         type="invoice"
@@ -393,10 +421,10 @@ const InvoiceActions = ({
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -413,6 +441,14 @@ const InvoiceActions = ({
           case "draft":
             return (
               <DraftInvoiceActions
+                companyId={companyId}
+                orderId={orderId}
+                invoiceId={invoiceId}
+              />
+            );
+          case "voided":
+            return (
+              <VoidedInvoiceActions
                 companyId={companyId}
                 orderId={orderId}
                 invoiceId={invoiceId}

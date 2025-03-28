@@ -6,18 +6,20 @@ import {
 import { useInvoiceTotalAmount } from "../shared/hooks";
 
 const useInvoiceContentData = ({
+  companyId,
   invoiceId,
   orderId,
 }: {
+  companyId: number;
   invoiceId: number;
   orderId: number;
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -122,9 +124,11 @@ const useInvoiceContentData = ({
 };
 
 const useInvoicingSummaryCardData = ({
+  companyId,
   invoiceId,
   orderId,
 }: {
+  companyId: number;
   invoiceId: number;
   orderId: number;
 }) => {
@@ -134,10 +138,10 @@ const useInvoicingSummaryCardData = ({
 
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -147,7 +151,7 @@ const useInvoicingSummaryCardData = ({
     useProjectPreviouslyInvoicedTotalAmount({ orderId });
 
   const { invoiceTotalAmount } = useInvoiceTotalAmount({
-    orderId,
+    companyId,
     invoiceId,
   });
 

@@ -29,6 +29,7 @@ const LoadingTable = () => (
   </>
 );
 const ProjectInvoicingSummaryCard = ({
+  companyId,
   orderId,
   invoiceId,
 }: {
@@ -37,6 +38,7 @@ const ProjectInvoicingSummaryCard = ({
   invoiceId: number;
 }) => {
   const { invoicingSummaryCardData } = useInvoicingSummaryCardData({
+    companyId,
     orderId,
     invoiceId,
   });

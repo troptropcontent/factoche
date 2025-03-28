@@ -17,10 +17,10 @@ const InvoiceShowContent = ({
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -82,7 +82,11 @@ const InvoiceShowContent = ({
               orderId={orderId}
               invoiceId={invoiceId}
             />
-            <InvoiceContent invoiceId={invoiceId} orderId={orderId} />
+            <InvoiceContent
+              invoiceId={invoiceId}
+              orderId={orderId}
+              companyId={companyId}
+            />
           </CardContent>
         </Card>
       </div>

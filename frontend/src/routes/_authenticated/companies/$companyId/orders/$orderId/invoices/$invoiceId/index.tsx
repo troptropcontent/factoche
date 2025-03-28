@@ -9,14 +9,14 @@ export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/orders/$orderId/invoices/$invoiceId/"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { invoiceId, orderId } }) =>
+  loader: ({ context: { queryClient }, params: { invoiceId, companyId } }) =>
     queryClient.ensureQueryData(
       Api.queryOptions(
         "get",
-        "/api/v1/organization/orders/{order_id}/invoices/{id}",
+        "/api/v1/organization/companies/{company_id}/invoices/{id}",
         {
           params: {
-            path: { id: Number(invoiceId), order_id: Number(orderId) },
+            path: { id: Number(invoiceId), company_id: Number(companyId) },
           },
         }
       )
