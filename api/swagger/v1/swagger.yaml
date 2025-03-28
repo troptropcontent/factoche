@@ -423,6 +423,35 @@ paths:
                     - details
                 required:
                 - error
+  "/api/v1/organization/companies/{company_id}/credit_notes":
+    get:
+      summary: Lists company's credit notes
+      tags:
+      - Credit Notes
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: credit notes found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::CreditNotes::CompactDto"
+        '403':
+          description: forbiden
   "/api/v1/organization/orders/{order_id}/invoices":
     post:
       summary: Creates an invoice
@@ -1438,6 +1467,102 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
+    Organization::Invoices::CompactDto:
+      type: object
+      required:
+      - holder_id
+      - id
+      - status
+      - number
+      - issue_date
+      - updated_at
+      - total_amount
+      - total_excl_tax_amount
+      - total_including_tax_amount
+      - total_excl_retention_guarantee_amount
+      properties:
+        holder_id:
+          type: integer
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+          - voided
+        number:
+          type: string
+        issue_date:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        total_amount:
+          type: string
+          format: decimal
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        total_including_tax_amount:
+          type: string
+          format: decimal
+        total_excl_retention_guarantee_amount:
+          type: string
+          format: decimal
+        pdf_url:
+          type: string
+          nullable: true
+    Organization::CreditNotes::CompactDto:
+      type: object
+      required:
+      - invoice
+      - id
+      - status
+      - number
+      - issue_date
+      - updated_at
+      - total_amount
+      - total_excl_tax_amount
+      - total_including_tax_amount
+      - total_excl_retention_guarantee_amount
+      properties:
+        invoice:
+          "$ref": "#/components/schemas/Organization::Invoices::CompactDto"
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - posted
+          - cancelled
+          - voided
+        number:
+          type: string
+        issue_date:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        total_amount:
+          type: string
+          format: decimal
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        total_including_tax_amount:
+          type: string
+          format: decimal
+        total_excl_retention_guarantee_amount:
+          type: string
+          format: decimal
+        pdf_url:
+          type: string
+          nullable: true
     Organization::CreditNotes::ExtendedDto::DocumentInfo:
       type: object
       required:
@@ -1659,6 +1784,9 @@ components:
       required:
       - payload
       - status
+      - total_excl_tax_amount
+      - total_including_tax_amount
+      - total_excl_retention_guarantee_amount
       properties:
         pdf_url:
           type: string
@@ -1670,58 +1798,24 @@ components:
           enum:
           - draft
           - published
-    Organization::Invoices::CompactDto::Line:
-      type: object
-      required:
-      - holder_id
-      - excl_tax_amount
-      properties:
-        holder_id:
-          type: string
-        excl_tax_amount:
+        total_excl_tax_amount:
           type: string
           format: decimal
-    Organization::Invoices::CompactDto:
-      type: object
-      required:
-      - holder_id
-      - id
-      - status
-      - issue_date
-      - updated_at
-      - total_amount
-      - lines
-      properties:
-        holder_id:
-          type: integer
-        id:
-          type: integer
-        status:
-          type: string
-          enum:
-          - draft
-          - posted
-          - cancelled
-          - voided
-        number:
-          type: string
-          nullable: true
-        issue_date:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        total_amount:
+        total_including_tax_amount:
           type: string
           format: decimal
-        lines:
+        total_excl_retention_guarantee_amount:
+          type: string
+          format: decimal
+    Organization::CreditNotes::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
           type: array
           items:
-            "$ref": "#/components/schemas/Organization::Invoices::CompactDto::Line"
-        pdf_url:
-          type: string
-          nullable: true
+            "$ref": "#/components/schemas/Organization::CreditNotes::CompactDto"
     Organization::Invoices::BaseExtendedDto::Line:
       type: object
       required:
@@ -1905,6 +1999,9 @@ components:
       - lines
       - detail
       - context
+      - total_excl_tax_amount
+      - total_including_tax_amount
+      - total_excl_retention_guarantee_amount
       properties:
         id:
           type: integer
@@ -1932,6 +2029,15 @@ components:
         pdf_url:
           type: string
           nullable: true
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        total_including_tax_amount:
+          type: string
+          format: decimal
+        total_excl_retention_guarantee_amount:
+          type: string
+          format: decimal
     Organization::Invoices::ExtendedDto:
       type: object
       required:
@@ -1941,6 +2047,9 @@ components:
       - lines
       - detail
       - context
+      - total_excl_tax_amount
+      - total_including_tax_amount
+      - total_excl_retention_guarantee_amount
       properties:
         id:
           type: integer
@@ -1968,6 +2077,15 @@ components:
         pdf_url:
           type: string
           nullable: true
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        total_including_tax_amount:
+          type: string
+          format: decimal
+        total_excl_retention_guarantee_amount:
+          type: string
+          format: decimal
         credit_note:
           "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
           nullable: true

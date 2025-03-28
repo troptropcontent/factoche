@@ -444,6 +444,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/credit_notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists company's credit notes */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description credit notes found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::CreditNotes::CompactDto"][];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/orders/{order_id}/invoices": {
         parameters: {
             query?: never;
@@ -1440,6 +1487,46 @@ export interface components {
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
         };
+        "Organization::Invoices::CompactDto": {
+            holder_id: number;
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            pdf_url?: string | null;
+        };
+        "Organization::CreditNotes::CompactDto": {
+            invoice: components["schemas"]["Organization::Invoices::CompactDto"];
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            pdf_url?: string | null;
+        };
         "Organization::CreditNotes::ExtendedDto::DocumentInfo": {
             number: string;
             /** Format: date-time */
@@ -1533,26 +1620,15 @@ export interface components {
             payload: components["schemas"]["Organization::CreditNotes::ExtendedDto::Payload"];
             /** @enum {string} */
             status: "draft" | "published";
-        };
-        "Organization::Invoices::CompactDto::Line": {
-            holder_id: string;
             /** Format: decimal */
-            excl_tax_amount: string;
-        };
-        "Organization::Invoices::CompactDto": {
-            holder_id: number;
-            id: number;
-            /** @enum {string} */
-            status: "draft" | "posted" | "cancelled" | "voided";
-            number?: string | null;
-            /** Format: date-time */
-            issue_date: string;
-            /** Format: date-time */
-            updated_at: string;
+            total_excl_tax_amount: string;
             /** Format: decimal */
-            total_amount: string;
-            lines: components["schemas"]["Organization::Invoices::CompactDto::Line"][];
-            pdf_url?: string | null;
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+        };
+        "Organization::CreditNotes::IndexDto": {
+            results: components["schemas"]["Organization::CreditNotes::CompactDto"][];
         };
         "Organization::Invoices::BaseExtendedDto::Line": {
             holder_id: string;
@@ -1631,6 +1707,12 @@ export interface components {
             detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
             context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
             pdf_url?: string | null;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
         };
         "Organization::Invoices::ExtendedDto": {
             id: number;
@@ -1643,6 +1725,12 @@ export interface components {
             detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
             context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
             pdf_url?: string | null;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
             credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
         };
         "Organization::ProjectVersions::CompactDto": {
