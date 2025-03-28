@@ -615,7 +615,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/orders/{order_id}/invoices/{id}": {
+    "/api/v1/organization/companies/{company_id}/invoices/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -628,7 +628,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -668,7 +668,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -725,7 +725,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -772,7 +772,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -836,7 +836,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel": {
+    "/api/v1/organization/companies/{company_id}/invoices/{id}/cancel": {
         parameters: {
             query?: never;
             header?: never;
@@ -851,7 +851,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -876,21 +876,12 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description not found */
+                /** @description invoice not found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": {
-                            error: {
-                                status: string;
-                                code: number;
-                                message: string;
-                                details: Record<string, never>;
-                            };
-                        };
-                    };
+                    content?: never;
                 };
                 /** @description unprocessable entity */
                 422: {
@@ -1620,12 +1611,6 @@ export interface components {
             payload: components["schemas"]["Organization::CreditNotes::ExtendedDto::Payload"];
             /** @enum {string} */
             status: "draft" | "published";
-            /** Format: decimal */
-            total_excl_tax_amount: string;
-            /** Format: decimal */
-            total_including_tax_amount: string;
-            /** Format: decimal */
-            total_excl_retention_guarantee_amount: string;
         };
         "Organization::CreditNotes::IndexDto": {
             results: components["schemas"]["Organization::CreditNotes::CompactDto"][];
