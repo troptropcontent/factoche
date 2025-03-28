@@ -28,8 +28,6 @@ module Accounting
       end
 
       def find_financial_transaction_url!(financial_transaction)
-        validate_browser_config!
-
         r = Accounting::FinancialTransactions::FindPrintUrl.call(financial_transaction.id)
 
         raise r.error unless r.success?
@@ -42,14 +40,6 @@ module Accounting
           filename: "#{financial_transaction.number}.pdf",
           content_type: "application/pdf"
         )
-      end
-
-      def browser_config
-        @browser_config ||= Rails.configuration.headless_browser
-      end
-
-      def validate_browser_config!
-        raise Error::UnprocessableEntityError, "Headless browser configuration is missing" if browser_config.nil?
       end
     end
   end

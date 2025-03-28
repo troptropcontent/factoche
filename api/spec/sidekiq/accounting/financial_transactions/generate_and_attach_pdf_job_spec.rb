@@ -90,17 +90,5 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
         }.to raise_error(ActiveRecord::RecordNotFound, "Couldn't find Accounting::FinancialTransaction with 'id'=an-id-that-do-not-exists")
       end
     end
-
-    context 'when headless browser config is missing' do
-      before do
-        allow(Rails.configuration).to receive(:headless_browser).and_return(nil)
-      end
-
-      it 'raises an UnprocessableEntityError' do
-        expect {
-          described_class.new.perform("financial_transaction_id" => invoice.id)
-        }.to raise_error(Error::UnprocessableEntityError, /configuration is missing/)
-      end
-    end
   end
 end
