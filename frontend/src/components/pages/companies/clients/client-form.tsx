@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Form, FormMessage } from "@/components/ui/form";
+import { Form, FormMessage, FormSubmit } from "@/components/ui/form";
 import { FormControl } from "@/components/ui/form";
 import { FormItem, FormLabel } from "@/components/ui/form";
 import { FormField } from "@/components/ui/form";
@@ -22,6 +21,7 @@ const clientFormSchema = (t: TFunction<"translation">) =>
     address_street: z.string().min(1, t("form.validation.required")),
     address_city: z.string().min(1, t("form.validation.required")),
     address_zipcode: z.string().min(1, t("form.validation.required")),
+    vat_number: z.string().min(1, t("form.validation.required")),
   });
 
 type ClientFormType = z.infer<ReturnType<typeof clientFormSchema>>;
@@ -34,6 +34,7 @@ const DefaultValues: ClientFormType = {
   address_street: "",
   address_city: "",
   address_zipcode: "",
+  vat_number: "",
 };
 
 // TODO: Consider refactoring error handling logic into a shared utility
@@ -80,8 +81,8 @@ const ClientForm = ({
     }
   };
 
-  const onSubmit = (values: ClientFormType) => {
-    createClientMutation.mutate(values, {
+  const onSubmit = async (values: ClientFormType) => {
+    await createClientMutation.mutateAsync(values, {
       onError: handleError,
       onSuccess: () => {
         navigate({
@@ -232,12 +233,32 @@ const ClientForm = ({
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="vat_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("pages.companies.clients.form.vat_number")}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "pages.companies.clients.form.vat_number_placeholder"
+                  )}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         {form.formState.errors.root && (
           <FormMessage>{form.formState.errors.root.message}</FormMessage>
         )}
-        <Button type="submit">
+        <FormSubmit type="submit">
           {t("pages.companies.clients.form.submit")}
-        </Button>
+        </FormSubmit>
       </form>
     </Form>
   );

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { useNewInvoiceTotalAmount } from "./form-hooks";
+import { FormSubmit } from "@/components/ui/form";
 
 const FormSubmitButton = () => {
   const { t } = useTranslation();
@@ -8,9 +8,9 @@ const FormSubmitButton = () => {
   const newInvoiceAmount = useNewInvoiceTotalAmount();
 
   return (
-    <Button type="submit" disabled={newInvoiceAmount == 0}>
+    <FormSubmit disabled={newInvoiceAmount == 0}>
       {t("pages.companies.completion_snapshot.form.submit_button_label")}
-    </Button>
+    </FormSubmit>
   );
 };
 

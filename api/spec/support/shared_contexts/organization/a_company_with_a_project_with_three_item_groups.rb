@@ -20,6 +20,7 @@ RSpec.shared_context 'a company with a project with three item groups' do
     let("project_version_#{ordinal}_item_group_item_unit_quantity") { index + 1 }
     let("project_version_#{ordinal}_item_group_item_name") { "Super item #{index + 1}" }
     let("project_version_#{ordinal}_item_group_item_unit") { "ENS" }
+    let("project_version_#{ordinal}_item_group_item_tax_rate") { 0.20 }
     # rubocop:disable RSpec/LetSetup
     let!("project_version_#{ordinal}_item_group_item") do
       FactoryBot.create(
@@ -29,7 +30,7 @@ RSpec.shared_context 'a company with a project with three item groups' do
         item_group: send("project_version_#{ordinal}_item_group"),
         quantity: send("project_version_#{ordinal}_item_group_item_unit_quantity"),
         unit_price_amount: send("project_version_#{ordinal}_item_group_item_unit_price_amount"),
-        unit: send("project_version_#{ordinal}_item_group_item_unit"),
+        tax_rate: send("project_version_#{ordinal}_item_group_item_tax_rate"),
         original_item_uuid: SecureRandom.uuid)
     end
     let("#{ordinal}_item") { send("project_version_#{ordinal}_item_group_item") }

@@ -2,13 +2,20 @@ require 'rails_helper'
 
 module Accounting
   module Invoices
+    # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe BuildAttributes do
       describe '.call' do
-        subject(:result) { described_class.call(company[:id], project, project_version, issue_date) }
+        subject(:result) { described_class.call(company[:id], project, project_version, new_invoice_items, issue_date) }
 
         let(:issue_date) { Date.current }
 
         let(:project) { { name: "Super Project" } }
+
+        let(:new_invoice_items) do
+          [
+            { original_item_uuid: 'item-uuid-1', invoice_amount: "150" }
+          ]
+        end
 
         let(:project_version) do
           {
@@ -94,7 +101,10 @@ module Accounting
             company_id: company[:id],
             holder_id: project_version[:id],
             status: :draft,
-            issue_date: issue_date
+            issue_date: issue_date,
+            total_excl_tax_amount: 150.0,
+            total_including_tax_amount: 180.0,
+            total_excl_retention_guarantee_amount: 162.0
           )
 
           context = result.data[:context]
@@ -118,20 +128,20 @@ module Accounting
           )
         end
 
-          # rubocop:disable RSpec/MultipleMemoizedHelpers
+
           context 'when required data is missing' do
             let(:invalid_project_version) { { number: 'PV-001' } }
 
             it 'returns failure with error message', :aggregate_failures do
-              result = described_class.call(company[:id], project, invalid_project_version, issue_date)
+              result = described_class.call(company[:id], project, invalid_project_version, new_invoice_items, issue_date)
               expect(result).not_to be_success
               expect(result.error).to include('Failed to build invoice attributes')
               expect(result.error).to include('PV-001')
             end
           end
-        # rubocop:enable RSpec/MultipleMemoizedHelpers
-        # rubocop:enable RSpec/ExampleLength
+          # rubocop:enable RSpec/ExampleLength
+        end
       end
-    end
+    # rubocop:enable RSpec/MultipleMemoizedHelpers
   end
 end
