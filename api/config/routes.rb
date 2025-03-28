@@ -45,6 +45,7 @@ Rails.application.routes.draw do
           resources :invoices, only: [ :index, :show, :update, :destroy ] do
             member do
               post "", action: :post
+              post "cancel", action: :cancel
             end
           end
           resources :credit_notes, only: [ :index ]
@@ -72,11 +73,7 @@ Rails.application.routes.draw do
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
         resources :orders, only: [ :show ] do
-          resources :invoices, only: [ :create ] do
-            member do
-              post "cancel", action: :cancel
-            end
-          end
+          resources :invoices, only: [ :create ]
           member do
             get :invoiced_items
           end

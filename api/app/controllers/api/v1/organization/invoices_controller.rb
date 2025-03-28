@@ -64,11 +64,9 @@ module Api
           render json: ::Organization::Invoices::ShowDto.new({ result: result.data })
         end
 
-        # POST /api/v1/organization/orders/:order_id/invoices/:id/cancel
+        # POST   /api/v1/organization/companies/:company_id/invoices/:id/cancel
         def cancel
-          order = policy_scope(::Organization::Project).where(type: "Organization::Order").find(params[:order_id])
-
-          invoice = Accounting::Invoice.where(holder_id: order.versions.pluck(:id)).includes(:lines).find(params[:id])
+          invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
 
           result = ::Accounting::Invoices::Cancel.call(invoice.id)
 
