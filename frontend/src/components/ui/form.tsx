@@ -179,7 +179,7 @@ const FormSubmit = React.forwardRef<
   const {
     formState: { isSubmitting },
   } = useFormContext();
-  console.log({ isSubmitting });
+
   return (
     <Button
       ref={ref}

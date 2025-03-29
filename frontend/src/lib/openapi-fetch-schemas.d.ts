@@ -444,35 +444,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/orders/{order_id}/invoices": {
+    "/api/v1/organization/companies/{company_id}/credit_notes": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Lists invoices for an order */
+        /** Lists company's credit notes */
         get: {
             parameters: {
-                query?: {
-                    status?: ("draft" | "posted" | "cancelled" | "voided")[];
-                };
+                query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description invoices found */
+                /** @description credit notes found */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            results: components["schemas"]["Organization::Invoices::CompactDto"][];
+                            results: components["schemas"]["Organization::CreditNotes::CompactDto"][];
                         };
                     };
                 };
@@ -483,15 +481,24 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description order not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/orders/{order_id}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         put?: never;
         /** Creates an invoice */
         post: {
@@ -557,7 +564,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/orders/{order_id}/invoices/{id}": {
+    "/api/v1/organization/companies/{company_id}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists invoices for an order */
+        get: {
+            parameters: {
+                query?: {
+                    status?: ("draft" | "posted" | "cancelled" | "voided")[];
+                    order_id?: number;
+                };
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description invoices found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Invoices::CompactDto"][];
+                            meta: components["schemas"]["Organization::Invoices::Meta"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/companies/{company_id}/invoices/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -570,7 +628,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -610,7 +668,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -667,7 +725,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -714,7 +772,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -778,7 +836,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/orders/{order_id}/invoices/{id}/cancel": {
+    "/api/v1/organization/companies/{company_id}/invoices/{id}/cancel": {
         parameters: {
             query?: never;
             header?: never;
@@ -793,7 +851,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    order_id: number;
+                    company_id: number;
                     id: number;
                 };
                 cookie?: never;
@@ -818,21 +876,12 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description not found */
+                /** @description invoice not found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "application/json": {
-                            error: {
-                                status: string;
-                                code: number;
-                                message: string;
-                                details: Record<string, never>;
-                            };
-                        };
-                    };
+                    content?: never;
                 };
                 /** @description unprocessable entity */
                 422: {
@@ -1429,6 +1478,46 @@ export interface components {
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
         };
+        "Organization::Invoices::CompactDto": {
+            holder_id: number;
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            pdf_url?: string | null;
+        };
+        "Organization::CreditNotes::CompactDto": {
+            invoice: components["schemas"]["Organization::Invoices::CompactDto"];
+            id: number;
+            /** @enum {string} */
+            status: "draft" | "posted" | "cancelled" | "voided";
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            pdf_url?: string | null;
+        };
         "Organization::CreditNotes::ExtendedDto::DocumentInfo": {
             number: string;
             /** Format: date-time */
@@ -1523,23 +1612,8 @@ export interface components {
             /** @enum {string} */
             status: "draft" | "published";
         };
-        "Organization::Invoices::CompactDto::Line": {
-            holder_id: string;
-            /** Format: decimal */
-            excl_tax_amount: string;
-        };
-        "Organization::Invoices::CompactDto": {
-            id: number;
-            /** @enum {string} */
-            status: "draft" | "posted" | "cancelled" | "voided";
-            number?: string | null;
-            /** Format: date-time */
-            issue_date: string;
-            /** Format: date-time */
-            updated_at: string;
-            /** Format: decimal */
-            total_amount: string;
-            lines: components["schemas"]["Organization::Invoices::CompactDto::Line"][];
+        "Organization::CreditNotes::IndexDto": {
+            results: components["schemas"]["Organization::CreditNotes::CompactDto"][];
         };
         "Organization::Invoices::BaseExtendedDto::Line": {
             holder_id: string;
@@ -1596,6 +1670,7 @@ export interface components {
             description?: string | null;
         };
         "Organization::Invoices::BaseExtendedDto::Context": {
+            project_name: string;
             /** Format: decimal */
             project_version_retention_guarantee_rate: string;
             project_version_number: number;
@@ -1618,6 +1693,13 @@ export interface components {
             detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
             context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
             pdf_url?: string | null;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            holder_id: number;
         };
         "Organization::Invoices::ExtendedDto": {
             id: number;
@@ -1630,10 +1712,55 @@ export interface components {
             detail: components["schemas"]["Organization::Invoices::BaseExtendedDto::Detail"];
             context: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context"];
             pdf_url?: string | null;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            holder_id: number;
             credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
+        };
+        "Organization::ProjectVersions::CompactDto": {
+            id: number;
+            project_id: number;
+            number: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: decimal */
+            retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_amount: string;
+        };
+        "Organization::Invoices::Meta": {
+            order_versions: components["schemas"]["Organization::ProjectVersions::CompactDto"][];
+            orders: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
+        };
+        "Organization::Projects::BaseCompactDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::Orders::CompactDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            /** @enum {string} */
+            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+            /** Format: decimal */
+            invoiced_amount: string;
         };
         "Organization::Invoices::IndexDto": {
             results: components["schemas"]["Organization::Invoices::CompactDto"][];
+            meta: components["schemas"]["Organization::Invoices::Meta"];
         };
         "Organization::Invoices::ShowDto": {
             result: components["schemas"]["Organization::Invoices::ExtendedDto"];
@@ -1729,16 +1856,6 @@ export interface components {
         "Organization::ProjectVersionShowResponseDto": {
             result: components["schemas"]["Organization::ProjectVersionShowResponseProjectVersionDto"];
         };
-        "Organization::ProjectVersions::CompactDto": {
-            id: number;
-            number: number;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: decimal */
-            retention_guarantee_rate: string;
-            /** Format: decimal */
-            total_amount: string;
-        };
         "Organization::ProjectVersions::ExtendedDto": {
             id: number;
             number: number;
@@ -1748,21 +1865,12 @@ export interface components {
             retention_guarantee_rate: string;
             ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
             item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+            project_id: number;
             items: components["schemas"]["Organization::Items::ExtendedDto"][];
             pdf_url?: string | null;
         };
         "Organization::ProjectVersions::ShowDto": {
             result: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-        };
-        "Organization::Projects::BaseCompactDto": {
-            id: number;
-            number: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::Clients::ExtendedDto"];
-            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
         "Organization::Projects::BaseExtendedDto": {
             id: number;
@@ -1806,18 +1914,6 @@ export interface components {
         };
         "Organization::Projects::InvoicedItemsDto": {
             results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
-        };
-        "Organization::Projects::Orders::CompactDto": {
-            id: number;
-            number: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::Clients::ExtendedDto"];
-            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-            /** Format: decimal */
-            invoiced_amount: string;
         };
         "Organization::Projects::Orders::ExtendedDto": {
             id: number;

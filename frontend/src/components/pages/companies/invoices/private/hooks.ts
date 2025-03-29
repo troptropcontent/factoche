@@ -6,18 +6,20 @@ import {
 import { useInvoiceTotalAmount } from "../shared/hooks";
 
 const useInvoiceContentData = ({
+  companyId,
   invoiceId,
   orderId,
 }: {
+  companyId: number;
   invoiceId: number;
   orderId: number;
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -122,9 +124,11 @@ const useInvoiceContentData = ({
 };
 
 const useInvoicingSummaryCardData = ({
+  companyId,
   invoiceId,
   orderId,
 }: {
+  companyId: number;
   invoiceId: number;
   orderId: number;
 }) => {
@@ -134,10 +138,10 @@ const useInvoicingSummaryCardData = ({
 
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices/{id}",
+    "/api/v1/organization/companies/{company_id}/invoices/{id}",
     {
       params: {
-        path: { order_id: orderId, id: invoiceId },
+        path: { company_id: companyId, id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -147,7 +151,7 @@ const useInvoicingSummaryCardData = ({
     useProjectPreviouslyInvoicedTotalAmount({ orderId });
 
   const { invoiceTotalAmount } = useInvoiceTotalAmount({
-    orderId,
+    companyId,
     invoiceId,
   });
 
@@ -177,4 +181,38 @@ const useInvoicingSummaryCardData = ({
   };
 };
 
-export { useInvoiceContentData, useInvoicingSummaryCardData };
+const useProformaQuery = (companyId: string) =>
+  Api.useQuery("get", "/api/v1/organization/companies/{company_id}/invoices", {
+    params: {
+      path: { company_id: Number(companyId) },
+      query: { status: ["draft", "voided"] },
+    },
+  });
+
+const useInvoicesQuery = (companyId: string) =>
+  Api.useQuery("get", "/api/v1/organization/companies/{company_id}/invoices", {
+    params: {
+      path: { company_id: Number(companyId) },
+      query: { status: ["posted", "cancelled"] },
+    },
+  });
+
+const useCreditNotesQuery = (companyId: string) =>
+  Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/credit_notes",
+    {
+      params: {
+        path: { company_id: Number(companyId) },
+      },
+    },
+    { select: ({ results }) => results }
+  );
+
+export {
+  useInvoiceContentData,
+  useInvoicingSummaryCardData,
+  useProformaQuery,
+  useInvoicesQuery,
+  useCreditNotesQuery,
+};

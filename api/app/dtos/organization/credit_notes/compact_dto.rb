@@ -1,7 +1,7 @@
 module Organization
-  module Invoices
+  module CreditNotes
     class CompactDto < OpenApiDto
-      field "holder_id", :integer
+      field "invoice", :object, subtype: Invoices::CompactDto
       field "id", :integer
       field "status", :enum, subtype: [ "draft", "posted", "cancelled", "voided" ]
       field "number", :string

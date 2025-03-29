@@ -32,11 +32,11 @@ const InvoicesSummary = ({
 }) => {
   const { data: projectInvoices } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices",
+    "/api/v1/organization/companies/{company_id}/invoices",
     {
       params: {
-        path: { order_id: orderId },
-        query: { status: ["cancelled", "draft", "posted"] },
+        path: { company_id: companyId },
+        query: { status: ["cancelled", "draft", "posted"], order_id: orderId },
       },
     },
     {
@@ -51,11 +51,10 @@ const InvoicesSummary = ({
     invoice: NonNullable<typeof projectInvoices>[number]
   ) => {
     navigate({
-      to: "/companies/$companyId/orders/$orderId/invoices/$invoiceId",
+      to: "/companies/$companyId/invoices/$invoiceId",
       params: {
         companyId: companyId.toString(),
         invoiceId: invoice.id.toString(),
-        orderId: orderId.toString(),
       },
     });
   };

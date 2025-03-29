@@ -43,13 +43,16 @@ const LoadedContent = ({
 };
 
 const InvoiceContent = ({
+  companyId,
   orderId,
   invoiceId,
 }: {
+  companyId: number;
   orderId: number;
   invoiceId: number;
 }) => {
   const { invoiceContentData } = useInvoiceContentData({
+    companyId,
     invoiceId,
     orderId,
   });
