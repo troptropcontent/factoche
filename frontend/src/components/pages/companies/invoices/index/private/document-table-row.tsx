@@ -10,10 +10,12 @@ import { useTranslation } from "react-i18next";
 import { findOrder } from "./utils";
 
 const DocumentTableRow = ({
+  companyId,
   document,
   orderVersions,
   orders,
 }: {
+  companyId: string;
   document: InvoiceCompact;
   orderVersions: ProjectVersionCompact[];
   orders: OrderCompact[];
@@ -44,7 +46,13 @@ const DocumentTableRow = ({
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link href={`/invoices/${document.id}`}>
+            <Link
+              to={"/companies/$companyId/invoices/$invoiceId"}
+              params={{
+                companyId: companyId,
+                invoiceId: document.id.toString(),
+              }}
+            >
               <Eye />
             </Link>
           </Button>

@@ -38,6 +38,7 @@ const Content = ({ companyId }: { companyId: string }) => {
         <CardContent>
           <div className="overflow-x-auto">
             <DocumentTable
+              companyId={companyId}
               documentsData={
                 invoicesData
                   ? {

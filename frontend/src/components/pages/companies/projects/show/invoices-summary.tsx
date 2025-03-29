@@ -51,11 +51,10 @@ const InvoicesSummary = ({
     invoice: NonNullable<typeof projectInvoices>[number]
   ) => {
     navigate({
-      to: "/companies/$companyId/orders/$orderId/invoices/$invoiceId",
+      to: "/companies/$companyId/invoices/$invoiceId",
       params: {
         companyId: companyId.toString(),
         invoiceId: invoice.id.toString(),
-        orderId: orderId.toString(),
       },
     });
   };

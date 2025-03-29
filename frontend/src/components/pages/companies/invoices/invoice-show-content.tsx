@@ -7,11 +7,10 @@ import { InvoiceContent } from "./private/invoice-content";
 import { InvoiceActions } from "./private/invoice-actions";
 
 const InvoiceShowContent = ({
-  routeParams: { companyId, orderId, invoiceId },
+  routeParams: { companyId, invoiceId },
 }: {
   routeParams: {
     companyId: number;
-    orderId: number;
     invoiceId: number;
   };
 }) => {
@@ -28,15 +27,29 @@ const InvoiceShowContent = ({
 
   const isInvoiceLoaded = invoiceData != undefined;
 
+  const { data: projectVersion } = Api.useQuery(
+    "get",
+    "/api/v1/organization/project_versions/{id}",
+    {
+      params: {
+        path: { id: invoiceData?.holder_id ?? -1 }, // The -1 will never be sent as we set enabled: invoiceData !== undefined, this for typescript to be happy
+      },
+    },
+    { select: ({ result }) => result, enabled: invoiceData !== undefined }
+  );
+
+  const isProjectVersionLoaded = projectVersion !== undefined;
+
   const { data: projectData } = Api.useQuery(
     "get",
     "/api/v1/organization/orders/{id}",
-    { params: { path: { id: orderId } } }
+    { params: { path: { id: projectVersion?.project_id ?? -1 } } }, // The -1 will never be sent as we set enabled: projectVersion !== undefined, this for typescript to be happy
+    { enabled: projectVersion !== undefined }
   );
 
   const isProjectDataLoaded = projectData != undefined;
 
-  if (!isInvoiceLoaded || !isProjectDataLoaded) {
+  if (!isInvoiceLoaded || !isProjectDataLoaded || !isProjectVersionLoaded) {
     return null;
   }
 
@@ -55,10 +68,10 @@ const InvoiceShowContent = ({
     invoiceData.status === "draft"
       ? {
           companyId: companyId,
-          orderId: orderId,
+          orderId: projectData.result.id,
         }
       : {
-          name: "toto",
+          name: invoiceData.context.project_name,
           version_number: invoiceData.context.project_version_number,
           version_date: invoiceData.context.project_version_date,
         };
@@ -70,7 +83,7 @@ const InvoiceShowContent = ({
         <ClientSummaryCard {...clientSummaryCardProps} />
         <InvoiceActions
           companyId={companyId}
-          orderId={orderId}
+          orderId={projectData.result.id}
           invoiceId={invoiceId}
         />
       </div>
@@ -79,12 +92,12 @@ const InvoiceShowContent = ({
           <CardContent className="mt-6 space-y-6">
             <ProjectInvoicingSummaryCard
               companyId={companyId}
-              orderId={orderId}
+              orderId={projectData.result.id}
               invoiceId={invoiceId}
             />
             <InvoiceContent
               invoiceId={invoiceId}
-              orderId={orderId}
+              orderId={projectData.result.id}
               companyId={companyId}
             />
           </CardContent>

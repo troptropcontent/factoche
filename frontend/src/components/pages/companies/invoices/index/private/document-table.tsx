@@ -17,11 +17,13 @@ import { OrderCompact } from "../../../projects/shared/types";
 import { DocumentTableRow } from "./document-table-row";
 
 const LoadedTableBody = ({
+  companyId,
   documents,
   orderVersions,
   orders,
   tab,
 }: {
+  companyId: string;
   documents: InvoiceCompact[];
   orderVersions: ProjectVersionCompact[];
   orders: OrderCompact[];
@@ -34,6 +36,7 @@ const LoadedTableBody = ({
       {documents.length > 0 ? (
         documents.map((document) => (
           <DocumentTableRow
+            companyId={companyId}
             document={document}
             orderVersions={orderVersions}
             orders={orders}
@@ -85,9 +88,11 @@ const LoadingTableBody = () => {
 };
 
 const DocumentTable = ({
+  companyId,
   documentsData,
   tab,
 }: {
+  companyId: string;
   documentsData:
     | {
         invoices: InvoiceCompact[];
@@ -142,6 +147,7 @@ const DocumentTable = ({
         <LoadingTableBody />
       ) : (
         <LoadedTableBody
+          companyId={companyId}
           documents={documentsData.invoices}
           orderVersions={documentsData.orderVersions}
           orders={documentsData.orders}
