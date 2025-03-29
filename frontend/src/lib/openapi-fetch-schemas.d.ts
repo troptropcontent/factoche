@@ -1670,6 +1670,7 @@ export interface components {
             description?: string | null;
         };
         "Organization::Invoices::BaseExtendedDto::Context": {
+            project_name: string;
             /** Format: decimal */
             project_version_retention_guarantee_rate: string;
             project_version_number: number;
@@ -1698,6 +1699,7 @@ export interface components {
             total_including_tax_amount: string;
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
+            holder_id: number;
         };
         "Organization::Invoices::ExtendedDto": {
             id: number;
@@ -1716,6 +1718,7 @@ export interface components {
             total_including_tax_amount: string;
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
+            holder_id: number;
             credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
         };
         "Organization::ProjectVersions::CompactDto": {
@@ -1862,6 +1865,7 @@ export interface components {
             retention_guarantee_rate: string;
             ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
             item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+            project_id: number;
             items: components["schemas"]["Organization::Items::ExtendedDto"][];
             pdf_url?: string | null;
         };

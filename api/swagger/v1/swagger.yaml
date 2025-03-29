@@ -1923,6 +1923,7 @@ components:
     Organization::Invoices::BaseExtendedDto::Context:
       type: object
       required:
+      - project_name
       - project_version_retention_guarantee_rate
       - project_version_number
       - project_version_date
@@ -1931,6 +1932,8 @@ components:
       - project_version_items
       - project_version_item_groups
       properties:
+        project_name:
+          type: string
         project_version_retention_guarantee_rate:
           type: string
           format: decimal
@@ -1964,6 +1967,7 @@ components:
       - total_excl_tax_amount
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
+      - holder_id
       properties:
         id:
           type: integer
@@ -2000,6 +2004,8 @@ components:
         total_excl_retention_guarantee_amount:
           type: string
           format: decimal
+        holder_id:
+          type: integer
     Organization::Invoices::ExtendedDto:
       type: object
       required:
@@ -2012,6 +2018,7 @@ components:
       - total_excl_tax_amount
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
+      - holder_id
       properties:
         id:
           type: integer
@@ -2048,6 +2055,8 @@ components:
         total_excl_retention_guarantee_amount:
           type: string
           format: decimal
+        holder_id:
+          type: integer
         credit_note:
           "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
           nullable: true
@@ -2437,6 +2446,7 @@ components:
       - retention_guarantee_rate
       - ungrouped_items
       - item_groups
+      - project_id
       - items
       properties:
         id:
@@ -2457,6 +2467,8 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
+        project_id:
+          type: integer
         items:
           type: array
           items:
