@@ -328,7 +328,8 @@ i18n
                                             "status": {
                                                 "draft": "Brouillon",
                                                 "posted": "Postée",
-                                                "cancelled": "Annulée"
+                                                "cancelled": "Annulée",
+                                                "voided": "Supprimée"
                                             },
                                             "title_published": "Facture de situation N°{{number}}",
                                             "title_unpublished": "Facture PROFORMA de situation N°{{number}}",
@@ -389,6 +390,47 @@ i18n
                                                 "create_success_toast_title": "Nouvelle facture d'avancement enregistrée"
                                             },
                                             "total_info": "Total de la facture: <strong>{{total}}<strong>"
+                                        }
+                                    },
+                                    "index": {
+                                        "title": "Mes factures",
+                                        "tabs": {
+                                            "table": {
+                                                "columns": {
+                                                    "number": "Numéro",
+                                                    "client": "Client",
+                                                    "order": "Commande",
+                                                    "invoice_number": "Facture originale",
+                                                    "date": "Date",
+                                                    "status": "Status",
+                                                    "amount": "Montant",
+                                                    "actions": "Actions"
+                                                }
+                                            },
+                                            "invoices": {
+                                                "label": "Factures",
+                                                "title": "Factures",
+                                                "description": "Retrouvez toutes vos factures ci-dessous",
+                                                "empty_state": {
+                                                    "title": "Aucune facture trouvée",
+                                                }
+                                            },
+                                            "creditNotes": {
+                                                "label": "Avoirs",
+                                                "title": "Avoirs",
+                                                "description": "Retrouvez tous vos avoirs ci-dessous",
+                                                "empty_state": {
+                                                    "title": "Aucun avoir trouvé",
+                                                }
+                                            },
+                                            "proforma": {
+                                                "label": "Proforma",
+                                                "title": "Proforma",
+                                                "description": "Retrouvez toutes vos factures proforma ci-dessous",
+                                                "empty_state": {
+                                                    "title": "Aucune facture proforma trouvée",
+                                                }
+                                            }
                                         }
                                     }
                                 }

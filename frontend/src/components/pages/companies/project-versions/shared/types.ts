@@ -1,3 +1,5 @@
+import { paths } from "@/lib/openapi-fetch-schemas";
+
 type Item = {
   name: string;
   description?: string | null;
@@ -22,4 +24,7 @@ type ProjectVersion = {
   item_groups: ItemGroup[];
 };
 
-export type { Item, ItemGroup, ProjectVersion };
+type ProjectVersionCompact =
+  paths["/api/v1/organization/companies/{company_id}/invoices"]["get"]["responses"]["200"]["content"]["application/json"]["meta"]["order_versions"][number];
+
+export type { Item, ItemGroup, ProjectVersion, ProjectVersionCompact };

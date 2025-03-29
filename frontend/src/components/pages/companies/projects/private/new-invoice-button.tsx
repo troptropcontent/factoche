@@ -25,10 +25,16 @@ const NewInvoiceButton = ({
 }) => {
   const { data: projectInvoices } = Api.useQuery(
     "get",
-    "/api/v1/organization/orders/{order_id}/invoices",
-    { params: { path: { order_id: orderId } } },
+    "/api/v1/organization/companies/{company_id}/invoices",
+    {
+      params: {
+        path: { company_id: companyId },
+        query: { status: ["cancelled", "draft", "posted"], order_id: orderId },
+      },
+    },
     { select: ({ results }) => results }
   );
+
   const isButtonEnable =
     projectInvoices != undefined &&
     !projectInvoices.some(({ status }) => status === "draft");

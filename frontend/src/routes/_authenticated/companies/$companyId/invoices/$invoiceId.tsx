@@ -1,22 +1,22 @@
+import { Api } from "@/lib/openapi-fetch-query-client";
+import { createFileRoute } from "@tanstack/react-router";
 import { InvoiceShowContent } from "@/components/pages/companies/invoices/invoice-show-content";
 import { StatusBadge } from "@/components/pages/companies/invoices/private/status-badge";
 import { Layout } from "@/components/pages/companies/layout";
-import { Api } from "@/lib/openapi-fetch-query-client";
-import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
-  "/_authenticated/companies/$companyId/orders/$orderId/invoices/$invoiceId/"
+  "/_authenticated/companies/$companyId/invoices/$invoiceId"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { invoiceId, orderId } }) =>
+  loader: ({ context: { queryClient }, params: { invoiceId, companyId } }) =>
     queryClient.ensureQueryData(
       Api.queryOptions(
         "get",
-        "/api/v1/organization/orders/{order_id}/invoices/{id}",
+        "/api/v1/organization/companies/{company_id}/invoices/{id}",
         {
           params: {
-            path: { id: Number(invoiceId), order_id: Number(orderId) },
+            path: { id: Number(invoiceId), company_id: Number(companyId) },
           },
         }
       )
@@ -25,7 +25,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { result: invoice } = Route.useLoaderData();
-  const { companyId, invoiceId, orderId } = Route.useParams();
+  const { companyId, invoiceId } = Route.useParams();
   const { t } = useTranslation();
 
   return (
@@ -46,7 +46,6 @@ function RouteComponent() {
           routeParams={{
             companyId: Number(companyId),
             invoiceId: Number(invoiceId),
-            orderId: Number(orderId),
           }}
         />
       </Layout.Content>

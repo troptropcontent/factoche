@@ -9,6 +9,8 @@ const getStatusColor = (status: string) => {
       return "bg-green-500 hover:bg-green-600";
     case "cancelled":
       return "bg-red-500 hover:bg-red-600";
+    case "voided":
+      return "bg-red-500 hover:bg-red-600";
     default:
       return "bg-gray-500 hover:bg-gray-600";
   }

@@ -16,6 +16,8 @@ migrate:
 	bundle exec dotenv -f config/.env.development rails db:migrate
 rollback:
 	bundle exec dotenv -f config/.env.development rails db:rollback
+routesc:
+	bundle exec dotenv -f config/.env.development rails routes -c $(filter-out $@,$(MAKECMDGOALS))
 rspec:
 	bundle exec dotenv -f config/.env.development rspec $(filter-out $@,$(MAKECMDGOALS))
 frontend:

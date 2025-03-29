@@ -1,6 +1,6 @@
 import { Layout } from "@/components/pages/companies/layout";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { OrderCompact } from "@/components/pages/companies/projects/shared/types";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -20,19 +20,76 @@ export const Route = createFileRoute(
   component: RouteComponent,
 });
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "new":
-      return "bg-gray-500";
-    case "invoicing_in_progress":
-      return "bg-yellow-500";
-    case "invoiced":
-      return "bg-blue-500";
-    case "canceled":
-      return "bg-purple-500";
-    default:
-      return "bg-gray-500";
-  }
+const OrdersTableRow = ({
+  order,
+  companyId,
+}: {
+  order: OrderCompact;
+  companyId: string;
+}) => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { data: invoicedAmount } = Api.useQuery(
+    "get",
+    "/api/v1/organization/orders/{id}/invoiced_items",
+    { params: { path: { id: order.id } } },
+    {
+      select: (data) =>
+        data.results.reduce(
+          (prev, { invoiced_amount }) => prev + Number(invoiced_amount),
+          0
+        ),
+    }
+  );
+
+  const handleRowClick = (orderId: number) => {
+    navigate({
+      to: "/companies/$companyId/orders/$orderId",
+      params: { companyId: companyId, orderId: orderId.toString() },
+    });
+  };
+  return (
+    <TableRow
+      key={order.id}
+      onClick={() => handleRowClick(order.id)}
+      className="cursor-pointer hover:bg-gray-100 transition-colors"
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleRowClick(order.id);
+        }
+      }}
+    >
+      <TableCell className="font-medium">{order.name}</TableCell>
+      <TableCell>{order.client.name}</TableCell>
+      <TableCell>
+        {t("common.number_in_currency", {
+          amount: parseFloat(order.last_version.total_amount),
+        })}
+      </TableCell>
+      <TableCell>
+        {invoicedAmount !== undefined ? (
+          t("common.number_in_currency", {
+            amount: invoicedAmount,
+          })
+        ) : (
+          <Skeleton className="w-full h-4" />
+        )}
+      </TableCell>
+      <TableCell>
+        {invoicedAmount !== undefined ? (
+          t("common.number_in_currency", {
+            amount:
+              parseFloat(order.last_version.total_amount) - invoicedAmount,
+          })
+        ) : (
+          <Skeleton className="w-full h-4" />
+        )}
+      </TableCell>
+    </TableRow>
+  );
 };
 
 function RouteComponent() {
@@ -44,13 +101,6 @@ function RouteComponent() {
     { params: { path: { company_id: Number(companyId) } } },
     { select: ({ results }) => results }
   );
-  const navigate = useNavigate();
-  const handleRowClick = (orderId: number) => {
-    navigate({
-      to: "/companies/$companyId/orders/$orderId",
-      params: { companyId: companyId, orderId: orderId.toString() },
-    });
-  };
 
   return (
     <Layout.Root>
@@ -63,23 +113,11 @@ function RouteComponent() {
       </Layout.Header>
       <Layout.Content>
         <div className="container mx-auto">
-          <div className="flex justify-between items-center mb-4">
-            {/* TODO: Implement search and sort functionality */}
-            <Input
-              placeholder={t(
-                "pages.companies.clients.index.search.placeholder"
-              )}
-              className="max-w-sm"
-            />
-          </div>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>
                   {t("pages.companies.projects.index.table.columns.name")}
-                </TableHead>
-                <TableHead>
-                  {t("pages.companies.projects.index.table.columns.status")}
                 </TableHead>
                 <TableHead>
                   {t("pages.companies.projects.index.table.columns.client")}
@@ -103,46 +141,7 @@ function RouteComponent() {
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
-                <TableRow
-                  key={order.id}
-                  onClick={() => handleRowClick(order.id)}
-                  className="cursor-pointer hover:bg-gray-100 transition-colors"
-                  role="link"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleRowClick(order.id);
-                    }
-                  }}
-                >
-                  <TableCell className="font-medium">{order.name}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={`${getStatusColor(order.status)} text-white`}
-                    >
-                      {order.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{order.client.name}</TableCell>
-                  <TableCell>
-                    {t("common.number_in_currency", {
-                      amount: parseFloat(order.last_version.total_amount),
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    {t("common.number_in_currency", {
-                      amount: parseFloat(order.invoiced_amount),
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    {t("common.number_in_currency", {
-                      amount:
-                        parseFloat(order.last_version.total_amount) -
-                        parseFloat(order.invoiced_amount),
-                    })}
-                  </TableCell>
-                </TableRow>
+                <OrdersTableRow order={order} companyId={companyId} />
               ))}
             </TableBody>
           </Table>
