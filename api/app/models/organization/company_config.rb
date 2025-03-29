@@ -8,6 +8,8 @@ module Organization
       "vat_rate"=> "0.20"
     }.freeze
 
+    has_rich_text :general_terms_and_conditions
+
     belongs_to :company, class_name: "Organization::Company"
   end
 end
