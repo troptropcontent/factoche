@@ -8,9 +8,8 @@ class Api::V1::Organization::CompaniesController < Api::V1::ApiV1Controller
 
   # GET /api/v1/organization/companies/:id
   def show
-    company = policy_scope(Organization::Company).find_by(id: params[:id])
-    raise Error::NotFoundError unless company
+    company = policy_scope(Organization::Company).find(params[:id])
 
-    render json: Organization::CompanySerializer.render(company)
+    render json: Organization::Companies::ShowDto.new({ result: company }).to_json
   end
 end

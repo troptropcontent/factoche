@@ -10,7 +10,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
 
       response '200', 'successfully lists user\'s companies' do
         let(:user) { FactoryBot.create(:user) }
-        let(:company) { FactoryBot.create(:company) }
+        let(:company) { FactoryBot.create(:company, :with_config) }
         let!(:member) { FactoryBot.create(:member, user:, company:) }
         let(:another_user) { FactoryBot.create(:user) }
         let(:another_company) { FactoryBot.create(:company) }
@@ -57,28 +57,18 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
       parameter name: :id, in: :path, type: :integer
 
       response '200', 'successfully shows the company' do
+        schema ::Organization::Companies::ShowDto.to_schema
+
         let(:user) { FactoryBot.create(:user) }
-        let(:company) { FactoryBot.create(:company) }
+        let(:company) { FactoryBot.create(:company, :with_config) }
         let!(:member) { FactoryBot.create(:member, user:, company:) }
         let(:id) { company.id }
         let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
-        schema type: :object,
-               properties: {
-                 id: { type: :integer },
-                 name: { type: :string },
-                 registration_number: { type: :string },
-                 email: { type: :string },
-                 phone: { type: :string },
-                 address_city: { type: :string },
-                 address_street: { type: :string },
-                 address_zipcode: { type: :string }
-               },
-               required: [ 'id', 'name', 'registration_number', 'email', 'phone', 'address_city', 'address_street', 'address_zipcode' ]
 
         run_test! do |response|
           data = JSON.parse(response.body)
-          expect(data["id"]).to eq(company.id)
+          expect(data.dig("result", "id")).to eq(company.id)
         end
       end
 
