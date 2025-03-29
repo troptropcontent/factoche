@@ -3,7 +3,9 @@
 # - Error handling
 # - For :array & :object handle when the type is not a DTO (or dto variant, like string)
 class OpenApiDto
-  ALLOWED_FIELD_TYPES = [ :string, :integer, :float, :boolean, :array, :object, :enum, :timestamp, :decimal ].freeze
+  PRIMITIVE_TYPES = [ :string, :integer, :float, :boolean, :timestamp, :decimal ].freeze
+  ADVANCED_TYPES = [ :array, :object, :enum ].freeze
+  ALLOWED_FIELD_TYPES = PRIMITIVE_TYPES + ADVANCED_TYPES
   @registered_dto_schemas = {}
 
   class << self
@@ -78,6 +80,7 @@ class OpenApiDto
     private
 
     def array_field_schema(info)
+      return { type: :array, items: { type: info[:subtype] } } if info[:subtype].is_a?(Symbol)
       return { type: :array, items: { '$ref': "#/components/schemas/#{info[:subtype].name}" } } unless info[:subtype].is_a?(Array)
       subtypes = info[:subtype]
       subtypes.first.is_a?(Array) ? { oneOf: subtypes.map { |subtype| { type: :array, items: { '$ref': "#/components/schemas/#{subtype.first.name}" }  } } } : { type: :array, items: { oneOf: subtypes.map { |subtype| { '$ref': "#/components/schemas/#{subtype.name}" } } } }
@@ -85,11 +88,12 @@ class OpenApiDto
 
     def validate_array_subtype!(name, type, subtype)
       raise ArgumentError, "Subtype is required for array" if subtype.nil?
+      return if subtype.is_a?(Symbol) && PRIMITIVE_TYPES.include?(subtype)
       return if subtype.is_a?(Class) && subtype < OpenApiDto
       return if subtype.is_a?(Array) && subtype.all? { |sub| sub.is_a?(Class) && sub < OpenApiDto }
       return if subtype.is_a?(Array) && subtype.all? { |sub| sub.is_a?(Array) && sub.first.is_a?(Class) && sub.first < OpenApiDto }
 
-      raise ArgumentError, "Subtype must be a class descendant of OpenApiDto or array of such classes or an array of one element arrays of such classes for #{name}"
+      raise ArgumentError, "Subtype must be a primitive type symbol (:string, :decimal etc) or class descendant of OpenApiDto or and array such classes or an array of one element arrays of such classes for #{name}"
     end
 
     def validate_object_subtype!(name, type, subtype)
@@ -264,7 +268,15 @@ class OpenApiDto
   def validate_array_value!(value, field_name, subtype)
     validate_array_type!(value, field_name)
 
-    value.map { |item| create_subtype_instance(item, field_name, subtype) }
+    if subtype.is_a?(Symbol)
+      begin
+        value.map { |item| validate_field_value!(field_name, subtype, nil, item) }
+      rescue ArgumentError
+        raise ArgumentError, "Expected an array of #{subtype} for #{field_name}"
+      end
+    else
+      value.map { |item| create_subtype_instance(item, field_name, subtype) }
+    end
   end
 
   def validate_array_type!(value, field_name)

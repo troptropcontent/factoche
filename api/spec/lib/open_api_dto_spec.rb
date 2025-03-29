@@ -105,11 +105,23 @@ RSpec.describe OpenApiDto do
           end
         end
 
+        # rubocop:disable RSpec/NestedGroups
         describe "when the value is an array but does not satisfy the subtype" do
-          it "raises an error" do
-            expect { tmp_dto_class.new({ items: [ { name: 3 } ] }) }.to raise_error(ArgumentError, 'Expected String for name, got Integer')
+          context "when the subtype is advanced" do
+            it "raises an error" do
+              expect { tmp_dto_class.new({ items: [ { name: 3 } ] }) }.to raise_error(ArgumentError, 'Expected String for name, got Integer')
+            end
+          end
+
+          context "when the subtype is primitive" do
+            let(:tmp_dto_class) { Class.new(OpenApiDto) { field 'items', :array, subtype: :integer } }
+
+            it "raises an error" do
+              expect { tmp_dto_class.new({ items: [ { name: 3 } ] }) }.to raise_error(ArgumentError, 'Expected an array of integer for items')
+            end
           end
         end
+        # rubocop:enable RSpec/NestedGroups
       end
 
       describe "when the type is object" do
