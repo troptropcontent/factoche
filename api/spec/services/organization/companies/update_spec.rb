@@ -49,7 +49,7 @@ RSpec.describe Organization::Companies::Update do
       let(:params) do
         {
           name: 'Valid Name',
-          configs: { general_terms_and_conditions: 17 } # We only accept value between 0 and 1 in the database
+          configs: { default_vat_rate: 17 } # We only accept value between 0 and 1 in the database
         }
       end
 

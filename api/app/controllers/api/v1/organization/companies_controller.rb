@@ -41,7 +41,7 @@ class Api::V1::Organization::CompaniesController < Api::V1::ApiV1Controller
       :vat_number,
       :capital_amount,
       configs: %i[
-        general_terms_and_condition
+        general_terms_and_conditions
         default_vat_rate
         payment_term_days
         payment_term_accepted_methods
