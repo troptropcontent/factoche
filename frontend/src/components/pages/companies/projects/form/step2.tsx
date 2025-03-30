@@ -19,8 +19,10 @@ import { ImportItemsFromCsvModal } from "./private/import-items-from-csv-modal";
 import { useEffect, useState } from "react";
 
 const EmptyStateActions = ({
+  addNewGroupInput,
   setInitialFormValues,
 }: {
+  addNewGroupInput: () => void;
   setInitialFormValues: (
     initialFormValues: z.infer<typeof step2FormSchema>
   ) => void;
@@ -28,7 +30,7 @@ const EmptyStateActions = ({
   const { t } = useTranslation();
   return (
     <div className="flex gap-4">
-      <Button variant="outline">
+      <Button variant="outline" onClick={addNewGroupInput}>
         <Pointer />
         {t(
           "pages.companies.projects.form.composition_step.empty_state.action_label"
@@ -115,7 +117,10 @@ const Step2 = ({
               "pages.companies.projects.form.composition_step.empty_state.description"
             )}
             action={
-              <EmptyStateActions setInitialFormValues={setInitialFormValues} />
+              <EmptyStateActions
+                setInitialFormValues={setInitialFormValues}
+                addNewGroupInput={addNewGroupInput}
+              />
             }
             onAction={addNewGroupInput}
             className="flex-grow mb-4"

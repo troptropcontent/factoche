@@ -16,6 +16,7 @@ import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AuthenticatedCompaniesCompanyIdImport } from './routes/_authenticated/companies/$companyId'
 import { Route as AuthenticatedCompaniesCompanyIdIndexImport } from './routes/_authenticated/companies/$companyId/index'
+import { Route as AuthenticatedCompaniesCompanyIdSettingsImport } from './routes/_authenticated/companies/$companyId/settings'
 import { Route as AuthenticatedCompaniesCompanyIdQuotesIndexImport } from './routes/_authenticated/companies/$companyId/quotes/index'
 import { Route as AuthenticatedCompaniesCompanyIdOrdersIndexImport } from './routes/_authenticated/companies/$companyId/orders/index'
 import { Route as AuthenticatedCompaniesCompanyIdInvoicesIndexImport } from './routes/_authenticated/companies/$companyId/invoices/index'
@@ -59,6 +60,13 @@ const AuthenticatedCompaniesCompanyIdIndexRoute =
   AuthenticatedCompaniesCompanyIdIndexImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+  } as any)
+
+const AuthenticatedCompaniesCompanyIdSettingsRoute =
+  AuthenticatedCompaniesCompanyIdSettingsImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
   } as any)
 
@@ -180,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/companies/$companyId/settings': {
+      id: '/_authenticated/companies/$companyId/settings'
+      path: '/settings'
+      fullPath: '/companies/$companyId/settings'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdSettingsImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
+    }
     '/_authenticated/companies/$companyId/': {
       id: '/_authenticated/companies/$companyId/'
       path: '/'
@@ -277,6 +292,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AuthenticatedCompaniesCompanyIdRouteChildren {
+  AuthenticatedCompaniesCompanyIdSettingsRoute: typeof AuthenticatedCompaniesCompanyIdSettingsRoute
   AuthenticatedCompaniesCompanyIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdIndexRoute
   AuthenticatedCompaniesCompanyIdClientsNewRoute: typeof AuthenticatedCompaniesCompanyIdClientsNewRoute
   AuthenticatedCompaniesCompanyIdInvoicesInvoiceIdRoute: typeof AuthenticatedCompaniesCompanyIdInvoicesInvoiceIdRoute
@@ -294,6 +310,8 @@ interface AuthenticatedCompaniesCompanyIdRouteChildren {
 
 const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompanyIdRouteChildren =
   {
+    AuthenticatedCompaniesCompanyIdSettingsRoute:
+      AuthenticatedCompaniesCompanyIdSettingsRoute,
     AuthenticatedCompaniesCompanyIdIndexRoute:
       AuthenticatedCompaniesCompanyIdIndexRoute,
     AuthenticatedCompaniesCompanyIdClientsNewRoute:
@@ -347,6 +365,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof AuthenticatedIndexRoute
   '/companies/$companyId': typeof AuthenticatedCompaniesCompanyIdRouteWithChildren
+  '/companies/$companyId/settings': typeof AuthenticatedCompaniesCompanyIdSettingsRoute
   '/companies/$companyId/': typeof AuthenticatedCompaniesCompanyIdIndexRoute
   '/companies/$companyId/clients/new': typeof AuthenticatedCompaniesCompanyIdClientsNewRoute
   '/companies/$companyId/invoices/$invoiceId': typeof AuthenticatedCompaniesCompanyIdInvoicesInvoiceIdRoute
@@ -365,6 +384,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/': typeof AuthenticatedIndexRoute
+  '/companies/$companyId/settings': typeof AuthenticatedCompaniesCompanyIdSettingsRoute
   '/companies/$companyId': typeof AuthenticatedCompaniesCompanyIdIndexRoute
   '/companies/$companyId/clients/new': typeof AuthenticatedCompaniesCompanyIdClientsNewRoute
   '/companies/$companyId/invoices/$invoiceId': typeof AuthenticatedCompaniesCompanyIdInvoicesInvoiceIdRoute
@@ -386,6 +406,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/companies/$companyId': typeof AuthenticatedCompaniesCompanyIdRouteWithChildren
+  '/_authenticated/companies/$companyId/settings': typeof AuthenticatedCompaniesCompanyIdSettingsRoute
   '/_authenticated/companies/$companyId/': typeof AuthenticatedCompaniesCompanyIdIndexRoute
   '/_authenticated/companies/$companyId/clients/new': typeof AuthenticatedCompaniesCompanyIdClientsNewRoute
   '/_authenticated/companies/$companyId/invoices/$invoiceId': typeof AuthenticatedCompaniesCompanyIdInvoicesInvoiceIdRoute
@@ -408,6 +429,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/'
     | '/companies/$companyId'
+    | '/companies/$companyId/settings'
     | '/companies/$companyId/'
     | '/companies/$companyId/clients/new'
     | '/companies/$companyId/invoices/$invoiceId'
@@ -425,6 +447,7 @@ export interface FileRouteTypes {
   to:
     | '/auth/login'
     | '/'
+    | '/companies/$companyId/settings'
     | '/companies/$companyId'
     | '/companies/$companyId/clients/new'
     | '/companies/$companyId/invoices/$invoiceId'
@@ -444,6 +467,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/_authenticated/'
     | '/_authenticated/companies/$companyId'
+    | '/_authenticated/companies/$companyId/settings'
     | '/_authenticated/companies/$companyId/'
     | '/_authenticated/companies/$companyId/clients/new'
     | '/_authenticated/companies/$companyId/invoices/$invoiceId'
@@ -502,6 +526,7 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/companies/$companyId.tsx",
       "parent": "/_authenticated",
       "children": [
+        "/_authenticated/companies/$companyId/settings",
         "/_authenticated/companies/$companyId/",
         "/_authenticated/companies/$companyId/clients/new",
         "/_authenticated/companies/$companyId/invoices/$invoiceId",
@@ -516,6 +541,10 @@ export const routeTree = rootRoute
         "/_authenticated/companies/$companyId/orders/$orderId/invoices/new",
         "/_authenticated/companies/$companyId/orders/$orderId/invoices/$invoiceId/update"
       ]
+    },
+    "/_authenticated/companies/$companyId/settings": {
+      "filePath": "_authenticated/companies/$companyId/settings.tsx",
+      "parent": "/_authenticated/companies/$companyId"
     },
     "/_authenticated/companies/$companyId/": {
       "filePath": "_authenticated/companies/$companyId/index.tsx",
