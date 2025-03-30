@@ -20,10 +20,9 @@ RSpec.describe Accounting::Invoices::BuildDetailAttributes do
         legal_form: 'sas',
         capital_amount: 10000,
         config: {
-          payment_term: {
-            days: payment_term_days,
-            accepted_methods: [ "transfer" ]
-          }
+          payment_term_days: 30,
+          payment_term_accepted_methods: [ 'transfer' ],
+          general_terms_and_conditions: '<h1>Condition<h1/>'
         }
       }
     end
@@ -71,8 +70,9 @@ RSpec.describe Accounting::Invoices::BuildDetailAttributes do
           seller_rcs_number: company[:rcs_number],
           seller_legal_form: company[:legal_form],
           seller_capital_amount: company[:capital_amount],
-          payment_term_days: company[:config][:payment_term][:days],
-          payment_term_accepted_methods: company[:config][:payment_term][:accepted_methods],
+          payment_term_days: company[:config][:payment_term_days],
+          payment_term_accepted_methods: company[:config][:payment_term_accepted_methods],
+          general_terms_and_conditions: company[:config][:general_terms_and_conditions],
           client_name: client[:name],
           client_registration_number: client[:registration_number],
           client_address_zipcode: client[:address_zipcode],
