@@ -520,6 +520,58 @@ i18n
                                     "vat_number_placeholder": "Numéro de TVA du client",
                                     "submit": "Ajouter"
                                 }
+                            },
+                            "settings": {
+                                "title": "Paramètres",
+                                "forms": {
+                                    "shared": {
+                                        "submit": "Enregistrer",
+                                        "success_toast_title": "Paramètres enregistrés",
+                                        "success_toast_description": "Les paramètres ont été enregistrés avec succès",
+                                        "error_toast_title": "Une erreur est survenue",
+                                        "error_toast_description": "Une erreur est survenue lors de l'enregistrement des paramètres, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
+                                    },
+                                    "general": {
+                                        "title": "Paramètres généraux",
+                                        "description": "Configurez les paramètres généraux de votre entreprise",
+                                        "fields": {
+                                            "name": "Nom",
+                                            "name_placeholder": "Nom de l'entreprise",
+                                            "registration_number": "Numéro d'enregistrement",
+                                            "registration_number_placeholder": "Numéro d'enregistrement de l'entreprise",
+                                            "email": "Email",
+                                            "email_placeholder": "Email de l'entreprise",
+                                            "phone": "Téléphone",
+                                            "phone_placeholder": "Téléphone de l'entreprise",
+                                            "address_street": "Adresse",
+                                            "address_street_placeholder": "Adresse de l'entreprise",
+                                            "address_city": "Ville",
+                                            "address_city_placeholder": "Ville de l'entreprise",
+                                            "address_zipcode": "Code postal",
+                                            "address_zipcode_placeholder": "Code postal de l'entreprise",
+                                            "vat_number": "Numéro de TVA",
+                                            "vat_number_placeholder": "Numéro de TVA de l'entreprise",
+                                            "capital_amount": "Montant du capital",
+                                            "capital_amount_placeholder": "Montant du capital de l'entreprise",
+                                            "legal_form": "Forme juridique",
+                                            "legal_form_placeholder": "Sélectionnez la forme juridique",
+                                            "rcs_city": "Ville RCS",
+                                            "rcs_city_placeholder": "Ville d'enregistrement RCS",
+                                            "rcs_number": "Numéro RCS",
+                                            "rcs_number_placeholder": "Numéro RCS de l'entreprise"
+                                        }
+                                    },
+                                    "billing": {
+                                        "title": "Paramètres de facturation",
+                                        "description": "Configurez les paramètres de facturation de votre entreprise",
+                                        "fields": {
+                                            "payment_term_days": "Délai de paiement (jours)",
+                                            "payment_term_accepted_methods": "Méthodes de paiement acceptées",
+                                            "default_vat_rate": "Taux de TVA par défaut",
+                                            "general_terms_and_condition": "Conditions générales",
+                                        }
+                                    },
+                                }
                             }
                         }
                     }
