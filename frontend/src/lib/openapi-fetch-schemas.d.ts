@@ -391,14 +391,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            id: number;
-                            name: string;
-                            registration_number: string;
-                            email: string;
-                            phone: string;
-                            address_city: string;
-                            address_street: string;
-                            address_zipcode: string;
+                            result: components["schemas"]["Organization::Companies::ExtendedDto"];
                         };
                     };
                 };
@@ -436,7 +429,87 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        /** Updates a company */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        registration_number?: string;
+                        email?: string;
+                        phone?: string;
+                        address_city?: string;
+                        address_street?: string;
+                        address_zipcode?: string;
+                        /** @enum {string} */
+                        legal_form?: "sasu" | "sas" | "eurl" | "sa" | "auto_entrepreneur";
+                        rcs_city?: string;
+                        rcs_number?: string;
+                        vat_number?: string;
+                        capital_amount?: number;
+                        configs?: {
+                            general_terms_and_conditions?: string;
+                            default_vat_rate?: number;
+                            payment_term_days?: number;
+                            payment_term_accepted_methods?: ("transfer" | "cash" | "card")[];
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description company updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Companies::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description company not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+                /** @description invalid request */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                status: string;
+                                code: number;
+                                message: string;
+                                details: Record<string, never>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1455,6 +1528,34 @@ export interface components {
         };
         "Organization::Clients::ShowDto": {
             result: components["schemas"]["Organization::Clients::ExtendedDto"];
+        };
+        "Organization::Companies::ExtendedDto": {
+            id: number;
+            name: string;
+            registration_number: string;
+            email: string;
+            phone: string;
+            address_city: string;
+            address_street: string;
+            address_zipcode: string;
+            /** @enum {string} */
+            legal_form: "sasu" | "sas" | "eurl" | "sa" | "auto_entrepreneur";
+            rcs_city: string;
+            rcs_number: string;
+            vat_number: string;
+            /** Format: decimal */
+            capital_amount: string;
+            config: components["schemas"]["Organization::CompanyConfigs::ExtendedDto"];
+        };
+        "Organization::CompanyConfigs::ExtendedDto": {
+            /** Format: decimal */
+            default_vat_rate: string;
+            payment_term_days: number;
+            payment_term_accepted_methods: string[];
+            general_terms_and_conditions: string;
+        };
+        "Organization::Companies::ShowDto": {
+            result: components["schemas"]["Organization::Companies::ExtendedDto"];
         };
         "Organization::CreateProjecItemDto": {
             name: string;

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_27_170114) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_30_155046) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -95,6 +95,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_27_170114) do
     t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
   end
 
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -162,6 +172,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_27_170114) do
     t.jsonb "settings", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "default_vat_rate", precision: 10, scale: 2, null: false
+    t.integer "payment_term_days", null: false
+    t.string "payment_term_accepted_methods", default: [], null: false, array: true
+    t.text "general_terms_and_conditions", null: false
     t.index ["company_id"], name: "index_organization_company_configs_on_company_id"
     t.index ["settings"], name: "index_organization_company_configs_on_settings", using: :gin
   end
