@@ -96,10 +96,9 @@ module Organization
             legal_form: company.legal_form,
             capital_amount: company.capital_amount,
             config: {
-              payment_term: {
-                days: company.config.settings.dig("payment_term", "days") || Organization::CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "days"),
-                accepted_methods: company.config.settings.dig("payment_term", "accepted_methods") || Organization::CompanyConfig::DEFAULT_SETTINGS.dig("payment_term", "accepted_methods")
-              }
+              payment_term_days: company.config.payment_term_days,
+              payment_term_accepted_methods: company.config.payment_term_accepted_methods,
+              general_terms_and_conditions:  company.config.general_terms_and_conditions
             }
           }
 
