@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_30_155046) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_30_200911) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_30_155046) do
     t.string "seller_rcs_number", null: false
     t.integer "payment_term_days", null: false
     t.string "payment_term_accepted_methods", default: [], null: false, array: true
+    t.text "general_terms_and_conditions"
     t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_a3f0028db5"
   end
 

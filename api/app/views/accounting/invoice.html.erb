@@ -209,17 +209,12 @@
 
     <%= render "accounting/totals", invoice: @invoice %>
 
-    <section class="break-before-page">
-      <h1 class="text-center text-xl font-bold"><%= t("views.accounting.invoice.shared.conditions.title") %></h1>
-      <p>
-        Le vendeur se réserve la propriété des marchandises vendues jusqu'au complet paiement du prix,
-        conformément à la Loi N° 80-335 du 12 mai 1980
-      </p>
-      <p>
-        Délai de réglement selon loi L.ME, Pénalités de retard en cas de palement après échéance équivalentes
-        à 3 fois le taux d'intérêt légal, indemnite forfaitaire pour frais de recouvrement de 40€.
-        Pas d'ecomple en cas de paiement anticipé
-      </p>
-    </section>
+    
+    <% if @invoice.detail.general_terms_and_conditions %>
+      <section class="break-before-page prose prose-sm mx-auto">
+        <h1 class="text-center text-xl font-bold"><%= t("views.accounting.invoice.shared.conditions.title") %></h1>
+        <%= @invoice.detail.general_terms_and_conditions.html_safe %>
+      </section>
+    <% end %>
   </main>
 <% end %>

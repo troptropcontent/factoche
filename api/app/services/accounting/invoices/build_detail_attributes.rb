@@ -4,10 +4,11 @@ module Accounting
       class << self
         def call(company, client, project_version, issue_date)
           attributes = {
+              general_terms_and_conditions: company.fetch(:config).fetch(:general_terms_and_conditions),
               delivery_date: issue_date,
-              payment_term_days: company.fetch(:config).fetch(:payment_term).fetch(:days),
-              payment_term_accepted_methods: company.fetch(:config).fetch(:payment_term).fetch(:accepted_methods),
-              due_date: issue_date + company.fetch(:config).fetch(:payment_term).fetch(:days).to_i.days,
+              payment_term_days: company.fetch(:config).fetch(:payment_term_days),
+              payment_term_accepted_methods: company.fetch(:config).fetch(:payment_term_accepted_methods),
+              due_date: issue_date + company.fetch(:config).fetch(:payment_term_days).days,
               seller_name: company.fetch(:name),
               seller_registration_number: company.fetch(:registration_number),
               seller_address_zipcode: company.fetch(:address_zipcode),

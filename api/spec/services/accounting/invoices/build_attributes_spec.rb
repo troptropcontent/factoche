@@ -60,10 +60,9 @@ module Accounting
           legal_form: "sas",
           capital_amount: 10000,
           config: {
-            payment_term: {
-              days: 30,
-              accepted_methods: [ "transfer" ]
-            }
+            payment_term_days: 30,
+            payment_term_accepted_methods: [ 'transfer' ],
+            general_terms_and_conditions: '<h1>Condition<h1/>'
           }
         } }
 

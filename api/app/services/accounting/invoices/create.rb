@@ -13,6 +13,10 @@ module Accounting
         #   - address_city [String] Company city
         #   - vat_number [String] Company VAT number
         #   - config [Hash] Company configuration containing:
+        #     - default_vat_rate [Decimal] Default VAT rate
+        #     - payment_term_days [Integer] Number of days until payment is due
+        #     - payment_term_accepted_methods [Array<String>] Accepted payment methods
+        #     - general_terms_and_conditions [String] General terms and conditions
         #     - payment_term [Hash] Payment terms containing:
         #       - days [Integer] Number of days until payment is due
         # @param client [Hash] Client data
