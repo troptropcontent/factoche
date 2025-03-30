@@ -31,7 +31,7 @@ Rails.application.routes.draw do
         post "refresh", to: "sessions#refresh"
       end
       namespace :organization do
-        resources :companies, only: [ :index, :show ] do
+        resources :companies, only: [ :index, :show, :update ] do
           resources :clients, only: [ :create, :index ] do
             resources :quotes, only: [ :create ]
           end

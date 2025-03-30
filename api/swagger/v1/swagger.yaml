@@ -341,32 +341,11 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  registration_number:
-                    type: string
-                  email:
-                    type: string
-                  phone:
-                    type: string
-                  address_city:
-                    type: string
-                  address_street:
-                    type: string
-                  address_zipcode:
-                    type: string
                 required:
-                - id
-                - name
-                - registration_number
-                - email
-                - phone
-                - address_city
-                - address_street
-                - address_zipcode
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Companies::ExtendedDto"
         '403':
           description: forbidden
           content:
@@ -423,6 +402,139 @@ paths:
                     - details
                 required:
                 - error
+    put:
+      summary: Updates a company
+      tags:
+      - Companies
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: company updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Companies::ExtendedDto"
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+        '404':
+          description: company not found
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  error:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      status:
+                        type: string
+                      code:
+                        type: integer
+                      message:
+                        type: string
+                      details:
+                        type: object
+                        nullable: true
+                    required:
+                    - status
+                    - code
+                    - message
+                    - details
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                registration_number:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                address_city:
+                  type: string
+                address_street:
+                  type: string
+                address_zipcode:
+                  type: string
+                legal_form:
+                  type: string
+                  enum:
+                  - sasu
+                  - sas
+                  - eurl
+                  - sa
+                  - auto_entrepreneur
+                rcs_city:
+                  type: string
+                rcs_number:
+                  type: string
+                vat_number:
+                  type: string
+                capital_amount:
+                  type: number
+                configs:
+                  type: object
+                  properties:
+                    general_terms_and_conditions:
+                      type: string
+                    default_vat_rate:
+                      type: number
+                    payment_term_days:
+                      type: integer
+                    payment_term_accepted_methods:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - transfer
+                        - cash
+                        - card
   "/api/v1/organization/companies/{company_id}/credit_notes":
     get:
       summary: Lists company's credit notes
@@ -1375,6 +1487,85 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+    Organization::Companies::ExtendedDto:
+      type: object
+      required:
+      - id
+      - name
+      - registration_number
+      - email
+      - phone
+      - address_city
+      - address_street
+      - address_zipcode
+      - legal_form
+      - rcs_city
+      - rcs_number
+      - vat_number
+      - capital_amount
+      - config
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        registration_number:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address_city:
+          type: string
+        address_street:
+          type: string
+        address_zipcode:
+          type: string
+        legal_form:
+          type: string
+          enum:
+          - sasu
+          - sas
+          - eurl
+          - sa
+          - auto_entrepreneur
+        rcs_city:
+          type: string
+        rcs_number:
+          type: string
+        vat_number:
+          type: string
+        capital_amount:
+          type: string
+          format: decimal
+        config:
+          "$ref": "#/components/schemas/Organization::CompanyConfigs::ExtendedDto"
+    Organization::CompanyConfigs::ExtendedDto:
+      type: object
+      required:
+      - default_vat_rate
+      - payment_term_days
+      - payment_term_accepted_methods
+      - general_terms_and_conditions
+      properties:
+        default_vat_rate:
+          type: string
+          format: decimal
+        payment_term_days:
+          type: integer
+        payment_term_accepted_methods:
+          type: array
+          items:
+            type: string
+        general_terms_and_conditions:
+          type: string
+    Organization::Companies::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Companies::ExtendedDto"
     Organization::CreateProjecItemDto:
       type: object
       required:
