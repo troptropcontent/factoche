@@ -39,6 +39,7 @@ Rails.application.routes.draw do
             resources :completion_snapshots, only: [ :create ]
           end
           resources :quotes, only: [ :index ]
+          resources :draft_orders, only: [ :index ]
           resources :orders, only: [ :index ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
@@ -72,6 +73,7 @@ Rails.application.routes.draw do
         end
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
+        resources :draft_orders, only: [ :show ]
         resources :orders, only: [ :show ] do
           resources :invoices, only: [ :create ]
           member do
