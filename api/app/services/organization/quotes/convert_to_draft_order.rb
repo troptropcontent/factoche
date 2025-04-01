@@ -16,12 +16,12 @@ module Organization
             draft_order_version = create_draft_order_version!(draft_order, quote_version)
             copy_groups_and_items!(quote_version, draft_order_version)
 
-            quote.update!(posted: true)
+            quote.update!(posted: true, posted_at: Time.current())
 
             ServiceResult.success(draft_order)
           end
         rescue StandardError => e
-          ServiceResult.failure("Failed to convert quote to order: #{e.message}, #{e.backtrace[0]}")
+          ServiceResult.failure("Failed to convert quote to draft order: #{e.message}, #{e.backtrace[0]}")
         end
 
         private

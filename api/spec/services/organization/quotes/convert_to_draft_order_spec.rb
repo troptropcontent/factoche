@@ -103,7 +103,7 @@ module Organization
           it 'returns failure' do
             result = described_class.call(-1)
             expect(result).to be_failure
-            expect(result.error).to include("Failed to convert quote to order: Couldn't find Organization::Quote with 'id'=-1")
+            expect(result.error).to include("Failed to convert quote to draft order: Couldn't find Organization::Quote with 'id'=-1")
           end
         end
 
@@ -113,7 +113,7 @@ module Organization
           it 'returns failure' do
             result = described_class.call(quote.id)
             expect(result).to be_failure
-            expect(result.error).to include("Failed to convert quote to order: Quote has already been converted to an draft order")
+            expect(result.error).to include("Failed to convert quote to draft order: Quote has already been converted to an draft order")
           end
         end
 
