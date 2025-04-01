@@ -290,14 +290,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_31_165502) do
     t.string "type", null: false
     t.bigint "company_id", null: false
     t.integer "number", null: false
-    t.bigint "project_version_id"
+    t.bigint "original_project_version_id"
     t.boolean "posted", default: false, null: false
     t.datetime "posted_at"
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
     t.index ["company_id", "type", "number"], name: "index_organization_projects_on_company_id_and_type_and_number", unique: true
     t.index ["company_id"], name: "index_organization_projects_on_company_id"
     t.index ["name", "client_id", "type"], name: "index_organization_projects_on_name_and_client_id_and_type", unique: true
-    t.index ["project_version_id"], name: "index_organization_projects_on_project_version_id"
+    t.index ["original_project_version_id"], name: "index_organization_projects_on_original_project_version_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -328,5 +328,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_31_165502) do
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"
   add_foreign_key "organization_projects", "organization_clients", column: "client_id"
   add_foreign_key "organization_projects", "organization_companies", column: "company_id"
-  add_foreign_key "organization_projects", "organization_project_versions", column: "project_version_id"
+  add_foreign_key "organization_projects", "organization_project_versions", column: "original_project_version_id"
 end

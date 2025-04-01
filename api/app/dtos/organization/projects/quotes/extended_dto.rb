@@ -2,8 +2,9 @@ module Organization
   module Projects
     module Quotes
       class ExtendedDto < BaseExtendedDto
-        field "status", :enum, subtype: [ "draft", "validated" ]
-        field "orders", :array, subtype: Orders::ExtendedDto
+        field "posted", :boolean
+        field "posted_at", :timestamp, required: false
+        field "draft_orders", :array, subtype: DraftOrders::ExtendedDto
       end
     end
   end

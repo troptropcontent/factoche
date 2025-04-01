@@ -223,7 +223,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
-  path "/api/v1/organization/quotes/{id}/convert_to_order" do
+  path "/api/v1/organization/quotes/{id}/convert_to_draft_order" do
     post "Convert a quote to an order" do
       tags "Quotes"
       security [ bearerAuth: [] ]
@@ -240,12 +240,12 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       include_context 'a company with a project with three item groups'
 
       response "201", "quote converted to order" do
-        schema Organization::Projects::Orders::ShowDto.to_schema
-        before { order.destroy }
+        schema Organization::Projects::DraftOrders::ShowDto.to_schema
+        before { draft_order.destroy }
 
         run_test! do
           parsed_response = JSON.parse(response.body)
-          expect(parsed_response.dig("result", "original_quote_version_id")).to eq(quote.last_version.id)
+          expect(parsed_response.dig("result", "original_project_version_id")).to eq(quote.last_version.id)
         end
       end
 
@@ -260,7 +260,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       response "422", "unprocessable entity" do
         context "when the quote have already been converted" do
           run_test! do
-            expect(response.body).to include("Quote has already been converted to an order")
+            expect(response.body).to include("Quote has already been converted to an draft order")
           end
         end
       end

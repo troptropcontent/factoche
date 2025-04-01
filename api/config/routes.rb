@@ -80,7 +80,7 @@ Rails.application.routes.draw do
         end
         resources :quotes, only: [ :show ] do
           member do
-            post "convert_to_order"
+            post "convert_to_draft_order"
           end
         end
       end
