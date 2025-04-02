@@ -3,7 +3,7 @@ require 'rails_helper'
 module Organization
   module Quotes
     # rubocop:disable RSpec/ExampleLength, RSpec/MultipleMemoizedHelpers
-    RSpec.describe ConvertToOrder do
+    RSpec.describe ConvertToDraftOrder do
       describe '.call', :aggregate_failures do
         let(:company) { FactoryBot.create(:company) }
         let(:client) { FactoryBot.create(:client, company: company) }
@@ -64,10 +64,10 @@ module Organization
             order_version = order.versions.first
 
             # Check basic attributes
-            expect(order).to be_a(Organization::Order)
+            expect(order).to be_a(DraftOrder)
             expect(order.client).to eq(quote.client)
             expect(order.name).to eq(quote.name)
-            expect(order.original_quote_version).to eq(quote_version)
+            expect(order.original_project_version).to eq(quote_version)
 
             # Check version attributes
             expect(order_version.retention_guarantee_rate).to eq(quote_version.retention_guarantee_rate)
@@ -103,7 +103,7 @@ module Organization
           it 'returns failure' do
             result = described_class.call(-1)
             expect(result).to be_failure
-            expect(result.error).to eq("Failed to convert quote to order: Couldn't find Organization::Quote with 'id'=-1")
+            expect(result.error).to include("Failed to convert quote to draft order: Couldn't find Organization::Quote with 'id'=-1")
           end
         end
 
@@ -113,17 +113,17 @@ module Organization
           it 'returns failure' do
             result = described_class.call(quote.id)
             expect(result).to be_failure
-            expect(result.error).to eq("Failed to convert quote to order: Quote has already been converted to an order")
+            expect(result.error).to include("Failed to convert quote to draft order: Quote has already been converted to an draft order")
           end
         end
 
         context 'when transaction fails' do
           it 'rolls back all changes on error' do
-            allow(Organization::Order).to receive(:create!).and_raise(StandardError, "Test error")
+            allow(DraftOrder).to receive(:create!).and_raise(StandardError, "Test error")
 
             expect {
               described_class.call(quote_version.id)
-            }.not_to change(Organization::Order, :count)
+            }.not_to change(DraftOrder, :count)
           end
         end
       end

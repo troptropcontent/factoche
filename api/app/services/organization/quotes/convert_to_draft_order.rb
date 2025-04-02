@@ -1,6 +1,6 @@
 module Organization
   module Quotes
-    class ConvertToOrder
+    class ConvertToDraftOrder
       class << self
         def call(quote_id)
           return ServiceResult.failure("quote_id must be an integer") unless quote_id.is_a?(Integer)
@@ -12,27 +12,29 @@ module Organization
           ensure_quote_have_not_been_converted_already!(quote)
 
           ActiveRecord::Base.transaction do
-            order = create_order!(quote, quote_version)
-            order_version = create_order_version!(order, quote_version)
-            copy_groups_and_items!(quote_version, order_version)
+            draft_order = create_draft_order!(quote, quote_version)
+            draft_order_version = create_draft_order_version!(draft_order, quote_version)
+            copy_groups_and_items!(quote_version, draft_order_version)
 
-            ServiceResult.success(order)
+            quote.update!(posted: true, posted_at: Time.current())
+
+            ServiceResult.success(draft_order)
           end
         rescue StandardError => e
-          ServiceResult.failure("Failed to convert quote to order: #{e.message}")
+          ServiceResult.failure("Failed to convert quote to draft order: #{e.message}, #{e.backtrace[0]}")
         end
 
         private
 
-        def create_order!(quote, quote_version)
-          Order.create!(
+        def create_draft_order!(quote, quote_version)
+          DraftOrder.create!(
             quote.attributes.except(
-              "id", "type", "created_at", "updated_at", "original_quote_version_id"
-            ).merge(original_quote_version: quote_version, number: find_next_order_number!(quote.company_id))
+              "id", "type", "created_at", "updated_at", "original_project_version_id"
+            ).merge(original_project_version: quote_version, number: find_next_draft_order_number!(quote.company_id))
           )
         end
 
-        def create_order_version!(order, quote_version)
+        def create_draft_order_version!(order, quote_version)
           ProjectVersion.create!(
             quote_version.attributes.except(
               "id", "project_id", "created_at", "updated_at"
@@ -80,15 +82,17 @@ module Organization
           end
         end
 
-        def find_next_order_number!(company_id)
-          r = Projects::FindNextNumber.call(company_id, Quote)
+        def find_next_draft_order_number!(company_id)
+          r = Projects::FindNextNumber.call(company_id, DraftOrder)
           raise r.error if r.failure?
 
           r.data
         end
 
         def ensure_quote_have_not_been_converted_already!(quote)
-          raise Error::UnprocessableEntityError, "Quote has already been converted to an order" if quote.orders.any?
+          # quote.posted? should be enought but we never know
+          is_converted = quote.posted? || quote.draft_orders.any?
+          raise Error::UnprocessableEntityError, "Quote has already been converted to an draft order" if is_converted
         end
       end
     end

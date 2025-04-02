@@ -29,7 +29,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
     end
 
     context 'when the project is a order' do
-      let(:project) { FactoryBot.create(:order, original_quote_version: quote_version, client: client, company: company) }
+      let(:project) { FactoryBot.create(:order, original_project_version: quote_version, client: client, company: company) }
 
       it 'returns the first version number with the relevant prefix', :aggregate_failures do
         result = described_class.call(project)

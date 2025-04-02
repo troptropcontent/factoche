@@ -25,14 +25,14 @@ module Api
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json, status: :created
         end
 
-        # POST    /api/v1/organization/quotes/:id/convert_to_order
-        def convert_to_order
+        # POST    /api/v1/organization/quotes/:id/convert_to_draft_order
+        def convert_to_draft_order
           quote = policy_scope(::Organization::Project).where(type: "Organization::Quote").find(params[:id])
 
-          result = ::Organization::Quotes::ConvertToOrder.call(quote.id)
+          result = ::Organization::Quotes::ConvertToDraftOrder.call(quote.id)
           raise Error::UnprocessableEntityError, result.error if result.failure?
 
-          render json: ::Organization::Projects::Orders::ShowDto.new({ result: result.data }).to_json, status: :created
+          render json: ::Organization::Projects::DraftOrders::ShowDto.new({ result: result.data }).to_json, status: :created
         end
 
         private

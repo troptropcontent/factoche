@@ -198,7 +198,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
           let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
           let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
           let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
           let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
           let!(:another_company_invoice) {
@@ -295,7 +295,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
           let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
           let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
           let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
           let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
           let!(:another_company_invoice) {
@@ -392,7 +392,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
           let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
           let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
           let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
           let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
           let!(:another_company_invoice) {
@@ -478,7 +478,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
           let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
           let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
           let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
           let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
           let!(:another_company_invoice) {
@@ -559,7 +559,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
           let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
           let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_quote_version: another_company_quote_version) }
+          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
           let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
           let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
           let!(:another_company_invoice) {

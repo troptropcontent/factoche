@@ -8,6 +8,13 @@ class Organization::Project < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: [ :client_id, :type ] }
 
+  validates :posted_at, absence: true, unless: :posted?
+  validates :posted_at, presence: true, if: :posted?
+
+  belongs_to :original_project_version,
+               class_name: "Organization::ProjectVersion",
+               foreign_key: :original_project_version_id, optional: true
+
   def status
     # TODO : Implement the logic
     "new"

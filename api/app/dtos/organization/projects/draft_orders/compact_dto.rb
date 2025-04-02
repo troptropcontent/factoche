@@ -1,6 +1,6 @@
 module Organization
   module Projects
-    module Quotes
+    module DraftOrders
       class CompactDto < BaseCompactDto
       end
     end
