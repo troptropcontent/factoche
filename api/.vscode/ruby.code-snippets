@@ -47,5 +47,26 @@
 		"body": [
 			"it_behaves_like \"an authenticated endpoint\""
 		],
-	}
+	},
+	"sser": {
+		"scope": "ruby",
+		"prefix": "sser",
+		"body": [
+			"require 'services/shared_examples/service_result_example'"
+		],
+	},
+	"sses": {
+		"scope": "ruby",
+		"prefix": "sses",
+		"body": [
+			"it_behaves_like 'a success'"
+		],
+	},
+	"ssef": {
+		"scope": "ruby",
+		"prefix": "ssef",
+		"body": [
+			"it_behaves_like 'a failure'"
+		],
+	},
 }
