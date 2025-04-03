@@ -159,7 +159,7 @@ module Organization
 
         context 'with transaction rollback' do
           before do
-            allow(Item).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
+            allow(ProjectVersions::Create).to receive(:call).and_return(ServiceResult.failure(Error::UnprocessableEntityError))
           end
 
           it 'rolls back all changes' do
@@ -172,7 +172,7 @@ module Organization
             result = described_class.call(company.id, client.id, valid_params)
 
             expect(result).to be_failure
-            expect(result.error).to be_a(ActiveRecord::RecordInvalid)
+            expect(result.error).to be_a(Error::UnprocessableEntityError)
           end
         end
       end
