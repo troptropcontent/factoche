@@ -1,6 +1,7 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 require 'database_cleaner/active_record'
+require 'support/helpers/authentication'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
@@ -90,6 +91,7 @@ RSpec.configure do |config|
     FactoryBot.reload
     DatabaseCleaner.clean
   end
+  config.include Helpers::Authentication, type: :request
 end
 
 Shoulda::Matchers.configure do |config|

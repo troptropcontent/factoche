@@ -41,6 +41,14 @@
 		],
 		"description": "Include shared context: a company with a project with three items"
 	},
+	"scc": {
+		"scope": "ruby",
+		"prefix": "scc",
+		"body": [
+			"require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'",
+			"include_context 'a company with a client and a member'"
+		],
+	},
 	"auth": {
 		"scope": "ruby",
 		"prefix": "auth",
