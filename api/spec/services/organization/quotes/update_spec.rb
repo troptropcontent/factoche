@@ -42,6 +42,11 @@ RSpec.describe Organization::Quotes::Update do
           .to change(Organization::ProjectVersion, :count).by(1)
           .and change(Organization::Item, :count).by(1)
       end
+
+      it 'enqueue a new job to generate its pdf' do
+        expect { result }
+        .to change(Organization::ProjectVersions::GeneratePdfJob.jobs, :size).by(1)
+      end
     end
 
     context 'when quote is posted' do
