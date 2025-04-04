@@ -4,5 +4,8 @@ FactoryBot.define do
     client { nil }
     sequence(:number) { |n| n }
     sequence(:name) { |n| "Order #{n}" }
+    trait :with_version do
+      after(:create) { |order| create(:project_version, project: order) }
+    end
   end
 end
