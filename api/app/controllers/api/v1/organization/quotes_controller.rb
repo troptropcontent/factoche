@@ -2,6 +2,7 @@ module Api
   module V1
     module Organization
       class QuotesController < Api::V1::ApiV1Controller
+        before_action(only: :show) { load_and_authorise_resource(:quote, param_key: :id,  class_name: "Organization::Quote") }
         # GET    /api/v1/organization/companies/:company_id/quotes
         def index
           quotes = policy_scope(::Organization::Project).where(type: "Organization::Quote", client: { company_id: params[:company_id] })
@@ -10,8 +11,7 @@ module Api
 
         # GET    /api/v1/organization/quotes/:id
         def show
-          quote = policy_scope(::Organization::Project).where(type: "Organization::Quote").find(params[:id])
-          render json: ::Organization::Projects::Quotes::ShowDto.new({ result: quote }).to_json
+          render json: ::Organization::Projects::Quotes::ShowDto.new({ result: @quote }).to_json
         end
 
         # POST    /api/v1/organization/companies/:company_id/clients/:client_id/quotes

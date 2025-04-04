@@ -74,16 +74,18 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       end
 
       response "404", "quote not found" do
-        context "when the user is not a member of the company" do
-          let(:another_user) { FactoryBot.create(:user) }
-          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
-
-          run_test!
-        end
-
         context "when the quote does not exist" do
           let(:id) { 123123123123123123123123 }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+          run_test!
+        end
+      end
+
+      response "401", "unauthorized" do
+        context "when the user is not a member of the company" do
+          let(:another_user) { FactoryBot.create(:user) }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
 
           run_test!
         end
