@@ -80,7 +80,7 @@ Rails.application.routes.draw do
             get :invoiced_items
           end
         end
-        resources :quotes, only: [ :show ] do
+        resources :quotes, only: [ :show, :update ] do
           member do
             post "convert_to_draft_order"
           end
