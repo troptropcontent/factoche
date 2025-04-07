@@ -9,7 +9,7 @@ module Organization
       #
       # @param new_record_class [Class] The class of the new project record to create (Quote, DraftOrder, or Order).
       #
-      # @return [Quote, DraftOrder, Order] The newly created project record.
+      # @return [Hash] A hash containing the newly created project and project version.
       #
       # @example Duplicating a Quote
       #   original_quote = Quote.find(1)
@@ -28,7 +28,7 @@ module Organization
           create_new_project_version!
           copy_groups_and_items!
 
-          @new_project
+          { new_project: @new_project, new_project_version: @new_project_version }
         end
       end
 

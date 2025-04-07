@@ -42,7 +42,7 @@ module Organization
               end
 
               it "copies the attributes of the original project into the new_project" do
-                new_project = result.data
+                new_project = result.data[:new_project]
                 expect(new_project).to be_a(scenario[:new_project_class])
                 expect(new_project).to have_attributes(original_project.attributes.except(
                  "id", "type", "created_at", "updated_at", "original_project_version_id"
@@ -50,21 +50,21 @@ module Organization
              end
 
              it "copies the attributes of the original project version into the new_project version" do
-               new_project_version = result.data.last_version
+               new_project_version = result.data[:new_project_version]
                 expect(new_project_version).to have_attributes(original_project_version.attributes.except(
                   "id", "project_id", "created_at", "updated_at"
                 ))
               end
 
               it "copies the attributes of the original project item groups into the new_project item groups" do
-                new_item_group = result.data.last_version.item_groups.first
+                new_item_group = result.data[:new_project_version].item_groups.first
                 expect(new_item_group).to have_attributes(original_project_version_group.attributes.except(
                   "id", "project_version_id", "created_at", "updated_at"
                 ))
               end
 
               it "copies the attributes of the original project items into the new_project items" do
-                 new_item = result.data.last_version.items.first
+                 new_item = result.data[:new_project_version].items.first
                  expect(new_item).to have_attributes(original_project_version_item.attributes.except(
                   "id", "project_version_id", "item_group_id", "created_at", "updated_at", "original_item_uuid"
                 ))
@@ -87,7 +87,7 @@ module Organization
               end
 
               it "copies the attributes of the original project into the new_project" do
-                new_project = result.data
+                new_project = result.data[:new_project]
                 expect(new_project).to be_a(scenario[:new_project_class])
                 expect(new_project).to have_attributes(original_project.attributes.except(
                  "id", "type", "created_at", "updated_at", "original_project_version_id"
@@ -95,14 +95,14 @@ module Organization
              end
 
              it "copies the attributes of the original project version into the new_project version" do
-               new_project_version = result.data.last_version
+               new_project_version = result.data[:new_project_version]
                 expect(new_project_version).to have_attributes(original_project_version.attributes.except(
                   "id", "project_id", "created_at", "updated_at"
                 ))
               end
 
               it "copies the attributes of the original project items into the new_project items" do
-                 new_item = result.data.last_version.items.first
+                 new_item = result.data[:new_project_version].items.first
                  expect(new_item).to have_attributes(original_project_version_item.attributes.except(
                   "id", "project_version_id", "item_group_id", "created_at", "updated_at", "original_item_uuid"
                 ))
