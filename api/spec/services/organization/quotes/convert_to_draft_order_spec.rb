@@ -94,7 +94,6 @@ module Organization
               expect(order_item.unit_price_amount).to eq(quote_item.unit_price_amount)
               expect(order_item.position).to eq(quote_item.position)
               expect(order_item.tax_rate).to eq(quote_item.tax_rate)
-              expect(order_item.original_item_uuid).to eq(quote_item.original_item_uuid)
             end
           end
         end

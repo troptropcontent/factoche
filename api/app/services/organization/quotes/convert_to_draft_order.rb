@@ -24,7 +24,7 @@ module Organization
           r = Projects::Duplicate.call(quote, DraftOrder)
           raise r.error if r.failure?
 
-          r.data
+          r.data[:new_project]
         end
 
         def ensure_quote_have_not_been_converted_already!(quote)
