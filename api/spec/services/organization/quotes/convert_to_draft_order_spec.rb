@@ -82,6 +82,11 @@ module Organization
             expect(order_version.items.map(&:name)).to match_array(quote_version.items.map(&:name))
           end
 
+          it 'enqueue a new job to generate its pdf' do
+            expect { described_class.call(quote.id) }
+            .to change(Organization::ProjectVersions::GeneratePdfJob.jobs, :size).by(1)
+          end
+
           it 'preserves all item attributes' do
             result = described_class.call(quote.id)
             order_version = result.data.versions.first

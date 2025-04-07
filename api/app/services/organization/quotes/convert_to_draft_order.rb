@@ -7,24 +7,32 @@ module Organization
 
           ensure_quote_have_not_been_converted_already!(quote)
 
-          ActiveRecord::Base.transaction do
-            draft_order = duplicate_quote!(quote)
+          draft_order, draft_order_version = ActiveRecord::Base.transaction do
+            draft_order, draft_order_version = duplicate_quote!(quote)
 
             quote.update!(posted: true, posted_at: Time.current())
 
-            ServiceResult.success(draft_order)
+            [ draft_order, draft_order_version ]
           end
+
+          trigger_pdf_generation_job(draft_order_version)
+
+          ServiceResult.success(draft_order)
         rescue StandardError => e
           ServiceResult.failure("Failed to convert quote to draft order: #{e.message}, #{e.backtrace[0]}")
         end
 
         private
 
+        def trigger_pdf_generation_job(draft_order_version)
+          ProjectVersions::GeneratePdfJob.perform_async({ "project_version_id"=>draft_order_version.id })
+        end
+
         def duplicate_quote!(quote)
           r = Projects::Duplicate.call(quote, DraftOrder)
           raise r.error if r.failure?
 
-          r.data[:new_project]
+          [ r.data[:new_project], r.data[:new_project_version] ]
         end
 
         def ensure_quote_have_not_been_converted_already!(quote)
