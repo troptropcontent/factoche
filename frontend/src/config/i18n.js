@@ -202,7 +202,7 @@ i18n
                                                             "quantity": "1",
                                                             "unit": "Unité",
                                                             "unit_price_amount": "100",
-                                                            "tax_rate": "0.2"
+                                                            "tax_rate": "20"
                                                         },
                                                         "line2": {
                                                             "group": "Groupe 1",
@@ -210,7 +210,7 @@ i18n
                                                             "quantity": "1",
                                                             "unit": "Unité",
                                                             "unit_price_amount": "100",
-                                                            "tax_rate": "0.2"
+                                                            "tax_rate": "20"
                                                         }
                                                     }
                                                 },
@@ -439,6 +439,7 @@ i18n
                                 "show": {
                                     "title": "Devis N°{{number}}",
                                     "actions": {
+                                        "update_quote": "Modifier le devis",
                                         "download_quote_pdf": "Télécharger le devis",
                                         "quote_pdf_unavailable": "Devis en cours de génération",
                                         "update_quote": "Modifier le devis",
@@ -452,6 +453,9 @@ i18n
                                 },
                                 "new": {
                                     "title": "Nouveau devis",
+                                },
+                                "update": {
+                                    "title": "Modifier le devis N°{{number}}",
                                 },
                                 "status": {
                                     "draft": "Brouillon",

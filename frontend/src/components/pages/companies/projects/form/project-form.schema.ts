@@ -10,6 +10,7 @@ const step1FormSchema = z.object({
 const step2FormSchema = z.object({
   items: z
     .object({
+      original_item_uuid: z.string().optional(),
       group_uuid: z.string().optional(),
       uuid: z.string(),
       name: z.string().min(1),

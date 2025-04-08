@@ -28,6 +28,7 @@ import { Route as AuthenticatedCompaniesCompanyIdClientsNewImport } from './rout
 import { Route as AuthenticatedCompaniesCompanyIdQuotesQuoteIdIndexImport } from './routes/_authenticated/companies/$companyId/quotes/$quoteId/index'
 import { Route as AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexImport } from './routes/_authenticated/companies/$companyId/orders/$orderId/index'
 import { Route as AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexImport } from './routes/_authenticated/companies/$companyId/draft_orders/$draftOrderId/index'
+import { Route as AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateImport } from './routes/_authenticated/companies/$companyId/quotes/$quoteId/update'
 import { Route as AuthenticatedCompaniesCompanyIdOrdersOrderIdInvoicesNewImport } from './routes/_authenticated/companies/$companyId/orders/$orderId/invoices/new'
 import { Route as AuthenticatedCompaniesCompanyIdOrdersOrderIdInvoicesInvoiceIdUpdateImport } from './routes/_authenticated/companies/$companyId/orders/$orderId/invoices/$invoiceId/update'
 
@@ -145,6 +146,13 @@ const AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute =
   AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexImport.update({
     id: '/draft_orders/$draftOrderId/',
     path: '/draft_orders/$draftOrderId/',
+    getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
+  } as any)
+
+const AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute =
+  AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateImport.update({
+    id: '/quotes/$quoteId/update',
+    path: '/quotes/$quoteId/update',
     getParentRoute: () => AuthenticatedCompaniesCompanyIdRoute,
   } as any)
 
@@ -266,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdQuotesIndexImport
       parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
     }
+    '/_authenticated/companies/$companyId/quotes/$quoteId/update': {
+      id: '/_authenticated/companies/$companyId/quotes/$quoteId/update'
+      path: '/quotes/$quoteId/update'
+      fullPath: '/companies/$companyId/quotes/$quoteId/update'
+      preLoaderRoute: typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateImport
+      parentRoute: typeof AuthenticatedCompaniesCompanyIdImport
+    }
     '/_authenticated/companies/$companyId/draft_orders/$draftOrderId/': {
       id: '/_authenticated/companies/$companyId/draft_orders/$draftOrderId/'
       path: '/draft_orders/$draftOrderId'
@@ -317,6 +332,7 @@ interface AuthenticatedCompaniesCompanyIdRouteChildren {
   AuthenticatedCompaniesCompanyIdInvoicesIndexRoute: typeof AuthenticatedCompaniesCompanyIdInvoicesIndexRoute
   AuthenticatedCompaniesCompanyIdOrdersIndexRoute: typeof AuthenticatedCompaniesCompanyIdOrdersIndexRoute
   AuthenticatedCompaniesCompanyIdQuotesIndexRoute: typeof AuthenticatedCompaniesCompanyIdQuotesIndexRoute
+  AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute: typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute
   AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute
   AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexRoute
   AuthenticatedCompaniesCompanyIdQuotesQuoteIdIndexRoute: typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdIndexRoute
@@ -346,6 +362,8 @@ const AuthenticatedCompaniesCompanyIdRouteChildren: AuthenticatedCompaniesCompan
       AuthenticatedCompaniesCompanyIdOrdersIndexRoute,
     AuthenticatedCompaniesCompanyIdQuotesIndexRoute:
       AuthenticatedCompaniesCompanyIdQuotesIndexRoute,
+    AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute:
+      AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute,
     AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute:
       AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute,
     AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexRoute:
@@ -393,6 +411,7 @@ export interface FileRoutesByFullPath {
   '/companies/$companyId/invoices': typeof AuthenticatedCompaniesCompanyIdInvoicesIndexRoute
   '/companies/$companyId/orders': typeof AuthenticatedCompaniesCompanyIdOrdersIndexRoute
   '/companies/$companyId/quotes': typeof AuthenticatedCompaniesCompanyIdQuotesIndexRoute
+  '/companies/$companyId/quotes/$quoteId/update': typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute
   '/companies/$companyId/draft_orders/$draftOrderId': typeof AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute
   '/companies/$companyId/orders/$orderId': typeof AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexRoute
   '/companies/$companyId/quotes/$quoteId': typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdIndexRoute
@@ -413,6 +432,7 @@ export interface FileRoutesByTo {
   '/companies/$companyId/invoices': typeof AuthenticatedCompaniesCompanyIdInvoicesIndexRoute
   '/companies/$companyId/orders': typeof AuthenticatedCompaniesCompanyIdOrdersIndexRoute
   '/companies/$companyId/quotes': typeof AuthenticatedCompaniesCompanyIdQuotesIndexRoute
+  '/companies/$companyId/quotes/$quoteId/update': typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute
   '/companies/$companyId/draft_orders/$draftOrderId': typeof AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute
   '/companies/$companyId/orders/$orderId': typeof AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexRoute
   '/companies/$companyId/quotes/$quoteId': typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdIndexRoute
@@ -436,6 +456,7 @@ export interface FileRoutesById {
   '/_authenticated/companies/$companyId/invoices/': typeof AuthenticatedCompaniesCompanyIdInvoicesIndexRoute
   '/_authenticated/companies/$companyId/orders/': typeof AuthenticatedCompaniesCompanyIdOrdersIndexRoute
   '/_authenticated/companies/$companyId/quotes/': typeof AuthenticatedCompaniesCompanyIdQuotesIndexRoute
+  '/_authenticated/companies/$companyId/quotes/$quoteId/update': typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdUpdateRoute
   '/_authenticated/companies/$companyId/draft_orders/$draftOrderId/': typeof AuthenticatedCompaniesCompanyIdDraftordersDraftOrderIdIndexRoute
   '/_authenticated/companies/$companyId/orders/$orderId/': typeof AuthenticatedCompaniesCompanyIdOrdersOrderIdIndexRoute
   '/_authenticated/companies/$companyId/quotes/$quoteId/': typeof AuthenticatedCompaniesCompanyIdQuotesQuoteIdIndexRoute
@@ -460,6 +481,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/invoices'
     | '/companies/$companyId/orders'
     | '/companies/$companyId/quotes'
+    | '/companies/$companyId/quotes/$quoteId/update'
     | '/companies/$companyId/draft_orders/$draftOrderId'
     | '/companies/$companyId/orders/$orderId'
     | '/companies/$companyId/quotes/$quoteId'
@@ -479,6 +501,7 @@ export interface FileRouteTypes {
     | '/companies/$companyId/invoices'
     | '/companies/$companyId/orders'
     | '/companies/$companyId/quotes'
+    | '/companies/$companyId/quotes/$quoteId/update'
     | '/companies/$companyId/draft_orders/$draftOrderId'
     | '/companies/$companyId/orders/$orderId'
     | '/companies/$companyId/quotes/$quoteId'
@@ -500,6 +523,7 @@ export interface FileRouteTypes {
     | '/_authenticated/companies/$companyId/invoices/'
     | '/_authenticated/companies/$companyId/orders/'
     | '/_authenticated/companies/$companyId/quotes/'
+    | '/_authenticated/companies/$companyId/quotes/$quoteId/update'
     | '/_authenticated/companies/$companyId/draft_orders/$draftOrderId/'
     | '/_authenticated/companies/$companyId/orders/$orderId/'
     | '/_authenticated/companies/$companyId/quotes/$quoteId/'
@@ -560,6 +584,7 @@ export const routeTree = rootRoute
         "/_authenticated/companies/$companyId/invoices/",
         "/_authenticated/companies/$companyId/orders/",
         "/_authenticated/companies/$companyId/quotes/",
+        "/_authenticated/companies/$companyId/quotes/$quoteId/update",
         "/_authenticated/companies/$companyId/draft_orders/$draftOrderId/",
         "/_authenticated/companies/$companyId/orders/$orderId/",
         "/_authenticated/companies/$companyId/quotes/$quoteId/",
@@ -605,6 +630,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/companies/$companyId/quotes/": {
       "filePath": "_authenticated/companies/$companyId/quotes/index.tsx",
+      "parent": "/_authenticated/companies/$companyId"
+    },
+    "/_authenticated/companies/$companyId/quotes/$quoteId/update": {
+      "filePath": "_authenticated/companies/$companyId/quotes/$quoteId/update.tsx",
       "parent": "/_authenticated/companies/$companyId"
     },
     "/_authenticated/companies/$companyId/draft_orders/$draftOrderId/": {

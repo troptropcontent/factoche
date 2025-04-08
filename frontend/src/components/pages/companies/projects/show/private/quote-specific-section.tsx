@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, Pen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const QuoteSpecificSection = ({
@@ -103,9 +103,23 @@ const QuoteSpecificSection = ({
           </Link>
         </Button>
       ) : (
-        <Button variant="default" onClick={convertToDraftOrder}>
-          {t("pages.companies.quotes.show.actions.convert_to_order")}
-        </Button>
+        <>
+          <Button variant="default" onClick={convertToDraftOrder}>
+            {t("pages.companies.quotes.show.actions.convert_to_order")}
+          </Button>
+          <Button asChild variant="outline">
+            <Link
+              to={"/companies/$companyId/quotes/$quoteId/update"}
+              params={{
+                companyId: companyId.toString(),
+                quoteId: quoteId.toString(),
+              }}
+            >
+              <Pen className="mr-2 h-4 w-4" />
+              {t("pages.companies.quotes.show.actions.update_quote")}
+            </Link>
+          </Button>
+        </>
       )}
     </>
   );

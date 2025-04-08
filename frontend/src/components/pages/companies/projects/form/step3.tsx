@@ -1,9 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { Button, LoadingButton } from "@/components/ui/button";
 import { projectFormMachine } from "./project-form.machine";
 import { EventFromLogic } from "xstate";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { step1FormSchema, step2FormSchema } from "./project-form.schema";
+import {
+  formSchema,
+  step1FormSchema,
+  step2FormSchema,
+} from "./project-form.schema";
 import {
   Card,
   CardContent,
@@ -13,25 +17,21 @@ import {
 } from "@/components/ui/card";
 import { ItemGroupSummary } from "./private/item-group-summary";
 import { Api } from "@/lib/openapi-fetch-query-client";
-import { useNavigate } from "@tanstack/react-router";
 import { computeTotal } from "./private/utils";
-import { useToast } from "@/hooks/use-toast";
 
 const Step3 = ({
   send,
   companyId,
   previousStepsData: inputs,
+  submitFunction,
 }: {
   send: (e: EventFromLogic<typeof projectFormMachine>) => void;
   companyId: string;
   previousStepsData: z.infer<typeof step1FormSchema> &
     z.infer<typeof step2FormSchema>;
+  submitFunction: (data: z.infer<typeof formSchema>) => void;
 }) => {
   const { t } = useTranslation();
-  const { mutate } = Api.useMutation(
-    "post",
-    "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes"
-  );
 
   const { data: clients = [] } = Api.useQuery(
     "get",
@@ -42,58 +42,10 @@ const Step3 = ({
       },
     }
   );
-
-  const { toast } = useToast();
-  const navigate = useNavigate();
-
+  console.log({ submitFunction });
   const client = clients.find((client) => client.id == inputs.client_id);
 
-  const createNewProject = (clientId: number) => {
-    mutate(
-      {
-        body: {
-          ...inputs,
-          retention_guarantee_rate: inputs.retention_guarantee_rate / 100,
-          items: inputs.items.map((input) => ({
-            ...input,
-            tax_rate: input.tax_rate / 100,
-          })),
-        },
-        params: {
-          path: { company_id: Number(companyId), client_id: clientId },
-        },
-      },
-      {
-        onSuccess: ({ result: { id } }) => {
-          toast({
-            variant: "success",
-            title: t(
-              "pages.companies.projects.form.confirmation_step.toast.success_toast_title"
-            ),
-            description: t(
-              "pages.companies.projects.form.confirmation_step.toast.success_toast_description"
-            ),
-          });
-          navigate({
-            to: "/companies/$companyId/quotes/$quoteId",
-            params: { companyId: companyId, quoteId: id.toString() },
-          });
-        },
-        onError: () => {
-          toast({
-            variant: "destructive",
-            title: t(
-              "pages.companies.projects.form.confirmation_step.toast.error_toast_title"
-            ),
-            description: t(
-              "pages.companies.projects.form.confirmation_step.toast.error_toast_description"
-            ),
-          });
-        },
-      }
-    );
-  };
-
+  const handleSublmit = async () => submitFunction(inputs);
   return (
     <div className="px-6 flex flex-col flex-grow gap-4">
       <Card>
@@ -182,9 +134,10 @@ const Step3 = ({
         >
           {t("pages.companies.projects.form.previous_button_label")}
         </Button>
-        <Button onClick={() => createNewProject(inputs.client_id)}>
+
+        <LoadingButton onClick={handleSublmit}>
           {t("pages.companies.projects.form.submit_button_label")}
-        </Button>
+        </LoadingButton>
       </div>
     </div>
   );
