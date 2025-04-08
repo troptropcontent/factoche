@@ -73,7 +73,7 @@ Rails.application.routes.draw do
         end
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
-        resources :draft_orders, only: [ :show ]
+        resources :draft_orders, only: [ :show, :update ]
         resources :orders, only: [ :show ] do
           resources :invoices, only: [ :create ]
           member do
