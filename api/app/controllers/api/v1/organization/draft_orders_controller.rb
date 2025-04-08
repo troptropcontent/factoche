@@ -2,7 +2,7 @@ module Api
   module V1
     module Organization
       class DraftOrdersController < Api::V1::ApiV1Controller
-        before_action(only: [ :update ]) { load_and_authorise_resource(:draft_order, param_key: :id,  class_name: "Organization::DraftOrder") }
+        before_action(only: [ :update ]) { load_and_authorise_resource }
         # GET    /api/v1/organization/companies/:company_id/draft_orders
         def index
           draft_orders = policy_scope(::Organization::Project).where(type: "Organization::DraftOrder", client: { company_id: params[:company_id] })

@@ -2,7 +2,7 @@ module Api
   module V1
     module Organization
       class QuotesController < Api::V1::ApiV1Controller
-        before_action(only: [ :show, :update ]) { load_and_authorise_resource(:quote, param_key: :id,  class_name: "Organization::Quote") }
+        before_action(only: [ :show, :update ]) { load_and_authorise_resource(name: :quote, param_key: :id,  class_name: "Organization::Quote") }
         # GET    /api/v1/organization/companies/:company_id/quotes
         def index
           quotes = policy_scope(::Organization::Project).where(type: "Organization::Quote", client: { company_id: params[:company_id] })
