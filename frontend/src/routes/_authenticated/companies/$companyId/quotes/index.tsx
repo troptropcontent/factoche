@@ -102,7 +102,7 @@ function RouteComponent() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <QuoteStatusBadge status={quote.status} />
+                    <QuoteStatusBadge posted={quote.posted} />
                   </TableCell>
                 </TableRow>
               ))}
