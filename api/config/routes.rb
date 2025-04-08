@@ -74,7 +74,7 @@ Rails.application.routes.draw do
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
         resources :draft_orders, only: [ :show, :update ]
-        resources :orders, only: [ :show ] do
+        resources :orders, only: [ :show, :update ] do
           resources :invoices, only: [ :create ]
           member do
             get :invoiced_items
