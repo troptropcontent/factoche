@@ -455,7 +455,7 @@ i18n
                                 },
                                 "status": {
                                     "draft": "Brouillon",
-                                    "validated": "Validé",
+                                    "posted": "Validé",
                                 },
                                 "index": {
                                     "title": "Mes devis",
