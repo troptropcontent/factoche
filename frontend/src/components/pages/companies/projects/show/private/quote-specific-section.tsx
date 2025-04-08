@@ -22,9 +22,9 @@ const QuoteSpecificSection = ({
     { select: ({ result }) => result }
   );
 
-  const { mutate: convertToOrderMutation } = Api.useMutation(
+  const { mutate: convertToDraftOrderMutation } = Api.useMutation(
     "post",
-    "/api/v1/organization/quotes/{id}/convert_to_order"
+    "/api/v1/organization/quotes/{id}/convert_to_draft_order"
   );
 
   if (quote == undefined) {
@@ -33,10 +33,10 @@ const QuoteSpecificSection = ({
 
   const documentUrl = quote.last_version.pdf_url;
 
-  const order = quote.orders[0];
-  const convertToOrder = () => {
+  const draftOrder = quote.draft_orders[0];
+  const convertToDraftOrder = () => {
     const onSuccess = ({
-      result: { id: orderId },
+      result: { id: draftOrderId },
     }: {
       result: { id: number };
     }) => {
@@ -50,10 +50,10 @@ const QuoteSpecificSection = ({
         variant: "success",
       });
       navigate({
-        to: "/companies/$companyId/orders/$orderId",
+        to: "/companies/$companyId/draft_orders/$draftOrderId",
         params: {
           companyId: companyId.toString(),
-          orderId: orderId.toString(),
+          draftOrderId: draftOrderId.toString(),
         },
       });
     };
@@ -69,7 +69,7 @@ const QuoteSpecificSection = ({
         ),
       });
     };
-    convertToOrderMutation(
+    convertToDraftOrderMutation(
       { params: { path: { id: quoteId } } },
       { onSuccess, onError }
     );
@@ -90,20 +90,20 @@ const QuoteSpecificSection = ({
           </Link>
         )}
       </Button>
-      {order ? (
+      {draftOrder ? (
         <Button variant="default">
           <Link
-            to="/companies/$companyId/orders/$orderId"
+            to="/companies/$companyId/draft_orders/$draftOrderId"
             params={{
               companyId: companyId.toString(),
-              orderId: order.id.toString(),
+              draftOrderId: draftOrder.id.toString(),
             }}
           >
             {t("pages.companies.quotes.show.actions.go_order")}
           </Link>
         </Button>
       ) : (
-        <Button variant="default" onClick={convertToOrder}>
+        <Button variant="default" onClick={convertToDraftOrder}>
           {t("pages.companies.quotes.show.actions.convert_to_order")}
         </Button>
       )}
