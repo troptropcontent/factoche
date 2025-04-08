@@ -8,7 +8,7 @@ class Api::V1::Auth::SessionsController < Api::V1::ApiV1Controller
   def create
     skip_authorization
     user = User.find_by(email: session_params[:email])
-    ap "COUCOUUUUUUU"
+
     if user && user.authenticate(session_params[:password])
       render json: { access_token: JwtAuth.generate_access_token(user.id), refresh_token: JwtAuth.generate_refresh_token(user.id) }
     else
