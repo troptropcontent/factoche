@@ -1,5 +1,5 @@
 class Api::V1::Organization::ClientsController < Api::V1::ApiV1Controller
-  before_action(except: :show) { load_and_authorise_resource(:company, class_name: "Organization::Company") }
+  before_action(except: :show) { load_and_authorise_resource(name: :company, param_key: "company_id", class_name: "Organization::Company") }
   # POST /api/v1/organization/companies/:company_id/clients
   def create
     client = @company.clients.new(client_params)

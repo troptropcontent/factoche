@@ -1,9 +1,11 @@
 require "rails_helper"
 require "swagger_helper"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
+require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'
 require_relative "shared_examples/an_authenticated_endpoint"
 
 RSpec.describe Api::V1::Organization::QuotesController, type: :request do
+  define_negated_matcher :not_change, :change
   path "/api/v1/organization/companies/{company_id}/quotes" do
     get "List all the company's quotes" do
       tags "Quotes"
@@ -74,18 +76,265 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       end
 
       response "404", "quote not found" do
+        context "when the quote does not exist" do
+          let(:id) { 123123123123123123123123 }
+          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+          run_test!
+        end
+      end
+
+      response "401", "unauthorized" do
         context "when the user is not a member of the company" do
           let(:another_user) { FactoryBot.create(:user) }
           let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(another_user.id)}" }
 
           run_test!
         end
+      end
+    end
+    put "Update quote" do
+      tags "Quotes"
+      security [ bearerAuth: [] ]
+      produces "application/json"
+      security [ bearerAuth: [] ]
+      consumes "application/json"
+      produces "application/json"
+      parameter name: :id, in: :path, type: :integer
+      parameter name: :body, in: :body, schema: {
+        type: :object,
+        properties: {
+          name: { type: :string },
+          description: { type: :string },
+          retention_guarantee_rate: { type: :number },
+          new_items: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                group_uuid: { type: :string },
+                name: { type: :string },
+                description: { type: :string },
+                quantity: { type: :integer },
+                unit: { type: :string },
+                unit_price_amount: { type: :number },
+                position: { type: :integer },
+                tax_rate: { type: :number }
+              },
+              required: [ "name", "quantity", "unit", "unit_price_amount", "position", "tax_rate" ]
+            }
+          },
+          updated_items: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                group_uuid: { type: :string },
+                quantity: { type: :integer },
+                unit_price_amount: { type: :number },
+                position: { type: :integer },
+                tax_rate: { type: :number }
+              },
+              required: [ "quantity", "unit_price_amount", "position", "tax_rate" ]
+            }
+          },
+          groups: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                uuid: { type: :string },
+                name: { type: :string },
+                description: { type: :string },
+                position: { type: :integer }
+              },
+              required: [ "uuid", "name", "position" ]
+            }
+          }
+        },
+        required: [ "name", "retention_guarantee_rate", "items" ]
+      }
 
+      include_context 'a company with a client and a member'
+
+      let(:Authorization) { access_token(user) }
+
+      let(:id) { quote.id }
+      let!(:quote) do
+        ::Organization::Quotes::Create.call(
+          company.id,
+          client.id,
+          {
+            name: "Updated Quote",
+            description: "Updated Description of the new quote",
+            retention_guarantee_rate: 0.05,
+            groups: [
+              { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
+            ],
+            items: [
+              {
+                group_uuid: "group-1",
+                name: "Item 1",
+                description: "First item",
+                position: 1,
+                unit: "unit",
+                unit_price_amount: 100.0,
+                quantity: 1,
+                tax_rate: 0.2
+              }
+            ]
+          }
+        ).data
+      end
+      let(:body) { valid_body }
+      let(:valid_body) do
+        {
+          name: "Updated Quote",
+          description: "Updated Description of the new quote",
+          retention_guarantee_rate: 0.05,
+          groups: [
+            { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
+          ],
+          new_items: [
+            {
+              group_uuid: "group-1",
+              name: "Item 2",
+              description: "Second item",
+              position: 1,
+              unit: "unit",
+              unit_price_amount: 100.0,
+              quantity: 1,
+              tax_rate: 0.2
+            }
+          ],
+          updated_items: [
+            {
+              original_item_uuid: first_version_first_item.original_item_uuid,
+              group_uuid: "group-1",
+              position: 2,
+              unit_price_amount: 100.0,
+              quantity: 1,
+              tax_rate: 0.2
+            }
+          ]
+        }
+      end
+
+      let(:first_version_first_item) { quote.versions.first.items.find_by(name: "Item 1") }
+
+      let(:expected) { }
+
+      response "200", "quote updated" do
+        schema Organization::Projects::Quotes::ShowDto.to_schema
+        it "Updates the quote by updating updatable attributes and by creating a new version", :aggregate_failures do |example|
+          expect { submit_request(example.metadata) }
+            .to not_change(Organization::Quote, :count)
+            .and change(Organization::ProjectVersion, :count).by(1)
+            .and change(Organization::Item, :count).by(2)
+
+          assert_response_matches_metadata(example.metadata)
+        end
+
+        context "when there is updated items" do
+          run_test!("creates new item record but take the name, description and unit from the original record") {
+            new_version_first_item = quote.last_version.items.find_by(original_item_uuid: first_version_first_item.original_item_uuid)
+            expect(new_version_first_item.name).to eq("Item 1")
+            expect(new_version_first_item.description).to eq("First item")
+            expect(new_version_first_item.unit).to eq("unit")
+          }
+        end
+      end
+
+      response "404", "quote not found" do
         context "when the quote does not exist" do
-          let(:id) { 123123123123123123123123 }
-          let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+          let(:id) { -1 }
+          let(:Authorization) { access_token(user) }
 
           run_test!
+        end
+      end
+
+      response "401", "unauthorized" do
+        context "when the user is not a member of the company" do
+          let(:another_user) { FactoryBot.create(:user) }
+          let(:Authorization) { access_token(another_user) }
+
+          run_test!
+        end
+      end
+
+      response "422", "unprocessable entity" do
+        context "when the params are not valid" do
+          context "when a required qui is missing" do
+            let(:body) { body_without_name }
+            let(:body_without_name) do
+              {
+                description: "Updated Description of the new quote",
+                retention_guarantee_rate: 0.05,
+                groups: [
+                  { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
+                ],
+                new_items: [
+                  {
+                    group_uuid: "group-1",
+                    name: "Item 2",
+                    description: "Second item",
+                    position: 1,
+                    unit: "unit",
+                    unit_price_amount: 100.0,
+                    quantity: 1,
+                    tax_rate: 0.2
+                  }
+                ],
+                updated_items: [
+                  {
+                    original_item_uuid: first_version_first_item.original_item_uuid,
+                    group_uuid: "group-1",
+                    position: 2,
+                    unit_price_amount: 100.0,
+                    quantity: 1,
+                    tax_rate: 0.2
+                  }
+                ]
+              }
+            end
+
+            run_test!
+          end
+
+          context "when an item reference a group that is not provided" do
+            let(:body) { body_with_wrong_group_uuid_amoung_items }
+            let(:body_with_wrong_group_uuid_amoung_items) {
+              valid_body.merge({
+                updated_items: [
+                  valid_body.dig(:updated_items, 0).merge({
+                    group_uuid: "a-uuid-that-is-not-valid"
+                  })
+                ]
+              })
+            }
+
+            run_test!
+          end
+
+          context "when a group is not referenced by at least one item" do
+            let(:body) { body_with_group_uuid_not_referenced_amoung_items }
+            let(:body_with_group_uuid_not_referenced_amoung_items) {
+              valid_body.merge({
+                groups: valid_body.dig(:groups).push({ uuid: "group-2", name: "Group 2", description: "Second group", position: 1 })
+              })
+            }
+
+            run_test!
+          end
+
+          context "when the quote is already posted" do
+            before {
+              Organization::Quotes::ConvertToDraftOrder.call(quote.id)
+            }
+
+            run_test!
+          end
         end
       end
     end

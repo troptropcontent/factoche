@@ -3,90 +3,36 @@ module Organization
     class ConvertToDraftOrder
       class << self
         def call(quote_id)
-          return ServiceResult.failure("quote_id must be an integer") unless quote_id.is_a?(Integer)
           quote = Quote.find(quote_id)
-
-          quote_version = quote.last_version
-          return ServiceResult.failure("Quote have no version recorded, it's likely a bug") unless quote_version
 
           ensure_quote_have_not_been_converted_already!(quote)
 
-          ActiveRecord::Base.transaction do
-            draft_order = create_draft_order!(quote, quote_version)
-            draft_order_version = create_draft_order_version!(draft_order, quote_version)
-            copy_groups_and_items!(quote_version, draft_order_version)
+          draft_order, draft_order_version = ActiveRecord::Base.transaction do
+            draft_order, draft_order_version = duplicate_quote!(quote)
 
             quote.update!(posted: true, posted_at: Time.current())
 
-            ServiceResult.success(draft_order)
+            [ draft_order, draft_order_version ]
           end
+
+          trigger_pdf_generation_job(draft_order_version)
+
+          ServiceResult.success(draft_order)
         rescue StandardError => e
           ServiceResult.failure("Failed to convert quote to draft order: #{e.message}, #{e.backtrace[0]}")
         end
 
         private
 
-        def create_draft_order!(quote, quote_version)
-          DraftOrder.create!(
-            quote.attributes.except(
-              "id", "type", "created_at", "updated_at", "original_project_version_id"
-            ).merge(original_project_version: quote_version, number: find_next_draft_order_number!(quote.company_id))
-          )
+        def trigger_pdf_generation_job(draft_order_version)
+          ProjectVersions::GeneratePdfJob.perform_async({ "project_version_id"=>draft_order_version.id })
         end
 
-        def create_draft_order_version!(order, quote_version)
-          ProjectVersion.create!(
-            quote_version.attributes.except(
-              "id", "project_id", "created_at", "updated_at"
-            ).merge(project: order)
-          )
-        end
-
-        def create_group!(source_group, target_version)
-          ItemGroup.create!(
-            source_group.attributes.except(
-              "id", "project_version_id", "created_at", "updated_at"
-            ).merge(project_version: target_version)
-          )
-        end
-
-        def create_item!(source_item, target_version, target_group = nil)
-          Item.create!(
-            source_item.attributes.except(
-              "id", "project_version_id", "item_group_id", "created_at", "updated_at"
-            ).merge(
-              project_version: target_version,
-              item_group: target_group
-            )
-          )
-        end
-
-        def copy_groups_and_items!(source_version, target_version)
-          source_version.item_groups.order(:position).each do |source_group|
-            target_group = create_group!(source_group, target_version)
-            copy_items!(source_group, target_group, target_version)
-          end
-
-          copy_standalone_items!(source_version, target_version) if source_version.items.where(item_group_id: nil).exists?
-        end
-
-        def copy_items!(source_group, target_group, target_version)
-          source_group.grouped_items.order(:position).each do |source_item|
-            create_item!(source_item, target_version, target_group)
-          end
-        end
-
-        def copy_standalone_items!(source_version, target_version)
-          source_version.items.where(item_group_id: nil).order(:position).each do |source_item|
-            create_item!(source_item, target_version)
-          end
-        end
-
-        def find_next_draft_order_number!(company_id)
-          r = Projects::FindNextNumber.call(company_id, DraftOrder)
+        def duplicate_quote!(quote)
+          r = Projects::Duplicate.call(quote, DraftOrder)
           raise r.error if r.failure?
 
-          r.data
+          [ r.data[:new_project], r.data[:new_project_version] ]
         end
 
         def ensure_quote_have_not_been_converted_already!(quote)

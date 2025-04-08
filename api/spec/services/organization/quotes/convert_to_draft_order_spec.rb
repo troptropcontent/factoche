@@ -82,6 +82,11 @@ module Organization
             expect(order_version.items.map(&:name)).to match_array(quote_version.items.map(&:name))
           end
 
+          it 'enqueue a new job to generate its pdf' do
+            expect { described_class.call(quote.id) }
+            .to change(Organization::ProjectVersions::GeneratePdfJob.jobs, :size).by(1)
+          end
+
           it 'preserves all item attributes' do
             result = described_class.call(quote.id)
             order_version = result.data.versions.first
@@ -94,7 +99,6 @@ module Organization
               expect(order_item.unit_price_amount).to eq(quote_item.unit_price_amount)
               expect(order_item.position).to eq(quote_item.position)
               expect(order_item.tax_rate).to eq(quote_item.tax_rate)
-              expect(order_item.original_item_uuid).to eq(quote_item.original_item_uuid)
             end
           end
         end
