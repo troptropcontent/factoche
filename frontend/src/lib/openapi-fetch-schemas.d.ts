@@ -564,6 +564,169 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/draft_orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all the company's draft orders */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description list company's draft orders */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::Projects::DraftOrders::CompactDto"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/draft_orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Show draft order details */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description show draft order details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::DraftOrders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description draft order not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /** Update draft order */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        description?: string;
+                        retention_guarantee_rate: number;
+                        new_items?: {
+                            group_uuid?: string;
+                            name: string;
+                            description?: string;
+                            quantity: number;
+                            unit: string;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        updated_items?: {
+                            group_uuid?: string;
+                            quantity: number;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        groups?: {
+                            uuid: string;
+                            name: string;
+                            description?: string;
+                            position: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description draft order updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::DraftOrders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description draft order not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/orders/{order_id}/invoices": {
         parameters: {
             query?: never;
@@ -1059,7 +1222,83 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        /** Update order */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        description?: string;
+                        retention_guarantee_rate: number;
+                        new_items?: {
+                            group_uuid?: string;
+                            name: string;
+                            description?: string;
+                            quantity: number;
+                            unit: string;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        updated_items?: {
+                            group_uuid?: string;
+                            quantity: number;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        groups?: {
+                            uuid: string;
+                            name: string;
+                            description?: string;
+                            position: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description order updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description order not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1293,6 +1532,13 @@ export interface paths {
                         };
                     };
                 };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
                 /** @description quote not found */
                 404: {
                     headers: {
@@ -1302,7 +1548,83 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        /** Update quote */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        description?: string;
+                        retention_guarantee_rate: number;
+                        new_items?: {
+                            group_uuid?: string;
+                            name: string;
+                            description?: string;
+                            quantity: number;
+                            unit: string;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        updated_items?: {
+                            group_uuid?: string;
+                            quantity: number;
+                            unit_price_amount: number;
+                            position: number;
+                            tax_rate: number;
+                        }[];
+                        groups?: {
+                            uuid: string;
+                            name: string;
+                            description?: string;
+                            position: number;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description quote updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Projects::Quotes::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description quote not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1396,7 +1718,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/organization/quotes/{id}/convert_to_order": {
+    "/api/v1/organization/quotes/{id}/convert_to_draft_order": {
         parameters: {
             query?: never;
             header?: never;
@@ -1424,7 +1746,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            result: components["schemas"]["Organization::Projects::Orders::ExtendedDto"];
+                            result: components["schemas"]["Organization::Projects::DraftOrders::ExtendedDto"];
                         };
                     };
                 };
@@ -1844,8 +2166,6 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
         "Organization::Projects::Orders::CompactDto": {
             id: number;
@@ -1854,8 +2174,6 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
             /** Format: decimal */
             invoiced_amount: string;
         };
@@ -1980,8 +2298,6 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
         };
         "Organization::Projects::CompactDto": {
             id: number;
@@ -1993,6 +2309,32 @@ export interface components {
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
             /** @enum {string} */
             status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
+        };
+        "Organization::Projects::DraftOrders::CompactDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+        };
+        "Organization::Projects::DraftOrders::ExtendedDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            original_project_version_id: number;
+            posted: boolean;
+            /** Format: date-time */
+            posted_at?: string | null;
+        };
+        "Organization::Projects::DraftOrders::IndexDto": {
+            results: components["schemas"]["Organization::Projects::DraftOrders::CompactDto"][];
+        };
+        "Organization::Projects::DraftOrders::ShowDto": {
+            result: components["schemas"]["Organization::Projects::DraftOrders::ExtendedDto"];
         };
         "Organization::Projects::ExtendedDto": {
             id: number;
@@ -2023,9 +2365,7 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-            /** @enum {string} */
-            status: "new" | "invoicing_in_progress" | "invoiced" | "canceled";
-            original_quote_version_id: number;
+            original_project_version_id: number;
             /** Format: decimal */
             invoiced_amount: string;
         };
@@ -2042,8 +2382,7 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
-            /** @enum {string} */
-            status: "draft" | "validated";
+            posted: boolean;
         };
         "Organization::Projects::Quotes::ExtendedDto": {
             id: number;
@@ -2052,9 +2391,10 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-            /** @enum {string} */
-            status: "draft" | "validated";
-            orders: components["schemas"]["Organization::Projects::Orders::ExtendedDto"][];
+            posted: boolean;
+            /** Format: date-time */
+            posted_at?: string | null;
+            draft_orders: components["schemas"]["Organization::Projects::DraftOrders::ExtendedDto"][];
         };
         "Organization::Projects::Quotes::IndexDto": {
             results: components["schemas"]["Organization::Projects::Quotes::CompactDto"][];
