@@ -74,11 +74,13 @@ module Organization
       def map_updated_items(updated_items_params)
         updated_items_params.map do |updated_item_param|
           original_item = fetch_original_item(updated_item_param[:original_item_uuid])
-
-          updated_item_param.merge(
+          original_item_attributes = {
             name: original_item.name,
             description: original_item.description,
             unit: original_item.unit
+          }.compact
+          updated_item_param.merge(
+            original_item_attributes
           )
         end
       end
