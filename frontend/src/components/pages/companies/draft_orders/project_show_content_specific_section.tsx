@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { Button, LoadingButton } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Pen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { useNavigate } from "@tanstack/react-router";
@@ -45,10 +45,10 @@ const ProjectShowContentSpecificSection = ({
     }) => {
       toast({
         title: t(
-          "pages.companies.quotes.show.actions.convert_to_order_success_toast_title"
+          "pages.companies.draft_orders.show.actions.convert_to_order_success_toast_title"
         ),
         description: t(
-          "pages.companies.quotes.show.actions.convert_to_order_success_toast_description"
+          "pages.companies.draft_orders.show.actions.convert_to_order_success_toast_description"
         ),
         variant: "success",
       });
@@ -65,10 +65,10 @@ const ProjectShowContentSpecificSection = ({
       toast({
         variant: "destructive",
         title: t(
-          "pages.companies.quotes.show.actions.convert_to_order_error_toast_title"
+          "pages.companies.draft_orders.show.actions.convert_to_order_error_toast_title"
         ),
         description: t(
-          "pages.companies.quotes.show.actions.convert_to_order_error_toast_description"
+          "pages.companies.draft_orders.show.actions.convert_to_order_error_toast_description"
         ),
       });
     };
@@ -84,12 +84,16 @@ const ProjectShowContentSpecificSection = ({
         {documentUrl ? (
           <Link to={`${import.meta.env.VITE_API_BASE_URL}${documentUrl}`}>
             <Download className="mr-2 h-4 w-4" />
-            {t("pages.companies.quotes.show.actions.download_quote_pdf")}
+            {t(
+              "pages.companies.draft_orders.show.actions.download_draft_order_pdf"
+            )}
           </Link>
         ) : (
           <Link disabled>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t("pages.companies.quotes.show.actions.quote_pdf_unavailable")}
+            {t(
+              "pages.companies.draft_orders.show.actions.draft_order_pdf_unavailable"
+            )}
           </Link>
         )}
       </Button>
@@ -102,26 +106,30 @@ const ProjectShowContentSpecificSection = ({
               orderId: order.id.toString(),
             }}
           >
-            {t("pages.companies.quotes.show.actions.go_order")}
+            {t("pages.companies.draft_orders.show.actions.go_to_order")}
           </Link>
         </Button>
       ) : (
         <>
+          {!draftOrder.posted && (
+            <Button asChild variant="outline">
+              <Link
+                to={"/companies/$companyId/draft_orders/$draftOrderId/update"}
+                params={{
+                  companyId: companyId.toString(),
+                  draftOrderId: draftOrderId.toString(),
+                }}
+              >
+                <Pen className="mr-2 h-4 w-4" />
+                {t(
+                  "pages.companies.draft_orders.show.actions.update_draft_order"
+                )}
+              </Link>
+            </Button>
+          )}
           <LoadingButton variant="default" onClick={convertOrder}>
-            {t("pages.companies.quotes.show.actions.convert_to_order")}
+            {t("pages.companies.draft_orders.show.actions.convert_to_order")}
           </LoadingButton>
-          {/* <Button asChild variant="outline">
-            <Link
-              to={"/companies/$companyId/draft_orders/$draftOrder/update"}
-              params={{
-                companyId: companyId.toString(),
-                quoteId: quoteId.toString(),
-              }}
-            >
-              <Pen className="mr-2 h-4 w-4" />
-              {t("pages.companies.quotes.show.actions.update_quote")}
-            </Link>
-          </Button> */}
         </>
       )}
     </>

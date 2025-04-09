@@ -1,6 +1,7 @@
 import { DraftOrdersTable } from "@/components/pages/companies/draft_orders/index/draft-orders-table";
 import { Layout } from "@/components/pages/companies/layout";
 import { OrdersTable } from "@/components/pages/companies/orders/index/orders-table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@/components/ui/tabs";
 import { createFileRoute } from "@tanstack/react-router";
@@ -24,11 +25,15 @@ function RouteComponent() {
   return (
     <Layout.Root>
       <Layout.Header>
-        <div className="flex flex-grow justify-between items-center">
+        {isLoading ? (
+          <Skeleton className="h-4 w-full" />
+        ) : (
           <h1 className="text-3xl font-bold">
-            {t("pages.companies.orders.index.title")}
+            {t("pages.companies.orders.show.title", {
+              number: draftOrder?.number,
+            })}
           </h1>
-        </div>
+        )}
       </Layout.Header>
       <Layout.Content>
         <div className="container mx-auto">

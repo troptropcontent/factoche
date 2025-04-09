@@ -1,7 +1,6 @@
 import { ClientInfo } from "./client-info";
 import { ProjectVersionComposition } from "./project-version-composition";
 import { ProjectSummary } from "./project-summary";
-import { OrderSpecificSection } from "./private/order-specific-section";
 import { QuoteSpecificSection } from "./private/quote-specific-section";
 import { ProjectTypeKey } from "../shared/types";
 import { ReactNode } from "react";
@@ -27,9 +26,6 @@ const ProjectShowContent = ({
       <div className="md:col-span-1 flex flex-col gap-6">
         <ProjectSummary routeParams={{ projectId }} type={type} />
         <ClientInfo client={client} />
-        {type == "order" && (
-          <OrderSpecificSection companyId={companyId} orderId={projectId} />
-        )}
         {type == "quote" && (
           <QuoteSpecificSection companyId={companyId} quoteId={projectId} />
         )}

@@ -479,6 +479,17 @@ i18n
                             "draft_orders": {
                                 "show": {
                                     "title": "Commande provisoire N°{{number}}",
+                                    "actions": {
+                                        "update_draft_order": "Modifier la commande provisoire",
+                                        "convert_to_order": "Convertir en commande",
+                                        "download_draft_order_pdf": "Télécharger la commande provisoire en pdf",
+                                        "draft_order_pdf_unavailable": "Commande provisoire en cours de génération",
+                                        "go_to_order": "Voir la commande liée",
+                                        "convert_to_order_success_toast_title": "Commande provisoire convertie en commande",
+                                        "convert_to_order_success_toast_description": "La commande provisoire a bien été convertie en commande",
+                                        "convert_to_order_error_toast_title": "Une erreur est survenue",
+                                        "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion de la commande provisoire en commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible",
+                                    },
                                 },
                                 "badge": {
                                     "status": {
@@ -488,6 +499,27 @@ i18n
                                 }
                             },
                             "orders": {
+                                "show": {
+                                    "title": "Commande N°{{number}}",
+                                    "actions": {
+                                        "download_order_pdf": "Télécharger la commande en pdf",
+                                        "order_pdf_unavailable": "Commande en cours de génération",
+                                        "update_order": "Modifier la commande",
+                                    }
+                                },
+                                "update": {
+                                    "title": "Modifier la commande N°{{number}}",
+                                    "toasts": {
+                                        "success": {
+                                            "title": "Commande modifiée",
+                                            "description": "La commande a été modifiée avec succès"
+                                        },
+                                        "error": {
+                                            "title": "Une erreur est survenue",
+                                            "description": "Une erreur est survenue lors de la modification de la commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
+                                        }
+                                    }
+                                },
                                 "index": {
                                     "title": "Mes commandes",
                                     "tabs": {
