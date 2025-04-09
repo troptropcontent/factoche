@@ -28,7 +28,7 @@ ActiveRecord::Base.transaction do
     capital_amount: 12345600
   )
 
-  Organization::CompanyConfig.create!(company: company)
+  Organization::CompanyConfig.create!(company: company, payment_term_days: 30, default_vat_rate: 0.2, payment_term_accepted_methods: [ "transfer" ], general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION</h1>')
 
   Organization::Member.create!(
     user_id: user.id,
