@@ -729,6 +729,39 @@ paths:
               - name
               - retention_guarantee_rate
               - items
+  "/api/v1/organization/draft_orders/{id}/convert_to_order":
+    post:
+      summary: Convert a draft order to an order
+      tags:
+      - Draft Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: draft order converted to order
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+        '404':
+          description: draft order not found
+        '401':
+          description: unauthorized
+        '422':
+          description: unprocessable entity
+        '403':
+          description: forbiden
   "/api/v1/organization/orders/{order_id}/invoices":
     post:
       summary: Creates an invoice
