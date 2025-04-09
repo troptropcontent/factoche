@@ -4,6 +4,7 @@ module Organization
       class << self
         def call(version)
           version_identifier = Organization::ProjectVersions::BuildVersionNumber.call(version).data
+
           unless version_identifier
             raise Error::UnprocessableEntityError, "Failed to compute version number"
           end
@@ -21,7 +22,16 @@ module Organization
         private
 
         def find_print_url(version)
-          Rails.application.routes.url_helpers.quote_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+          case version.project.class.name
+          when "Organization::Quote"
+            Rails.application.routes.url_helpers.quote_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+          when "Organization::DraftOrder"
+            Rails.application.routes.url_helpers.draft_order_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+          when "Organization::Order"
+            Rails.application.routes.url_helpers.order_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+          else
+            raise Error::UnprocessableEntityError, "Unsupported project type"
+          end
         end
       end
     end

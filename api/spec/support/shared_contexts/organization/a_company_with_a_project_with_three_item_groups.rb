@@ -19,27 +19,25 @@ RSpec.shared_context 'a company with a project with three item groups' do
   let(:project_version_retention_guarantee_rate) { 0.05 }
   ordinals = [ "first", "second", "third" ]
 
-  [].each do
-    ordinals.each_with_index do |ordinal, index|
-      let("project_version_#{ordinal}_item_group") { FactoryBot.create(:item_group, project_version: project_version) }
-      let("project_version_#{ordinal}_item_group_item_unit_price_amount") { 100 * (index + 1) }
-      let("project_version_#{ordinal}_item_group_item_unit_quantity") { index + 1 }
-      let("project_version_#{ordinal}_item_group_item_name") { "Super item #{index + 1}" }
-      let("project_version_#{ordinal}_item_group_item_unit") { "ENS" }
-      let("project_version_#{ordinal}_item_group_item_tax_rate") { 0.20 }
-      # rubocop:disable RSpec/LetSetup
-      let!("project_version_#{ordinal}_item_group_item") do
-        FactoryBot.create(
-          :item,
-          project_version: project_version,
-          name: send("project_version_#{ordinal}_item_group_item_name"),
-          item_group: send("project_version_#{ordinal}_item_group"),
-          quantity: send("project_version_#{ordinal}_item_group_item_unit_quantity"),
-          unit_price_amount: send("project_version_#{ordinal}_item_group_item_unit_price_amount"),
-          tax_rate: send("project_version_#{ordinal}_item_group_item_tax_rate"),
-          original_item_uuid: SecureRandom.uuid)
-      end
-      let("#{ordinal}_item") { send("project_version_#{ordinal}_item_group_item") }
+  ordinals.each_with_index do |ordinal, index|
+    let("project_version_#{ordinal}_item_group") { FactoryBot.create(:item_group, project_version: project_version) }
+    let("project_version_#{ordinal}_item_group_item_unit_price_amount") { 100 * (index + 1) }
+    let("project_version_#{ordinal}_item_group_item_unit_quantity") { index + 1 }
+    let("project_version_#{ordinal}_item_group_item_name") { "Super item #{index + 1}" }
+    let("project_version_#{ordinal}_item_group_item_unit") { "ENS" }
+    let("project_version_#{ordinal}_item_group_item_tax_rate") { 0.20 }
+    # rubocop:disable RSpec/LetSetup
+    let!("project_version_#{ordinal}_item_group_item") do
+      FactoryBot.create(
+        :item,
+        project_version: project_version,
+        name: send("project_version_#{ordinal}_item_group_item_name"),
+        item_group: send("project_version_#{ordinal}_item_group"),
+        quantity: send("project_version_#{ordinal}_item_group_item_unit_quantity"),
+        unit_price_amount: send("project_version_#{ordinal}_item_group_item_unit_price_amount"),
+        tax_rate: send("project_version_#{ordinal}_item_group_item_tax_rate"),
+        original_item_uuid: SecureRandom.uuid)
     end
+    let("#{ordinal}_item") { send("project_version_#{ordinal}_item_group_item") }
   end
 end
