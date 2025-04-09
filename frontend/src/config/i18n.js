@@ -475,6 +475,11 @@ i18n
                                     }
                                 }
                             },
+                            "draft_orders": {
+                                "show": {
+                                    "title": "Commande provisoire N°{{number}}",
+                                }
+                            },
                             "clients": {
                                 "index": {
                                     "title": "Mes clients",
