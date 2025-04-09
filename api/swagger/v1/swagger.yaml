@@ -3141,6 +3141,8 @@ components:
       - name
       - client
       - last_version
+      - posted
+      - posted_at
       properties:
         id:
           type: integer
@@ -3155,6 +3157,11 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        posted:
+          type: boolean
+        posted_at:
+          type: string
+          format: date-time
     Organization::Projects::DraftOrders::ExtendedDto:
       type: object
       required:

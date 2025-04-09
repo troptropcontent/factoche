@@ -2385,6 +2385,9 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::CompactDto"];
+            posted: boolean;
+            /** Format: date-time */
+            posted_at: string;
         };
         "Organization::Projects::DraftOrders::ExtendedDto": {
             id: number;

@@ -435,6 +435,7 @@ i18n
                                     }
                                 }
                             },
+                           
                             "quotes": {
                                 "show": {
                                     "title": "Devis N°{{number}}",
@@ -478,6 +479,40 @@ i18n
                             "draft_orders": {
                                 "show": {
                                     "title": "Commande provisoire N°{{number}}",
+                                },
+                                "badge": {
+                                    "status": {
+                                        "draft": "Brouillon",
+                                        "posted": "Validé",
+                                    }
+                                }
+                            },
+                            "orders": {
+                                "index": {
+                                    "title": "Mes commandes",
+                                    "tabs": {
+                                        "posted": {
+                                            "title": "Commandes validées",
+                                            "columns": {
+                                                "number": "Numéro",
+                                                "name": "Nom",
+                                                "client": "Client",
+                                                "total_amount": "Total HT",
+                                                "invoiced_amount": "Facturé HT",
+                                                "remaining_amount": "Restant dû HT",
+                                            }
+                                        },
+                                        "draft": {
+                                            "title": "Commandes provisoires",
+                                            "columns": {
+                                                "number": "Numéro",
+                                                "name": "Nom",
+                                                "client": "Client",
+                                                "amount": "Montant",
+                                                "status": "Status",
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             "clients": {
