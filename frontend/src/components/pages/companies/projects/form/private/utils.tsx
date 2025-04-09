@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { step2FormSchema } from "../project-form.schema";
+import { formSchema, step2FormSchema } from "../project-form.schema";
 import { CSV_FIELDS, DEFAULT_TAX_RATE } from "./constants";
 import { useTranslation } from "react-i18next";
+import { ProjectExtended, UpdateProjectBody } from "../../shared/types";
 
 const newGroupInput = (
   position: number
@@ -78,10 +79,97 @@ ${line1}
 ${line2}`;
 };
 
+const buildProjectFormInitialValue = (
+  project: ProjectExtended
+): z.infer<typeof formSchema> => {
+  const groupsWithUuid = project.last_version.item_groups.map((group) => ({
+    ...group,
+    description: group.description || "",
+    uuid: uuidv4(),
+  }));
+  return {
+    name: project.name,
+    description: project.description || "",
+    client_id: project.client.id,
+    retention_guarantee_rate:
+      Number(project.last_version.retention_guarantee_rate) * 100,
+    items: project.last_version.items.map((item) => ({
+      ...item,
+      uuid: uuidv4(),
+      original_item_uuid: item.original_item_uuid,
+      unit_price_amount: Number(item.unit_price_amount),
+      tax_rate: Number(item.tax_rate) * 100,
+      description: item.description || "",
+      group_uuid: groupsWithUuid.find(
+        (group) => group.id === item.item_group_id
+      )?.uuid,
+    })),
+    groups: groupsWithUuid,
+  };
+};
+
+const buildUpdateProjectBody = (
+  inputs: z.infer<typeof formSchema>
+): UpdateProjectBody => {
+  const buildUpdatedItemInput = (items: (typeof inputs)["items"]) => {
+    return items
+      .filter((item) => item.original_item_uuid != undefined)
+      .map((updated_item) => ({
+        position: updated_item.position,
+        quantity: updated_item.quantity,
+        tax_rate: updated_item.tax_rate / 100,
+        unit_price_amount: updated_item.unit_price_amount,
+        group_uuid: updated_item.group_uuid,
+        original_item_uuid: updated_item.original_item_uuid,
+      }));
+  };
+
+  const buildNewItemInput = (items: (typeof inputs)["items"]) => {
+    return items
+      .filter((item) => item.original_item_uuid === undefined)
+      .map((new_item) => ({
+        name: new_item.name,
+        unit: new_item.unit,
+        position: new_item.position,
+        quantity: new_item.quantity,
+        tax_rate: new_item.tax_rate / 100,
+        unit_price_amount: new_item.unit_price_amount,
+        group_uuid: new_item.group_uuid,
+        ...(new_item.description != "" && new_item.description != undefined
+          ? { description: new_item.description }
+          : {}),
+      }));
+  };
+
+  const buildGroupsInput = (
+    groups: (typeof inputs)["groups"]
+  ): UpdateProjectBody["groups"] => {
+    return groups.map((group) => ({
+      name: group.name,
+      position: group.position,
+      uuid: group.uuid,
+      ...(group.description != "" && group.description != undefined
+        ? { description: group.description }
+        : {}),
+    }));
+  };
+
+  return {
+    name: inputs.name,
+    description: inputs.description,
+    retention_guarantee_rate: Number(inputs.retention_guarantee_rate) / 100,
+    updated_items: buildUpdatedItemInput(inputs.items),
+    new_items: buildNewItemInput(inputs.items),
+    groups: buildGroupsInput(inputs.groups),
+  };
+};
+
 export {
   newGroupInput,
   newItemInput,
   findNextPosition,
   computeTotal,
   buildCsvTemplateData,
+  buildProjectFormInitialValue,
+  buildUpdateProjectBody,
 };

@@ -249,7 +249,7 @@ ActiveRecord::Base.transaction do
 
   quote = result.data
 
-  r = Organization::Quotes::ConvertToOrder.call(quote.versions.last.id)
+  r = Organization::Quotes::ConvertToDraftOrder.call(quote.id)
   if r.failure?
     raise "Unable to convert quote into order : #{r.error}"
   end

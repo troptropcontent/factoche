@@ -23,6 +23,7 @@ const Item = ({ inputId }: { inputId: string }) => {
   );
 
   const fieldName = `items.${inputIndex}` as const;
+  const originalItemUuidFieldName = `${fieldName}.original_item_uuid` as const;
   const quantityFieldName = `${fieldName}.quantity` as const;
   const unitPriceFieldName = `${fieldName}.unit_price_amount` as const;
   const nameFieldDame = `${fieldName}.name` as const;
@@ -30,6 +31,7 @@ const Item = ({ inputId }: { inputId: string }) => {
   const taxRateFieldName = `${fieldName}.tax_rate` as const;
   const quantityInput = watch(quantityFieldName);
   const unitPriceInput = watch(unitPriceFieldName);
+  const originalItemUuidInput = watch(originalItemUuidFieldName);
 
   const { t } = useTranslation();
   return (
@@ -50,6 +52,7 @@ const Item = ({ inputId }: { inputId: string }) => {
                   placeholder={t(
                     "pages.companies.projects.form.composition_step.item_name_input_placeholder"
                   )}
+                  disabled={originalItemUuidInput != undefined}
                   {...field}
                 />
               </FormControl>
@@ -103,6 +106,7 @@ const Item = ({ inputId }: { inputId: string }) => {
                   placeholder={t(
                     "pages.companies.projects.form.composition_step.item_unit_input_placeholder"
                   )}
+                  disabled={originalItemUuidInput != undefined}
                   {...field}
                 />
               </FormControl>

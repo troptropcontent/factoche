@@ -1,8 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { CSV_FIELDS } from "./constants";
+import { CSV_FIELDS, PROJECT_FORM_INITIAL_VALUES } from "./constants";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
-import { step2FormSchema } from "../project-form.schema";
+import { formSchema, step2FormSchema } from "../project-form.schema";
+import { ProjectType } from "./types";
+import { Api } from "@/lib/openapi-fetch-query-client";
+import { buildProjectFormInitialValue } from "./utils";
 
 type CsvFieldKey = keyof typeof CSV_FIELDS;
 type CsvFieldLabel = string;
@@ -282,4 +285,49 @@ const useCsvFields = (appendToDebugInfo: (debugInfo: string) => void) => {
   return { parseCsvResult };
 };
 
-export { useCsvFieldsMapping, useCsvFields };
+const useProjectFormInitialValues = (options?: {
+  projectId: string;
+  projectType: ProjectType;
+}): undefined | z.infer<typeof formSchema> => {
+  const { data: quote } = Api.useQuery(
+    "get",
+    "/api/v1/organization/quotes/{id}",
+    { params: { path: { id: Number(options?.projectId) } } },
+    {
+      enabled: options?.projectType === "quote",
+      select: ({ result }) => result,
+    }
+  );
+  const { data: draftOrder } = Api.useQuery(
+    "get",
+    "/api/v1/organization/draft_orders/{id}",
+    { params: { path: { id: Number(options?.projectId) } } },
+    {
+      enabled: options?.projectType === "draftOrder",
+      select: ({ result }) => result,
+    }
+  );
+  const { data: order } = Api.useQuery(
+    "get",
+    "/api/v1/organization/orders/{id}",
+    { params: { path: { id: Number(options?.projectId) } } },
+    {
+      enabled: options?.projectType === "order",
+      select: ({ result }) => result,
+    }
+  );
+
+  if (options == undefined) {
+    return PROJECT_FORM_INITIAL_VALUES;
+  }
+
+  const project = quote || draftOrder || order;
+
+  if (project == undefined) {
+    return undefined;
+  }
+
+  return buildProjectFormInitialValue(project);
+};
+
+export { useCsvFieldsMapping, useCsvFields, useProjectFormInitialValues };

@@ -166,7 +166,6 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           client.id,
           {
             name: "Updated Quote",
-            description: "Updated Description of the new quote",
             retention_guarantee_rate: 0.05,
             groups: [
               { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
@@ -181,6 +180,15 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
                 unit_price_amount: 100.0,
                 quantity: 1,
                 tax_rate: 0.2
+              },
+              {
+                group_uuid: "group-1",
+                name: "Item 2",
+                position: 2,
+                unit: "unit",
+                unit_price_amount: 200.0,
+                quantity: 2,
+                tax_rate: 0.1
               }
             ]
           }
@@ -198,8 +206,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           new_items: [
             {
               group_uuid: "group-1",
-              name: "Item 2",
-              description: "Second item",
+              name: "Item 3",
               position: 1,
               unit: "unit",
               unit_price_amount: 100.0,
@@ -215,12 +222,21 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
               unit_price_amount: 100.0,
               quantity: 1,
               tax_rate: 0.2
+            },
+            {
+              original_item_uuid: first_version_second_item.original_item_uuid,
+              group_uuid: "group-1",
+              position: 2,
+              unit_price_amount: 300.0,
+              quantity: 1,
+              tax_rate: 0.2
             }
           ]
         }
       end
 
       let(:first_version_first_item) { quote.versions.first.items.find_by(name: "Item 1") }
+      let(:first_version_second_item) { quote.versions.first.items.find_by(name: "Item 2") }
 
       let(:expected) { }
 
@@ -230,7 +246,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           expect { submit_request(example.metadata) }
             .to not_change(Organization::Quote, :count)
             .and change(Organization::ProjectVersion, :count).by(1)
-            .and change(Organization::Item, :count).by(2)
+            .and change(Organization::Item, :count).by(3)
 
           assert_response_matches_metadata(example.metadata)
         end

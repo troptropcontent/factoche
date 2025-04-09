@@ -2,7 +2,7 @@ module Api
   module V1
     module Organization
       class DraftOrdersController < Api::V1::ApiV1Controller
-        before_action(only: [ :update ]) { load_and_authorise_resource }
+        before_action(only: [ :update, :convert_to_order ]) { load_and_authorise_resource }
         # GET    /api/v1/organization/companies/:company_id/draft_orders
         def index
           draft_orders = policy_scope(::Organization::Project).where(type: "Organization::DraftOrder", client: { company_id: params[:company_id] })
@@ -15,6 +15,14 @@ module Api
           raise result.error if result.failure?
 
           render json: ::Organization::Projects::DraftOrders::ShowDto.new({ result: result.data }).to_json
+        end
+
+        # POST    /api/v1/organization/draft_orders/:id/convert_to_order
+        def convert_to_order
+          result = ::Organization::DraftOrders::ConvertToOrder.call(@draft_order.id)
+          raise result.error if result.failure?
+
+          render json: ::Organization::Projects::Orders::ShowDto.new({ result: result.data }).to_json
         end
 
         # GET    /api/v1/organization/draft_orders/:id

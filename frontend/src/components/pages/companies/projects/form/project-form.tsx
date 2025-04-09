@@ -1,87 +1,23 @@
-import { useMachine } from "@xstate/react";
-import { projectFormMachine } from "./project-form.machine";
-import { ProgressStepper } from "@/components/ui/progress-stepper";
-import { useTranslation } from "react-i18next";
-import { Step1 } from "./step1";
-import { Step2 } from "./step2";
-import { Step3 } from "./step3";
+import { ProjectFormContent } from "./project-form-content";
+import { z } from "zod";
+import { formSchema } from "./project-form.schema";
 
-const ProjectForm = ({ companyId }: { companyId: string }) => {
-  const [
-    {
-      value: currentMachineState,
-      context: {
-        formData: {
-          name,
-          retention_guarantee_rate,
-          client_id,
-          description,
-          items,
-          groups,
-        },
-      },
-    },
-    send,
-  ] = useMachine(projectFormMachine);
-  const { t } = useTranslation();
-  const progressSteps = new Map<typeof currentMachineState, string>([
-    [
-      "step1",
-      t(`pages.companies.projects.form.basic_info_step.progress_bar_label`),
-    ],
-    [
-      "step2",
-      t(`pages.companies.projects.form.composition_step.progress_bar_label`),
-    ],
-    [
-      "completed",
-      t(`pages.companies.projects.form.confirmation_step.progress_bar_label`),
-    ],
-  ]);
-
+type ProjectFormProps = {
+  companyId: string;
+  initialValues: z.infer<typeof formSchema>;
+  submitFunction: (data: z.infer<typeof formSchema>) => void;
+};
+const ProjectForm = ({
+  companyId,
+  initialValues,
+  submitFunction,
+}: ProjectFormProps) => {
   return (
-    <>
-      <ProgressStepper
-        steps={progressSteps}
-        currentStep={currentMachineState}
-      />
-      {(() => {
-        switch (currentMachineState) {
-          case "step1":
-            return (
-              <Step1
-                send={send}
-                companyId={companyId}
-                initialValues={{
-                  name,
-                  retention_guarantee_rate,
-                  client_id,
-                  description,
-                }}
-              />
-            );
-          case "step2":
-            return <Step2 send={send} initialValues={{ items, groups }} />;
-          case "completed":
-            return (
-              <Step3
-                send={send}
-                companyId={companyId}
-                previousStepsData={{
-                  name,
-                  retention_guarantee_rate,
-                  client_id,
-                  description,
-                  items,
-                  groups,
-                }}
-              />
-            );
-          default:
-            return null;
-        }
-      })()}
-    </>
+    <ProjectFormContent
+      companyId={companyId}
+      initialProjectFormValues={initialValues}
+      submitFunction={submitFunction}
+    />
   );
 };
 
