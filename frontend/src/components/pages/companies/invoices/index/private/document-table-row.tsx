@@ -21,6 +21,7 @@ const DocumentTableRow = ({
   orders: OrderCompact[];
 }) => {
   const { t } = useTranslation();
+
   const order = findOrder(document, orderVersions, orders);
   if (order === undefined) {
     throw "order could not be found in the metada, this is likely a bug";

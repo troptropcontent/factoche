@@ -21,6 +21,8 @@ Rails.application.routes.draw do
   resources :prints, only: [] do
     collection do
       get "quotes/:quote_id/quote_versions/:id", action: :quote_version, as: :quote
+      get "draft_orders/:draft_order_id/draft_order_versions/:id", action: :draft_order_version, as: :draft_order
+      get "orders/:order_id/order_versions/:id", action: :order_version, as: :order
     end
   end
 
@@ -39,6 +41,7 @@ Rails.application.routes.draw do
             resources :completion_snapshots, only: [ :create ]
           end
           resources :quotes, only: [ :index ]
+          resources :draft_orders, only: [ :index ]
           resources :orders, only: [ :index ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
@@ -72,15 +75,20 @@ Rails.application.routes.draw do
         end
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
-        resources :orders, only: [ :show ] do
+        resources :draft_orders, only: [ :show, :update ] do
+          member do
+            post "convert_to_order"
+          end
+        end
+        resources :orders, only: [ :show, :update ] do
           resources :invoices, only: [ :create ]
           member do
             get :invoiced_items
           end
         end
-        resources :quotes, only: [ :show ] do
+        resources :quotes, only: [ :show, :update ] do
           member do
-            post "convert_to_order"
+            post "convert_to_draft_order"
           end
         end
       end

@@ -6,21 +6,17 @@
         <tbody>
           <tr>
             <th colspan="2" class="px-2 bg-gray-200 border-1 rounded rounded-b-none text-2xl">
-              <%= if @project.is_a?(Organization::Quote)
-                    t("views.organization.quote.title") 
-                  elsif @project.is_a?(Organization::Order)
-                    t("views.organization.order.title")
-                  end %>
+              <%= t("views.organization.#{@project_type}.title")  %>
             </th>
           </tr>
           <% [{
-            label: t("views.organization.quote.number"),
+            label: t("views.organization.#{@project_type}.number"),
             data: @project.number
           }, {
-            label: t("views.organization.quote.version.number"),
+            label: t("views.organization.#{@project_type}.version.number"),
             data: @project_version.number
           }, {
-            label: t("views.organization.quote.issue_date"), 
+            label: t("views.organization.#{@project_type}.issue_date"), 
             data: l(@project_version.created_at, format: :short)
           }].each_with_index do |row, index| %>
             <tr class="group">
@@ -43,12 +39,12 @@
             <tbody>
                 <tr>
                     <th colspan="2" class="px-2 py-1 bg-gray-200 border rounded rounded-b-none">
-                        <%= t("views.organization.quote.context.title") %>
+                        <%= t("views.organization.#{@project_type}.context.title") %>
                     </th>
                 </tr>
                 <tr>
                     <td class="px-2 py-1 border-1 border-t-0 rounded-b">
-                    <%= t("views.organization.quote.context.name_html",
+                    <%= t("views.organization.#{@project_type}.context.name_html",
                             name: @project.name) %>
                     </td>
                 </tr>

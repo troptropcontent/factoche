@@ -2,6 +2,7 @@ module Api
   module V1
     module Organization
       class QuotesController < Api::V1::ApiV1Controller
+        before_action(only: [ :show, :update ]) { load_and_authorise_resource(name: :quote, param_key: :id,  class_name: "Organization::Quote") }
         # GET    /api/v1/organization/companies/:company_id/quotes
         def index
           quotes = policy_scope(::Organization::Project).where(type: "Organization::Quote", client: { company_id: params[:company_id] })
@@ -10,8 +11,15 @@ module Api
 
         # GET    /api/v1/organization/quotes/:id
         def show
-          quote = policy_scope(::Organization::Project).where(type: "Organization::Quote").find(params[:id])
-          render json: ::Organization::Projects::Quotes::ShowDto.new({ result: quote }).to_json
+          render json: ::Organization::Projects::Quotes::ShowDto.new({ result: @quote }).to_json
+        end
+
+        # PUT    /api/v1/organization/quotes/:id
+        def update
+          result = ::Organization::Quotes::Update.call(@quote, update_quote_params.to_h)
+          raise result.error if result.failure?
+
+          render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json
         end
 
         # POST    /api/v1/organization/companies/:company_id/clients/:client_id/quotes
@@ -25,14 +33,14 @@ module Api
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json, status: :created
         end
 
-        # POST    /api/v1/organization/quotes/:id/convert_to_order
-        def convert_to_order
+        # POST    /api/v1/organization/quotes/:id/convert_to_draft_order
+        def convert_to_draft_order
           quote = policy_scope(::Organization::Project).where(type: "Organization::Quote").find(params[:id])
 
-          result = ::Organization::Quotes::ConvertToOrder.call(quote.id)
+          result = ::Organization::Quotes::ConvertToDraftOrder.call(quote.id)
           raise Error::UnprocessableEntityError, result.error if result.failure?
 
-          render json: ::Organization::Projects::Orders::ShowDto.new({ result: result.data }).to_json, status: :created
+          render json: ::Organization::Projects::DraftOrders::ShowDto.new({ result: result.data }).to_json, status: :created
         end
 
         private
@@ -48,6 +56,38 @@ module Api
               :description,
               :quantity,
               :unit,
+              :unit_price_amount,
+              :position,
+              :tax_rate
+            ],
+            groups: [
+              :uuid,
+              :name,
+              :description,
+              :position
+            ]
+          )
+        end
+
+        def update_quote_params
+          params.require(:quote).permit(
+            :name,
+            :description,
+            :retention_guarantee_rate,
+            new_items: [
+              :group_uuid,
+              :name,
+              :description,
+              :quantity,
+              :unit,
+              :unit_price_amount,
+              :position,
+              :tax_rate
+            ],
+            updated_items: [
+              :original_item_uuid,
+              :group_uuid,
+              :quantity,
               :unit_price_amount,
               :position,
               :tax_rate

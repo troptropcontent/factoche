@@ -28,7 +28,6 @@ function RouteComponent() {
   const navigate = useNavigate({ from: Route.fullPath });
   const { t } = useTranslation();
 
-  // Update URL when tab changes
   const handleTabChange = (value: string) => {
     if (!(TABS as ReadonlyArray<string>).includes(value)) {
       throw new Error(`Invalid tab value: ${value}`);

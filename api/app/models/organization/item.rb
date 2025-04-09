@@ -6,6 +6,7 @@ class Organization::Item < ApplicationRecord
   validates :quantity, presence: true
   validates :unit, presence: true
   validates :unit_price_amount, presence: true
+  validates :original_item_uuid, presence: true
   validate :item_group_belongs_to_same_project_version
 
   def amount_cents

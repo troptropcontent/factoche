@@ -562,7 +562,205 @@ paths:
                     type: array
                     items:
                       "$ref": "#/components/schemas/Organization::CreditNotes::CompactDto"
-        "403":
+        '403':
+          description: forbiden
+  "/api/v1/organization/companies/{company_id}/draft_orders":
+    get:
+      summary: List all the company's draft orders
+      tags:
+      - Draft Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: list company's draft orders
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::Projects::DraftOrders::CompactDto"
+  "/api/v1/organization/draft_orders/{id}":
+    get:
+      summary: Show draft order details
+      tags:
+      - Draft Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: show draft order details
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::DraftOrders::ExtendedDto"
+        '404':
+          description: draft order not found
+    put:
+      summary: Update draft order
+      tags:
+      - Draft Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: draft order updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::DraftOrders::ExtendedDto"
+        '404':
+          description: draft order not found
+        '401':
+          description: unauthorized
+        '422':
+          description: unprocessable entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                retention_guarantee_rate:
+                  type: number
+                new_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit:
+                        type: string
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - name
+                    - quantity
+                    - unit
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                updated_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - quantity
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                groups:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      position:
+                        type: integer
+                    required:
+                    - uuid
+                    - name
+                    - position
+              required:
+              - name
+              - retention_guarantee_rate
+              - items
+  "/api/v1/organization/draft_orders/{id}/convert_to_order":
+    post:
+      summary: Convert a draft order to an order
+      tags:
+      - Draft Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: draft order converted to order
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+        '404':
+          description: draft order not found
+        '401':
+          description: unauthorized
+        '422':
+          description: unprocessable entity
+        '403':
           description: forbiden
   "/api/v1/organization/orders/{order_id}/invoices":
     post:
@@ -1017,6 +1215,143 @@ paths:
                     "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
         "404":
           description: order not found
+    put:
+      summary: Update order
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: order updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+        '404':
+          description: order not found
+    put:
+      summary: Update order
+      tags:
+      - Orders
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: order updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+        '404':
+          description: order not found
+        '401':
+          description: unauthorized
+        '422':
+          description: unprocessable entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                retention_guarantee_rate:
+                  type: number
+                new_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit:
+                        type: string
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - name
+                    - quantity
+                    - unit
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                updated_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - quantity
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                groups:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      position:
+                        type: integer
+                    required:
+                    - uuid
+                    - name
+                    - position
+              required:
+              - name
+              - retention_guarantee_rate
+              - items
   "/api/v1/organization/orders/{id}/invoiced_items":
     get:
       summary: invoiced amount for each item
@@ -1165,6 +1500,147 @@ paths:
                     "$ref": "#/components/schemas/Organization::Projects::Quotes::ExtendedDto"
         "404":
           description: quote not found
+        '401':
+          description: unauthorized
+    put:
+      summary: Update quote
+      tags:
+      - Quotes
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: quote updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Quotes::ExtendedDto"
+        '404':
+          description: quote not found
+        '401':
+          description: unauthorized
+    put:
+      summary: Update quote
+      tags:
+      - Quotes
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: quote updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Projects::Quotes::ExtendedDto"
+        '404':
+          description: quote not found
+        '401':
+          description: unauthorized
+        '422':
+          description: unprocessable entity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                retention_guarantee_rate:
+                  type: number
+                new_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit:
+                        type: string
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - name
+                    - quantity
+                    - unit
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                updated_items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group_uuid:
+                        type: string
+                      quantity:
+                        type: integer
+                      unit_price_amount:
+                        type: number
+                      position:
+                        type: integer
+                      tax_rate:
+                        type: number
+                    required:
+                    - quantity
+                    - unit_price_amount
+                    - position
+                    - tax_rate
+                groups:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      position:
+                        type: integer
+                    required:
+                    - uuid
+                    - name
+                    - position
+              required:
+              - name
+              - retention_guarantee_rate
+              - items
   "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes":
     post:
       summary: Create a new quote for a client
@@ -1259,10 +1735,10 @@ paths:
                       - name
                       - position
               required:
-                - name
-                - retention_guarantee_rate
-                - items
-  "/api/v1/organization/quotes/{id}/convert_to_order":
+              - name
+              - retention_guarantee_rate
+              - items
+  "/api/v1/organization/quotes/{id}/convert_to_draft_order":
     post:
       summary: Convert a quote to an order
       tags:
@@ -1286,8 +1762,8 @@ paths:
                   - result
                 properties:
                   result:
-                    "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
-        "404":
+                    "$ref": "#/components/schemas/Organization::Projects::DraftOrders::ExtendedDto"
+        '404':
           description: quote not found
         "422":
           description: unprocessable entity
@@ -2293,12 +2769,11 @@ components:
     Organization::Projects::BaseCompactDto:
       type: object
       required:
-        - id
-        - number
-        - name
-        - client
-        - last_version
-        - status
+      - id
+      - number
+      - name
+      - client
+      - last_version
       properties:
         id:
           type: integer
@@ -2313,23 +2788,15 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
-        status:
-          type: string
-          enum:
-            - new
-            - invoicing_in_progress
-            - invoiced
-            - canceled
     Organization::Projects::Orders::CompactDto:
       type: object
       required:
-        - id
-        - number
-        - name
-        - client
-        - last_version
-        - status
-        - invoiced_amount
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - invoiced_amount
       properties:
         id:
           type: integer
@@ -2344,13 +2811,6 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
-        status:
-          type: string
-          enum:
-            - new
-            - invoicing_in_progress
-            - invoiced
-            - canceled
         invoiced_amount:
           type: string
           format: decimal
@@ -2677,12 +3137,11 @@ components:
     Organization::Projects::BaseExtendedDto:
       type: object
       required:
-        - id
-        - number
-        - name
-        - client
-        - last_version
-        - status
+      - id
+      - number
+      - name
+      - client
+      - last_version
       properties:
         id:
           type: integer
@@ -2697,13 +3156,6 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-        status:
-          type: string
-          enum:
-            - new
-            - invoicing_in_progress
-            - invoiced
-            - canceled
     Organization::Projects::CompactDto:
       type: object
       required:
@@ -2731,21 +3183,24 @@ components:
         status:
           type: string
           enum:
-            - new
-            - invoicing_in_progress
-            - invoiced
-            - canceled
-    Organization::Projects::ExtendedDto:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::DraftOrders::CompactDto:
       type: object
       required:
-        - id
-        - name
-        - client
-        - invoiced_amount
-        - last_version
-        - status
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - posted
+      - posted_at
       properties:
         id:
+          type: integer
+        number:
           type: integer
         name:
           type: string
@@ -2754,58 +3209,24 @@ components:
           nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
-        invoiced_amount:
-          type: string
-          format: decimal
         last_version:
-          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-        status:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
+        posted:
+          type: boolean
+        posted_at:
           type: string
-          enum:
-            - new
-            - invoicing_in_progress
-            - invoiced
-            - canceled
-    Organization::Projects::IndexDto:
+          format: date-time
+    Organization::Projects::DraftOrders::ExtendedDto:
       type: object
       required:
-        - results
-      properties:
-        results:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::Projects::CompactDto"
-    Organization::Projects::InvoicedItemDto:
-      type: object
-      required:
-        - original_item_uuid
-        - invoiced_amount
-      properties:
-        original_item_uuid:
-          type: string
-        invoiced_amount:
-          type: string
-          format: decimal
-    Organization::Projects::InvoicedItemsDto:
-      type: object
-      required:
-        - results
-      properties:
-        results:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
-    Organization::Projects::Orders::ExtendedDto:
-      type: object
-      required:
-        - id
-        - number
-        - name
-        - client
-        - last_version
-        - status
-        - original_quote_version_id
-        - invoiced_amount
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - original_project_version_id
+      - posted
+      - orders
       properties:
         id:
           type: integer
@@ -2820,18 +3241,123 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-        status:
+        original_project_version_id:
+          type: integer
+        posted:
+          type: boolean
+        posted_at:
           type: string
-          enum:
-            - new
-            - invoicing_in_progress
-            - invoiced
-            - canceled
-        original_quote_version_id:
+          format: date-time
+          nullable: true
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+    Organization::Projects::Orders::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - original_project_version_id
+      - invoiced_amount
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        original_project_version_id:
           type: integer
         invoiced_amount:
           type: string
           format: decimal
+    Organization::Projects::DraftOrders::IndexDto:
+      type: object
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::DraftOrders::CompactDto"
+    Organization::Projects::DraftOrders::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Projects::DraftOrders::ExtendedDto"
+    Organization::Projects::ExtendedDto:
+      type: object
+      required:
+      - id
+      - name
+      - client
+      - invoiced_amount
+      - last_version
+      - status
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        invoiced_amount:
+          type: string
+          format: decimal
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        status:
+          type: string
+          enum:
+          - new
+          - invoicing_in_progress
+          - invoiced
+          - canceled
+    Organization::Projects::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::CompactDto"
+    Organization::Projects::InvoicedItemDto:
+      type: object
+      required:
+      - original_item_uuid
+      - invoiced_amount
+      properties:
+        original_item_uuid:
+          type: string
+        invoiced_amount:
+          type: string
+          format: decimal
+    Organization::Projects::InvoicedItemsDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
     Organization::Projects::Orders::IndexDto:
       type: object
       required:
@@ -2851,12 +3377,12 @@ components:
     Organization::Projects::Quotes::CompactDto:
       type: object
       required:
-        - id
-        - number
-        - name
-        - client
-        - last_version
-        - status
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - posted
       properties:
         id:
           type: integer
@@ -2871,21 +3397,18 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::CompactDto"
-        status:
-          type: string
-          enum:
-            - draft
-            - validated
+        posted:
+          type: boolean
     Organization::Projects::Quotes::ExtendedDto:
       type: object
       required:
-        - id
-        - number
-        - name
-        - client
-        - last_version
-        - status
-        - orders
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - posted
+      - draft_orders
       properties:
         id:
           type: integer
@@ -2900,15 +3423,16 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-        status:
+        posted:
+          type: boolean
+        posted_at:
           type: string
-          enum:
-            - draft
-            - validated
-        orders:
+          format: date-time
+          nullable: true
+        draft_orders:
           type: array
           items:
-            "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+            "$ref": "#/components/schemas/Organization::Projects::DraftOrders::ExtendedDto"
     Organization::Projects::Quotes::IndexDto:
       type: object
       required:

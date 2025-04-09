@@ -2,25 +2,18 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 
 interface QuoteStatusBadgeProps {
-  status: string;
+  posted: boolean;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "draft":
-      return "bg-gray-500";
-    case "validated":
-      return "bg-green-500";
-    default:
-      return "bg-gray-500";
-  }
+const getStatusColor = (posted: boolean) => {
+  return posted ? "bg-green-500" : "bg-gray-500";
 };
 
-export function QuoteStatusBadge({ status }: QuoteStatusBadgeProps) {
+export function QuoteStatusBadge({ posted }: QuoteStatusBadgeProps) {
   const { t } = useTranslation();
   return (
-    <Badge className={`${getStatusColor(status)} text-white`}>
-      {t(`pages.companies.quotes.status.${status}`)}
+    <Badge className={`${getStatusColor(posted)} text-white`}>
+      {t(`pages.companies.quotes.status.${posted ? "posted" : "draft"}`)}
     </Badge>
   );
 }

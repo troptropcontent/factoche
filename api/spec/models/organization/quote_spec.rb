@@ -6,18 +6,18 @@ RSpec.describe Organization::Quote, type: :model do
     let(:client) { FactoryBot.create(:client, company: company) }
     let(:quote) { FactoryBot.build(:quote, client: client, company: company) }
 
-    it 'is valid without original_quote_version_id' do
+    it 'is valid without original_project_version_id' do
       expect(quote).to be_valid
     end
 
-    it 'is invalid with original_quote_version_id', :aggregate_failures do
+    it 'is invalid with original_project_version_id', :aggregate_failures do
       # Create a project version to reference
       other_quote = FactoryBot.create(:quote, client: client, company: company)
       version = FactoryBot.create(:project_version, project: other_quote)
 
-      quote.original_quote_version_id = version.id
+      quote.original_project_version_id = version.id
       expect(quote).not_to be_valid
-      expect(quote.errors[:original_quote_version_id]).to include("must be blank")
+      expect(quote.errors[:original_project_version_id]).to include("must be blank")
     end
 
     it 'inherits Project validations', :aggregate_failures do

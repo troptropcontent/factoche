@@ -41,11 +41,72 @@
 		],
 		"description": "Include shared context: a company with a project with three items"
 	},
+	"scc": {
+		"scope": "ruby",
+		"prefix": "scc",
+		"body": [
+			"require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'",
+			"include_context 'a company with a client and a member'"
+		],
+	},
+	"scq": {
+		"scope": "ruby",
+		"prefix": "scq",
+		"body": [
+			"require 'support/shared_contexts/organization/projects/a_company_with_a_quote'",
+			"include_context 'a company with a quote'"
+		],
+	},
+	"sco": {
+		"scope": "ruby",
+		"prefix": "sco",
+		"body": [
+			"require 'support/shared_contexts/organization/projects/a_company_with_an_order'",
+			"include_context 'a company with an order'"
+		],
+	},
+	"scd": {
+		"scope": "ruby",
+		"prefix": "scd",
+		"body": [
+			"require 'support/shared_contexts/organization/projects/a_company_with_a_draft_order'",
+			"include_context 'a company with a draft order'"
+		],
+	},
+	"occ": {
+		"scope": "ruby",
+		"prefix": "occ",
+		"body": [
+			"require 'support/shared_contexts/organization/a_company_with_a_client_and_an_order_with_three_items'",
+			"include_context 'a company with a client and an order with three items'"
+		],
+	},
 	"auth": {
 		"scope": "ruby",
 		"prefix": "auth",
 		"body": [
 			"it_behaves_like \"an authenticated endpoint\""
 		],
-	}
+	},
+	"sser": {
+		"scope": "ruby",
+		"prefix": "sser",
+		"body": [
+			"require 'services/shared_examples/service_result_example'"
+		],
+	},
+	"sses": {
+		"scope": "ruby",
+		"prefix": "sses",
+		"body": [
+			"it_behaves_like 'a success'"
+		],
+	},
+	"ssef": {
+		"scope": "ruby",
+		"prefix": "ssef",
+		"body": [
+			"it_behaves_like 'a failure'"
+		],
+	},
 }

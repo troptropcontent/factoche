@@ -1,13 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Trans, useTranslation } from "react-i18next";
+import { ProjectTypeKey } from "../shared/types";
 
 export function ProjectSummary({
   routeParams: { projectId },
   type,
 }: {
   routeParams: { projectId: number };
-  type: "quote" | "order";
+  type: ProjectTypeKey;
 }) {
   const { t } = useTranslation();
   const { data, isLoading } = Api.useQuery(
