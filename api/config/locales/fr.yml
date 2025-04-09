@@ -123,6 +123,12 @@ fr:
             previously_invoiced_label_html: "Déjà facturé"
             new_completion_label_html: "Avancement"
             new_invoice_label_html: "À facturer"
+      projects:
+        columns:
+          name: "Désignation"
+          quantity: "Quantité"
+          unit_price: "Prix unitaire"
+          total: "Total"
       quote:
         title: "Devis"
         number: "Numéro du devis"
@@ -132,6 +138,38 @@ fr:
           name_html: "<strong>Designation :</strong> %{name}"
         version:
           title: "Version du devis"
+          number: "Numéro de version"
+          groups:
+            columns:
+              name: "Désignation"
+              quantity: "Quantité"
+              unit_price: "Prix unitaire"
+              total: "Total"
+      draft_order:
+        title: "Commande provisoire"
+        number: "Numéro de commande provisoire"
+        issue_date: "Date de création"
+        context:
+          title: "Contexte"
+          name_html: "<strong>Designation :</strong> %{name}"
+        version:
+          title: "Version de la commande provisoire"
+          number: "Numéro de version"
+          groups:
+            columns:
+              name: "Désignation"
+              quantity: "Quantité"
+              unit_price: "Prix unitaire"
+              total: "Total"
+      order:
+        title: "Commande"
+        number: "Numéro de commande"
+        issue_date: "Date de création"
+        context:
+          title: "Contexte"
+          name_html: "<strong>Designation :</strong> %{name}"
+        version:
+          title: "Version de la commande"
           number: "Numéro de version"
           groups:
             columns:
