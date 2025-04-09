@@ -2397,6 +2397,18 @@ export interface components {
             posted: boolean;
             /** Format: date-time */
             posted_at?: string | null;
+            orders: components["schemas"]["Organization::Projects::Orders::ExtendedDto"][];
+        };
+        "Organization::Projects::Orders::ExtendedDto": {
+            id: number;
+            number: number;
+            name: string;
+            description?: string | null;
+            client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            original_project_version_id: number;
+            /** Format: decimal */
+            invoiced_amount: string;
         };
         "Organization::Projects::DraftOrders::IndexDto": {
             results: components["schemas"]["Organization::Projects::DraftOrders::CompactDto"][];
@@ -2425,17 +2437,6 @@ export interface components {
         };
         "Organization::Projects::InvoicedItemsDto": {
             results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
-        };
-        "Organization::Projects::Orders::ExtendedDto": {
-            id: number;
-            number: number;
-            name: string;
-            description?: string | null;
-            client: components["schemas"]["Organization::Clients::ExtendedDto"];
-            last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
-            original_project_version_id: number;
-            /** Format: decimal */
-            invoiced_amount: string;
         };
         "Organization::Projects::Orders::IndexDto": {
             results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];

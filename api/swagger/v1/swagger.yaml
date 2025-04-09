@@ -3165,6 +3165,7 @@ components:
       - last_version
       - original_project_version_id
       - posted
+      - orders
       properties:
         id:
           type: integer
@@ -3187,6 +3188,39 @@ components:
           type: string
           format: date-time
           nullable: true
+        orders:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Projects::Orders::ExtendedDto"
+    Organization::Projects::Orders::ExtendedDto:
+      type: object
+      required:
+      - id
+      - number
+      - name
+      - client
+      - last_version
+      - original_project_version_id
+      - invoiced_amount
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        client:
+          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        last_version:
+          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        original_project_version_id:
+          type: integer
+        invoiced_amount:
+          type: string
+          format: decimal
     Organization::Projects::DraftOrders::IndexDto:
       type: object
       required:
@@ -3263,35 +3297,6 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
-    Organization::Projects::Orders::ExtendedDto:
-      type: object
-      required:
-      - id
-      - number
-      - name
-      - client
-      - last_version
-      - original_project_version_id
-      - invoiced_amount
-      properties:
-        id:
-          type: integer
-        number:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        client:
-          "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
-        last_version:
-          "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
-        original_project_version_id:
-          type: integer
-        invoiced_amount:
-          type: string
-          format: decimal
     Organization::Projects::Orders::IndexDto:
       type: object
       required:
