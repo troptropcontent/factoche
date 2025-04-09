@@ -73,7 +73,11 @@ Rails.application.routes.draw do
         end
         resources :clients, only: [ :show ]
         resources :prints, only: [ :show ]
-        resources :draft_orders, only: [ :show, :update ]
+        resources :draft_orders, only: [ :show, :update ] do
+          member do
+            post "convert_to_order"
+          end
+        end
         resources :orders, only: [ :show, :update ] do
           resources :invoices, only: [ :create ]
           member do

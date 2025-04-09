@@ -3,6 +3,7 @@ require "swagger_helper"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
 require_relative "shared_examples/an_authenticated_endpoint"
 require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'
+require 'support/shared_contexts/organization/projects/a_company_with_a_draft_order'
 
 module Api
   module V1
@@ -341,6 +342,67 @@ module Api
                 end
               end
             end
+          end
+        end
+
+        path "/api/v1/organization/draft_orders/{id}/convert_to_order" do
+          post "Convert a draft order to an order" do
+            tags "Draft Orders"
+            security [ bearerAuth: [] ]
+            consumes "application/json"
+            produces "application/json"
+            parameter name: :id, in: :path, type: :integer
+
+            let(:user) { FactoryBot.create(:user) }
+            let!(:member) { FactoryBot.create(:member, user:, company:) }
+            let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+            let(:id) { draft_order.id }
+
+            include_context 'a company with a draft order'
+
+            response "200", "draft order converted to order" do
+              schema ::Organization::Projects::Orders::ShowDto.to_schema
+              before { draft_order }
+
+              it "create a new order based on the draft_order", :aggregate_failures do |example|
+                expect { submit_request(example.metadata) }
+                  .to not_change(::Organization::DraftOrder, :count)
+                  .and change(::Organization::Order, :count).by(1)
+                  .and change(::Organization::ProjectVersion, :count).by(1)
+                  .and change(::Organization::Item, :count).by(3)
+
+                assert_response_matches_metadata(example.metadata)
+              end
+            end
+
+            response "404", "draft order not found" do
+              let(:id) { -1 }
+
+              run_test! do
+                expect(response.body).to include("Resource not found")
+              end
+            end
+
+            response "401", "unauthorized" do
+              let(:id) { draft_order.id }
+              let(:another_user) { FactoryBot.create(:user) }
+              let(:Authorization) { access_token(another_user) }
+
+              run_test!
+            end
+
+            response "422", "unprocessable entity" do
+              context "when the draft order has already been converted" do
+                before { ::Organization::DraftOrders::ConvertToOrder.call(draft_order.id) }
+
+                run_test! do
+                  expect(response.body).to include("Draft order has already been converted to an order")
+                end
+              end
+            end
+
+            it_behaves_like "an authenticated endpoint"
           end
         end
       end
