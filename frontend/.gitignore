@@ -22,7 +22,5 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.slnsrc/lib/openapi-fetch-schemas.d.ts
+*.sln
 *.sw?
-
-src/lib/openapi-fetch-schemas.d.ts

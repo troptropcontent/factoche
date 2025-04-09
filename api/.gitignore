@@ -13,5 +13,3 @@ log
 node_modules
 
 storage/
-
-/swagger/v1/swagger.yaml
