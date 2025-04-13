@@ -10,5 +10,3 @@ production:
   adapter: redis
   url: <%= ENV.fetch("REDIS_URL") %>
   channel_prefix: fabati_production
-  allowed_request_origins:
-    - https://www.fabati.fr
