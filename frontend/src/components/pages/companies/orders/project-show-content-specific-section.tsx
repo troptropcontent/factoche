@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Download, Loader2, Pen } from "lucide-react";
+import { useChannelSubscription } from "@/hooks/use-channel-subscription";
 
 const ProjectShowContentSpecificSection = ({
   orderId,
@@ -13,12 +14,23 @@ const ProjectShowContentSpecificSection = ({
   companyId: number;
 }) => {
   const { t } = useTranslation();
-  const { data: order } = Api.useQuery(
+  const { data: order, refetch } = Api.useQuery(
     "get",
     "/api/v1/organization/orders/{id}",
     { params: { path: { id: orderId } } },
     { select: ({ result }) => result }
   );
+  useChannelSubscription({
+    channelName: `NotificationsChannel`,
+    onReceive: (data) => {
+      if (
+        data.type == "PDF_GENERATED" &&
+        data.data.record_id === order?.last_version.id
+      ) {
+        refetch();
+      }
+    },
+  });
 
   return (
     <>

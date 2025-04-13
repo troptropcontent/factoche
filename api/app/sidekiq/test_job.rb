@@ -1,7 +1,7 @@
 class TestJob
   include Sidekiq::Job
 
-  def perform
-    ap "TEST JOB"
+  def perform(args)
+    ActionCable.server.broadcast(args["websocket_channel"], args["data"])
   end
 end

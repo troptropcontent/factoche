@@ -7,6 +7,7 @@ import { Api } from "@/lib/openapi-fetch-query-client";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react";
+import { useChannelSubscription } from "@/hooks/use-channel-subscription";
 
 const ProjectShowContentSpecificSection = ({
   draftOrderId,
@@ -18,12 +19,24 @@ const ProjectShowContentSpecificSection = ({
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { data: draftOrder } = Api.useQuery(
+  const { data: draftOrder, refetch } = Api.useQuery(
     "get",
     "/api/v1/organization/draft_orders/{id}",
     { params: { path: { id: draftOrderId } } },
     { select: ({ result }) => result }
   );
+
+  useChannelSubscription({
+    channelName: `NotificationsChannel`,
+    onReceive: (data) => {
+      if (
+        data.type == "PDF_GENERATED" &&
+        data.data.record_id === draftOrder?.last_version.id
+      ) {
+        refetch();
+      }
+    },
+  });
 
   const { mutateAsync: convertToOrderMutationAsync } = Api.useMutation(
     "post",

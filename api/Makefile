@@ -1,7 +1,7 @@
 server:
 	rm -f tmp/pids/server.pid && bundle exec dotenv -f config/.env.development rails server -p 8080
-rails-%:
-	bundle exec dotenv -f config/.env.development rails $(subst rails-,,$@)
+rails:
+	bundle exec dotenv -f config/.env.development rails $(ARGS)
 deploy:
 	bundle exec dotenv -f config/.env.production kamal deploy -d production
 boot_chromium:
