@@ -1,4 +1,6 @@
 import { CompanyLayout } from "@/components/layout/company-layout";
+import { CableContextProvider } from "@/contexts/cable-context";
+import { getAccessToken } from "@/lib/auth-service";
 import { Api } from "@/lib/openapi-fetch-query-client";
 
 import {
@@ -34,9 +36,18 @@ export const Route = createFileRoute("/_authenticated/companies/$companyId")({
 });
 
 function RouteComponent() {
+  const { companyId } = Route.useParams();
+  const accessToken = getAccessToken();
+  if (!accessToken) {
+    throw new Error(
+      "Access token is missing. This should not occur since the loader of the route was handled properly."
+    );
+  }
   return (
     <CompanyLayout>
-      <Outlet />
+      <CableContextProvider companyId={Number(companyId)} token={accessToken}>
+        <Outlet />
+      </CableContextProvider>
     </CompanyLayout>
   );
 }

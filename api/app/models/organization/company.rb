@@ -1,4 +1,5 @@
 class Organization::Company < ApplicationRecord
+  WEBSOCKET_CHANNEL_PREFIX = "notifications_company"
   has_many :members, dependent: :destroy, class_name: "Organization::Member"
   has_many :clients, dependent: :destroy, class_name: "Organization::Client"
   has_many :projects, through: :clients, class_name: "Organization::Project"
@@ -23,4 +24,8 @@ class Organization::Company < ApplicationRecord
   validates :address_city, presence: true
   validates :address_zipcode, presence: true
   validates :registration_number, presence: true
+
+  def websocket_channel
+    [ WEBSOCKET_CHANNEL_PREFIX, id ].join("_")
+  end
 end

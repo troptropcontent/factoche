@@ -33,7 +33,8 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
             expect(result.data).to include(
               "class_name" => version.class.name,
               "id" => version.id,
-              "file_name" => scenario[:version_identifier]
+              "file_name" => scenario[:version_identifier],
+              "websocket_channel" => "notifications_company_#{version.project.company_id}"
             )
 
             expect(result.data["url"]).to match(scenario[:url])

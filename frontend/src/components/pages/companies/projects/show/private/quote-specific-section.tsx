@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useChannelSubscription } from "@/hooks/use-channel-subscription";
 import { useToast } from "@/hooks/use-toast";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -15,7 +16,7 @@ const QuoteSpecificSection = ({
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { data: quote } = Api.useQuery(
+  const { data: quote, refetch } = Api.useQuery(
     "get",
     "/api/v1/organization/quotes/{id}",
     { params: { path: { id: quoteId } } },
@@ -26,6 +27,18 @@ const QuoteSpecificSection = ({
     "post",
     "/api/v1/organization/quotes/{id}/convert_to_draft_order"
   );
+
+  useChannelSubscription({
+    channelName: `NotificationsChannel`,
+    onReceive: (data) => {
+      if (
+        data.type == "PDF_GENERATED" &&
+        data.data.record_id === quote?.last_version.id
+      ) {
+        refetch();
+      }
+    },
+  });
 
   if (quote == undefined) {
     return null;
