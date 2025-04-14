@@ -102,13 +102,14 @@ function RouteComponent() {
     <Layout.Root>
       <Layout.Header>
         <h1 className="text-3xl font-bold">
-          {t("pages.companies.quotes.update.title", {
+          {t("pages.companies.orders.update.title", {
             number: order.number,
           })}
         </h1>
       </Layout.Header>
       <Layout.Content>
         <ProjectForm
+          update
           companyId={companyId}
           initialValues={buildProjectFormInitialValue(order)}
           submitFunction={updateOrderAsync}

@@ -117,6 +117,7 @@ function RouteComponent() {
       <Layout.Content>
         <LoadingWrapper isLoading={quote === undefined}>
           <ProjectForm
+            update
             companyId={companyId}
             initialValues={buildProjectFormInitialValue(quote)}
             submitFunction={updateQuoteAsync}

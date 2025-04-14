@@ -11,10 +11,12 @@ import { Step2 } from "./step2";
 import { useMemo } from "react";
 
 const ProjectFormContent = ({
+  update,
   initialProjectFormValues,
   companyId,
   submitFunction,
 }: {
+  update?: boolean;
   companyId: string;
   initialProjectFormValues: z.infer<typeof formSchema>;
   submitFunction: (data: z.infer<typeof formSchema>) => void;
@@ -67,6 +69,7 @@ const ProjectFormContent = ({
           case "step1":
             return (
               <Step1
+                update={update}
                 send={send}
                 companyId={companyId}
                 initialValues={{

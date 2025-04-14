@@ -477,6 +477,9 @@ i18n
                                 }
                             },
                             "draft_orders": {
+                                "update": {
+                                    "title": "Modifier la commande provisoire N°{{number}}",
+                                },
                                 "show": {
                                     "title": "Commande provisoire N°{{number}}",
                                     "actions": {
