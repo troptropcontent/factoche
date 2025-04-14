@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins [ "http://127.0.0.1:3000", "http://localhost:3000", "https://www.fabati.fr", "https://v0-fabati.vercel.app" ]
+    origins [ "http://127.0.0.1:3000", "http://localhost:3000", "https://app.fabati.fr", "https://v0-fabati.vercel.app" ]
 
     resource "*",
       headers: :any,

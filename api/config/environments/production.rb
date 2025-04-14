@@ -81,7 +81,7 @@ Rails.application.configure do
     "print.fabati.fr"
   ]
 
-  config.action_cable.allowed_request_origins = [ "https://www.fabati.fr" ]
+  config.action_cable.allowed_request_origins = [ "https://app.fabati.fr" ]
 
   #
   # Skip DNS rebinding protection for the default health check endpoint.
