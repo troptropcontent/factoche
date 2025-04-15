@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useLoginMutation } from "@/queries/auth/useLoginMutation";
-import { useAuth } from "@/hooks/use_auth";
-import { useNavigate } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
+import { AuthContext } from "@/auth";
 
 export default function LoginForm({ redirect }: { redirect: string }) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const loginMutation = useLoginMutation();
+
+  const authContext = useContext(AuthContext);
+
+  if (authContext === null) {
+    throw new Error("LoginForm must be used within an AuthContext");
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,18 +29,9 @@ export default function LoginForm({ redirect }: { redirect: string }) {
       return;
     }
 
-    loginMutation.mutate(
-      { email, password },
-      {
-        onSuccess: ({ access_token, refresh_token }) => {
-          login(access_token, refresh_token);
-          navigate({ to: redirect });
-        },
-        onError: () => {
-          setError("Credentials seems not to be correct");
-        },
-      },
-    );
+    await authContext.login(email, password);
+
+    router.history.push(redirect);
   };
 
   return (

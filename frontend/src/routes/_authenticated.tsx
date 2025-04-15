@@ -1,4 +1,4 @@
-import { isAuthed } from "@/lib/auth-service";
+import { getAccessToken } from "@/auth-utils";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 function AuthenticatedLayout() {
@@ -6,15 +6,15 @@ function AuthenticatedLayout() {
 }
 
 export const Route = createFileRoute("/_authenticated")({
+  component: AuthenticatedLayout,
   beforeLoad: ({ location }) => {
-    if (!isAuthed()) {
+    const token = getAccessToken();
+
+    if (!token && !location.pathname.startsWith("/auth/login")) {
       throw redirect({
         to: "/auth/login",
-        search: {
-          redirect: location.href,
-        },
+        search: { redirect: location.href },
       });
     }
   },
-  component: AuthenticatedLayout,
 });

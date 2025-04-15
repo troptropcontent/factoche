@@ -1,6 +1,6 @@
+import { getAccessToken } from "@/auth-utils";
 import { CompanyLayout } from "@/components/layout/company-layout";
 import { CableContextProvider } from "@/contexts/cable-context";
-import { getAccessToken } from "@/lib/auth-service";
 import { Api } from "@/lib/openapi-fetch-query-client";
 
 import {
