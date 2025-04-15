@@ -1,3 +1,4 @@
+import { AuthContext } from "@/auth";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -7,7 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/use_auth";
 import { Link, useRouter } from "@tanstack/react-router";
 import {
   Cuboid,
@@ -17,9 +17,13 @@ import {
   Settings,
   FileText,
 } from "lucide-react";
+import { useContext } from "react";
 
 export function AppSidebar() {
-  const { logout } = useAuth();
+  const authContext = useContext(AuthContext);
+  if (authContext === null) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
   const router = useRouter();
 
   const items = [
@@ -74,7 +78,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <Button
           onClick={() => {
-            logout();
+            authContext.logout();
             router.invalidate();
           }}
           variant="outline"

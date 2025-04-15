@@ -55,8 +55,6 @@ const Step1 = ({
     });
   };
 
-  console.log({ update });
-
   return (
     <Form {...form}>
       <form

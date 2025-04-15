@@ -13,14 +13,20 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Layout } from "@/components/pages/companies/layout";
-import { getCompanyClientsQueryOptions } from "@/queries/organization/clients/getCompanyClientsQueryOptions";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/clients/"
 )({
   component: RouteComponent,
   loader: ({ context: { queryClient }, params: { companyId } }) =>
-    queryClient.ensureQueryData(getCompanyClientsQueryOptions(companyId)),
+    queryClient.ensureQueryData(
+      Api.queryOptions(
+        "get",
+        "/api/v1/organization/companies/{company_id}/clients",
+        { params: { path: { company_id: Number(companyId) } } }
+      )
+    ),
 });
 
 function RouteComponent() {

@@ -1,7 +1,7 @@
 import createFetchClient, { type Middleware } from "openapi-fetch";
 import createQueryClient from "openapi-react-query";
 import type { paths } from "./openapi-fetch-schemas";
-import { getAccessToken } from "./auth-service";
+import { clearAccessToken, getAccessToken } from "@/auth-utils";
 
 const fetchClient = (function () {
   const authMiddleware: Middleware = {
@@ -13,6 +13,13 @@ const fetchClient = (function () {
       }
 
       return request;
+    },
+    async onResponse({ response }) {
+      if (response.status === 403) {
+        clearAccessToken();
+      }
+
+      return response;
     },
   };
 

@@ -42,7 +42,7 @@ const Step3 = ({
       },
     }
   );
-  console.log({ submitFunction });
+
   const client = clients.find((client) => client.id == inputs.client_id);
 
   const handleSublmit = async () => submitFunction(inputs);

@@ -3,9 +3,8 @@ import { FormControl } from "@/components/ui/form";
 import { FormItem, FormLabel } from "@/components/ui/form";
 import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createClientMutationOptions } from "@/queries/organization/clients/postCompanyQueryOptions";
+import { Api } from "@/lib/openapi-fetch-query-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { TFunction } from "i18next";
 import { useForm } from "react-hook-form";
@@ -57,8 +56,10 @@ const ClientForm = ({
       ...initialValues,
     },
   });
-  const createClientMutation = useMutation(
-    createClientMutationOptions(parseInt(companyId))
+
+  const createClientMutation = Api.useMutation(
+    "post",
+    "/api/v1/organization/companies/{company_id}/clients"
   );
 
   // @ts-expect-error Type 'any' for details parameter is expected since API error response type is not strictly typed
@@ -82,15 +83,18 @@ const ClientForm = ({
   };
 
   const onSubmit = async (values: ClientFormType) => {
-    await createClientMutation.mutateAsync(values, {
-      onError: handleError,
-      onSuccess: () => {
-        navigate({
-          to: "/companies/$companyId/clients",
-          params: { companyId },
-        });
-      },
-    });
+    await createClientMutation.mutateAsync(
+      { body: values, params: { path: { company_id: Number(companyId) } } },
+      {
+        onError: handleError,
+        onSuccess: () => {
+          navigate({
+            to: "/companies/$companyId/clients",
+            params: { companyId },
+          });
+        },
+      }
+    );
   };
 
   return (
