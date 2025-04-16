@@ -4,6 +4,7 @@ module Accounting
 
     InvoiceType = "Invoice".freeze
     CreditNoteType = "CreditNote".freeze
+    ProformaType = "Proforma".freeze
 
     has_many :lines,
              class_name: "Accounting::FinancialTransactionLine",
@@ -44,8 +45,8 @@ module Accounting
     end
 
     def valid_type_name?
-      unless type.demodulize == InvoiceType || type.demodulize == CreditNoteType
-        errors.add(:type, "must either be Invoice or CreditNote")
+      unless type.demodulize == InvoiceType || type.demodulize == CreditNoteType || type.demodulize == ProformaType
+        errors.add(:type, "must either be Invoice, CreditNote or Proforma")
       end
     end
   end
