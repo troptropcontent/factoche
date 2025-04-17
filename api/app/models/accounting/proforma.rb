@@ -7,7 +7,8 @@ module Accounting
     enum :status,
          {
            draft: "draft",
-           voided: "voided"
+           voided: "voided",
+           posted: "posted"
          },
          default: :draft,
          validate: true
