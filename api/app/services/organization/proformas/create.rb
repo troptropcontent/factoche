@@ -145,7 +145,6 @@ module Organization
       end
 
       def ensure_no_other_draft!
-        byebug
         raise "Cannot create a new proforma invoice while another draft proforma invoice exists for this project" if Accounting::Proforma.where(holder_id: @project.versions.pluck(:id)).draft.any?
       end
     end

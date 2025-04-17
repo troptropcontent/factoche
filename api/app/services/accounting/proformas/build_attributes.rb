@@ -52,7 +52,7 @@ module Accounting
               unit: item.fetch(:unit),
               unit_price_amount: item.fetch(:unit_price_amount),
               tax_rate: item.fetch(:tax_rate),
-              previously_billed_amount: previous_invoices_data.dig(item.fetch(:original_item_uuid), :invoices_amount) - previous_invoices_data.dig(item.fetch(:original_item_uuid), :credit_notes_amount)
+              previously_billed_amount: previous_invoices_data.dig(item.fetch(:original_item_uuid), :invoices_amount).to_d - previous_invoices_data.dig(item.fetch(:original_item_uuid), :credit_notes_amount).to_d
             }
           end
         end

@@ -83,6 +83,7 @@ Rails.application.routes.draw do
         end
         resources :orders, only: [ :show, :update ] do
           resources :invoices, only: [ :create ]
+          resources :proformas, only: [ :create ]
           member do
             get :invoiced_items
           end
