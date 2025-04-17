@@ -52,6 +52,7 @@ Rails.application.routes.draw do
               post "cancel", action: :cancel
             end
           end
+          resources :proformas, only: [ :show ]
           resources :credit_notes, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do

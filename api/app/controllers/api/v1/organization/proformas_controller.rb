@@ -2,6 +2,8 @@ module Api
   module V1
     module Organization
       class ProformasController < ApiV1Controller
+        before_action(except: :create) { load_and_authorise_resource(class_name: "Accounting::Proforma") }
+
         # POST /api/v1/organization/orders/:order_id/proformas
         def create
           load_and_authorise_resource name: :order, class_name: "::Organization::Order", param_key: :order_id
@@ -15,6 +17,11 @@ module Api
           end
 
           render json: ::Organization::Proformas::ShowDto.new({ result: result.data })
+        end
+
+        # GET    /api/v1/organization/companies/:company_id/proformas/:id
+        def show
+          render json: ::Organization::Proformas::ShowDto.new({ result: @proforma })
         end
 
         private

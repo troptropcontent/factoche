@@ -2,6 +2,8 @@ require 'rails_helper'
 require 'swagger_helper'
 require_relative "shared_examples/an_authenticated_endpoint"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
+
 RSpec.describe Api::V1::Organization::ProformasController, type: :request do
   path '/api/v1/organization/orders/{order_id}/proformas' do
     post 'Creates an invoice' do
@@ -69,6 +71,47 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
           run_test!
         end
       end
+    end
+  end
+  path '/api/v1/organization/companies/{company_id}/proformas/{id}' do
+    get 'Show invoice' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      parameter name: :company_id, in: :path, type: :integer
+      parameter name: :id, in: :path, type: :integer
+
+      include_context 'a company with an order'
+
+      let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+      let(:id) { proforma.id }
+      let(:company_id) { company.id }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { access_token(user) }
+      include_context 'a company with a project with three items'
+
+      response '200', 'proforma found' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Proformas::ShowDto.to_schema
+
+        run_test!
+      end
+
+      response '401', 'unauthorised' do
+        describe "when the company is not a company the user is a member of" do
+          run_test!
+        end
+      end
+
+      response '404', 'not_found' do
+        describe "when the proforma does not exists" do
+          let(:id) { -1 }
+
+          run_test!
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
     end
   end
 end
