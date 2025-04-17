@@ -1,7 +1,7 @@
 module Accounting
   module Proformas
-    # Post and invoice by voiding the current one and creating a posted one identical
-    # @param invoice_id [Integer] ID of the invoice to post
+    # Post and proforma by posting the current one and creating a new posted invoice identical
+    # @param proforma_id [Integer] ID of the proforma to post
     # @param issue_date [Time] When the duplicate invoice should be issued (defaults to current time)
     #
     # @return [ServiceResult] Success with duplicated Invoice or failure with error message
