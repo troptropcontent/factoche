@@ -34,7 +34,7 @@ module ApplicationService
     contract = contract_class.new
     result = contract.call(params)
     raise Error::UnprocessableEntityError.new(result.errors.to_h) if result.failure?
-    result.to_h
+    result.to_h.with_indifferent_access
   end
 
   def transaction(&block)
