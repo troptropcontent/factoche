@@ -73,6 +73,92 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       end
     end
   end
+  path '/api/v1/organization/companies/{company_id}/proformas' do
+    get 'Lists invoices for an order' do
+      tags 'Invoices'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      parameter name: :company_id, in: :path, type: :integer
+      parameter name: 'order_id',
+        in: :query,
+        schema: {
+          type: :integer
+        }
+
+      let(:order_id) { nil }
+      let(:company_id) { company.id }
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+      include_context 'a company with an order'
+
+      response '200', 'invoices found' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema ::Organization::Proformas::IndexDto.to_schema
+
+        context "when there are no invoices attached to the order" do
+          run_test!("it returns an empty array") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response["results"]).to eq([])
+          end
+        end
+
+        context "when there are invoices attached to the order" do
+          before {
+            Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+          }
+
+          run_test!("it returns the invoices") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response["results"].count).to eq(1)
+            expect(parsed_response.dig("results", 0)).to include({ "number"=> "PRO-#{Time.current.year}-000001" })
+          end
+        end
+
+        describe "when the company_id does not belong to a company the user is a member of" do
+          let(:company_id) { FactoryBot.create(:company).id }
+
+          before {
+            Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+          }
+
+          run_test!("it returns an empty array") do
+            parsed_response = JSON.parse(response.body)
+            expect(parsed_response["results"]).to eq([])
+          end
+        end
+
+        context "when order_id is provided in the query params" do
+          context "when the order_id correctly belongs to an order of the company" do
+            let(:order_id) { order.id }
+
+            before do
+              # another order
+              another_quote = FactoryBot.create(:quote, :with_version, company: company, client: client, number: 2)
+              another_draft_order = FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: another_quote.last_version, number: 2)
+              another_order = FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2)
+
+              # A proforma from another order
+              Organization::Proformas::Create.call(another_order.last_version.id, { invoice_amounts: [ { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data.persisted?
+
+              # previous invoice related to order
+              Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+
+              # previous invoice related to another_order
+              FactoryBot.create(:invoice, company_id: company.id, holder_id: "another_holder_id", number: "PRO-2024-00002")
+            end
+
+            run_test!("it returns the filtered invoices") do
+              parsed_response = JSON.parse(response.body)
+              expect(parsed_response.dig("results", 0, "number")).to eq("PRO-#{Time.current.year}-000002")
+              expect(parsed_response.dig("results").length).to eq(1)
+            end
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+  end
   path '/api/v1/organization/companies/{company_id}/proformas/{id}' do
     get 'Show invoice' do
       tags 'Invoices'

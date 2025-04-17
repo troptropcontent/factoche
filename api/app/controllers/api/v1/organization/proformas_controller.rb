@@ -2,7 +2,20 @@ module Api
   module V1
     module Organization
       class ProformasController < ApiV1Controller
-        before_action(except: :create) { load_and_authorise_resource(class_name: "Accounting::Proforma") }
+        before_action(except: [ :create, :index ]) { load_and_authorise_resource(class_name: "Accounting::Proforma") }
+
+        # GET    /api/v1/organization/companies/:company_id/proformas
+        def index
+          proformas = policy_scope(Accounting::Proforma).where(company_id: params[:company_id])
+                                                       .then { |proformas| filter_by_order(proformas) }
+                                                       .order(:number)
+
+          order_versions = ::Organization::ProjectVersion.where(id: proformas.pluck(:holder_id))
+
+          orders = ::Organization::Order.where(id: order_versions.pluck(:project_id))
+
+          render json: ::Organization::Proformas::IndexDto.new({ results: proformas, meta: { order_versions: order_versions, orders: orders } })
+        end
 
         # POST /api/v1/organization/orders/:order_id/proformas
         def create
@@ -28,6 +41,12 @@ module Api
 
         def proforma_params
           params.require(:proforma).permit(invoice_amounts: [ :original_item_uuid, :invoice_amount ])
+        end
+
+        def filter_by_order(proformas)
+          return proformas unless params[:order_id].present?
+
+          proformas.where(holder_id: ::Organization::ProjectVersion.where(project_id: params[:order_id]).pluck(:id))
         end
       end
     end
