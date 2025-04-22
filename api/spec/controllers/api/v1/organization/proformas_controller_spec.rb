@@ -388,5 +388,69 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       it_behaves_like "an authenticated endpoint"
     end
+
+    post 'Post proforma' do
+      tags 'Proformas'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      consumes 'application/json'
+      parameter name: :id, in: :path, type: :integer
+
+      include_context 'a company with an order'
+
+      let!(:proforma) {
+        ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: "0.2" } ] }).data
+      }
+      let(:id) { proforma.id }
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { access_token(user) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+      response '200', 'invoice posted' do
+        schema Organization::Proformas::ShowDto.to_schema
+
+        it "Posts the proforma by voiding the proforma and creating a new instance of Invoice", :aggregate_failures do |example|
+          expect { submit_request(example.metadata) }
+            .to change(Accounting::Invoice, :count).by(1)
+            .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+            .and change(Accounting::FinancialTransactionLine, :count).by(2)
+
+          assert_response_matches_metadata(example.metadata)
+
+          parsed_response = JSON.parse(response.body)
+
+          expect(parsed_response.dig("result", "id")).not_to eq(proforma.id)
+          expect(parsed_response.dig("result", "status")).to eq("posted")
+          expect(parsed_response.dig("result", "number")).to end_with("001")
+        end
+      end
+
+      response '404', 'invoice not found' do
+        context "when the proforma does not exist" do
+          let(:id) { -1 }
+
+          run_test!
+        end
+      end
+
+      response '401', 'unauthorised' do
+        context "when the proforma does not belogn to a company the user is a member of" do
+          let(:Authorization) { access_token(FactoryBot.create(:user)) }
+
+          run_test!
+        end
+      end
+
+      response '422', 'unprocessable entity' do
+        context "when the invoice is not draft" do
+          before { proforma.update(status: :posted) }
+
+          run_test!
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
   end
 end

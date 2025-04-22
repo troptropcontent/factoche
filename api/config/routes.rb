@@ -94,7 +94,11 @@ Rails.application.routes.draw do
             post "convert_to_draft_order"
           end
         end
-        resources :proformas, only: [ :update, :show, :destroy ]
+        resources :proformas, only: [ :update, :show, :destroy ] do
+          member do
+            post "", action: :post
+          end
+        end
       end
     end
   end
