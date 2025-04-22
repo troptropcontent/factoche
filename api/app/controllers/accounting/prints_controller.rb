@@ -14,10 +14,6 @@ module Accounting
         raise Error::UnprocessableEntityError, "No invoice found for this id"
       end
 
-      unless Invoice::PUBLISHED_STATUS.include?(@invoice.status)
-        raise Error::UnprocessableEntityError, "Invoice must be published"
-      end
-
       render template: "accounting/invoice", layout: "print"
     end
 
@@ -26,13 +22,10 @@ module Accounting
     def unpublished_invoice
       @proforma = true
       @locale = :fr
-      @invoice = Accounting::Invoice.find_by(id: params[:id])
+      @invoice = Accounting::Proforma.find_by(id: params[:id])
+
       if @invoice.nil?
         raise Error::UnprocessableEntityError, "No invoice found for this id"
-      end
-
-      unless Invoice::UNPUBLISHED_STATUS.include?(@invoice.status)
-        raise Error::UnprocessableEntityError, "Invoice must be unpublished"
       end
 
       render template: "accounting/invoice", layout: "print"
