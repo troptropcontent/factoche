@@ -3,7 +3,7 @@ module Organization
     class CompactDto < OpenApiDto
       field "invoice", :object, subtype: Invoices::CompactDto
       field "id", :integer
-      field "status", :enum, subtype: [ "draft", "posted", "cancelled", "voided" ]
+      field "status", :enum, subtype: [ "draft", "posted" ]
       field "number", :string
       field "issue_date", :timestamp
       field "updated_at", :timestamp

@@ -40,12 +40,10 @@ module Accounting
 
     enum :status,
          {
-           draft: "draft",
-           voided: "voided",
            posted: "posted",
            cancelled: "cancelled"
          },
-         default: :draft,
+         default: :posted,
          validate: true
 
     validate :valid_number

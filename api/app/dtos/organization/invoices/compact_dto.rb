@@ -3,7 +3,7 @@ module Organization
     class CompactDto < OpenApiDto
       field "holder_id", :integer
       field "id", :integer
-      field "status", :enum, subtype: [ "draft", "posted", "cancelled", "voided" ]
+      field "status", :enum, subtype: [ "posted", "cancelled" ]
       field "number", :string
       field "issue_date", :timestamp
       field "updated_at", :timestamp
