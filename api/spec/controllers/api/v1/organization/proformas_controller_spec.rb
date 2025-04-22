@@ -159,7 +159,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
-  path '/api/v1/organization/companies/{company_id}/proformas/{id}' do
+  path '/api/v1/organization/proformas/{id}' do
     get 'Show invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
@@ -199,8 +199,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       it_behaves_like "an authenticated endpoint"
     end
-  end
-  path '/api/v1/organization/proformas/{id}' do
+
     put 'Update proforma' do
       tags 'Proformas'
       security [ bearerAuth: [] ]

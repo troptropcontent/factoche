@@ -32,7 +32,7 @@ module Api
           render json: ::Organization::Proformas::ShowDto.new({ result: result.data })
         end
 
-        # GET    /api/v1/organization/companies/:company_id/proformas/:id
+        # GET    /api/v1/organization/proformas/:id
         def show
           render json: ::Organization::Proformas::ShowDto.new({ result: @proforma })
         end
