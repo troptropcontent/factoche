@@ -1,11 +1,23 @@
 require 'rails_helper'
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
 RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
   describe '#perform' do
+    include_context 'a company with an order'
     include_context 'a company with a project with three items'
 
-    let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+
+    let(:proforma) do
+                  ::Organization::Proformas::Create.call(order_version.id, {
+                    invoice_amounts: [
+                      { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 1 },
+                      { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 2 }
+                    ]
+                  }).data
+    end
+
+    let(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
 
     let(:pdf_file) { Tempfile.new([ 'test', '.pdf' ]) }
 
@@ -26,9 +38,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
       }.to change { invoice.reload.pdf.attached? }.from(false).to(true)
     end
 
-    context "when the financial transaction is a published invoice" do
-      before { invoice.update(status: :posted, number: "INV-2024-00001") }
-
+    context "when the financial transaction is an invoice" do
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => invoice.id)
 
@@ -41,12 +51,12 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
       end
     end
 
-    context "when the financial transaction is an unpublished invoice" do
+    context "when the financial transaction is an proforma" do
       it 'calls the PDF generator with the correct URL' do
-        described_class.new.perform("financial_transaction_id" => invoice.id)
+        described_class.new.perform("financial_transaction_id" => proforma.id)
 
         expected_url = Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
-          invoice,
+          proforma,
           host: "html_pdf:8081"
         )
 
