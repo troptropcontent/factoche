@@ -49,6 +49,17 @@ module Api
           render json: ::Organization::Proformas::ShowDto.new({ result: result.data })
         end
 
+        # DELETE /api/v1/organization/proformas/:id
+        def destroy
+          result = ::Accounting::Proformas::Void.call(@proforma.id)
+
+          if result.failure?
+            raise Error::UnprocessableEntityError, "Failed to void proforma: #{result.error}"
+          end
+
+          render json: ::Organization::Proformas::ShowDto.new({ result: result.data })
+        end
+
         private
 
         def proforma_params

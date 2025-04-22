@@ -315,5 +315,78 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       it_behaves_like "an authenticated endpoint"
     end
+
+    delete 'Voids an invoice' do
+      tags 'Proformas'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+
+      parameter name: :id, in: :path, type: :integer, required: true
+
+      include_context 'a company with an order'
+
+      let(:proforma) {
+        Organization::Proformas::Create.call(order_version.id, {
+          invoice_amounts: [
+            { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" }
+          ]
+        }).data
+      }
+      let(:id) { proforma.id }
+
+      let(:user) { FactoryBot.create(:user) }
+      let(:Authorization) { access_token(user) }
+
+      response '200', 'proforma voided' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Proformas::ShowDto.to_schema
+
+        it "voids the proforma" do |example|
+          expect {
+            submit_request(example.metadata)
+          }.to change { proforma.reload.status }.from("draft").to("voided")
+
+          assert_response_matches_metadata(example.metadata)
+        end
+      end
+
+      response '404', 'not found' do
+        schema ApiError.schema
+
+        context "when the proforma does not exist" do
+          let(:id) { -1 }
+          let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+          run_test!
+        end
+      end
+
+      response '401', 'unauthorised' do
+        schema ApiError.schema
+
+        context "when the proforma does not belong to a company the user is a member of" do
+          let(:Authorization) { access_token(FactoryBot.create(:user)) }
+
+          run_test!
+        end
+      end
+
+      response '422', 'unprocessable entity' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema ApiError.schema
+
+        context "when the proforma is not in draft status" do
+          before do
+            proforma.update!(status: :posted)
+          end
+
+          run_test! do |response|
+            expect(response.body).to include("Failed to void proforma: Cannot void a proforma that is not in draft status")
+          end
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
   end
 end
