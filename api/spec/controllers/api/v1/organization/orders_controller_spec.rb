@@ -3,6 +3,7 @@ require "swagger_helper"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
 require_relative "shared_examples/an_authenticated_endpoint"
 require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
 module Api
   module V1
@@ -349,7 +350,7 @@ module Api
             produces "application/json"
             parameter name: :id, in: :path, type: :integer
 
-            include_context 'a company with a project with three item groups'
+            include_context 'a company with an order'
 
             let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
             let(:user) { FactoryBot.create(:user) }
@@ -367,15 +368,15 @@ module Api
                   {
                     "results" => [
                       {
-                        "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
+                        "original_item_uuid" => order_version.items.first.original_item_uuid,
                         "invoiced_amount" => "0.0"
                       },
                       {
-                        "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
+                        "original_item_uuid" => order_version.items.second.original_item_uuid,
                         "invoiced_amount" => "0.0"
                       },
                       {
-                        "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
+                        "original_item_uuid" => order_version.items.third.original_item_uuid,
                         "invoiced_amount" => "0.0"
                       }
                     ]
@@ -395,15 +396,15 @@ module Api
                     {
                       "results" => [
                         {
-                          "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
-                          "invoiced_amount" => "1.0"
+                          "original_item_uuid" => order_version.items.first.original_item_uuid,
+                          "invoiced_amount" => "0.2"
                         },
                         {
-                          "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
-                          "invoiced_amount" => "2.0"
+                          "original_item_uuid" => order_version.items.second.original_item_uuid,
+                          "invoiced_amount" => "0.0"
                         },
                         {
-                          "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
+                          "original_item_uuid" => order_version.items.third.original_item_uuid,
                           "invoiced_amount" => "0.0"
                         }
                       ]
@@ -411,14 +412,8 @@ module Api
                   end
 
                   before {
-                    draft_invoice = ::Organization::Invoices::Create.call(project_version.id, {
-                      invoice_amounts: [
-                        { original_item_uuid: first_item.original_item_uuid, invoice_amount: 1 },
-                        { original_item_uuid: second_item.original_item_uuid, invoice_amount: 2 }
-                      ]
-                    }).data
-
-                    Accounting::Invoices::Post.call(draft_invoice.id).data
+                    proforma = ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+                    ::Accounting::Proformas::Post.call(proforma.id)
                   }
 
                   run_test!("It returns the relevant amount for each items") do
@@ -433,15 +428,15 @@ module Api
                     {
                       "results" => [
                         {
-                          "original_item_uuid" => project_version_first_item_group_item.original_item_uuid,
+                          "original_item_uuid" => order_version.items.first.original_item_uuid,
                           "invoiced_amount" => "0.0"
                         },
                         {
-                          "original_item_uuid" => project_version_second_item_group_item.original_item_uuid,
+                          "original_item_uuid" => order_version.items.second.original_item_uuid,
                           "invoiced_amount" => "0.0"
                         },
                         {
-                          "original_item_uuid" => project_version_third_item_group_item.original_item_uuid,
+                          "original_item_uuid" => order_version.items.third.original_item_uuid,
                           "invoiced_amount" => "0.0"
                         }
                       ]
@@ -449,14 +444,8 @@ module Api
                   end
 
                   before {
-                    draft_invoice = ::Organization::Invoices::Create.call(project_version.id, {
-                      invoice_amounts: [
-                        { original_item_uuid: first_item.original_item_uuid, invoice_amount: 1 },
-                        { original_item_uuid: second_item.original_item_uuid, invoice_amount: 2 }
-                      ]
-                    }).data
-
-                    Accounting::Invoices::Post.call(draft_invoice.id, 2.days.from_now).data
+                    proforma = ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+                    ::Accounting::Proformas::Post.call(proforma.id, Time.current + 2.days)
                   }
 
                   run_test!("It does not take those transactions into account") do
