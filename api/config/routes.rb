@@ -98,6 +98,7 @@ Rails.application.routes.draw do
             post "cancel", action: :cancel
           end
         end
+        resources :credit_notes, only: [ :show ]
       end
     end
   end
