@@ -2,7 +2,8 @@ module Api
   module V1
     module Organization
       class InvoicesController < ApiV1Controller
-        before_action :load_invoice!, except: [ :index ]
+        before_action(except: [ :index ]) { load_and_authorise_resource(class_name: "Accounting::Invoice") }
+
         # GET    /api/v1/organization/companies/:company_id/invoices
         def index
           invoices = policy_scope(Accounting::Invoice).where(company_id: params[:company_id])
@@ -17,12 +18,12 @@ module Api
           render json: ::Organization::Invoices::IndexDto.new({ results: invoices, meta: { order_versions: order_versions, orders: orders } })
         end
 
-        # GET    /api/v1/organization/companies/:company_id/invoices/:id
+        # GET    /api/v1/organization/invoices/:id
         def show
           render json: ::Organization::Invoices::ShowDto.new({ result: @invoice })
         end
 
-        # POST   /api/v1/organization/companies/:company_id/invoices/:id/cancel
+        # POST   /api/v1/organization/invoices/:id/cancel
         def cancel
           result = ::Accounting::Invoices::Cancel.call(@invoice.id)
 
@@ -34,10 +35,6 @@ module Api
         end
 
         private
-
-        def load_invoice!
-          @invoice = policy_scope(Accounting::Invoice).where(company_id: params[:company_id]).includes(:lines).find(params[:id])
-        end
 
         def invoice_params
           params.require(:invoice).permit(invoice_amounts: [ :original_item_uuid, :invoice_amount ])

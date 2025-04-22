@@ -102,46 +102,39 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
-  path '/api/v1/organization/companies/{company_id}/invoices/{id}' do
+  path '/api/v1/organization/invoices/{id}' do
     get 'Show invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
       produces 'application/json'
-      parameter name: :company_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
 
       let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
       let(:id) { invoice.id }
-      let(:company_id) { company.id }
       let(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
       include_context 'a company with a project with three items'
 
       response '200', 'invoice found' do
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
         schema Organization::Invoices::ShowDto.to_schema
 
         run_test!
       end
 
       response '404', 'invoice not found' do
-        describe "when the company is not a company the user is a member of" do
+        describe "when the invoice does not exists" do
+          let(:id) { -1 }
+
           run_test!
         end
+      end
 
-        describe "when the invoice does not belong to company" do
-          let!(:member) { FactoryBot.create(:member, user:, company:) }
-          let(:another_company) { FactoryBot.create(:company, :with_config) }
-          let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
-          let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
-          let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
-          let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
-          let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
-          let!(:another_company_invoice) {
-            ::Organization::Invoices::Create.call(another_company_project_version.id, { invoice_amounts: [ { original_item_uuid: another_company_project_version_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
-          }
-          let(:id) { another_company_invoice.id }
+      response '401', 'unauthorised' do
+        describe "when the invoice does not belong to a company the user is a member of" do
+          let(:Authorization) { access_token(FactoryBot.create(:user)) }
 
           run_test!
         end
@@ -150,13 +143,12 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
-  path '/api/v1/organization/companies/{company_id}/invoices/{id}/cancel' do
+
+  path '/api/v1/organization/invoices/{id}/cancel' do
     post 'Cancels an invoice' do
       tags 'Invoices'
       security [ bearerAuth: [] ]
       produces 'application/json'
-
-      parameter name: :company_id, in: :path, type: :integer, required: true
       parameter name: :id, in: :path, type: :integer, required: true
 
       let(:invoice) {
@@ -168,13 +160,15 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         Accounting::Invoices::Post.call(draft.id).data
       }
       let(:id) { invoice.id }
-      let(:company_id) { company.id }
+
       let(:user) { FactoryBot.create(:user) }
+      let!(:member) { FactoryBot.create(:member, user:, company:) }
+
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
       include_context 'a company with a project with three items'
 
       response '200', 'invoice cancelled' do
-        let!(:member) { FactoryBot.create(:member, user:, company:) }
         schema Organization::Invoices::ShowDto.to_schema
 
         it "cancels the invoice and creates a credit note" do |example|
@@ -188,31 +182,16 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       end
 
       response '404', 'invoice not found' do
-        context "when the company is not a company the user is a member of" do
-          run_test!
-        end
-
         context "when the invoice does not exist" do
           let(:id) { -1 }
-          let!(:member) { FactoryBot.create(:member, user:, company:) }
 
           run_test!
         end
+      end
 
-        describe "when the invoice does not belong to company" do
-          let!(:member) { FactoryBot.create(:member, user:, company:) }
-
-          let(:another_company) { FactoryBot.create(:company, :with_config) }
-          let(:another_company_client) { FactoryBot.create(:client, company: another_company) }
-          let(:another_company_quote) { FactoryBot.create(:quote, client: another_company_client, company: another_company) }
-          let(:another_company_quote_version) { FactoryBot.create(:project_version, project: another_company_quote) }
-          let(:another_company_project) { FactoryBot.create(:order, client: another_company_client, company: another_company, original_project_version: another_company_quote_version) }
-          let(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_project) }
-          let(:another_company_project_version_item) { FactoryBot.create(:item, project_version: another_company_project_version) }
-          let!(:another_company_invoice) {
-            ::Organization::Invoices::Create.call(another_company_project_version.id, { invoice_amounts: [ { original_item_uuid: another_company_project_version_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
-          }
-          let(:id) { another_company_invoice.id }
+      response '401', 'unauthorised' do
+        context "when the invoice does not belong to a company the user is a member of" do
+          let(:Authorization) { access_token(FactoryBot.create(:user)) }
 
           run_test!
         end
