@@ -1,7 +1,8 @@
 require 'rails_helper'
 require 'swagger_helper'
 require_relative "shared_examples/an_authenticated_endpoint"
-require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
+
 RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
   path '/api/v1/organization/companies/{company_id}/invoices' do
     get 'Lists invoices for an order' do
@@ -10,49 +11,52 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       produces 'application/json'
       parameter name: :company_id, in: :path, type: :integer
       parameter name: 'status',
-          in: :query,
-          schema: {
-            type: :array,
-            items: {
-              type: :string,
-              enum: [ 'draft', 'posted', 'cancelled', 'voided' ]
-            }
-          }
-      parameter name: 'order_id',
-        in: :query,
+      in: :query,
         schema: {
-          type: :integer
+          type: :array,
+          items: {
+            type: :string,
+            enum: [ 'draft', 'posted', 'cancelled', 'voided' ]
+          }
         }
+        parameter name: 'order_id',
+        in: :query,
+          schema: {
+            type: :integer
+          }
 
-      let(:order_id) { nil }
-      let(:company_id) { company.id }
-      let(:user) { FactoryBot.create(:user) }
-      let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-      include_context 'a company with a project with three items'
+        let(:order_id) { nil }
+        let(:company_id) { company.id }
+        let(:user) { FactoryBot.create(:user) }
+        let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
+
+
+        include_context 'a company with an order'
 
       response '200', 'invoices found' do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
         schema Organization::Invoices::IndexDto.to_schema
 
-        context "when there are no invoices attached to the order" do
+        context "when there are no invoices" do
           run_test!("it returns an empty array") do
             parsed_response = JSON.parse(response.body)
             expect(parsed_response["results"]).to eq([])
           end
         end
 
-        context "when there are invoices attached to the order" do
-         let!(:previous_invoice) {
-            ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
-          }
+        context "when there are invoices" do
+          let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+          let!(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
 
           run_test!("it returns the invoices") do
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("results", 0)).to include({ "id"=> previous_invoice.id })
+            expect(parsed_response.dig("results", 0)).to include({ "id"=> invoice.id })
           end
         end
 
         describe "when the company_id does not belong to a company the user is a member of" do
+          let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+          let!(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
           let(:company_id) { FactoryBot.create(:company).id }
 
           run_test!("it returns an empty array") do
@@ -62,18 +66,18 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
         end
 
         context "when status are provided in the query params" do
-          let(:status) { [ "voided" ] }
+          let(:status) { [ "cancelled" ] }
 
-          before do
-            FactoryBot.create(:invoice, company_id: company.id, holder_id: project_version.id, number: "PRO-2024-00001")
-            FactoryBot.create(:invoice, :voided, company_id: company.id, holder_id: project_version.id, number: "PRO-2024-00002")
-            FactoryBot.create(:invoice, :posted, company_id: company.id, holder_id: project_version.id, number: "INV-2024-00001")
-            FactoryBot.create(:invoice, :cancelled, company_id: company.id, holder_id: project_version.id, number: "INV-2024-00002")
-          end
+          let(:first_proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+          let!(:first_invoice) { ::Accounting::Proformas::Post.call(first_proforma.id).data }
+          let(:second_proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+          let(:second_invoice) { ::Accounting::Proformas::Post.call(second_proforma.id).data }
+          let!(:second_invoice_credit_note) { ::Accounting::Invoices::Cancel.call(second_invoice.id).data[:credit_note] }
+
 
           run_test!("it returns the filtered invoices") do
             parsed_response = JSON.parse(response.body)
-            expect(parsed_response.dig("results", 0, "number")).to eq("PRO-2024-00002")
+            expect(parsed_response.dig("results", 0, "number")).to eq(second_invoice.number)
             expect(parsed_response.dig("results").length).to eq(1)
           end
         end
@@ -82,17 +86,19 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
           context "when the order_id correctly belongs to an order of the company" do
             let(:order_id) { order.id }
 
-            before do
-              # previous invoice related to order
-              FactoryBot.create(:invoice, company_id: company.id, holder_id: project_version.id, number: "PRO-2024-00001")
+            let(:proforma_related_to_order) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+            let!(:invoice_related_to_order) { ::Accounting::Proformas::Post.call(proforma_related_to_order.id).data }
 
-              # previous invoice related to another_order
-              FactoryBot.create(:invoice, company_id: company.id, holder_id: "another_holder_id", number: "PRO-2024-00002")
-            end
+            let(:another_quote) { FactoryBot.create(:quote, :with_version, company: company, client: client, number: 2) }
+            let(:another_draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: another_quote.last_version, number: 2) }
+            let(:another_order) { FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2) }
+            let(:proforma_not_related_to_order) { ::Organization::Proformas::Create.call(another_order.versions.last.id, { invoice_amounts: [ { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+            let!(:invoice_not_related_to_order) { ::Accounting::Proformas::Post.call(proforma_not_related_to_order.id).data }
+
 
             run_test!("it returns the filtered invoices") do
               parsed_response = JSON.parse(response.body)
-              expect(parsed_response.dig("results", 0, "number")).to eq("PRO-2024-00001")
+              expect(parsed_response.dig("results", 0, "number")).to eq(invoice_related_to_order.number)
               expect(parsed_response.dig("results").length).to eq(1)
             end
           end
@@ -102,6 +108,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
+
   path '/api/v1/organization/invoices/{id}' do
     get 'Show invoice' do
       tags 'Invoices'
@@ -109,14 +116,16 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       produces 'application/json'
       parameter name: :id, in: :path, type: :integer
 
-      let(:invoice) { ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+      include_context 'a company with an order'
+
+      let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+      let!(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
+
       let(:id) { invoice.id }
       let(:user) { FactoryBot.create(:user) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
 
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-
-      include_context 'a company with a project with three items'
 
       response '200', 'invoice found' do
         schema Organization::Invoices::ShowDto.to_schema
@@ -151,22 +160,16 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       produces 'application/json'
       parameter name: :id, in: :path, type: :integer, required: true
 
-      let(:invoice) {
-        draft = Organization::Invoices::Create.call(project_version.id, {
-          invoice_amounts: [
-            { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" }
-          ]
-        }).data
-        Accounting::Invoices::Post.call(draft.id).data
-      }
-      let(:id) { invoice.id }
+      include_context 'a company with an order'
 
+      let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
+      let!(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
+
+      let(:id) { invoice.id }
       let(:user) { FactoryBot.create(:user) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
 
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-
-      include_context 'a company with a project with three items'
 
       response '200', 'invoice cancelled' do
         schema Organization::Invoices::ShowDto.to_schema
@@ -198,7 +201,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
       end
 
       response '422', 'unprocessable entity' do
-        before { invoice.update(status: :draft, number: "PRO-2024-0001") }
+        before { ::Accounting::Invoices::Cancel.call(invoice.id) }
 
         let!(:member) { FactoryBot.create(:member, user:, company:) }
         schema ApiError.schema
