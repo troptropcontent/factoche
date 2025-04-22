@@ -33,17 +33,6 @@ module Api
           render json: ::Organization::Invoices::ShowDto.new({ result: result.data[:invoice] })
         end
 
-        # POST   /api/v1/organization/companies/:company_id/invoices/:id
-        def post
-          result = ::Accounting::Invoices::Post.call(@invoice.id)
-
-          if result.failure?
-            raise Error::UnprocessableEntityError, "Failed to post invoice: #{result.error}"
-          end
-
-          render json: ::Organization::Invoices::ShowDto.new({ result: result.data })
-        end
-
         private
 
         def load_invoice!
