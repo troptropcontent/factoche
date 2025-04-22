@@ -22,17 +22,6 @@ module Api
           render json: ::Organization::Invoices::ShowDto.new({ result: @invoice })
         end
 
-        # DELETE /api/v1/organization/companies/:company_id/invoices/:id
-        def destroy
-          result = ::Accounting::Invoices::Void.call(@invoice.id)
-
-          if result.failure?
-            raise Error::UnprocessableEntityError, "Failed to void invoice: #{result.error}"
-          end
-
-          render json: ::Organization::Invoices::ShowDto.new({ result: result.data })
-        end
-
         # POST   /api/v1/organization/companies/:company_id/invoices/:id/cancel
         def cancel
           result = ::Accounting::Invoices::Cancel.call(@invoice.id)
