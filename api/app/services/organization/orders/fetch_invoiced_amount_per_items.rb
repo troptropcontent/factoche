@@ -52,7 +52,7 @@ module Organization
       end
 
       def calculate_amounts_per_holder
-        @lines.each_with_object(Hash.new { |hash, key| hash[key] = { invoices_amount: 0, credit_notes_amount: 0 } }) do |line, result|
+        @lines.each_with_object(Hash.new { |hash, key| hash[key] = { invoices_amount: 0.to_d, credit_notes_amount: 0.to_d } }) do |line, result|
           amount_key = line.type == LINE_TYPES[:invoice] ? :invoices_amount : :credit_notes_amount
           result[line.holder_id][amount_key] += line.sum
         end
