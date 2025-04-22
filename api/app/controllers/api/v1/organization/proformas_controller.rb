@@ -37,6 +37,18 @@ module Api
           render json: ::Organization::Proformas::ShowDto.new({ result: @proforma })
         end
 
+        # PATCH  /api/v1/organization/proformas/:id
+        # PUT  /api/v1/organization/proformas/:id
+        def update
+          result = ::Organization::Proformas::Update.call(@proforma.id, proforma_params.to_h)
+
+          if result.failure?
+            raise Error::UnprocessableEntityError, "Failed to update proforma: #{result.error}"
+          end
+
+          render json: ::Organization::Proformas::ShowDto.new({ result: result.data })
+        end
+
         private
 
         def proforma_params

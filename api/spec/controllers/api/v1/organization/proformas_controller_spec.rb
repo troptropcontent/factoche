@@ -200,4 +200,121 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       it_behaves_like "an authenticated endpoint"
     end
   end
+  path '/api/v1/organization/proformas/{id}' do
+    put 'Update proforma' do
+      tags 'Proformas'
+      security [ bearerAuth: [] ]
+      produces 'application/json'
+      consumes 'application/json'
+      parameter name: :id, in: :path, type: :integer
+      parameter name: :body, in: :body, required: true, schema: {
+        type: :object,
+        required: [ :invoice_amounts ],
+        properties: {
+          invoice_amounts: {
+            type: :array,
+            items: {
+              type: :object,
+              required: [ :original_item_uuid, :invoice_amount ],
+              properties: {
+                original_item_uuid: { type: :string },
+                invoice_amount: { type: :string, format: "decimal" }
+              }
+            }
+          }
+        }
+      }
+
+      include_context 'a company with an order'
+
+      let!(:proforma) {
+        ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: "0.2" } ] }).data
+      }
+      let(:id) { proforma.id }
+      let(:user) { FactoryBot.create(:user) }
+
+      let(:Authorization) { "Bearer #{access_token(user)}" }
+      let(:body) { { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "1" } ] } }
+
+      response '200', 'Proforma updated' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+        schema Organization::Proformas::ShowDto.to_schema
+
+        it "Updates the proforma by voiding the proforma and creating a new one", :aggregate_failures do |example|
+          expect { submit_request(example.metadata) }
+            .to change(Accounting::Proforma, :count).by(1)
+            .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+            .and change(Accounting::FinancialTransactionLine, :count).by(1)
+
+          assert_response_matches_metadata(example.metadata)
+
+          parsed_response = JSON.parse(response.body)
+
+          expect(parsed_response.dig("result", "id")).not_to eq(proforma.id)
+          expect(parsed_response.dig("result", "status")).to eq("draft")
+          expect(parsed_response.dig("result", "number")).to end_with("002")
+        end
+
+        context "when the client has changed" do
+          before { client.update(name: "New Client Name") }
+
+          it "Updates the invoice details accordingly" do |example|
+            submit_request(example.metadata)
+
+            parsed_response = JSON.parse(response.body)
+
+            expect(parsed_response.dig("result", "detail", "client_name")).to eq("New Client Name")
+
+            assert_response_matches_metadata(example.metadata)
+          end
+        end
+      end
+
+      response '404', 'invoice not found' do
+        describe "when the proforma does not exists" do
+          let(:id) { -1 }
+
+          run_test!
+        end
+      end
+
+      response '401', 'unathorised' do
+        describe "when the proforma does not belong to a company the user is a member of" do
+          let(:Authorization) { "Bearer #{access_token(FactoryBot.create(:user))}" }
+
+          run_test!
+        end
+      end
+
+      response '422', 'unprocessable entity' do
+        let!(:member) { FactoryBot.create(:member, user:, company:) }
+
+        context "when the invoice is not draft" do
+          before { proforma.update(status: :posted) }
+
+          run_test!
+        end
+
+        context "when the invoice_amount would exceed the total amount allowed in the order for the item" do
+          let(:body) { { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "100000" } ] } }
+
+          run_test!
+        end
+
+        context "when the original_item_uuid does not belong to the order" do
+          let(:body) { { invoice_amounts: [ { original_item_uuid: "another_id", invoice_amount: "1" } ] } }
+
+          run_test!
+        end
+
+        context "when the params are not valid" do
+          let(:body) { { invoice_amounts: [ { invoice_amount: "1" } ] } }
+
+          run_test!
+        end
+      end
+
+      it_behaves_like "an authenticated endpoint"
+    end
+  end
 end

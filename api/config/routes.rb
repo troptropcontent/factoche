@@ -52,7 +52,7 @@ Rails.application.routes.draw do
               post "cancel", action: :cancel
             end
           end
-          resources :proformas, only: [ :show, :index ]
+          resources :proformas, only: [ :show, :index, :update ]
           resources :credit_notes, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
@@ -94,6 +94,7 @@ Rails.application.routes.draw do
             post "convert_to_draft_order"
           end
         end
+        resources :proformas, only: [ :update ]
       end
     end
   end
