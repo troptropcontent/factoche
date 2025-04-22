@@ -22,18 +22,6 @@ module Api
           render json: ::Organization::Invoices::ShowDto.new({ result: @invoice })
         end
 
-        # PATCH  /api/v1/organization/companies/:company_id/invoices/:id
-        # PUT  /api/v1/organization/companies/:company_id/invoices/:id
-        def update
-          result = ::Organization::Invoices::Update.call(@invoice.id, invoice_params.to_h)
-
-          if result.failure?
-            raise Error::UnprocessableEntityError, "Failed to update invoice: #{result.error}"
-          end
-
-          render json: ::Organization::Invoices::ShowDto.new({ result: result.data })
-        end
-
         # DELETE /api/v1/organization/companies/:company_id/invoices/:id
         def destroy
           result = ::Accounting::Invoices::Void.call(@invoice.id)

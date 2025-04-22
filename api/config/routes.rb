@@ -46,7 +46,7 @@ Rails.application.routes.draw do
           resources :orders, only: [ :index ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
-          resources :invoices, only: [ :index, :show, :update, :destroy ] do
+          resources :invoices, only: [ :index, :show, :destroy ] do
             member do
               post "", action: :post
               post "cancel", action: :cancel
