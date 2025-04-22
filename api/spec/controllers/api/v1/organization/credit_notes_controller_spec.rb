@@ -17,28 +17,32 @@ module Api
             let(:company_id) { company.id }
             let(:user) { FactoryBot.create(:user) }
             let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
-            include_context 'a company with a project with three items'
+            include_context 'a company with an order'
 
             response '200', 'credit notes found' do
               let!(:member) { FactoryBot.create(:member, user:, company:) }
               schema ::Organization::CreditNotes::IndexDto.to_schema
 
-              context "when there are no credit notes attached to the order" do
+              context "when there are no credit notes" do
                 run_test!("it returns an empty array") do
                   parsed_response = JSON.parse(response.body)
                   expect(parsed_response["results"]).to eq([])
                 end
               end
 
-              context "when there are credit notes attached to the order" do
-                let!(:posted_invoice) {
-                  draft = ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
-                  ::Accounting::Invoices::Post.call(draft.id).data
-                }
+              context "when there are credit notes" do
+                let(:proforma) do
+                  ::Organization::Proformas::Create.call(order_version.id, {
+                    invoice_amounts: [
+                      { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 1 },
+                      { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 2 }
+                    ]
+                  }).data
+                end
 
-                let!(:credit_note) {
-                  Accounting::Invoices::Cancel.call(posted_invoice.id).data[:credit_note]
-                }
+                let(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
+
+                let!(:credit_note) { ::Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }
 
                 run_test!("it returns the credit notes") do
                   parsed_response = JSON.parse(response.body)
@@ -47,14 +51,18 @@ module Api
               end
 
               describe "when the company_id does not belong to a company the user is a member of" do
-                let!(:posted_invoice) {
-                  draft = ::Organization::Invoices::Create.call(project_version.id, { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.2" } ] }).data
-                  ::Accounting::Invoices::Post.call(draft.id).data
-                }
+                let(:proforma) do
+                  ::Organization::Proformas::Create.call(order_version.id, {
+                    invoice_amounts: [
+                      { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 1 },
+                      { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 2 }
+                    ]
+                  }).data
+                end
 
-                let!(:credit_note) {
-                  Accounting::Invoices::Cancel.call(posted_invoice.id).data[:credit_note]
-                }
+                let(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
+
+                let!(:credit_note) { ::Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }
 
                 let(:company_id) { FactoryBot.create(:company).id }
 
