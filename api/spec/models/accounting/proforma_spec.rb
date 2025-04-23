@@ -4,7 +4,7 @@ RSpec.describe Accounting::Proforma, type: :model do
   describe "validations" do
     subject(:proforma) { FactoryBot.build(:proforma) }
 
-    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", voided: "voided").with_default(:draft) }
+    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", voided: "voided", posted: "posted").with_default(:draft) }
 
     describe "#valid_number" do
       it "validates number respect the expected format", :aggregate_failures do
