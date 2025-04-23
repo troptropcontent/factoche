@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
 module Tests
   class Invoice < Accounting::FinancialTransaction
@@ -72,7 +73,13 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
     end
 
     describe "type" do
-      subject(:transaction) { FactoryBot.build(:invoice, company_id: 2, holder_id: 2, number: "PRO-2024-001") }
+      subject(:transaction) {
+        proforma = Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+        Accounting::Proformas::Post.call(proforma.id).data
+       }
+
+      include_context 'a company with an order'
+
 
       context "when the type is Invoice" do
         it { is_expected.to be_valid }
@@ -84,6 +91,12 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
         it { is_expected.to be_valid }
       end
 
+      context "when the type is Proforma" do
+        before { transaction.type = "Proforma" }
+
+        it { is_expected.to be_valid }
+      end
+
       context "when the type is not CreditNote or Invoice" do
         before { transaction.type = "SomeOtherTypeName" }
 
@@ -91,7 +104,7 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
 
         it "returns a proper message" do
           transaction.valid?
-          expect(transaction.errors["type"]).to include("must either be Invoice or CreditNote")
+          expect(transaction.errors["type"]).to include("must either be Invoice, CreditNote or Proforma")
         end
       end
     end
