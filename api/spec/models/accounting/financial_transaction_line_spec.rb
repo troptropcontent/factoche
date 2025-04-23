@@ -1,14 +1,22 @@
 require 'rails_helper'
-
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 RSpec.describe Accounting::FinancialTransactionLine, type: :model do
+  include_context 'a company with an order'
+
   describe 'associations' do
     it { is_expected.to belong_to(:financial_transaction).class_name('Accounting::FinancialTransaction') }
   end
 
   describe 'validations' do
     subject(:line) {
-      FactoryBot.build(:financial_transaction_line, financial_transaction: FactoryBot.create(:invoice, company_id: 2, holder_id: 2, number: "PRO-2024-0001"))
+      FactoryBot.build(:financial_transaction_line, financial_transaction_id: invoice.id)
     }
+
+    let(:invoice) {
+      proforma = Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+      Accounting::Proformas::Post.call(proforma.id).data
+    }
+
 
     it { is_expected.to validate_presence_of(:unit) }
     it { is_expected.to validate_presence_of(:unit_price_amount) }
