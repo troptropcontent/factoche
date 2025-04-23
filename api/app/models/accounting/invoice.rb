@@ -31,10 +31,7 @@ module Accounting
       end
     end
 
-    UNPUBLISHED_STATUS = [ "draft", "voided" ].freeze
-    NUMBER_UNPUBLISHED_PREFIX = "PRO".freeze
-    PUBLISHED_STATUS = [ "posted", "cancelled" ].freeze
-    NUMBER_PUBLISHED_PREFIX = "INV".freeze
+    NUMBER_PREFIX = "INV".freeze
 
     has_one :credit_note, class_name: "Accounting::CreditNote", foreign_key: :holder_id
 
@@ -45,21 +42,5 @@ module Accounting
          },
          default: :posted,
          validate: true
-
-    validate :valid_number
-
-    scope :published, -> { where(status: PUBLISHED_STATUS) }
-
-    scope :unpublished, -> { where(status: UNPUBLISHED_STATUS) }
-
-    private
-
-    def valid_number
-      prefix = UNPUBLISHED_STATUS.include?(status) ? NUMBER_UNPUBLISHED_PREFIX : NUMBER_PUBLISHED_PREFIX
-      regex = /^#{prefix}-\d{4}-\d+$/
-      unless number.match?(regex)
-        errors.add(:number, "must match format #{prefix}-YEAR-SEQUENCE")
-      end
-    end
   end
 end
