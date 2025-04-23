@@ -3,6 +3,7 @@ require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
 module Tests
   class Invoice < Accounting::FinancialTransaction
+    NUMBER_PREFIX = "INV".freeze
     class Context < Dry::Validation::Contract
       params do
         required(:test_field).filled(:string)
@@ -12,6 +13,7 @@ module Tests
   end
 
   class CreditNote < Accounting::FinancialTransaction
+    NUMBER_PREFIX = "CN".freeze
     class Context < Dry::Validation::Contract
       params do
         required(:test_field).filled(:string)
