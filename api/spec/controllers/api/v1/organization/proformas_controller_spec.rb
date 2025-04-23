@@ -167,7 +167,6 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       tags 'Invoices'
       security [ bearerAuth: [] ]
       produces 'application/json'
-      parameter name: :company_id, in: :path, type: :integer
       parameter name: :id, in: :path, type: :integer
 
       include_context 'a company with an order'
