@@ -138,13 +138,16 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
               another_order = FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2)
 
               # A proforma from another order
-              Organization::Proformas::Create.call(another_order.last_version.id, { invoice_amounts: [ { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data.persisted?
+              another_order_proforma = Organization::Proformas::Create.call(another_order.last_version.id, { invoice_amounts: [ { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
 
-              # previous invoice related to order
-              Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+              # An invoice from another order
+              Accounting::Proformas::Post.call(another_order_proforma.id).data.persisted?
 
-              # previous invoice related to another_order
-              FactoryBot.create(:invoice, company_id: company.id, holder_id: "another_holder_id", number: "PRO-2024-00002")
+              # A proforma related to the order
+              order_proforma = Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+
+              # An invoice related to the order
+              Accounting::Proformas::Post.call(order_proforma.id).data.persisted?
             end
 
             run_test!("it returns the filtered invoices") do
