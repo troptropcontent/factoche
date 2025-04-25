@@ -64,7 +64,9 @@ const InvoicesSummary = ({
 
   const ordersFinancialTransactions =
     orderInvoices !== undefined && orderProformas !== undefined
-      ? [...orderInvoices, ...orderProformas]
+      ? [...orderInvoices, ...orderProformas].sort((a, b) => {
+          return Date.parse(a.issue_date) - Date.parse(b.issue_date);
+        })
       : undefined;
 
   const navigate = useNavigate();
