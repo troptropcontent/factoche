@@ -21,7 +21,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { StatusBadge } from "../../invoices/private/status-badge";
-import { NewInvoiceButton } from "../../projects/private/new-invoice-button";
+import { NewProformaButton } from "./new-proforma-button";
 
 const InvoicesSummary = ({
   companyId,
@@ -30,38 +30,68 @@ const InvoicesSummary = ({
   companyId: number;
   orderId: number;
 }) => {
-  const { data: projectInvoices } = Api.useQuery(
+  const { data: orderInvoices } = Api.useQuery(
     "get",
     "/api/v1/organization/companies/{company_id}/invoices",
     {
       params: {
         path: { company_id: companyId },
-        query: { status: ["cancelled", "draft", "posted"], order_id: orderId },
+        query: { order_id: orderId },
       },
     },
     {
       select: ({ results }) =>
-        results.sort((a, b) => -b.issue_date.localeCompare(a.issue_date)),
+        results.map((invoice) => ({ ...invoice, type: "invoice" as const })),
     }
   );
+
+  const { data: orderProformas } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/proformas",
+    {
+      params: {
+        path: { company_id: companyId },
+        query: { order_id: orderId },
+      },
+    },
+    {
+      select: ({ results }) =>
+        results
+          .map((proforma) => ({ ...proforma, type: "proforma" as const }))
+          .filter((proforma) => proforma.status !== "voided"),
+    }
+  );
+
+  const ordersFinancialTransactions =
+    orderInvoices !== undefined && orderProformas !== undefined
+      ? [...orderInvoices, ...orderProformas]
+      : undefined;
 
   const navigate = useNavigate();
 
   const handleRowClick = (
-    invoice: NonNullable<typeof projectInvoices>[number]
+    financialTransaction: NonNullable<
+      typeof ordersFinancialTransactions
+    >[number]
   ) => {
+    const path =
+      financialTransaction.type === "invoice"
+        ? `/companies/$companyId/invoices/$invoiceId`
+        : `/companies/$companyId/proformas/$proformaId`;
+
     navigate({
-      to: "/companies/$companyId/invoices/$invoiceId",
+      to: path,
       params: {
         companyId: companyId.toString(),
-        invoiceId: invoice.id.toString(),
+        invoiceId: financialTransaction.id.toString(),
+        proformaId: financialTransaction.id.toString(),
       },
     });
   };
 
   const { t } = useTranslation();
 
-  if (projectInvoices == undefined) {
+  if (ordersFinancialTransactions == undefined) {
     return;
   }
 
@@ -75,7 +105,7 @@ const InvoicesSummary = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {projectInvoices.length > 0 && (
+        {ordersFinancialTransactions.length > 0 && (
           <Table>
             <TableHeader>
               <TableRow>
@@ -102,38 +132,40 @@ const InvoicesSummary = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projectInvoices.map((invoice, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => handleRowClick(invoice)}
-                  className="cursor-pointer hover:bg-gray-100 transition-colors"
-                  role="link"
-                >
-                  <TableCell>
-                    {invoice.number ||
-                      t(
-                        "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.number_when_empty"
-                      )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {t("common.date", {
-                      date: Date.parse(invoice.updated_at),
-                    })}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <StatusBadge status={invoice.status} />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {t("common.number_in_currency", {
-                      amount: invoice.total_amount,
-                    })}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {ordersFinancialTransactions.map(
+                (financialTransaction, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => handleRowClick(financialTransaction)}
+                    className="cursor-pointer hover:bg-gray-100 transition-colors"
+                    role="link"
+                  >
+                    <TableCell>
+                      {financialTransaction.number ||
+                        t(
+                          "pages.companies.projects.show.completion_snapshot_invoices_summary.columns.number_when_empty"
+                        )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {t("common.date", {
+                        date: Date.parse(financialTransaction.updated_at),
+                      })}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <StatusBadge status={financialTransaction.status} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {t("common.number_in_currency", {
+                        amount: financialTransaction.total_amount,
+                      })}
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
             </TableBody>
           </Table>
         )}
-        {projectInvoices.length === 0 && (
+        {ordersFinancialTransactions.length === 0 && (
           <EmptyState
             icon={TrafficCone}
             title={t(
@@ -147,7 +179,7 @@ const InvoicesSummary = ({
             )}
             onAction={() => {
               navigate({
-                to: "/companies/$companyId/orders/$orderId/invoices/new",
+                to: "/companies/$companyId/orders/$orderId/proformas/new",
                 params: {
                   companyId: companyId.toString(),
                   orderId: orderId.toString(),
@@ -158,9 +190,9 @@ const InvoicesSummary = ({
           />
         )}
       </CardContent>
-      {projectInvoices.length > 0 && (
+      {ordersFinancialTransactions.length > 0 && (
         <CardFooter>
-          <NewInvoiceButton {...{ companyId, orderId }} />
+          <NewProformaButton {...{ companyId, orderId }} />
         </CardFooter>
       )}
     </Card>

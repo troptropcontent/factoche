@@ -15,6 +15,7 @@ import { t } from "i18next";
 import { ProjectVersionCompact } from "../../../project-versions/shared/types";
 import { OrderCompact } from "../../../projects/shared/types";
 import { DocumentTableRow } from "./document-table-row";
+import { ProformaCompact } from "../../../proformas/shared/types";
 
 const LoadedTableBody = ({
   companyId,
@@ -24,7 +25,7 @@ const LoadedTableBody = ({
   tab,
 }: {
   companyId: string;
-  documents: InvoiceCompact[];
+  documents: InvoiceCompact[] | ProformaCompact[];
   orderVersions: ProjectVersionCompact[];
   orders: OrderCompact[];
   tab: Tab;
@@ -36,6 +37,7 @@ const LoadedTableBody = ({
       {documents.length > 0 ? (
         documents.map((document) => (
           <DocumentTableRow
+            tab={tab}
             companyId={companyId}
             document={document}
             orderVersions={orderVersions}
@@ -93,13 +95,11 @@ const DocumentTable = ({
   tab,
 }: {
   companyId: string;
-  documentsData:
-    | {
-        invoices: InvoiceCompact[];
-        orders: OrderCompact[];
-        orderVersions: ProjectVersionCompact[];
-      }
-    | undefined;
+  documentsData?: {
+    documents: InvoiceCompact[] | ProformaCompact[];
+    orders: OrderCompact[];
+    orderVersions: ProjectVersionCompact[];
+  };
   tab: Tab;
 }) => {
   return (
@@ -148,7 +148,7 @@ const DocumentTable = ({
       ) : (
         <LoadedTableBody
           companyId={companyId}
-          documents={documentsData.invoices}
+          documents={documentsData.documents}
           orderVersions={documentsData.orderVersions}
           orders={documentsData.orders}
           tab={tab}

@@ -16,28 +16,28 @@ const ButtonContent = () => {
   );
 };
 
-const NewInvoiceButton = ({
+const NewProformaButton = ({
   companyId,
   orderId,
 }: {
   companyId: number;
   orderId: number;
 }) => {
-  const { data: projectInvoices } = Api.useQuery(
+  const { data: orderProformas } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/invoices",
+    "/api/v1/organization/companies/{company_id}/proformas",
     {
       params: {
         path: { company_id: companyId },
-        query: { status: ["cancelled", "draft", "posted"], order_id: orderId },
+        query: { order_id: orderId },
       },
     },
     { select: ({ results }) => results }
   );
 
   const isButtonEnable =
-    projectInvoices != undefined &&
-    !projectInvoices.some(({ status }) => status === "draft");
+    orderProformas != undefined &&
+    !orderProformas.some(({ status }) => status === "draft");
 
   return (
     <div className="w-full">
@@ -48,7 +48,7 @@ const NewInvoiceButton = ({
       >
         {isButtonEnable ? (
           <Link
-            to={`/companies/$companyId/orders/$orderId/invoices/new`}
+            to={`/companies/$companyId/orders/$orderId/proformas/new`}
             params={{
               companyId: companyId.toString(),
               orderId: orderId.toString(),
@@ -63,7 +63,7 @@ const NewInvoiceButton = ({
       {!isButtonEnable && (
         <p className="text-xs text-muted-foreground mt-2 text-center">
           {t(
-            "pages.companies.projects.show.completion_snapshot_invoices_summary.new_completion_snapshot_invoice_button.disabled_hint"
+            "pages.companies.orders.show.invoices_summary.new_proforma_button.disabled_hint"
           )}
         </p>
       )}
@@ -71,4 +71,4 @@ const NewInvoiceButton = ({
   );
 };
 
-export { NewInvoiceButton };
+export { NewProformaButton };
