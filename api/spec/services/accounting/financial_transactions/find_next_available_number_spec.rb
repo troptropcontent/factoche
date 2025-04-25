@@ -88,7 +88,7 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
           )
 
           expect(result).to be_failure
-          expect(result.error).to include("Company ID is required")
+          expect(result.error.message).to include("Company ID is required")
         end
       end
 
@@ -101,14 +101,14 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
           )
 
           expect(result).to be_failure
-          expect(result.error).to include("Prefix is required")
+          expect(result.error.message).to include("Prefix is required")
         end
       end
     end
 
     context 'when database error occurs' do
       before do
-        allow(Accounting::FinancialTransaction).to receive(:where).and_raise(ActiveRecord::StatementInvalid)
+        allow(Accounting::FinancialTransaction).to receive(:where).and_raise("Database Error")
       end
 
       it 'returns failure' do
@@ -119,7 +119,7 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
         )
 
         expect(result).to be_failure
-        expect(result.error).to include("Failed to find next available number")
+        expect(result.error.message).to include("Database Error")
       end
     end
   end

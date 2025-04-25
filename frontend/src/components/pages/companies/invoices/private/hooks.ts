@@ -1,25 +1,18 @@
 import { Api } from "@/lib/openapi-fetch-query-client";
-import {
-  useProjectPreviouslyInvoicedTotalAmount,
-  useProjectTotalAmount,
-} from "../../projects/shared/hooks";
-import { useInvoiceTotalAmount } from "../shared/hooks";
 
 const useInvoiceContentData = ({
-  companyId,
   invoiceId,
   orderId,
 }: {
-  companyId: number;
   invoiceId: number;
   orderId: number;
 }) => {
   const { data: invoiceData } = Api.useQuery(
     "get",
-    "/api/v1/organization/companies/{company_id}/invoices/{id}",
+    "/api/v1/organization/invoices/{id}",
     {
       params: {
-        path: { company_id: companyId, id: invoiceId },
+        path: { id: invoiceId },
       },
     },
     { select: ({ result }) => result }
@@ -68,30 +61,6 @@ const useInvoiceContentData = ({
     return line ? Number(line.excl_tax_amount) : 0;
   };
 
-  // For invoices that are not draft we want to display the data stored in the invoice context not the live data
-  if (invoiceData.status != "draft") {
-    return {
-      invoiceContentData: {
-        items: invoiceData.context.project_version_items.map((item) => ({
-          name: item.name,
-          quantity: item.quantity,
-          unit: item.unit,
-          unitPriceAmount: Number(item.unit_price_amount),
-          totalAmount: item.quantity * Number(item.unit_price_amount),
-          previouslyInvoicedAmount: Number(item.previously_billed_amount),
-          invoiceAmount: findInvoicedAmount(item.original_item_uuid),
-          groupId: item.group_id,
-        })),
-        groups: invoiceData.context.project_version_item_groups.map(
-          (group) => ({
-            name: group.name,
-            id: group.id,
-          })
-        ),
-      },
-    };
-  }
-
   const findPreviopuslyInvoicedAmount = (originalItemUuid: string) => {
     const amount = previouslyInvoicedAmounts.find(
       (previouslyInvoicedAmount) =>
@@ -119,64 +88,6 @@ const useInvoiceContentData = ({
         name: group.name,
         id: group.id,
       })),
-    },
-  };
-};
-
-const useInvoicingSummaryCardData = ({
-  companyId,
-  invoiceId,
-  orderId,
-}: {
-  companyId: number;
-  invoiceId: number;
-  orderId: number;
-}) => {
-  const { projectTotalAmount } = useProjectTotalAmount({
-    orderId,
-  });
-
-  const { data: invoiceData } = Api.useQuery(
-    "get",
-    "/api/v1/organization/companies/{company_id}/invoices/{id}",
-    {
-      params: {
-        path: { company_id: companyId, id: invoiceId },
-      },
-    },
-    { select: ({ result }) => result }
-  );
-
-  const { projectPreviouslyInvoicedTotalAmount } =
-    useProjectPreviouslyInvoicedTotalAmount({ orderId });
-
-  const { invoiceTotalAmount } = useInvoiceTotalAmount({
-    companyId,
-    invoiceId,
-  });
-
-  if (
-    projectTotalAmount == undefined ||
-    invoiceData == undefined ||
-    projectPreviouslyInvoicedTotalAmount == undefined ||
-    invoiceTotalAmount == undefined
-  ) {
-    return {
-      invoicingSummaryCardData: undefined,
-    };
-  }
-
-  const previouslyInvoicedAmount =
-    invoiceData.status == "draft"
-      ? projectPreviouslyInvoicedTotalAmount
-      : Number(invoiceData.context.project_total_previously_billed_amount);
-
-  return {
-    invoicingSummaryCardData: {
-      projectTotalAmount: projectTotalAmount,
-      previouslyInvoicedAmount,
-      newSnapshotAmount: previouslyInvoicedAmount + invoiceTotalAmount,
-      invoiceTotalAmount,
     },
   };
 };
@@ -211,7 +122,6 @@ const useCreditNotesQuery = (companyId: string) =>
 
 export {
   useInvoiceContentData,
-  useInvoicingSummaryCardData,
   useProformaQuery,
   useInvoicesQuery,
   useCreditNotesQuery,

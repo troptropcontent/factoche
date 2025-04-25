@@ -1,12 +1,17 @@
 require "rails_helper"
-
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 RSpec.describe Accounting::CreditNote, type: :model do
+  include_context 'a company with an order'
+
   describe "validations" do
-    subject(:credit_note) { FactoryBot.build(:credit_note, number: "CN-2024-0001", invoice: invoice) }
+    subject(:credit_note) { Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }
 
-    let(:invoice) { FactoryBot.create(:invoice, :posted, number: "INV-2024-0001", company_id: 1, holder_id: 1) }
+    let(:invoice) {
+      proforma = Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+      Accounting::Proformas::Post.call(proforma.id).data
+    }
 
-    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", posted: "posted").with_default(:draft) }
+    it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(posted: "posted").with_default(:posted) }
     it { is_expected.to belong_to(:invoice).class_name("Accounting::Invoice").with_foreign_key(:holder_id) }
 
     describe "#valid_number" do

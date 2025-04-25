@@ -8,19 +8,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { useProformaQuery } from "../private/hooks";
 import { DocumentTable } from "./private/document-table";
 import { TabTrigger } from "./private/tab-trigger";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 const TAB_VALUE = "proforma" as const;
 
 const Trigger = ({ companyId }: { companyId: string }) => {
-  const { data: invoicesData } = useProformaQuery(companyId);
-  return <TabTrigger documents={invoicesData?.results} tab={TAB_VALUE} />;
+  const { data: proformaData } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/proformas",
+    { params: { path: { company_id: Number(companyId) } } }
+  );
+
+  return <TabTrigger documents={proformaData?.results} tab={TAB_VALUE} />;
 };
 
 const Content = ({ companyId }: { companyId: string }) => {
-  const { data: invoicesData } = useProformaQuery(companyId);
+  const { data: proformaData } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/proformas",
+    { params: { path: { company_id: Number(companyId) } } }
+  );
   const { t } = useTranslation();
   return (
     <TabsContent value={TAB_VALUE}>
@@ -40,11 +49,11 @@ const Content = ({ companyId }: { companyId: string }) => {
             <DocumentTable
               companyId={companyId}
               documentsData={
-                invoicesData
+                proformaData
                   ? {
-                      invoices: invoicesData.results,
-                      orders: invoicesData.meta.orders,
-                      orderVersions: invoicesData.meta.order_versions,
+                      documents: proformaData.results,
+                      orders: proformaData.meta.orders,
+                      orderVersions: proformaData.meta.order_versions,
                     }
                   : undefined
               }

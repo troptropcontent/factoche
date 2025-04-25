@@ -28,11 +28,19 @@ module Api
         def invoiced_items
           order = policy_scope(::Organization::Project).where(type: "Organization::Order").find(params[:id])
 
-          result = ::Organization::Projects::GetInvoicedAmountForProjectItems.call(order.client.company_id, order.id)
+          result = ::Organization::Orders::FetchInvoicedAmountPerItems.call(order.id)
 
           raise Error::UnprocessableEntityError.new(result.error) unless result.success?
 
-          render json: ::Organization::Projects::InvoicedItemsDto.new({ results: result.data })
+          items = ::Organization::Item.where(project_version_id: order.versions.pluck(:id))
+          results = items.map do |item|
+            {
+              original_item_uuid: item.original_item_uuid,
+              invoiced_amount: result.data[item.original_item_uuid][:invoices_amount] - result.data[item.original_item_uuid][:credit_notes_amount]
+            }
+          end
+
+          render json: ::Organization::Projects::Orders::InvoicedItemsDto.new({ results: results }).to_json
         end
 
         private

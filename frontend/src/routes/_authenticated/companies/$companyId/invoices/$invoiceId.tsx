@@ -1,40 +1,36 @@
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { createFileRoute } from "@tanstack/react-router";
-import { InvoiceShowContent } from "@/components/pages/companies/invoices/invoice-show-content";
 import { StatusBadge } from "@/components/pages/companies/invoices/private/status-badge";
-import { Layout } from "@/components/pages/companies/layout";
+import { Layout, LoadingLayout } from "@/components/pages/companies/layout";
 import { useTranslation } from "react-i18next";
+import { FinancialTransactionShowContent } from "@/components/pages/companies/financial_transactions/financial-transaction-show-content";
+import { FinancialTransactionShowInvoiceSpecificContent } from "@/components/pages/companies/invoices/show/financial-transaction-show-invoice-specific-content";
 
 export const Route = createFileRoute(
   "/_authenticated/companies/$companyId/invoices/$invoiceId"
 )({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { invoiceId, companyId } }) =>
-    queryClient.ensureQueryData(
-      Api.queryOptions(
-        "get",
-        "/api/v1/organization/companies/{company_id}/invoices/{id}",
-        {
-          params: {
-            path: { id: Number(invoiceId), company_id: Number(companyId) },
-          },
-        }
-      )
-    ),
 });
 
 function RouteComponent() {
-  const { result: invoice } = Route.useLoaderData();
-  const { companyId, invoiceId } = Route.useParams();
+  const { invoiceId, companyId } = Route.useParams();
+  const { data: invoice } = Api.useQuery(
+    "get",
+    "/api/v1/organization/invoices/{id}",
+    { params: { path: { id: Number(invoiceId) } } },
+    { select: ({ result }) => result }
+  );
   const { t } = useTranslation();
 
-  return (
+  return invoice == undefined ? (
+    <LoadingLayout />
+  ) : (
     <Layout.Root>
       <Layout.Header>
         <div className="flex flex-grow items-center">
           <h1 className="text-3xl font-bold mr-auto">
             {t(
-              `pages.companies.projects.invoices.completion_snapshot.show.title_${invoice.status == "draft" || invoice.status == "voided" ? "unpublished" : "published"}`,
+              `pages.companies.projects.invoices.completion_snapshot.show.title_published`,
               { number: invoice.number }
             )}
           </h1>
@@ -42,12 +38,12 @@ function RouteComponent() {
         </div>
       </Layout.Header>
       <Layout.Content>
-        <InvoiceShowContent
-          routeParams={{
-            companyId: Number(companyId),
-            invoiceId: Number(invoiceId),
-          }}
-        />
+        <FinancialTransactionShowContent financialTransaction={invoice}>
+          <FinancialTransactionShowInvoiceSpecificContent
+            invoice={invoice}
+            companyId={companyId}
+          />
+        </FinancialTransactionShowContent>
       </Layout.Content>
     </Layout.Root>
   );

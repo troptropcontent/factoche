@@ -433,9 +433,13 @@ i18n
                                             }
                                         }
                                     }
+                                },
+                                "proformas": {
+                                    "show": {
+                                        "title": "Facture proforma N°{{number}}",
+                                    }
                                 }
                             },
-                           
                             "quotes": {
                                 "show": {
                                     "title": "Devis N°{{number}}",
@@ -508,6 +512,11 @@ i18n
                                         "download_order_pdf": "Télécharger la commande en pdf",
                                         "order_pdf_unavailable": "Commande en cours de génération",
                                         "update_order": "Modifier la commande",
+                                    },
+                                    "invoices_summary": {
+                                        "new_proforma_button": {
+                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule facture proforma en cours de rédaction"
+                                        }
                                     }
                                 },
                                 "update": {
@@ -650,6 +659,14 @@ i18n
                                             "general_terms_and_condition": "Conditions générales",
                                         }
                                     },
+                                }
+                            },
+                            "proformas": {
+                                "show": {
+                                    "title": "Facture proforma N°{{number}}",
+                                },
+                                "new": {
+                                    "title": "Nouvelle facture proforma",
                                 }
                             }
                         }

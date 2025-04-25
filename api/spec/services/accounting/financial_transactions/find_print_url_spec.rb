@@ -1,47 +1,58 @@
 require 'rails_helper'
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
 module Accounting
   module FinancialTransactions
     RSpec.describe FindPrintUrl do
       describe '.call', :aggregate_failures do
-        let(:invoice) { FactoryBot.create(:invoice, company_id: 1, holder_id: 1, number: "PRO-2024-00001") }
+        include_context 'a company with an order'
+
+        let(:proforma) do
+          ::Organization::Proformas::Create.call(
+            order_version.id,
+            invoice_amounts: [
+              { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 1 },
+              { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 2 }
+            ]
+          ).data
+        end
+
+        let(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
+        let(:credit_note) { ::Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }
 
         context 'when financial transaction is an invoice' do
           let(:financial_transaction_id) { invoice.id }
 
-          context 'with draft status' do
-            it 'returns unpublished invoice URL' do
-              result = described_class.call(financial_transaction_id)
+          it 'returns published invoice URL' do
+            result = described_class.call(financial_transaction_id)
 
-              expect(result).to be_success
-              expect(result.data).to eq(
-                Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
-                  invoice.id,
-                  { host: ENV.fetch("PRINT_MICROSERVICE_HOST") }
-                )
+            expect(result).to be_success
+            expect(result.data).to eq(
+              Rails.application.routes.url_helpers.accounting_prints_published_invoice_url(
+                invoice.id,
+                host: ENV.fetch("PRINT_MICROSERVICE_HOST")
               )
-            end
+            )
           end
+        end
 
-          context 'with posted status' do
-            before { invoice.update!(status: :posted, number: 'INV-2024-0001') }
+        context 'when financial transaction is a proforma' do
+          let(:financial_transaction_id) { proforma.id }
 
-            it 'returns published invoice URL' do
-              result = described_class.call(financial_transaction_id)
+          it 'returns unpublished invoice URL' do
+            result = described_class.call(financial_transaction_id)
 
-              expect(result).to be_success
-              expect(result.data).to eq(
-                Rails.application.routes.url_helpers.accounting_prints_published_invoice_url(
-                  invoice.id,
-                  { host: ENV.fetch("PRINT_MICROSERVICE_HOST") }
-                )
+            expect(result).to be_success
+            expect(result.data).to eq(
+              Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
+                proforma.id,
+                host: ENV.fetch("PRINT_MICROSERVICE_HOST")
               )
-            end
+            )
           end
         end
 
         context 'when financial transaction is a credit note' do
-          let(:credit_note) { FactoryBot.create(:credit_note, company_id: 1, holder_id: invoice.id, number: "CN-2024-00001") }
           let(:financial_transaction_id) { credit_note.id }
 
           it 'returns credit note URL' do
@@ -51,7 +62,7 @@ module Accounting
             expect(result.data).to eq(
               Rails.application.routes.url_helpers.accounting_prints_credit_note_url(
                 credit_note.id,
-                { host: ENV.fetch("PRINT_MICROSERVICE_HOST") }
+                host: ENV.fetch("PRINT_MICROSERVICE_HOST")
               )
             )
           end

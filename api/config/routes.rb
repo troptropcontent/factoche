@@ -46,12 +46,8 @@ Rails.application.routes.draw do
           resources :orders, only: [ :index ] do
             resources :versions, only: [ :index, :show ], controller: "project_versions"
           end
-          resources :invoices, only: [ :index, :show, :update, :destroy ] do
-            member do
-              post "", action: :post
-              post "cancel", action: :cancel
-            end
-          end
+          resources :proformas, only: [ :index ]
+          resources :invoices, only: [ :index ]
           resources :credit_notes, only: [ :index ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
@@ -82,7 +78,7 @@ Rails.application.routes.draw do
           end
         end
         resources :orders, only: [ :show, :update ] do
-          resources :invoices, only: [ :create ]
+          resources :proformas, only: [ :create ]
           member do
             get :invoiced_items
           end
@@ -92,6 +88,17 @@ Rails.application.routes.draw do
             post "convert_to_draft_order"
           end
         end
+        resources :proformas, only: [ :update, :show, :destroy ] do
+          member do
+            post "", action: :post
+          end
+        end
+        resources :invoices, only: [ :show ] do
+          member do
+            post "cancel", action: :cancel
+          end
+        end
+        resources :credit_notes, only: [ :show ]
       end
     end
   end
