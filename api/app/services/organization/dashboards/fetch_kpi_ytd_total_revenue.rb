@@ -86,8 +86,8 @@ module Organization
          ActionCable.server.broadcast(@websocket_channel_id, {
             "type" => NotificationChannelTypeKey,
             "data" => {
-              "ytd_revenue_for_this_year"=> @ytd_revenue_for_this_year,
-              "ytd_revenue_for_last_year"=> @ytd_revenue_for_last_year
+              "ytd_revenue_for_this_year"=> @ytd_revenue_for_this_year.to_s,
+              "ytd_revenue_for_last_year"=> @ytd_revenue_for_last_year.to_s
             }
           })
       end
