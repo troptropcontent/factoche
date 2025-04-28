@@ -30,7 +30,8 @@ module Organization
       def create_version(project, validated_params)
         Organization::ProjectVersion.create!(
           project: project,
-          retention_guarantee_rate: validated_params[:retention_guarantee_rate]
+          retention_guarantee_rate: validated_params[:retention_guarantee_rate],
+          total_excl_tax_amount: validated_params[:items].sum { |item| item[:quantity] * item[:unit_price_amount] }
         )
       end
 

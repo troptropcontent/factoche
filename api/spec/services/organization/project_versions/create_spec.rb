@@ -37,7 +37,7 @@ RSpec.describe Organization::ProjectVersions::Create do
               expect(result).to be_success
               expect(result.data[:version]).to be_persisted
               expect(result.data[:version].retention_guarantee_rate).to eq 0.05
-              expect(result.data[:items].count).to eq 1
+              expect(result.data[:version].total_excl_tax_amount).to eq 200
               expect(result.data[:groups]).to be_empty
 
               item = result.data[:items].first
@@ -100,7 +100,7 @@ RSpec.describe Organization::ProjectVersions::Create do
 
           context 'when original_item_uuid is provided for some items' do
             context "when the original_item_uuid belongs to a previous version of the project" do
-              let(:project_version) { FactoryBot.create(:project_version, project: project) }
+              let(:project_version) { FactoryBot.create(:project_version, project: project, total_excl_tax_amount: 0) }
               let(:project_version_item) { FactoryBot.create(:item, project_version: project_version, original_item_uuid: "2bd8f435-dd31-41d1-a0bc-7cffb3b72fb1") }
               let(:params) do
                 {
