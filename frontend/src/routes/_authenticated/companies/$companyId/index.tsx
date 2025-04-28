@@ -1,3 +1,4 @@
+import Dashboard from "@/components/pages/companies/dashboard/dashboard";
 import { Layout } from "@/components/pages/companies/layout";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -12,10 +13,12 @@ function RouteComponent() {
   return (
     <Layout.Root>
       <Layout.Header>
-        <h1>{t("pages.companies.show.title")}</h1>
+        <h1 className="text-xl font-semibold">
+          {t("pages.companies.show.title")}
+        </h1>
       </Layout.Header>
       <Layout.Content>
-        <p>{t("pages.companies.show.description", { companyId })}</p>
+        <Dashboard companyId={Number(companyId)} />
       </Layout.Content>
     </Layout.Root>
   );

@@ -625,6 +625,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get company's dashboard data */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description client created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Dashboards::DashboardData"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/draft_orders": {
         parameters: {
             query?: never;
@@ -2328,6 +2375,21 @@ export interface components {
         };
         "Organization::CreditNotes::ShowDto": {
             result: components["schemas"]["Organization::CreditNotes::ExtendedDto"];
+        };
+        "Organization::Dashboards::YtdTotalRevenues": {
+            /** Format: decimal */
+            this_year: string;
+            /** Format: decimal */
+            last_year: string;
+        };
+        "Organization::Dashboards::Kpis": {
+            ytd_total_revenues: components["schemas"]["Organization::Dashboards::YtdTotalRevenues"];
+        };
+        "Organization::Dashboards::DashboardData": {
+            kpis: components["schemas"]["Organization::Dashboards::Kpis"];
+        };
+        "Organization::Dashboards::ShowDto": {
+            result: components["schemas"]["Organization::Dashboards::DashboardData"];
         };
         "Organization::Invoices::ExtendedDto": {
             id: number;

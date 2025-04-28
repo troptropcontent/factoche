@@ -36,6 +36,15 @@ i18n
                     },
                     "pages": {
                         "companies": {
+                            "dashboard": {
+                                "title": "Mon dashboard",
+                                "kpi_cards": {
+                                    "ytd_revenues": {
+                                        "title": "Chiffre d'affaires annuel",
+                                        "secondary_info": "{{percentage}} / n-1",
+                                    }
+                                }
+                            },
                             "show": {
                                 "title": "Mon dashboard",
                                 "description": "Dashboard de la company {{companyId}}" // Fixed triple brackets to double

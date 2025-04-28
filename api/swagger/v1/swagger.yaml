@@ -595,6 +595,33 @@ paths:
           description: unauthorised
         '403':
           description: forbiden
+  "/api/v1/organization/companies/{company_id}/dashboard":
+    get:
+      summary: Get company's dashboard data
+      tags:
+      - Dashboard
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: client created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Dashboards::DashboardData"
+        '403':
+          description: forbiden
   "/api/v1/organization/companies/{company_id}/draft_orders":
     get:
       summary: List all the company's draft orders
@@ -2522,6 +2549,39 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto"
+    Organization::Dashboards::YtdTotalRevenues:
+      type: object
+      required:
+      - this_year
+      - last_year
+      properties:
+        this_year:
+          type: string
+          format: decimal
+        last_year:
+          type: string
+          format: decimal
+    Organization::Dashboards::Kpis:
+      type: object
+      required:
+      - ytd_total_revenues
+      properties:
+        ytd_total_revenues:
+          "$ref": "#/components/schemas/Organization::Dashboards::YtdTotalRevenues"
+    Organization::Dashboards::DashboardData:
+      type: object
+      required:
+      - kpis
+      properties:
+        kpis:
+          "$ref": "#/components/schemas/Organization::Dashboards::Kpis"
+    Organization::Dashboards::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Dashboards::DashboardData"
     Organization::Invoices::ExtendedDto:
       type: object
       required:
