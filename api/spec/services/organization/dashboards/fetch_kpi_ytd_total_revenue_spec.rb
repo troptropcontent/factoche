@@ -164,8 +164,8 @@ RSpec.describe Organization::Dashboards::FetchKpiYtdTotalRevenue do
           {
             "type" => "KpiTotalRevenueGenerated",
             "data" => {
-              "ytd_revenue_for_this_year" => 0,
-              "ytd_revenue_for_last_year" => 0
+              "ytd_revenue_for_this_year" => "0.0",
+              "ytd_revenue_for_last_year" => "0.0"
             }
           }
         )
