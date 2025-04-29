@@ -86,12 +86,12 @@ RSpec.describe Organization::Dashboards::FetchKpiAverageOrdersCompletionPercenta
       let(:expected_average_completion_percentage) do
         # first order completion percentage = 55 / 1 315 = 0.0418
         # another order completion percentage = 22 / 1000 = 0.022
-        # average = (0.0418 + 0.022) / 2 = 0.0319
+        # average = (0.0418 + 0.022) / 2 = 0.03
         0.0319
       end
 
       it 'returns the average completion percentage of the orders created between today and the beggining of the year' do
-        expect(result.data).to be_within(0.0001).of(expected_average_completion_percentage)
+        expect(result.data).to eq(0.03)
       end
 
       context 'when some orders have been created before end_date.beggining_of_year' do
@@ -99,7 +99,7 @@ RSpec.describe Organization::Dashboards::FetchKpiAverageOrdersCompletionPercenta
 
         it 'returns the average completion percentage of the relevant orders only' do
           # Only take the another_order into account
-          expect(result.data).to be_within(0.0001).of(0.022)
+          expect(result.data).to eq(0.02)
         end
       end
     end
