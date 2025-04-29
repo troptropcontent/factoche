@@ -2302,7 +2302,7 @@ export interface components {
         };
         "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
             original_item_uuid: string;
-            group_id: number;
+            group_id?: number | null;
             name: string;
             description?: string | null;
             quantity: number;
@@ -2384,6 +2384,8 @@ export interface components {
         };
         "Organization::Dashboards::Kpis": {
             ytd_total_revenues: components["schemas"]["Organization::Dashboards::YtdTotalRevenues"];
+            /** Format: decimal */
+            average_orders_completion_percentage: string;
         };
         "Organization::Dashboards::DashboardData": {
             kpis: components["schemas"]["Organization::Dashboards::Kpis"];

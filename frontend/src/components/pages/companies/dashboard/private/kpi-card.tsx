@@ -70,9 +70,13 @@ const MainInfo = ({ children }: { children: ReactNode }) => (
  * @param {ReactNode} props.children - The secondary information to be displayed
  * @returns {JSX.Element} A styled paragraph containing the secondary information
  */
-const SecondaryInfo = ({ children }: { children: ReactNode }) => (
-  <p className="text-xs text-muted-foreground">{children}</p>
-);
+const SecondaryInfo = ({ children }: { children: ReactNode }) => {
+  if (typeof children == "object") {
+    return <>{children}</>
+  } else {
+    return <p className="text-xs text-muted-foreground">{children}</p>
+  }
+};
 
 /**
  * KpiCard component that provides a composable interface for creating KPI cards

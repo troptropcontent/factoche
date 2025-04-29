@@ -42,6 +42,9 @@ i18n
                                     "ytd_revenues": {
                                         "title": "Chiffre d'affaires annuel",
                                         "secondary_info": "{{percentage}} / n-1",
+                                    },
+                                    "average_orders_completion": {
+                                        "title": "Avancement moyen des commandes"
                                     }
                                 }
                             },

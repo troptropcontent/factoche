@@ -2357,7 +2357,6 @@ components:
       type: object
       required:
       - original_item_uuid
-      - group_id
       - name
       - quantity
       - unit
@@ -2369,6 +2368,7 @@ components:
           type: string
         group_id:
           type: integer
+          nullable: true
         name:
           type: string
         description:
@@ -2565,9 +2565,13 @@ components:
       type: object
       required:
       - ytd_total_revenues
+      - average_orders_completion_percentage
       properties:
         ytd_total_revenues:
           "$ref": "#/components/schemas/Organization::Dashboards::YtdTotalRevenues"
+        average_orders_completion_percentage:
+          type: string
+          format: decimal
     Organization::Dashboards::DashboardData:
       type: object
       required:

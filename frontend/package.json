@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "backend": "(cd ../api && bundle exec rails s)",
+    "backend": "(cd ../api && make server)",
     "open-api": "(cd ../api && make rswag) && openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/lib/openapi-fetch-schemas.d.ts"
   },
   "dependencies": {

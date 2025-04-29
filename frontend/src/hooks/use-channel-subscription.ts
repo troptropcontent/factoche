@@ -12,6 +12,10 @@ type ChannelMessageTypes =
         ytd_revenue_for_this_year: string;
         ytd_revenue_for_last_year: string;
       };
+    }
+  | {
+      type: "KpiAverageOrderCompletionGenerated";
+      data: number;
     };
 
 export function useChannelSubscription(

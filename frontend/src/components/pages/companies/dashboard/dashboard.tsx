@@ -12,7 +12,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { BarChart3, CreditCard, Layers } from "lucide-react";
+import { Layers } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/table";
 
 import { KpiCardTotalRevenue } from "./private/kpi-card-total-revenue";
+import { KpiCardAverageOrdersCompletionPercentage } from "./private/kpi-card-average_orders_completion_percentage";
 
 // Sample data for the charts
 const revenueData = [
@@ -135,41 +136,9 @@ export default function Dashboard({ companyId }: { companyId: number }) {
     <div className="flex min-h-screen bg-background">
       <div className="flex flex-1 flex-col">
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <KpiCardTotalRevenue companyId={companyId} />
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Amount Currently Due
-                </CardTitle>
-                <CreditCard className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  ${kpiData.amountDue.toLocaleString()}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {((kpiData.amountDue / kpiData.totalRevenue) * 100).toFixed(
-                    1
-                  )}
-                  % of total revenue
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Average Project Completion
-                </CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {kpiData.avgCompletion}%
-                </div>
-                <Progress value={kpiData.avgCompletion} className="mt-2" />
-              </CardContent>
-            </Card>
+            <KpiCardAverageOrdersCompletionPercentage companyId={companyId} />
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Projects</CardTitle>
