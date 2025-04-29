@@ -6,6 +6,7 @@ module Organization
     end
     class Kpis < OpenApiDto
       field "ytd_total_revenues", :object, subtype: YtdTotalRevenues
+      field "average_orders_completion_percentage", :decimal
     end
     class DashboardData < OpenApiDto
       field "kpis", :object, subtype: Kpis

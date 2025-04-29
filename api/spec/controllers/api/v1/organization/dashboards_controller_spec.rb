@@ -14,10 +14,13 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
 
       include_context 'a company with an order'
 
+      # Setup items to have a total project version of 200 * 3 + 34.99 * 17 + 200 + 10 = 3 194.83 €
       let(:first_item_unit_price_amount) { 200 }
       let(:first_item_quantity) { 3 }
       let(:second_item_unit_price_amount) { 34.99 }
       let(:second_item_quantity) { 17 }
+      let(:third_item_unit_price_amount) { 200 }
+      let(:third_item_quantity) { 10 }
 
       let(:user) { FactoryBot.create(:user) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
@@ -171,6 +174,45 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
                     "ytd_revenue_for_this_year"=> "299.0",
                     "ytd_revenue_for_last_year"=> "143.0"
                   }
+                })
+              end
+            end
+          end
+
+          describe "average_orders_completion_percentage" do
+            before do
+              # Create an invoice to impact the average_orders_completion_percentage
+              proforma = Organization::Proformas::Create.call(
+                order.last_version.id,
+                {
+                  invoice_amounts: [
+                    { original_item_uuid: order_version.items.third.original_item_uuid, invoice_amount: 1500 }
+                  ]
+                }
+              ).data
+
+              # Create an invoice for 1500 € as per the proforma
+              Accounting::Proformas::Post.call(proforma.id).data
+
+              # After this the average_orders_compeltion_percentage should equal 1 500 (the total of the invoices) / 3 194.83 (the total of the order version) => 0.47
+            end
+
+            run_test!("It returns the total revenues YTD (Year-to-Date)") do |response|
+              parsed_response = JSON.parse(response.body)
+              parsed_average_orders_compeltion_percentage = BigDecimal(parsed_response.dig("result", "kpis", "average_orders_completion_percentage"))
+              expect(parsed_average_orders_compeltion_percentage).to eq(0.47)
+            end
+
+            describe "real_time_broadcast" do
+              it "broadcasts to the company notifications channel" do |example|
+                allow(ActionCable.server).to receive(:broadcast)
+
+                submit_request(example.metadata)
+                assert_response_matches_metadata(example.metadata)
+
+                expect(ActionCable.server).to have_received(:broadcast).with(company.websocket_channel, {
+                  "type" => "KpiAverageOrderCompletionGenerated",
+                  "data" => 0.47
                 })
               end
             end
