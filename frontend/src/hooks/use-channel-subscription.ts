@@ -16,6 +16,13 @@ type ChannelMessageTypes =
   | {
       type: "KpiAverageOrderCompletionGenerated";
       data: number;
+    }
+  | {
+      type: "KpiOrdersDetailsGenerated";
+      data: {
+        completed_orders_count: number;
+        not_completed_orders_count: number;
+      };
     };
 
 export function useChannelSubscription(

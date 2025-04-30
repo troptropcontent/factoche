@@ -2561,17 +2561,30 @@ components:
         last_year:
           type: string
           format: decimal
+    Organization::Dashboards::OrderDetails:
+      type: object
+      required:
+      - completed_orders_count
+      - not_completed_orders_count
+      properties:
+        completed_orders_count:
+          type: integer
+        not_completed_orders_count:
+          type: integer
     Organization::Dashboards::Kpis:
       type: object
       required:
       - ytd_total_revenues
       - average_orders_completion_percentage
+      - orders_details
       properties:
         ytd_total_revenues:
           "$ref": "#/components/schemas/Organization::Dashboards::YtdTotalRevenues"
         average_orders_completion_percentage:
           type: string
           format: decimal
+        orders_details:
+          "$ref": "#/components/schemas/Organization::Dashboards::OrderDetails"
     Organization::Dashboards::DashboardData:
       type: object
       required:

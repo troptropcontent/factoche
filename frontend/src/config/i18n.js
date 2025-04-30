@@ -45,6 +45,12 @@ i18n
                                     },
                                     "average_orders_completion": {
                                         "title": "Avancement moyen des commandes"
+                                    },
+                                    "orders_details": {
+                                        "title": "Commandes",
+                                        "main_info": "{{count}} en cours",
+                                        "secondary_info_one": "{{count}} terminée cette année",
+                                        "secondary_info_other": "{{count}} terminées cette année",
                                     }
                                 }
                             },

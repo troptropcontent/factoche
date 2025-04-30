@@ -12,7 +12,6 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Layers } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +39,7 @@ import {
 
 import { KpiCardTotalRevenue } from "./private/kpi-card-total-revenue";
 import { KpiCardAverageOrdersCompletionPercentage } from "./private/kpi-card-average_orders_completion_percentage";
+import { KpiCardOrdersDetails } from "./private/kpi-card-orders-details";
 
 // Sample data for the charts
 const revenueData = [
@@ -122,15 +122,6 @@ const upcomingInvoicesData = [
   },
 ];
 
-// KPI summary data
-const kpiData = {
-  totalRevenue: 285000,
-  amountDue: 87000,
-  avgCompletion: 63,
-  activeProjects: 8,
-  completedProjects: 12,
-};
-
 export default function Dashboard({ companyId }: { companyId: number }) {
   return (
     <div className="flex min-h-screen bg-background">
@@ -139,20 +130,7 @@ export default function Dashboard({ companyId }: { companyId: number }) {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <KpiCardTotalRevenue companyId={companyId} />
             <KpiCardAverageOrdersCompletionPercentage companyId={companyId} />
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Projects</CardTitle>
-                <Layers className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {kpiData.activeProjects} Active
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {kpiData.completedProjects} completed this year
-                </p>
-              </CardContent>
-            </Card>
+            <KpiCardOrdersDetails companyId={companyId} />
           </div>
 
           {/* Charts Section */}

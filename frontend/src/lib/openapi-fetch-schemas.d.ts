@@ -2382,10 +2382,15 @@ export interface components {
             /** Format: decimal */
             last_year: string;
         };
+        "Organization::Dashboards::OrderDetails": {
+            completed_orders_count: number;
+            not_completed_orders_count: number;
+        };
         "Organization::Dashboards::Kpis": {
             ytd_total_revenues: components["schemas"]["Organization::Dashboards::YtdTotalRevenues"];
             /** Format: decimal */
             average_orders_completion_percentage: string;
+            orders_details: components["schemas"]["Organization::Dashboards::OrderDetails"];
         };
         "Organization::Dashboards::DashboardData": {
             kpis: components["schemas"]["Organization::Dashboards::Kpis"];
