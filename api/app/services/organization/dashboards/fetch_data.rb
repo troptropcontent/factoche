@@ -11,7 +11,8 @@ module Organization
         {
           kpis: {
             ytd_total_revenues: fetch_ytd_total_revenues!,
-            average_orders_completion_percentage: fetch_average_orders_completion_percentage!
+            average_orders_completion_percentage: fetch_average_orders_completion_percentage!,
+            orders_details: fetch_orders_details!
           }
         }
       end
@@ -30,6 +31,13 @@ module Organization
 
       def fetch_average_orders_completion_percentage!
         r = FetchKpiAverageOrdersCompletionPercentage.call(company_id: @company.id, end_date: @end_date, websocket_channel_id: @websocket_channel_id)
+        raise r.error if r.failure?
+
+        r.data
+      end
+
+      def fetch_orders_details!
+        r = FetchKpiOrdersDetails.call(company_id: @company.id, end_date: @end_date, websocket_channel_id: @websocket_channel_id)
         raise r.error if r.failure?
 
         r.data

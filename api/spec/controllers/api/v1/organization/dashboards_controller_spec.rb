@@ -217,6 +217,50 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               end
             end
           end
+
+          describe "orders_details" do
+            before do
+              # Create an invoice to impact the order completion and make it reach 100 %
+              proforma = Organization::Proformas::Create.call(
+                order.last_version.id,
+                {
+                  invoice_amounts: [
+                    { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: (order_version.items.first.quantity * order_version.items.first.unit_price_amount).round(2) },
+                    { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: (order_version.items.second.quantity * order_version.items.second.unit_price_amount).round(2) },
+                    { original_item_uuid: order_version.items.third.original_item_uuid, invoice_amount: (order_version.items.third.quantity * order_version.items.third.unit_price_amount).round(2) }
+                  ]
+                }
+              ).data
+
+              # Create an invoice for the proforma
+              Accounting::Proformas::Post.call(proforma.id).data
+
+              # After this the order will be completed as 100 % will be invoiced
+            end
+
+            run_test!("It returns the correct orders details") do |response|
+              parsed_response = JSON.parse(response.body)
+              expect(parsed_response.dig("result", "kpis", "orders_details", "completed_orders_count")).to eq(1)
+              expect(parsed_response.dig("result", "kpis", "orders_details", "not_completed_orders_count")).to eq(0)
+            end
+
+            describe "real_time_broadcast" do
+              it "broadcasts to the company notifications channel" do |example|
+                allow(ActionCable.server).to receive(:broadcast)
+
+                submit_request(example.metadata)
+                assert_response_matches_metadata(example.metadata)
+
+                expect(ActionCable.server).to have_received(:broadcast).with(company.websocket_channel, {
+                  'type' => 'KpiOrdersDetailsGenerated',
+                  'data' => {
+                    "completed_orders_count" => 1,
+                    "not_completed_orders_count" => 0
+                  }
+                })
+              end
+            end
+          end
         end
       end
 
