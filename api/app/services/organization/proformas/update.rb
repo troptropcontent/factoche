@@ -96,6 +96,7 @@ module Organization
         }
 
         client_hash = {
+          id: @client.id,
           name: @client.name,
           registration_number: @client.registration_number,
           address_zipcode: @client.address_zipcode,

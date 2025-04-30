@@ -5,7 +5,7 @@ module Accounting
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe BuildAttributes do
       describe '.call' do
-        subject(:result) { described_class.call(company[:id], project, project_version, new_invoice_items, issue_date) }
+        subject(:result) { described_class.call(company[:id], client[:id], project, project_version, new_invoice_items, issue_date) }
 
         let(:issue_date) { Time.current }
 
@@ -67,6 +67,7 @@ module Accounting
         } }
 
         let(:client) { {
+          id: 1,
           name: "Client Corp",
           registration_number: "987654321",
           address_zipcode: "75002",
@@ -93,6 +94,7 @@ module Accounting
         it 'returns success with correct invoice attributes', :aggregate_failures do
           expect(result.data).to include(
             company_id: company[:id],
+            client_id: client[:id],
             holder_id: project_version[:id],
             status: :draft,
             issue_date: issue_date,
@@ -127,7 +129,7 @@ module Accounting
             let(:invalid_project_version) { { number: 'PV-001' } }
 
             it 'returns failure with error message', :aggregate_failures do
-              result = described_class.call(company[:id], project, invalid_project_version, new_invoice_items, issue_date)
+              result = described_class.call(company[:id], client[:id], project, invalid_project_version, new_invoice_items, issue_date)
               expect(result).not_to be_success
               expect(result.error).to include('Failed to build invoice attributes')
               expect(result.error).to include('PV-001')

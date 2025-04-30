@@ -25,6 +25,7 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
         # Create a first invoice
         first_invoice = FactoryBot.create(:invoice,
           company_id: company.id,
+          client_id: client.id,
           holder_id: order_version.id,
           number: "INV-2024-00001",
           status: :posted,
@@ -40,6 +41,7 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
         # Create a credit note for this invoice
         FactoryBot.create(:credit_note,
           company_id: company.id,
+          client_id: client.id,
           holder_id: first_invoice.id,
           number: "CN-2024-00001",
           status: :posted,
@@ -55,6 +57,7 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
         # Create a second invoice
         FactoryBot.create(:invoice,
           company_id: company.id,
+          client_id: client.id,
           holder_id: order_version.id,
           number: "INV-2024-00002",
           status: :posted,

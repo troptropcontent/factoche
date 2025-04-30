@@ -48,7 +48,7 @@ module Accounting
         def call(company, client, project, project_version, new_invoice_items, issue_date = Time.current)
           proforma = ActiveRecord::Base.transaction do
             # Create a proforma record
-            base_proforma_attributes = build_proforma_attributes!(company.fetch(:id), project, project_version, new_invoice_items, issue_date)
+            base_proforma_attributes = build_proforma_attributes!(company.fetch(:id), client.fetch(:id), project, project_version, new_invoice_items, issue_date)
             proforma_number = find_next_available_proforma_number!(company.fetch(:id), issue_date)
             proforma = Proforma.create!(base_proforma_attributes.merge({ number: proforma_number }))
 
@@ -73,8 +73,8 @@ module Accounting
 
         private
 
-        def build_proforma_attributes!(company_id, project, project_version, new_invoice_items, issue_date)
-          result = BuildAttributes.call(company_id, project, project_version, new_invoice_items, issue_date)
+        def build_proforma_attributes!(company_id, client_id, project, project_version, new_invoice_items, issue_date)
+          result = BuildAttributes.call(company_id, client_id, project, project_version, new_invoice_items, issue_date)
 
           raise result.error if result.failure?
           result.data

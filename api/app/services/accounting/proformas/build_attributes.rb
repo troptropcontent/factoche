@@ -2,11 +2,12 @@ module Accounting
   module Proformas
     class BuildAttributes
       class << self
-        def call(company_id, project, project_version, new_invoice_items, issue_date)
+        def call(company_id, client_id, project, project_version, new_invoice_items, issue_date)
           totals = compute_totals(project_version, new_invoice_items)
 
           attributes = {
             company_id: company_id,
+            client_id: client_id,
             holder_id: project_version.fetch(:id),
             status: :draft,
             issue_date: issue_date,

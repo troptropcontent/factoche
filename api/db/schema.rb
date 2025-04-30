@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_30_102908) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_30_150857) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -91,6 +91,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_102908) do
     t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
     t.decimal "total_including_tax_amount", precision: 15, scale: 2, null: false
     t.decimal "total_excl_retention_guarantee_amount", precision: 15, scale: 2, null: false
+    t.bigint "client_id", null: false
+    t.index ["client_id"], name: "index_accounting_financial_transactions_on_client_id"
     t.index ["company_id"], name: "index_accounting_financial_transactions_on_company_id"
     t.index ["context"], name: "index_accounting_financial_transactions_on_context", using: :gin
     t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
