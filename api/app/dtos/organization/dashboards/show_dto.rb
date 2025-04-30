@@ -32,7 +32,7 @@ module Organization
     end
     class DashboardData < OpenApiDto
       field "kpis", :object, subtype: Kpis
-      field "charts_data", :object, subtype: ChartsData, required: false
+      field "charts_data", :object, subtype: ChartsData
     end
     class ShowDto < OpenApiDto
       field "result", :object, subtype: DashboardData
