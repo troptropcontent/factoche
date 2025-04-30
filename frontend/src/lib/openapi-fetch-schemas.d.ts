@@ -2392,8 +2392,38 @@ export interface components {
             average_orders_completion_percentage: string;
             orders_details: components["schemas"]["Organization::Dashboards::OrderDetails"];
         };
+        "Organization::Dashboards::MonthlyRevenues": {
+            /** Format: decimal */
+            january?: string | null;
+            /** Format: decimal */
+            february?: string | null;
+            /** Format: decimal */
+            march?: string | null;
+            /** Format: decimal */
+            april?: string | null;
+            /** Format: decimal */
+            may?: string | null;
+            /** Format: decimal */
+            june?: string | null;
+            /** Format: decimal */
+            july?: string | null;
+            /** Format: decimal */
+            august?: string | null;
+            /** Format: decimal */
+            september?: string | null;
+            /** Format: decimal */
+            october?: string | null;
+            /** Format: decimal */
+            november?: string | null;
+            /** Format: decimal */
+            december?: string | null;
+        };
+        "Organization::Dashboards::ChartsData": {
+            monthly_revenues: components["schemas"]["Organization::Dashboards::MonthlyRevenues"];
+        };
         "Organization::Dashboards::DashboardData": {
             kpis: components["schemas"]["Organization::Dashboards::Kpis"];
+            charts_data: components["schemas"]["Organization::Dashboards::ChartsData"];
         };
         "Organization::Dashboards::ShowDto": {
             result: components["schemas"]["Organization::Dashboards::DashboardData"];

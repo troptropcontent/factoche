@@ -1,8 +1,6 @@
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -40,22 +38,9 @@ import {
 import { KpiCardTotalRevenue } from "./private/kpi-card-total-revenue";
 import { KpiCardAverageOrdersCompletionPercentage } from "./private/kpi-card-average_orders_completion_percentage";
 import { KpiCardOrdersDetails } from "./private/kpi-card-orders-details";
+import { ChartCardRevenueOverTime } from "./private/chart-card-revenue-over-time";
 
 // Sample data for the charts
-const revenueData = [
-  { month: "Jan", revenue: 12500 },
-  { month: "Feb", revenue: 18200 },
-  { month: "Mar", revenue: 15800 },
-  { month: "Apr", revenue: 21000 },
-  { month: "May", revenue: 19500 },
-  { month: "Jun", revenue: 24800 },
-  { month: "Jul", revenue: 27300 },
-  { month: "Aug", revenue: 25100 },
-  { month: "Sep", revenue: 29800 },
-  { month: "Oct", revenue: 31200 },
-  { month: "Nov", revenue: 28900 },
-  { month: "Dec", revenue: 33500 },
-];
 
 const invoiceStatusData = [
   { name: "Paid", value: 68, color: "#10b981" },
@@ -135,68 +120,7 @@ export default function Dashboard({ companyId }: { companyId: number }) {
 
           {/* Charts Section */}
           <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {/* Revenue Over Time */}
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle>Revenue Over Time</CardTitle>
-                <CardDescription>Monthly invoiced amount</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={{
-                    revenue: {
-                      label: "Revenue",
-                      color: "hsl(var(--chart-1))",
-                    },
-                  }}
-                  className="aspect-[4/3]"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={revenueData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
-                      <ChartTooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div className="flex flex-col">
-                                    <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                      Month
-                                    </span>
-                                    <span className="font-bold text-muted-foreground">
-                                      {payload[0].payload.month}
-                                    </span>
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                      Revenue
-                                    </span>
-                                    <span className="font-bold">
-                                      ${payload[0].value.toLocaleString()}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke="var(--color-revenue)"
-                        strokeWidth={2}
-                        activeDot={{ r: 8 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </CardContent>
-            </Card>
+            <ChartCardRevenueOverTime companyId={companyId} />
 
             {/* Outstanding vs. Paid Invoices */}
             <Card>

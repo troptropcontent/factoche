@@ -23,6 +23,23 @@ type ChannelMessageTypes =
         completed_orders_count: number;
         not_completed_orders_count: number;
       };
+    }
+  | {
+      type: "GraphDataMonthlyRevenuesGenerated";
+      data: {
+        jan?: string | null;
+        feb?: string | null;
+        mar?: string | null;
+        apr?: string | null;
+        may?: string | null;
+        jun?: string | null;
+        jul?: string | null;
+        aug?: string | null;
+        sep?: string | null;
+        oct?: string | null;
+        nov?: string | null;
+        dec?: string | null;
+      };
     };
 
 export function useChannelSubscription(

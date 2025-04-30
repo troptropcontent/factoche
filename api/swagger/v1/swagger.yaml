@@ -2585,13 +2585,75 @@ components:
           format: decimal
         orders_details:
           "$ref": "#/components/schemas/Organization::Dashboards::OrderDetails"
+    Organization::Dashboards::MonthlyRevenues:
+      type: object
+      required: []
+      properties:
+        january:
+          type: string
+          format: decimal
+          nullable: true
+        february:
+          type: string
+          format: decimal
+          nullable: true
+        march:
+          type: string
+          format: decimal
+          nullable: true
+        april:
+          type: string
+          format: decimal
+          nullable: true
+        may:
+          type: string
+          format: decimal
+          nullable: true
+        june:
+          type: string
+          format: decimal
+          nullable: true
+        july:
+          type: string
+          format: decimal
+          nullable: true
+        august:
+          type: string
+          format: decimal
+          nullable: true
+        september:
+          type: string
+          format: decimal
+          nullable: true
+        october:
+          type: string
+          format: decimal
+          nullable: true
+        november:
+          type: string
+          format: decimal
+          nullable: true
+        december:
+          type: string
+          format: decimal
+          nullable: true
+    Organization::Dashboards::ChartsData:
+      type: object
+      required:
+      - monthly_revenues
+      properties:
+        monthly_revenues:
+          "$ref": "#/components/schemas/Organization::Dashboards::MonthlyRevenues"
     Organization::Dashboards::DashboardData:
       type: object
       required:
       - kpis
+      - charts_data
       properties:
         kpis:
           "$ref": "#/components/schemas/Organization::Dashboards::Kpis"
+        charts_data:
+          "$ref": "#/components/schemas/Organization::Dashboards::ChartsData"
     Organization::Dashboards::ShowDto:
       type: object
       required:

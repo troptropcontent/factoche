@@ -52,6 +52,38 @@ i18n
                                         "secondary_info_one": "{{count}} terminée cette année",
                                         "secondary_info_other": "{{count}} terminées cette année",
                                     }
+                                },
+                                "charts": {
+                                    "revenue_over_time": {
+                                        "tooltip_label_month": "Mois",
+                                        "tooltip_label_revenue": "Chiffre d'affaires",
+                                        "title": "Chiffre d'affaires par mois",
+                                        "description": "Chiffre d'affaires par mois",
+                                        "january": "Janvier",
+                                        "january_short": "Jan",
+                                        "february": "Février",
+                                        "february_short": "Fev",
+                                        "march": "Mars",
+                                        "march_short": "Mar",
+                                        "april": "Avril",
+                                        "april_short": "Avr",
+                                        "may": "Mai",
+                                        "may_short": "Mai",
+                                        "june": "Juin",
+                                        "june_short": "Jun",
+                                        "july": "Juillet",
+                                        "july_short": "Jul",
+                                        "august": "Août",
+                                        "august_short": "Aou",
+                                        "september": "Septembre",
+                                        "september_short": "Sep",
+                                        "october": "Octobre",
+                                        "october_short": "Oct",
+                                        "november": "Novembre",
+                                        "november_short": "Nov",
+                                        "december": "Décembre",
+                                        "december_short": "Dec",
+                                    }
                                 }
                             },
                             "show": {
