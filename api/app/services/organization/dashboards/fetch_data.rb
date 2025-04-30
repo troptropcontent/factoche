@@ -13,6 +13,9 @@ module Organization
             ytd_total_revenues: fetch_ytd_total_revenues!,
             average_orders_completion_percentage: fetch_average_orders_completion_percentage!,
             orders_details: fetch_orders_details!
+          },
+          charts_data: {
+            monthly_revenues: fetch_monthly_revenues!
           }
         }
       end
@@ -38,6 +41,13 @@ module Organization
 
       def fetch_orders_details!
         r = FetchKpiOrdersDetails.call(company_id: @company.id, end_date: @end_date, websocket_channel_id: @websocket_channel_id)
+        raise r.error if r.failure?
+
+        r.data
+      end
+
+      def fetch_monthly_revenues!
+        r = FetchGraphDataMonthlyRevenues.call(company_id: @company.id, year: @end_date.year, websocket_channel_id: @websocket_channel_id)
         raise r.error if r.failure?
 
         r.data
