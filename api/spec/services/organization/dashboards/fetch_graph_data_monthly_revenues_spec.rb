@@ -53,18 +53,18 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
     context 'when there are no invoices recorded' do
       it 'returns nil for each month' do
         expect(result.data).to eq({
-          "1": nil,
-          "2": nil,
-          "3": nil,
-          "4": nil,
-          "5": nil,
-          "6": nil,
-          "7": nil,
-          "8": nil,
-          "9": nil,
-          "10": nil,
-          "11": nil,
-          "12": nil
+          "january" => nil,
+          "february" => nil,
+          "march" => nil,
+          "april" => nil,
+          "may" => nil,
+          "june" => nil,
+          "july" => nil,
+          "august" => nil,
+          "september" => nil,
+          "october" => nil,
+          "november" => nil,
+          "december" => nil
         })
       end
     end
@@ -107,18 +107,18 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
 
       it 'returns the monthly revenues for the specified year' do
         expect(result.data).to eq({
-          "1": 10,
-          "2": 10,
-          "3": nil,
-          "4": nil,
-          "5": nil,
-          "6": nil,
-          "7": nil,
-          "8": nil,
-          "9": nil,
-          "10": nil,
-          "11": nil,
-          "12": nil
+          "january" => 10,
+          "february" => 10,
+          "march" => nil,
+          "april" => nil,
+          "may" => nil,
+          "june" => nil,
+          "july" => nil,
+          "august" => nil,
+          "september" => nil,
+          "october" => nil,
+          "november" => nil,
+          "december" => nil
         })
       end
     end
@@ -139,18 +139,18 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
           {
             'type' => 'GraphDataMonthlyRevenuesGenerated',
             'data' => {
-              "1": nil,
-              "2": nil,
-              "3": nil,
-              "4": nil,
-              "5": nil,
-              "6": nil,
-              "7": nil,
-              "8": nil,
-              "9": nil,
-              "10": nil,
-              "11": nil,
-              "12": nil
+              "january" => nil,
+              "february" => nil,
+              "march" => nil,
+              "april" => nil,
+              "may" => nil,
+              "june" => nil,
+              "july" => nil,
+              "august" => nil,
+              "september" => nil,
+              "october" => nil,
+              "november" => nil,
+              "december" => nil
             }
           }
         )

@@ -6,20 +6,6 @@ module Organization
 
       # The notification type key used for websocket broadcasts
       WEB_SOCKET_NOTIFICATION_KEY = "GraphDataMonthlyRevenuesGenerated".freeze
-      EMPTY_MONTHLY_REVENUES_CHART_DATA = {
-        "1": nil,
-        "2": nil,
-        "3": nil,
-        "4": nil,
-        "5": nil,
-        "6": nil,
-        "7": nil,
-        "8": nil,
-        "9": nil,
-        "10": nil,
-        "11": nil,
-        "12": nil
-      }.freeze
 
       def call(company_id:, year: Time.current.year, websocket_channel_id: nil)
         @company = Company.find(company_id)
@@ -36,8 +22,15 @@ module Organization
       def fetch_monthly_revenue
         monthly_revenues = MonthlyRevenue.where(year: @year, company_id: @company.id)
 
-        monthly_revenues.each_with_object(EMPTY_MONTHLY_REVENUES_CHART_DATA.deep_dup) { |monthly_revenue, monthly_revenues_chart_data|
-          monthly_revenues_chart_data[monthly_revenue.month.to_s.to_sym] = monthly_revenue.total_revenue
+        monthly_revenues.each_with_object(empty_monthly_revenues_chart_data) { |monthly_revenue, monthly_revenues_chart_data|
+          monthly_revenues_chart_data_key = Date::MONTHNAMES[monthly_revenue.month].downcase
+          monthly_revenues_chart_data[monthly_revenues_chart_data_key] = monthly_revenue.total_revenue
+        }
+      end
+
+      def empty_monthly_revenues_chart_data
+        Date::MONTHNAMES.each_with_object({}) { |month_name, base_monthly_revenues|
+          base_monthly_revenues[month_name.downcase] = nil if month_name
         }
       end
 
