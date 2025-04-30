@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_29_073541) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_30_102908) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -467,5 +467,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_073541) do
      FROM ((orders
        LEFT JOIN last_versions ON ((orders.id = last_versions.project_id)))
        LEFT JOIN amount_invoiced_per_orders ON ((orders.id = amount_invoiced_per_orders.project_id)));
+  SQL
+  create_view "monthly_revenues", sql_definition: <<-SQL
+      SELECT invoices.company_id,
+      (date_part('year'::text, invoices.issue_date))::integer AS year,
+      (date_part('month'::text, invoices.issue_date))::integer AS month,
+      sum((invoices.total_excl_tax_amount - COALESCE(credit_notes.total_excl_tax_amount, (0)::numeric))) AS total_revenue
+     FROM (accounting_financial_transactions invoices
+       LEFT JOIN accounting_financial_transactions credit_notes ON (((credit_notes.holder_id = invoices.id) AND ((credit_notes.type)::text = 'Accounting::CreditNote'::text))))
+    WHERE ((invoices.type)::text = 'Accounting::Invoice'::text)
+    GROUP BY invoices.company_id, ((date_part('year'::text, invoices.issue_date))::integer), ((date_part('month'::text, invoices.issue_date))::integer);
   SQL
 end
