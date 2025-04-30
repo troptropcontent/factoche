@@ -58,7 +58,7 @@ i18n
                                         "tooltip_label_month": "Mois",
                                         "tooltip_label_revenue": "Chiffre d'affaires",
                                         "title": "Chiffre d'affaires par mois",
-                                        "description": "Chiffre d'affaires par mois",
+                                        "description": "Toutes les commandes sont incluses",
                                         "january": "Janvier",
                                         "january_short": "Jan",
                                         "february": "Février",

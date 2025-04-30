@@ -127,6 +127,8 @@ const ChartCardRevenueOverTime = ({ companyId }: { companyId: number }) => {
     }
   );
 
+  const { t } = useTranslation();
+
   const { data: revenueOtherTimeFromServer } = Api.useQuery(
     "get",
     "/api/v1/organization/companies/{company_id}/dashboard",
@@ -150,8 +152,12 @@ const ChartCardRevenueOverTime = ({ companyId }: { companyId: number }) => {
   return (
     <Card className="col-span-2">
       <CardHeader>
-        <CardTitle>Revenue Over Time</CardTitle>
-        <CardDescription>Monthly invoiced amount</CardDescription>
+        <CardTitle>
+          {t("pages.companies.dashboard.charts.revenue_over_time.title")}
+        </CardTitle>
+        <CardDescription>
+          {t("pages.companies.dashboard.charts.revenue_over_time.description")}
+        </CardDescription>
       </CardHeader>
       {isLoaded ? <LoadedContent data={displayData} /> : <LoadingContent />}
     </Card>
