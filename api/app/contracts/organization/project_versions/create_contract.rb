@@ -6,7 +6,7 @@ module Organization
         required(:groups).type(:array).each do
           schema do
             required(:name).filled(:string)
-            optional(:description).filled(:string)
+            optional(:description).type(:string)
             required(:position).filled(:integer)
             required(:uuid).filled(:string)
           end
@@ -14,7 +14,7 @@ module Organization
         required(:items).filled(:array).each do
           schema do
             required(:name).filled(:string)
-            optional(:description).filled(:string)
+            optional(:description).type(:string)
             optional(:original_item_uuid).filled(:string)
             required(:position).filled(:integer)
             required(:quantity).filled(:integer)
