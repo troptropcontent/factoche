@@ -74,6 +74,7 @@ module Accounting
           }
         } }
         let(:client) { {
+          id: 1,
           name: "Client Corp",
           registration_number: "987654321",
           address_zipcode: "75002",

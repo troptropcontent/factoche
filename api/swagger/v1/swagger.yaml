@@ -595,6 +595,33 @@ paths:
           description: unauthorised
         '403':
           description: forbiden
+  "/api/v1/organization/companies/{company_id}/dashboard":
+    get:
+      summary: Get company's dashboard data
+      tags:
+      - Dashboard
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: client created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::Dashboards::DashboardData"
+        '403':
+          description: forbiden
   "/api/v1/organization/companies/{company_id}/draft_orders":
     get:
       summary: List all the company's draft orders
@@ -2330,7 +2357,6 @@ components:
       type: object
       required:
       - original_item_uuid
-      - group_id
       - name
       - quantity
       - unit
@@ -2342,6 +2368,7 @@ components:
           type: string
         group_id:
           type: integer
+          nullable: true
         name:
           type: string
         description:
@@ -2522,6 +2549,164 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::CreditNotes::ExtendedDto"
+    Organization::Dashboards::YtdTotalRevenues:
+      type: object
+      required:
+      - this_year
+      - last_year
+      properties:
+        this_year:
+          type: string
+          format: decimal
+        last_year:
+          type: string
+          format: decimal
+    Organization::Dashboards::OrderDetails:
+      type: object
+      required:
+      - completed_orders_count
+      - not_completed_orders_count
+      properties:
+        completed_orders_count:
+          type: integer
+        not_completed_orders_count:
+          type: integer
+    Organization::Dashboards::Kpis:
+      type: object
+      required:
+      - ytd_total_revenues
+      - average_orders_completion_percentage
+      - orders_details
+      properties:
+        ytd_total_revenues:
+          "$ref": "#/components/schemas/Organization::Dashboards::YtdTotalRevenues"
+        average_orders_completion_percentage:
+          type: string
+          format: decimal
+        orders_details:
+          "$ref": "#/components/schemas/Organization::Dashboards::OrderDetails"
+    Organization::Dashboards::MonthlyRevenues:
+      type: object
+      required: []
+      properties:
+        january:
+          type: string
+          format: decimal
+          nullable: true
+        february:
+          type: string
+          format: decimal
+          nullable: true
+        march:
+          type: string
+          format: decimal
+          nullable: true
+        april:
+          type: string
+          format: decimal
+          nullable: true
+        may:
+          type: string
+          format: decimal
+          nullable: true
+        june:
+          type: string
+          format: decimal
+          nullable: true
+        july:
+          type: string
+          format: decimal
+          nullable: true
+        august:
+          type: string
+          format: decimal
+          nullable: true
+        september:
+          type: string
+          format: decimal
+          nullable: true
+        october:
+          type: string
+          format: decimal
+          nullable: true
+        november:
+          type: string
+          format: decimal
+          nullable: true
+        december:
+          type: string
+          format: decimal
+          nullable: true
+    Organization::Dashboards::RevenueByClient:
+      type: object
+      required:
+      - client_id
+      - client_name
+      - revenue
+      properties:
+        client_id:
+          type: integer
+        client_name:
+          type: string
+        revenue:
+          type: string
+          format: decimal
+    Organization::Dashboards::OrderCompletionPercentageSchema:
+      type: object
+      required:
+      - id
+      - name
+      - order_total_amount
+      - invoiced_total_amount
+      - completion_percentage
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order_total_amount:
+          type: string
+          format: decimal
+        invoiced_total_amount:
+          type: string
+          format: decimal
+        completion_percentage:
+          type: string
+          format: decimal
+    Organization::Dashboards::ChartsData:
+      type: object
+      required:
+      - monthly_revenues
+      - revenue_by_client
+      - order_completion_percentages
+      properties:
+        monthly_revenues:
+          "$ref": "#/components/schemas/Organization::Dashboards::MonthlyRevenues"
+        revenue_by_client:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Dashboards::RevenueByClient"
+        order_completion_percentages:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Dashboards::OrderCompletionPercentageSchema"
+    Organization::Dashboards::DashboardData:
+      type: object
+      required:
+      - kpis
+      - charts_data
+      properties:
+        kpis:
+          "$ref": "#/components/schemas/Organization::Dashboards::Kpis"
+        charts_data:
+          "$ref": "#/components/schemas/Organization::Dashboards::ChartsData"
+    Organization::Dashboards::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::Dashboards::DashboardData"
     Organization::Invoices::ExtendedDto:
       type: object
       required:

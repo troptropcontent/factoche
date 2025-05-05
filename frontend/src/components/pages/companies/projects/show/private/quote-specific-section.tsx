@@ -28,16 +28,16 @@ const QuoteSpecificSection = ({
     "/api/v1/organization/quotes/{id}/convert_to_draft_order"
   );
 
-  useChannelSubscription({
-    channelName: `NotificationsChannel`,
-    onReceive: (data) => {
-      if (
-        data.type == "PDF_GENERATED" &&
-        data.data.record_id === quote?.last_version.id
-      ) {
-        refetch();
-      }
-    },
+  useChannelSubscription<{
+    type: "PDF_GENERATED";
+    data: { record_class: string; record_id: number };
+  }>(`NotificationsChannel`, (data) => {
+    if (
+      data.type == "PDF_GENERATED" &&
+      data.data.record_id === quote?.last_version.id
+    ) {
+      refetch();
+    }
   });
 
   if (quote == undefined) {

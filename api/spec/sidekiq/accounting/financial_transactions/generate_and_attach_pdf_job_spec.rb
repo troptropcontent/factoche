@@ -65,7 +65,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
     end
 
     context "when the financial transaction is a credit note" do
-      let (:credit_note) { FactoryBot.create(:credit_note, :posted, company_id: company.id, holder_id: invoice.id, number: "CN-2024-00001") }
+      let (:credit_note) { FactoryBot.create(:credit_note, :posted, company_id: company.id, client_id: client.id, holder_id: invoice.id, number: "CN-2024-00001") }
 
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => credit_note.id)

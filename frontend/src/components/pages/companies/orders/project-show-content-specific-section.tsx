@@ -20,16 +20,17 @@ const ProjectShowContentSpecificSection = ({
     { params: { path: { id: orderId } } },
     { select: ({ result }) => result }
   );
-  useChannelSubscription({
-    channelName: `NotificationsChannel`,
-    onReceive: (data) => {
-      if (
-        data.type == "PDF_GENERATED" &&
-        data.data.record_id === order?.last_version.id
-      ) {
-        refetch();
-      }
-    },
+
+  useChannelSubscription<{
+    type: "PDF_GENERATED";
+    data: { record_class: string; record_id: number };
+  }>(`NotificationsChannel`, (data) => {
+    if (
+      data.type == "PDF_GENERATED" &&
+      data.data.record_id === order?.last_version.id
+    ) {
+      refetch();
+    }
   });
 
   return (

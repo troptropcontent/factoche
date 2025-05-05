@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_31_165502) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_05_143804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -91,6 +91,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_31_165502) do
     t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
     t.decimal "total_including_tax_amount", precision: 15, scale: 2, null: false
     t.decimal "total_excl_retention_guarantee_amount", precision: 15, scale: 2, null: false
+    t.bigint "client_id", null: false
+    t.index ["client_id"], name: "index_accounting_financial_transactions_on_client_id"
     t.index ["company_id"], name: "index_accounting_financial_transactions_on_company_id"
     t.index ["context"], name: "index_accounting_financial_transactions_on_context", using: :gin
     t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
@@ -278,6 +280,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_31_165502) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "retention_guarantee_rate", precision: 3, scale: 2
+    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
     t.index ["project_id"], name: "index_organization_project_versions_on_project_id"
   end
 
@@ -329,4 +332,156 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_31_165502) do
   add_foreign_key "organization_projects", "organization_clients", column: "client_id"
   add_foreign_key "organization_projects", "organization_companies", column: "company_id"
   add_foreign_key "organization_projects", "organization_project_versions", column: "original_project_version_id"
+
+  create_view "orders_invoicing_data", sql_definition: <<-SQL
+      WITH latest_versions AS (
+           SELECT DISTINCT ON (organization_project_versions.project_id) organization_project_versions.id,
+              organization_project_versions.project_id
+             FROM organization_project_versions
+            ORDER BY organization_project_versions.project_id, organization_project_versions.number DESC
+          ), version_items AS (
+           SELECT lv.project_id,
+              oi.unit_price_amount,
+              oi.quantity,
+              (oi.unit_price_amount * (oi.quantity)::numeric) AS item_total
+             FROM (latest_versions lv
+               JOIN organization_items oi ON ((oi.project_version_id = lv.id)))
+          ), invoices AS (
+           SELECT opv.project_id,
+              ft.id,
+              ft.type,
+              ft.total_excl_tax_amount
+             FROM (accounting_financial_transactions ft
+               JOIN organization_project_versions opv ON ((ft.holder_id = opv.id)))
+            WHERE (((ft.type)::text = 'Accounting::Invoice'::text) AND (ft.status = ANY (ARRAY['posted'::accounting_financial_transaction_status, 'cancelled'::accounting_financial_transaction_status])))
+          ), credit_notes AS (
+           SELECT invoices.project_id,
+              ft.type,
+              ft.total_excl_tax_amount
+             FROM (accounting_financial_transactions ft
+               JOIN invoices ON ((ft.holder_id = invoices.id)))
+            WHERE (((ft.type)::text = 'Accounting::CreditNote'::text) AND (ft.status = ANY (ARRAY['posted'::accounting_financial_transaction_status, 'cancelled'::accounting_financial_transaction_status])))
+          ), invoice_totals AS (
+           SELECT invoices.project_id,
+              sum(invoices.total_excl_tax_amount) AS total_invoiced
+             FROM invoices
+            GROUP BY invoices.project_id
+          ), credit_note_totals AS (
+           SELECT credit_notes.project_id,
+              sum(credit_notes.total_excl_tax_amount) AS total_credited
+             FROM credit_notes
+            GROUP BY credit_notes.project_id
+          ), final AS (
+           SELECT vi.project_id,
+              sum(vi.item_total) AS order_total,
+              COALESCE(it.total_invoiced, (0)::numeric) AS total_invoiced,
+              COALESCE(ct.total_credited, (0)::numeric) AS total_credited,
+              round((LEAST((COALESCE((it.total_invoiced - ct.total_credited), (0)::numeric) / NULLIF(sum(vi.item_total), (0)::numeric)), (1)::numeric) * (100)::numeric), 2) AS progress_percentage
+             FROM ((version_items vi
+               LEFT JOIN invoice_totals it ON ((vi.project_id = it.project_id)))
+               LEFT JOIN credit_note_totals ct ON ((vi.project_id = ct.project_id)))
+            GROUP BY vi.project_id, it.total_invoiced, ct.total_credited
+          )
+   SELECT p.id AS order_id,
+      p.company_id,
+      p.name AS order_name,
+      f.order_total,
+      f.total_invoiced,
+      f.total_credited,
+      f.progress_percentage
+     FROM (final f
+       JOIN organization_projects p ON ((p.id = f.project_id)))
+    WHERE ((p.type)::text = 'Organization::Order'::text);
+  SQL
+  create_view "monthly_revenues", sql_definition: <<-SQL
+      SELECT invoices.company_id,
+      (date_part('year'::text, invoices.issue_date))::integer AS year,
+      (date_part('month'::text, invoices.issue_date))::integer AS month,
+      sum((invoices.total_excl_tax_amount - COALESCE(credit_notes.total_excl_tax_amount, (0)::numeric))) AS total_revenue
+     FROM (accounting_financial_transactions invoices
+       LEFT JOIN accounting_financial_transactions credit_notes ON (((credit_notes.holder_id = invoices.id) AND ((credit_notes.type)::text = 'Accounting::CreditNote'::text))))
+    WHERE ((invoices.type)::text = 'Accounting::Invoice'::text)
+    GROUP BY invoices.company_id, ((date_part('year'::text, invoices.issue_date))::integer), ((date_part('month'::text, invoices.issue_date))::integer);
+  SQL
+  create_view "order_completion_percentages", sql_definition: <<-SQL
+      WITH orders AS (
+           SELECT organization_projects.id,
+              organization_projects.client_id,
+              organization_projects.name,
+              organization_projects.created_at,
+              organization_projects.updated_at,
+              organization_projects.description,
+              organization_projects.type,
+              organization_projects.company_id,
+              organization_projects.number,
+              organization_projects.original_project_version_id,
+              organization_projects.posted,
+              organization_projects.posted_at
+             FROM organization_projects
+            WHERE ((organization_projects.type)::text = 'Organization::Order'::text)
+          ), last_version_numbers AS (
+           SELECT organization_project_versions.project_id,
+              max(organization_project_versions.number) AS last_version_number
+             FROM organization_project_versions
+            GROUP BY organization_project_versions.project_id
+          ), last_versions AS (
+           SELECT organization_project_versions.id,
+              organization_project_versions.project_id,
+              organization_project_versions.number,
+              organization_project_versions.created_at,
+              organization_project_versions.updated_at,
+              organization_project_versions.retention_guarantee_rate,
+              organization_project_versions.total_excl_tax_amount
+             FROM (organization_project_versions
+               JOIN last_version_numbers ON (((organization_project_versions.number = last_version_numbers.last_version_number) AND (organization_project_versions.project_id = last_version_numbers.project_id))))
+          ), invoices AS (
+           SELECT accounting_financial_transactions.id,
+              accounting_financial_transactions.company_id,
+              accounting_financial_transactions.holder_id,
+              accounting_financial_transactions.status,
+              accounting_financial_transactions.number,
+              accounting_financial_transactions.type,
+              accounting_financial_transactions.issue_date,
+              accounting_financial_transactions.context,
+              accounting_financial_transactions.created_at,
+              accounting_financial_transactions.updated_at,
+              accounting_financial_transactions.total_excl_tax_amount,
+              accounting_financial_transactions.total_including_tax_amount,
+              accounting_financial_transactions.total_excl_retention_guarantee_amount,
+              accounting_financial_transactions.client_id
+             FROM accounting_financial_transactions
+            WHERE ((accounting_financial_transactions.type)::text = 'Accounting::Invoice'::text)
+          ), credit_notes AS (
+           SELECT accounting_financial_transactions.id,
+              accounting_financial_transactions.company_id,
+              accounting_financial_transactions.holder_id,
+              accounting_financial_transactions.status,
+              accounting_financial_transactions.number,
+              accounting_financial_transactions.type,
+              accounting_financial_transactions.issue_date,
+              accounting_financial_transactions.context,
+              accounting_financial_transactions.created_at,
+              accounting_financial_transactions.updated_at,
+              accounting_financial_transactions.total_excl_tax_amount,
+              accounting_financial_transactions.total_including_tax_amount,
+              accounting_financial_transactions.total_excl_retention_guarantee_amount,
+              accounting_financial_transactions.client_id
+             FROM accounting_financial_transactions
+            WHERE ((accounting_financial_transactions.type)::text = 'Accounting::CreditNote'::text)
+          ), amount_invoiced_per_orders AS (
+           SELECT organization_project_versions.project_id,
+              (COALESCE(sum(invoices.total_excl_tax_amount), 0.00) - COALESCE(sum(credit_notes.total_excl_tax_amount), 0.00)) AS total_excl_tax_amount
+             FROM ((organization_project_versions
+               LEFT JOIN invoices ON ((organization_project_versions.id = invoices.holder_id)))
+               LEFT JOIN credit_notes ON ((invoices.id = credit_notes.holder_id)))
+            GROUP BY organization_project_versions.project_id
+          )
+   SELECT orders.id AS order_id,
+      last_versions.total_excl_tax_amount AS order_total_amount,
+      amount_invoiced_per_orders.total_excl_tax_amount AS invoiced_total_amount,
+      round((amount_invoiced_per_orders.total_excl_tax_amount / last_versions.total_excl_tax_amount), 2) AS completion_percentage
+     FROM ((orders
+       LEFT JOIN last_versions ON ((orders.id = last_versions.project_id)))
+       LEFT JOIN amount_invoiced_per_orders ON ((orders.id = amount_invoiced_per_orders.project_id)));
+  SQL
 end

@@ -625,6 +625,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get company's dashboard data */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description client created */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::Dashboards::DashboardData"];
+                        };
+                    };
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/draft_orders": {
         parameters: {
             query?: never;
@@ -2255,7 +2302,7 @@ export interface components {
         };
         "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem": {
             original_item_uuid: string;
-            group_id: number;
+            group_id?: number | null;
             name: string;
             description?: string | null;
             quantity: number;
@@ -2328,6 +2375,76 @@ export interface components {
         };
         "Organization::CreditNotes::ShowDto": {
             result: components["schemas"]["Organization::CreditNotes::ExtendedDto"];
+        };
+        "Organization::Dashboards::YtdTotalRevenues": {
+            /** Format: decimal */
+            this_year: string;
+            /** Format: decimal */
+            last_year: string;
+        };
+        "Organization::Dashboards::OrderDetails": {
+            completed_orders_count: number;
+            not_completed_orders_count: number;
+        };
+        "Organization::Dashboards::Kpis": {
+            ytd_total_revenues: components["schemas"]["Organization::Dashboards::YtdTotalRevenues"];
+            /** Format: decimal */
+            average_orders_completion_percentage: string;
+            orders_details: components["schemas"]["Organization::Dashboards::OrderDetails"];
+        };
+        "Organization::Dashboards::MonthlyRevenues": {
+            /** Format: decimal */
+            january?: string | null;
+            /** Format: decimal */
+            february?: string | null;
+            /** Format: decimal */
+            march?: string | null;
+            /** Format: decimal */
+            april?: string | null;
+            /** Format: decimal */
+            may?: string | null;
+            /** Format: decimal */
+            june?: string | null;
+            /** Format: decimal */
+            july?: string | null;
+            /** Format: decimal */
+            august?: string | null;
+            /** Format: decimal */
+            september?: string | null;
+            /** Format: decimal */
+            october?: string | null;
+            /** Format: decimal */
+            november?: string | null;
+            /** Format: decimal */
+            december?: string | null;
+        };
+        "Organization::Dashboards::RevenueByClient": {
+            client_id: number;
+            client_name: string;
+            /** Format: decimal */
+            revenue: string;
+        };
+        "Organization::Dashboards::OrderCompletionPercentageSchema": {
+            id: number;
+            name: string;
+            /** Format: decimal */
+            order_total_amount: string;
+            /** Format: decimal */
+            invoiced_total_amount: string;
+            /** Format: decimal */
+            completion_percentage: string;
+        };
+        "Organization::Dashboards::ChartsData": {
+            monthly_revenues: components["schemas"]["Organization::Dashboards::MonthlyRevenues"];
+            revenue_by_client: components["schemas"]["Organization::Dashboards::RevenueByClient"][];
+            order_completion_percentages: components["schemas"]["Organization::Dashboards::OrderCompletionPercentageSchema"][];
+        };
+        "Organization::Dashboards::DashboardData": {
+            kpis: components["schemas"]["Organization::Dashboards::Kpis"];
+            charts_data: components["schemas"]["Organization::Dashboards::ChartsData"];
+        };
+        "Organization::Dashboards::ShowDto": {
+            result: components["schemas"]["Organization::Dashboards::DashboardData"];
         };
         "Organization::Invoices::ExtendedDto": {
             id: number;

@@ -8,6 +8,7 @@ module Accounting
         subject(:result) { described_class.call(company, client, project, project_version, proforma_items, issue_date) }
         let(:issue_date) { Time.new(2024, 3, 20) }
         let(:company_id) { 1 }
+        let(:client_id) { 1 }
         let(:proforma_items) { [ {
           original_item_uuid: first_item_uuid,
           invoice_amount: "125.23"
@@ -74,6 +75,7 @@ module Accounting
         } }
 
         let(:client) { {
+          id: client_id,
           name: "Client Corp",
           registration_number: "987654321",
           address_zipcode: "75002",

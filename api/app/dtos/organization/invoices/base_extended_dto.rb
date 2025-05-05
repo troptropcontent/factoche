@@ -38,7 +38,7 @@ module Organization
       class Context < OpenApiDto
         class ProjectVersionItem < OpenApiDto
           field "original_item_uuid", :string
-          field "group_id", :integer
+          field "group_id", :integer, required: false
           field "name", :string
           field "description", :string, required: false
           field "quantity", :integer

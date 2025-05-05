@@ -36,6 +36,67 @@ i18n
                     },
                     "pages": {
                         "companies": {
+                            "dashboard": {
+                                "title": "Mon dashboard",
+                                "kpi_cards": {
+                                    "ytd_revenues": {
+                                        "title": "Chiffre d'affaires annuel",
+                                        "secondary_info": "{{percentage}} / n-1",
+                                    },
+                                    "average_orders_completion": {
+                                        "title": "Avancement moyen des commandes"
+                                    },
+                                    "orders_details": {
+                                        "title": "Commandes",
+                                        "main_info": "{{count}} en cours",
+                                        "secondary_info_one": "{{count}} terminée cette année",
+                                        "secondary_info_other": "{{count}} terminées cette année",
+                                    }
+                                },
+                                "charts": {
+                                    "revenue_over_time": {
+                                        "tooltip_label_month": "Mois",
+                                        "tooltip_label_revenue": "Chiffre d'affaires",
+                                        "title": "Chiffre d'affaires par mois",
+                                        "description": "Toutes les commandes sont incluses",
+                                        "january": "Janvier",
+                                        "january_short": "Jan",
+                                        "february": "Février",
+                                        "february_short": "Fev",
+                                        "march": "Mars",
+                                        "march_short": "Mar",
+                                        "april": "Avril",
+                                        "april_short": "Avr",
+                                        "may": "Mai",
+                                        "may_short": "Mai",
+                                        "june": "Juin",
+                                        "june_short": "Jun",
+                                        "july": "Juillet",
+                                        "july_short": "Jul",
+                                        "august": "Août",
+                                        "august_short": "Aou",
+                                        "september": "Septembre",
+                                        "september_short": "Sep",
+                                        "october": "Octobre",
+                                        "october_short": "Oct",
+                                        "november": "Novembre",
+                                        "november_short": "Nov",
+                                        "december": "Décembre",
+                                        "december_short": "Dec",
+                                    },
+                                    "revenue_by_client": {
+                                        "title": "Chiffre d'affaires par client",
+                                        "description": "Vos clients les plus importants par chiffre d'affaires",
+                                        "tooltip_label_client": "Client",
+                                        "tooltip_label_revenue": "Chiffre d'affaires",
+                                        
+                                    },
+                                    "major_orders_details": {
+                                        "title": "Commandes en cours",
+                                        "description": "Situation des commandes en cours de l'année",    
+                                    }
+                                }
+                            },
                             "show": {
                                 "title": "Mon dashboard",
                                 "description": "Dashboard de la company {{companyId}}" // Fixed triple brackets to double

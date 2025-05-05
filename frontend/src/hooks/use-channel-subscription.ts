@@ -1,45 +1,40 @@
+import { useContext, useEffect, useRef, useState } from "react";
 import { CableContext } from "@/contexts/cable-context";
-import { Subscription } from "@rails/actioncable";
-import { useContext, useEffect, useRef } from "react";
 
-type ChannelMessageTypes = {
-  type: "PDF_GENERATED";
-  data: { record_class: string; record_id: number };
-};
-
-const useChannelSubscription = ({
-  channelName,
-  onReceive,
-}: {
-  channelName: string;
-  onReceive: (message: ChannelMessageTypes) => void;
-}) => {
+export function useChannelSubscription<
+  T extends { type: string; data: unknown },
+>(channelName: string, onReceive: (data: T) => void) {
   const { cable } = useContext(CableContext);
-  const subscriptionRef = useRef<Subscription | null>(null);
+  const subscriptionRef = useRef<ActionCable.Subscription | null>(null);
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (!cable) {
-      throw new Error("Cable is not initialized.");
-    }
+    if (!cable) throw new Error("Cable not connected");
 
     const subscription = cable.subscriptions.create(
       { channel: channelName },
       {
+        connected: () => {
+          console.log(`[Cable] Connected to ${channelName}`);
+          setConnected(true);
+        },
+        disconnected: () => {
+          console.log(`[Cable] Disconnected from ${channelName}`);
+          setConnected(false);
+        },
         received: onReceive,
-        connected: () => console.log(`[Cable] Connected to ${channelName}`),
-        disconnected: () =>
-          console.log(`[Cable] Disconnected from ${channelName}`),
-        rejected: () =>
-          console.warn(`[Cable] Rejected subscription to ${channelName}`),
+        rejected: () => {
+          console.warn(`[Cable] Rejected subscription to ${channelName}`);
+        },
       }
     );
 
     subscriptionRef.current = subscription;
 
     return () => {
-      subscription?.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [cable, channelName, onReceive]);
-};
 
-export { useChannelSubscription };
+  return connected;
+}
