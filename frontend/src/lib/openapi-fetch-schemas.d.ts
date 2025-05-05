@@ -2420,12 +2420,24 @@ export interface components {
         };
         "Organization::Dashboards::RevenueByClient": {
             client_id: number;
+            client_name: string;
             /** Format: decimal */
             revenue: string;
+        };
+        "Organization::Dashboards::OrderCompletionPercentageSchema": {
+            id: number;
+            name: string;
+            /** Format: decimal */
+            order_total_amount: string;
+            /** Format: decimal */
+            invoiced_total_amount: string;
+            /** Format: decimal */
+            completion_percentage: string;
         };
         "Organization::Dashboards::ChartsData": {
             monthly_revenues: components["schemas"]["Organization::Dashboards::MonthlyRevenues"];
             revenue_by_client: components["schemas"]["Organization::Dashboards::RevenueByClient"][];
+            order_completion_percentages: components["schemas"]["Organization::Dashboards::OrderCompletionPercentageSchema"][];
         };
         "Organization::Dashboards::DashboardData": {
             kpis: components["schemas"]["Organization::Dashboards::Kpis"];

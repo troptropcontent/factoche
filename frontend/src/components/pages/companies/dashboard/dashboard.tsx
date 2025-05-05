@@ -1,5 +1,3 @@
-import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,12 +24,6 @@ import { ChartCardRevenueOverTime } from "./private/chart-card-revenue-over-time
 import { ChartCardRevenueByClient } from "./private/chart-card-revenue-by-client";
 
 // Sample data for the charts
-
-const invoiceStatusData = [
-  { name: "Paid", value: 68, color: "#10b981" },
-  { name: "Pending", value: 22, color: "#f59e0b" },
-  { name: "Overdue", value: 10, color: "#ef4444" },
-];
 
 const projectProgressData = [
   { name: "Office Renovation", progress: 85, billed: 42500, total: 50000 },
@@ -99,69 +91,8 @@ export default function Dashboard({ companyId }: { companyId: number }) {
           <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <ChartCardRevenueOverTime companyId={companyId} />
             <ChartCardRevenueByClient companyId={companyId} />
-            {/* Outstanding vs. Paid Invoices */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Invoice Status</CardTitle>
-                <CardDescription>Paid vs. pending vs. overdue</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={invoiceStatusData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={80}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {invoiceStatusData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                <div className="flex flex-col">
-                                  <span className="font-bold">
-                                    {payload[0].name}
-                                  </span>
-                                  <span className="text-muted-foreground">
-                                    {payload[0].value}%
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-4 flex justify-center space-x-4">
-                  {invoiceStatusData.map((item) => (
-                    <div key={item.name} className="flex items-center">
-                      <div
-                        className="mr-1 h-3 w-3 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="text-sm">
-                        {item.name} ({item.value}%)
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Progress by Project */}
-            <Card className="col-span-2">
+            <Card className="col-span-full">
               <CardHeader>
                 <CardTitle>Progress by Project</CardTitle>
                 <CardDescription>

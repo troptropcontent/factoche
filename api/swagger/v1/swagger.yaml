@@ -2641,11 +2641,36 @@ components:
       type: object
       required:
       - client_id
+      - client_name
       - revenue
       properties:
         client_id:
           type: integer
+        client_name:
+          type: string
         revenue:
+          type: string
+          format: decimal
+    Organization::Dashboards::OrderCompletionPercentageSchema:
+      type: object
+      required:
+      - id
+      - name
+      - order_total_amount
+      - invoiced_total_amount
+      - completion_percentage
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order_total_amount:
+          type: string
+          format: decimal
+        invoiced_total_amount:
+          type: string
+          format: decimal
+        completion_percentage:
           type: string
           format: decimal
     Organization::Dashboards::ChartsData:
@@ -2653,6 +2678,7 @@ components:
       required:
       - monthly_revenues
       - revenue_by_client
+      - order_completion_percentages
       properties:
         monthly_revenues:
           "$ref": "#/components/schemas/Organization::Dashboards::MonthlyRevenues"
@@ -2660,6 +2686,10 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Dashboards::RevenueByClient"
+        order_completion_percentages:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Dashboards::OrderCompletionPercentageSchema"
     Organization::Dashboards::DashboardData:
       type: object
       required:

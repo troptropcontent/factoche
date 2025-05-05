@@ -21,31 +21,43 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { buildChartCardRevenueByClientData } from "./util";
+
 import { useTranslation } from "react-i18next";
 
 type RevenueByClientWebsocket = {
   type: "GraphDataRevenueByClientGenerated";
   data: {
     client_id: number;
+    client_name: string;
     revenue: string;
   }[];
 };
 
 const useRevenueByClientFromApiResponseOrWebsocket = (companyId: number) => {
   const [revenueByClientFromWebsocket, setRevenueByClientFromWebsocket] =
-    useState<RevenueByClientWebsocket["data"] | undefined>(undefined);
+    useState<
+      | {
+          name: string;
+          revenue: number;
+        }[]
+      | undefined
+    >(undefined);
 
   const isSocketConnected = useChannelSubscription<RevenueByClientWebsocket>(
     `NotificationsChannel`,
     ({ data, type }) => {
       if (type === "GraphDataRevenueByClientGenerated") {
-        setRevenueByClientFromWebsocket(data);
+        setRevenueByClientFromWebsocket(
+          data.map(({ client_name, revenue }) => ({
+            name: client_name,
+            revenue: Number(revenue),
+          }))
+        );
       }
     }
   );
 
-  const { data: revenueByClientFromApiResponse } = Api.useQuery(
+  const { data: revenueByClientFromApiResponse = [] } = Api.useQuery(
     "get",
     "/api/v1/organization/companies/{company_id}/dashboard",
     { params: { path: { company_id: companyId } } },
@@ -54,7 +66,11 @@ const useRevenueByClientFromApiResponseOrWebsocket = (companyId: number) => {
         result: {
           charts_data: { revenue_by_client },
         },
-      }) => revenue_by_client,
+      }) =>
+        revenue_by_client.map(({ client_name, revenue }) => ({
+          name: client_name,
+          revenue: Number(revenue),
+        })),
       enabled: isSocketConnected,
     }
   );
@@ -69,19 +85,8 @@ const useRevenueByClientFromApiResponseOrWebsocket = (companyId: number) => {
 const ChartCardRevenueByClient = ({ companyId }: { companyId: number }) => {
   const revenueByClient =
     useRevenueByClientFromApiResponseOrWebsocket(companyId);
-  const { data: clients } = Api.useQuery(
-    "get",
-    "/api/v1/organization/companies/{company_id}/clients",
-    { params: { path: { company_id: companyId } } }
-  );
 
   const { t } = useTranslation();
-
-  const isDataLoaded = clients != undefined && revenueByClient != undefined;
-
-  const data = isDataLoaded
-    ? buildChartCardRevenueByClientData(revenueByClient, clients)
-    : [];
 
   return (
     <Card>
@@ -105,7 +110,7 @@ const ChartCardRevenueByClient = ({ companyId }: { companyId: number }) => {
         >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={data}
+              data={revenueByClient}
               layout="vertical"
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
