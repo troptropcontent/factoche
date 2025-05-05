@@ -509,12 +509,12 @@ i18n
                                         "download_quote_pdf": "Télécharger le devis",
                                         "quote_pdf_unavailable": "Devis en cours de génération",
                                         "update_quote": "Modifier le devis",
-                                        "convert_to_order": "Convertir en commande",
-                                        "convert_to_order_success_toast_title": "Devis converti en commande",
-                                        "convert_to_order_success_toast_description": "Le devis a bien été converti en commande",
+                                        "convert_to_order": "Convertir en commande provisoire",
+                                        "convert_to_order_success_toast_title": "Devis converti en commande provisoire",
+                                        "convert_to_order_success_toast_description": "Le devis a bien été converti en commande provisoire",
                                         "convert_to_order_error_toast_title": "Une erreur est survenue",
                                         "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion du devis en commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible",
-                                        "go_order": "Voir la commande liée"
+                                        "go_order": "Voir la commande provisoire liée"
                                     }
                                 },
                                 "new": {

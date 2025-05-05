@@ -16,7 +16,7 @@ const TransactionDetailsGrouped = ({
         <TransactionDetailsGroupedLines
           key={group.id}
           group={group}
-          items={items}
+          items={items.filter((groupItem) => groupItem.group_id === group.id)}
           transactionLines={transactionLines}
         />
       ))}
