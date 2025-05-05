@@ -7,17 +7,29 @@ RSpec.describe Organization::Dashboards::FetchGraphDataOrderCompletionPercentage
 
   include_context 'a company with some orders', number_of_orders: 3
 
-  # Max allowed invoices allowed for this item 100 * 100 => 10 000 €
+  # Setup the quote that will converted to `first_order` to obtain an order with a total value of 100 * 100 + 100 * 100 + 100 * 100 = 30 000
   let(:first_quote_first_item_unit_price_amount) { 100 }
   let(:first_quote_first_item_quantity) { 100 }
+  let(:first_quote_second_item_unit_price_amount) { 100 }
+  let(:first_quote_second_item_quantity) { 100 }
+  let(:first_quote_third_item_unit_price_amount) { 100 }
+  let(:first_quote_third_item_quantity) { 100 }
 
-  # Max allowed invoices allowed for this item 200 * 200 => 40 000 €
-  let(:second_quote_first_item_unit_price_amount) { 200 }
-  let(:second_quote_first_item_quantity) { 200 }
+  # Setup the quote that will converted to `second_order` to obtain an order with a total value of 100 * 100 + 100 * 100 + 100 * 100 = 30 000
+  let(:second_quote_first_item_unit_price_amount) { 100 }
+  let(:second_quote_first_item_quantity) { 100 }
+  let(:second_quote_second_item_unit_price_amount) { 100 }
+  let(:second_quote_second_item_quantity) { 100 }
+  let(:second_quote_third_item_unit_price_amount) { 100 }
+  let(:second_quote_third_item_quantity) { 100 }
 
-  # Max allowed invoices allowed for this item 300 * 300 => 90 000 €
-  let(:third_quote_first_item_unit_price_amount) { 300 }
-  let(:third_quote_first_item_quantity) { 300 }
+  # Setup the quote that will converted to `third_order` to obtain an order with a total value of 100 * 100 + 100 * 100 + 100 * 100 = 30 000
+  let(:third_quote_first_item_unit_price_amount) { 100 }
+  let(:third_quote_first_item_quantity) { 100 }
+  let(:third_quote_second_item_unit_price_amount) { 100 }
+  let(:third_quote_second_item_quantity) { 100 }
+  let(:third_quote_third_item_unit_price_amount) { 100 }
+  let(:third_quote_third_item_quantity) { 100 }
 
   let(:company_id) { company.id }
   let(:end_date) { DateTime.new(2024, 6, 15) }
@@ -41,7 +53,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataOrderCompletionPercentage
           first_order.last_version.id,
           {
             invoice_amounts: [
-              { original_item_uuid: first_order.last_version.items.first.original_item_uuid, invoice_amount: 123.99 }
+              { original_item_uuid: first_order.last_version.items.first.original_item_uuid, invoice_amount: 10000 },
+              { original_item_uuid: first_order.last_version.items.second.original_item_uuid, invoice_amount: 10000 }
             ]
           }
         ).data
@@ -65,7 +78,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataOrderCompletionPercentage
           second_order.last_version.id,
           {
             invoice_amounts: [
-              { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 999.99 }
+              { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 10000 }
             ]
           }
         ).data
@@ -76,20 +89,38 @@ RSpec.describe Organization::Dashboards::FetchGraphDataOrderCompletionPercentage
           third_order.last_version.id,
           {
             invoice_amounts: [
-              { original_item_uuid: third_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
+              { original_item_uuid: third_order.last_version.items.first.original_item_uuid, invoice_amount: 10000 },
+              { original_item_uuid: third_order.last_version.items.second.original_item_uuid, invoice_amount: 10000 },
+              { original_item_uuid: third_order.last_version.items.third.original_item_uuid, invoice_amount: 10000 }
             ]
           }
         ).data
         Accounting::Proformas::Post.call(third_proforma.id).data
       end
 
+      let(:expected) do
+        [
+          {
+            id: first_order.id,
+            name: first_order.name,
+            order_total_amount: 30000.0,
+            invoiced_total_amount: 20000.0,
+            completion_percentage: 0.67
+          },
+          {
+            id: second_order.id,
+            name: second_order.name,
+            order_total_amount: 30000.0,
+            invoiced_total_amount: 10000.0,
+            completion_percentage: 0.33
+          }
+        ]
+      end
+
       it_behaves_like 'a success'
 
       it 'returns the monthly revenues for the specified year' do
-        expect(result.data).to eq([
-          { id: first_order.id, name: first_order.name, completion_percentage: 0.01 },
-          { id: second_order.id, name: second_order.name, completion_percentage: 0.02 }
-        ])
+        expect(result.data).to eq(expected)
       end
     end
 

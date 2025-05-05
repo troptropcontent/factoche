@@ -19,10 +19,11 @@ module Organization
       private
 
       def fetch_order_completion_percentages
-        Organization::Dashboards::OrderCompletionPercentage.joins(:order)
+        Organization::Dashboards::OrderCompletionPercentage.joins({ order: :client })
                                                            .where({ order: { company_id: @company.id, created_at: @time_range } })
-                                                           .pluck("order_completion_percentages.order_id, \"order\".name, order_completion_percentages.completion_percentage")
-                                                           .map { |(id, name, completion_percentage)| { id:, name:, completion_percentage: completion_percentage.round(2) } }
+                                                           .order("order_completion_percentages.order_id")
+                                                           .pluck("order_completion_percentages.order_id, \"order\".name, order_completion_percentages.order_total_amount, order_completion_percentages.invoiced_total_amount, order_completion_percentages.completion_percentage")
+                                                           .map { |(id, name, order_total_amount, invoiced_total_amount, completion_percentage)| { id:, name:, order_total_amount:, invoiced_total_amount:, completion_percentage: } }
       end
     end
   end
