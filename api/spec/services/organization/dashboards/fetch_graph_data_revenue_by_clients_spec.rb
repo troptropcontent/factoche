@@ -87,8 +87,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
 
       it 'returns the monthly revenues for the specified year' do
         expect(result.data).to eq([
-          { client_id: first_client.id, revenue: 123.99 },
-          { client_id: second_client.id, revenue: 999.99 }
+          { client_id: first_client.id, client_name: first_client.name, revenue: 123.99 },
+          { client_id: second_client.id, client_name: second_client.name, revenue: 999.99 }
         ])
       end
     end

@@ -22,8 +22,8 @@ module Organization
         Organization::Client.joins("LEFT JOIN accounting_financial_transactions as invoices ON invoices.client_id = organization_clients.id AND invoices.type = 'Accounting::Invoice' LEFT JOIN accounting_financial_transactions as credit_notes ON credit_notes.holder_id = invoices.id AND credit_notes.type = 'Accounting::CreditNote'")
                             .where(company_id: @company.id, invoices: { issue_date: @time_range })
                             .group("organization_clients.id")
-                            .pluck(Arel.sql("organization_clients.id as client_id, SUM(COALESCE(invoices.total_excl_tax_amount, 0) - COALESCE(credit_notes.total_excl_tax_amount, 0)) as revenue"))
-                            .map { |(client_id, revenue)| { client_id:, revenue: } }
+                            .pluck(Arel.sql("organization_clients.id as client_id,organization_clients.name as client_name, SUM(COALESCE(invoices.total_excl_tax_amount, 0) - COALESCE(credit_notes.total_excl_tax_amount, 0)) as revenue"))
+                            .map { |(client_id, client_name, revenue)| { client_id:, client_name:, revenue: } }
       end
     end
   end
