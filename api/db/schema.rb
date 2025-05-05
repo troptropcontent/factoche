@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_30_150857) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_05_143804) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -393,6 +393,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_150857) do
        JOIN organization_projects p ON ((p.id = f.project_id)))
     WHERE ((p.type)::text = 'Organization::Order'::text);
   SQL
+  create_view "monthly_revenues", sql_definition: <<-SQL
+      SELECT invoices.company_id,
+      (date_part('year'::text, invoices.issue_date))::integer AS year,
+      (date_part('month'::text, invoices.issue_date))::integer AS month,
+      sum((invoices.total_excl_tax_amount - COALESCE(credit_notes.total_excl_tax_amount, (0)::numeric))) AS total_revenue
+     FROM (accounting_financial_transactions invoices
+       LEFT JOIN accounting_financial_transactions credit_notes ON (((credit_notes.holder_id = invoices.id) AND ((credit_notes.type)::text = 'Accounting::CreditNote'::text))))
+    WHERE ((invoices.type)::text = 'Accounting::Invoice'::text)
+    GROUP BY invoices.company_id, ((date_part('year'::text, invoices.issue_date))::integer), ((date_part('month'::text, invoices.issue_date))::integer);
+  SQL
   create_view "order_completion_percentages", sql_definition: <<-SQL
       WITH orders AS (
            SELECT organization_projects.id,
@@ -437,7 +447,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_150857) do
               accounting_financial_transactions.updated_at,
               accounting_financial_transactions.total_excl_tax_amount,
               accounting_financial_transactions.total_including_tax_amount,
-              accounting_financial_transactions.total_excl_retention_guarantee_amount
+              accounting_financial_transactions.total_excl_retention_guarantee_amount,
+              accounting_financial_transactions.client_id
              FROM accounting_financial_transactions
             WHERE ((accounting_financial_transactions.type)::text = 'Accounting::Invoice'::text)
           ), credit_notes AS (
@@ -453,7 +464,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_150857) do
               accounting_financial_transactions.updated_at,
               accounting_financial_transactions.total_excl_tax_amount,
               accounting_financial_transactions.total_including_tax_amount,
-              accounting_financial_transactions.total_excl_retention_guarantee_amount
+              accounting_financial_transactions.total_excl_retention_guarantee_amount,
+              accounting_financial_transactions.client_id
              FROM accounting_financial_transactions
             WHERE ((accounting_financial_transactions.type)::text = 'Accounting::CreditNote'::text)
           ), amount_invoiced_per_orders AS (
@@ -465,19 +477,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_30_150857) do
             GROUP BY organization_project_versions.project_id
           )
    SELECT orders.id AS order_id,
-      (amount_invoiced_per_orders.total_excl_tax_amount / last_versions.total_excl_tax_amount) AS completion_percentage
+      last_versions.total_excl_tax_amount AS order_total_amount,
+      amount_invoiced_per_orders.total_excl_tax_amount AS invoiced_total_amount,
+      round((amount_invoiced_per_orders.total_excl_tax_amount / last_versions.total_excl_tax_amount), 2) AS completion_percentage
      FROM ((orders
        LEFT JOIN last_versions ON ((orders.id = last_versions.project_id)))
        LEFT JOIN amount_invoiced_per_orders ON ((orders.id = amount_invoiced_per_orders.project_id)));
-  SQL
-  create_view "monthly_revenues", sql_definition: <<-SQL
-      SELECT invoices.company_id,
-      (date_part('year'::text, invoices.issue_date))::integer AS year,
-      (date_part('month'::text, invoices.issue_date))::integer AS month,
-      sum((invoices.total_excl_tax_amount - COALESCE(credit_notes.total_excl_tax_amount, (0)::numeric))) AS total_revenue
-     FROM (accounting_financial_transactions invoices
-       LEFT JOIN accounting_financial_transactions credit_notes ON (((credit_notes.holder_id = invoices.id) AND ((credit_notes.type)::text = 'Accounting::CreditNote'::text))))
-    WHERE ((invoices.type)::text = 'Accounting::Invoice'::text)
-    GROUP BY invoices.company_id, ((date_part('year'::text, invoices.issue_date))::integer), ((date_part('month'::text, invoices.issue_date))::integer);
   SQL
 end
