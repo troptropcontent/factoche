@@ -26,16 +26,16 @@ const ProjectShowContentSpecificSection = ({
     { select: ({ result }) => result }
   );
 
-  useChannelSubscription({
-    channelName: `NotificationsChannel`,
-    onReceive: (data) => {
-      if (
-        data.type == "PDF_GENERATED" &&
-        data.data.record_id === draftOrder?.last_version.id
-      ) {
-        refetch();
-      }
-    },
+  useChannelSubscription<{
+    type: "PDF_GENERATED";
+    data: { record_class: string; record_id: number };
+  }>(`NotificationsChannel`, (data) => {
+    if (
+      data.type == "PDF_GENERATED" &&
+      data.data.record_id === draftOrder?.last_version.id
+    ) {
+      refetch();
+    }
   });
 
   const { mutateAsync: convertToOrderMutationAsync } = Api.useMutation(

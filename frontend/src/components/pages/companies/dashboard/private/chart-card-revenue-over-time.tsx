@@ -76,7 +76,7 @@ const LoadedContent = ({ data }: { data: RawRevenueOtherTimeType }) => {
                           </span>
                           <span className="font-bold text-muted-foreground">
                             {t(
-                              `pages.companies.dashboard.charts.revenue_over_time.${payload[0].payload.month}`
+                              `pages.companies.dashboard.charts.revenue_over_time.${payload[0]!.payload.month}`
                             )}
                           </span>
                         </div>
@@ -88,7 +88,7 @@ const LoadedContent = ({ data }: { data: RawRevenueOtherTimeType }) => {
                           </span>
                           <span className="font-bold">
                             {t("common.number_in_currency", {
-                              amount: payload[0].value,
+                              amount: payload[0]!.value,
                             })}
                           </span>
                         </div>
