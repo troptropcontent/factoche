@@ -27,8 +27,15 @@ module Organization
       field "november", :decimal, required: false
       field "december", :decimal, required: false
     end
+
+    class RevenueByClient < OpenApiDto
+      field "client_id", :integer
+      field "revenue", :decimal
+    end
+
     class ChartsData < OpenApiDto
       field "monthly_revenues", :object, subtype: MonthlyRevenues
+      field "revenue_by_client", :array, subtype: RevenueByClient
     end
     class DashboardData < OpenApiDto
       field "kpis", :object, subtype: Kpis

@@ -254,7 +254,7 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
         end
 
         describe "charts_data" do
-          describe "charts_data" do
+          describe "monthly_revenues" do
             context "when there is no invoices recorded for the year" do
             end
 
@@ -306,6 +306,44 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
                               "november"  => nil,
                               "december"  => nil
                             }
+            end
+          end
+
+          describe "revenue_by_client" do
+            context "when there is no revenues recorded" do
+              run_test!("It shoudl return an empty array") do
+                expect(JSON.parse(response.body).dig("result", "charts_data", "revenue_by_client")).to eq([])
+              end
+            end
+
+            context "when there is revenues recorded" do
+              before do
+                # Create an invoice
+                first_proforma = Organization::Proformas::Create.call(
+                  order.last_version.id,
+                  {
+                    invoice_amounts: [
+                      { original_item_uuid: order.last_version.items.first.original_item_uuid, invoice_amount: 123.99 }
+                    ]
+                  }
+                ).data
+                Accounting::Proformas::Post.call(first_proforma.id)
+              end
+
+              run_test!("It shoudl return an empty array") do
+                expect(JSON.parse(response.body).dig("result", "charts_data", "revenue_by_client")).to eq([ { "client_id"=>order.client_id, "revenue"=>"123.99" } ])
+              end
+
+              it "broadcasts to the company notifications channel" do |example|
+                allow(ActionCable.server).to receive(:broadcast)
+                submit_request(example.metadata)
+                assert_response_matches_metadata(example.metadata)
+
+                expect(ActionCable.server).to have_received(:broadcast).with(
+                  company.websocket_channel,
+                  { 'type' => "GraphDataRevenueByClientsGenerated", 'data' => [ { client_id: order.client_id, revenue: 123.99 } ] }
+                )
+              end
             end
           end
         end
