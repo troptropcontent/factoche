@@ -2637,13 +2637,29 @@ components:
           type: string
           format: decimal
           nullable: true
+    Organization::Dashboards::RevenueByClient:
+      type: object
+      required:
+      - client_id
+      - revenue
+      properties:
+        client_id:
+          type: integer
+        revenue:
+          type: string
+          format: decimal
     Organization::Dashboards::ChartsData:
       type: object
       required:
       - monthly_revenues
+      - revenue_by_client
       properties:
         monthly_revenues:
           "$ref": "#/components/schemas/Organization::Dashboards::MonthlyRevenues"
+        revenue_by_client:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Dashboards::RevenueByClient"
     Organization::Dashboards::DashboardData:
       type: object
       required:

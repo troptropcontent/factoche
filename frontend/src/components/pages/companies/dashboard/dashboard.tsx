@@ -1,15 +1,4 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import { Progress } from "@/components/ui/progress";
 import {
   Table,
@@ -39,6 +23,7 @@ import { KpiCardTotalRevenue } from "./private/kpi-card-total-revenue";
 import { KpiCardAverageOrdersCompletionPercentage } from "./private/kpi-card-average_orders_completion_percentage";
 import { KpiCardOrdersDetails } from "./private/kpi-card-orders-details";
 import { ChartCardRevenueOverTime } from "./private/chart-card-revenue-over-time";
+import { ChartCardRevenueByClient } from "./private/chart-card-revenue-by-client";
 
 // Sample data for the charts
 
@@ -54,14 +39,6 @@ const projectProgressData = [
   { name: "Commercial Building", progress: 45, billed: 67500, total: 150000 },
   { name: "School Extension", progress: 92, billed: 138000, total: 150000 },
   { name: "Hospital Wing", progress: 30, billed: 90000, total: 300000 },
-];
-
-const topClientsData = [
-  { name: "ABC Corporation", revenue: 125000 },
-  { name: "XYZ Enterprises", revenue: 98000 },
-  { name: "123 Properties", revenue: 87500 },
-  { name: "Global Constructions", revenue: 76200 },
-  { name: "City Developers", revenue: 65800 },
 ];
 
 const upcomingInvoicesData = [
@@ -121,7 +98,7 @@ export default function Dashboard({ companyId }: { companyId: number }) {
           {/* Charts Section */}
           <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <ChartCardRevenueOverTime companyId={companyId} />
-
+            <ChartCardRevenueByClient companyId={companyId} />
             {/* Outstanding vs. Paid Invoices */}
             <Card>
               <CardHeader>
@@ -211,47 +188,6 @@ export default function Dashboard({ companyId }: { companyId: number }) {
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Top Clients by Revenue */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Top Clients by Revenue</CardTitle>
-                <CardDescription>Your most profitable clients</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={{
-                    revenue: {
-                      label: "Revenue",
-                      color: "hsl(var(--chart-2))",
-                    },
-                  }}
-                  className="aspect-[4/3]"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={topClientsData}
-                      layout="vertical"
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis
-                        type="number"
-                        tickFormatter={(value) => `$${value / 1000}k`}
-                      />
-                      <YAxis
-                        type="category"
-                        dataKey="name"
-                        width={100}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="revenue" fill="var(--color-revenue)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
               </CardContent>
             </Card>
 

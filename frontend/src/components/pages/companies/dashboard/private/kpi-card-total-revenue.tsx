@@ -6,6 +6,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KpiCardLoading } from "./kpi-card-loading";
 
+type YtdRevenueWebsocketNorification = {
+  type: "KpiTotalRevenueGenerated";
+  data: {
+    ytd_revenue_for_this_year: string;
+    ytd_revenue_for_last_year: string;
+  };
+};
 const KpiCardTotalRevenue = ({ companyId }: { companyId: number }) => {
   const [ytdRevenuesFromWebsocket, setYtdRevenuesFromWebsocket] = useState<
     | {
@@ -15,18 +22,19 @@ const KpiCardTotalRevenue = ({ companyId }: { companyId: number }) => {
     | undefined
   >(undefined);
 
-  const isSocketConnected = useChannelSubscription(
-    `NotificationsChannel`,
-    (data) => {
-      if (data.type === "KpiTotalRevenueGenerated") {
-        console.log("Data received : ", data.data);
-        setYtdRevenuesFromWebsocket({
-          ytdRevenueForLastYear: Number(data.data.ytd_revenue_for_last_year),
-          ytdRevenueForThisYear: Number(data.data.ytd_revenue_for_this_year),
-        });
+  const isSocketConnected =
+    useChannelSubscription<YtdRevenueWebsocketNorification>(
+      `NotificationsChannel`,
+      (data) => {
+        if (data.type === "KpiTotalRevenueGenerated") {
+          console.log("Data received : ", data.data);
+          setYtdRevenuesFromWebsocket({
+            ytdRevenueForLastYear: Number(data.data.ytd_revenue_for_last_year),
+            ytdRevenueForThisYear: Number(data.data.ytd_revenue_for_this_year),
+          });
+        }
       }
-    }
-  );
+    );
 
   const { t } = useTranslation();
 

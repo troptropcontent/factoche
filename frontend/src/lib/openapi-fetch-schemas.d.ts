@@ -2418,8 +2418,14 @@ export interface components {
             /** Format: decimal */
             december?: string | null;
         };
+        "Organization::Dashboards::RevenueByClient": {
+            client_id: number;
+            /** Format: decimal */
+            revenue: string;
+        };
         "Organization::Dashboards::ChartsData": {
             monthly_revenues: components["schemas"]["Organization::Dashboards::MonthlyRevenues"];
+            revenue_by_client: components["schemas"]["Organization::Dashboards::RevenueByClient"][];
         };
         "Organization::Dashboards::DashboardData": {
             kpis: components["schemas"]["Organization::Dashboards::Kpis"];

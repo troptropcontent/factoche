@@ -7,6 +7,10 @@ import { useTranslation } from "react-i18next";
 import { KpiCardLoading } from "./kpi-card-loading";
 import { Progress } from "@/components/ui/progress";
 
+type AverageOrderCompletionPercentageWebsocket = {
+  type: "KpiAverageOrderCompletionGenerated";
+  data: number;
+};
 const KpiCardAverageOrdersCompletionPercentage = ({
   companyId,
 }: {
@@ -17,15 +21,16 @@ const KpiCardAverageOrdersCompletionPercentage = ({
     setaverageOrdersCompletionPercentageFromWebsocket,
   ] = useState<number | undefined>(undefined);
 
-  const isSocketConnected = useChannelSubscription(
-    `NotificationsChannel`,
-    ({ data, type }) => {
-      if (type === "KpiAverageOrderCompletionGenerated") {
-        console.log("Data received : ", data);
-        setaverageOrdersCompletionPercentageFromWebsocket(data);
+  const isSocketConnected =
+    useChannelSubscription<AverageOrderCompletionPercentageWebsocket>(
+      `NotificationsChannel`,
+      ({ data, type }) => {
+        if (type === "KpiAverageOrderCompletionGenerated") {
+          console.log("Data received : ", data);
+          setaverageOrdersCompletionPercentageFromWebsocket(data);
+        }
       }
-    }
-  );
+    );
 
   const { t } = useTranslation();
 
@@ -56,7 +61,9 @@ const KpiCardAverageOrdersCompletionPercentage = ({
     <KpiCard.Root>
       <KpiCard.Header>
         <KpiCard.Title>
-          {t("pages.companies.dashboard.kpi_cards.average_orders_completion.title")}
+          {t(
+            "pages.companies.dashboard.kpi_cards.average_orders_completion.title"
+          )}
         </KpiCard.Title>
         <KpiCard.Icon>
           <BarChart3 />

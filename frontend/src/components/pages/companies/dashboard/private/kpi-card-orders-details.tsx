@@ -6,6 +6,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KpiCardLoading } from "./kpi-card-loading";
 
+type OrderDetailsWebsocket = {
+  type: "KpiOrdersDetailsGenerated";
+  data: {
+    completed_orders_count: number;
+    not_completed_orders_count: number;
+  };
+};
 const KpiCardOrdersDetails = ({ companyId }: { companyId: number }) => {
   const [ordersDetailsFromWebsocket, setOrdersDetailsFromWebsocket] = useState<
     | {
@@ -15,7 +22,7 @@ const KpiCardOrdersDetails = ({ companyId }: { companyId: number }) => {
     | undefined
   >(undefined);
 
-  const isSocketConnected = useChannelSubscription(
+  const isSocketConnected = useChannelSubscription<OrderDetailsWebsocket>(
     `NotificationsChannel`,
     ({ data, type }) => {
       if (type === "KpiOrdersDetailsGenerated") {

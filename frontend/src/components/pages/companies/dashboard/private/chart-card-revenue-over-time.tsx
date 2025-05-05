@@ -113,15 +113,32 @@ const LoadedContent = ({ data }: { data: RawRevenueOtherTimeType }) => {
   );
 };
 
+type RevenueOverTimeWebsocket = {
+  type: "GraphDataMonthlyRevenuesGenerated";
+  data: {
+    jan?: string | null;
+    feb?: string | null;
+    mar?: string | null;
+    apr?: string | null;
+    may?: string | null;
+    jun?: string | null;
+    jul?: string | null;
+    aug?: string | null;
+    sep?: string | null;
+    oct?: string | null;
+    nov?: string | null;
+    dec?: string | null;
+  };
+};
+
 const ChartCardRevenueOverTime = ({ companyId }: { companyId: number }) => {
   const [revenueOtherTimeFromWebsocket, setRevenueOtherTimeFromWebsocket] =
     useState<RawRevenueOtherTimeType | undefined>(undefined);
 
-  const isSocketConnected = useChannelSubscription(
+  const isSocketConnected = useChannelSubscription<RevenueOverTimeWebsocket>(
     `NotificationsChannel`,
     ({ data, type }) => {
       if (type === "GraphDataMonthlyRevenuesGenerated") {
-        console.log("Data received : ", data);
         setRevenueOtherTimeFromWebsocket(data);
       }
     }

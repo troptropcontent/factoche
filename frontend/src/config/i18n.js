@@ -83,6 +83,13 @@ i18n
                                         "november_short": "Nov",
                                         "december": "Décembre",
                                         "december_short": "Dec",
+                                    },
+                                    "revenue_by_client": {
+                                        "title": "Chiffre d'affaires par client",
+                                        "description": "Vos clients les plus importants par chiffre d'affaires",
+                                        "tooltip_label_client": "Client",
+                                        "tooltip_label_revenue": "Chiffre d'affaires",
+                                        
                                     }
                                 }
                             },

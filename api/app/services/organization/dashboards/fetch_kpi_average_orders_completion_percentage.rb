@@ -41,12 +41,13 @@ module Organization
       def fetch_average_order_completion_percentage
         time_range = @end_date.beginning_of_year...@end_date
 
-        Organization::Dashboards::OrderCompletionPercentage
+        order_completion_percentage = Organization::Dashboards::OrderCompletionPercentage
           .joins(:order)
           .where(order: { created_at: time_range, company_id: @company.id })
           .order("order_completion_percentages.order_id")
           .average("order_completion_percentages.completion_percentage")
-          .round(2)
+
+        order_completion_percentage&.round(2) || 0.to_d
       end
 
       # Broadcasts the completion percentage data to the specified websocket channel
