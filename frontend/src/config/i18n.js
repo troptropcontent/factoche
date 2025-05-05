@@ -90,6 +90,10 @@ i18n
                                         "tooltip_label_client": "Client",
                                         "tooltip_label_revenue": "Chiffre d'affaires",
                                         
+                                    },
+                                    "major_orders_details": {
+                                        "title": "Commandes en cours",
+                                        "description": "Situation des commandes en cours de l'année",    
                                     }
                                 }
                             },
