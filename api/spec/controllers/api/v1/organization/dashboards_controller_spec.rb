@@ -331,7 +331,7 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               end
 
               run_test!("It shoudl return an empty array") do
-                expect(JSON.parse(response.body).dig("result", "charts_data", "revenue_by_client")).to eq([ { "client_id"=>order.client_id, "revenue"=>"123.99" } ])
+                expect(JSON.parse(response.body).dig("result", "charts_data", "revenue_by_client")).to eq([ { "client_id"=>order.client_id, "client_name"=>"Super Client 1", "revenue"=>"123.99" } ])
               end
 
               it "broadcasts to the company notifications channel" do |example|
@@ -341,7 +341,7 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
 
                 expect(ActionCable.server).to have_received(:broadcast).with(
                   company.websocket_channel,
-                  { 'type' => "GraphDataRevenueByClientsGenerated", 'data' => [ { client_id: order.client_id, revenue: 123.99 } ] }
+                  { 'type' => "GraphDataRevenueByClientsGenerated", 'data' => [ { client_id: order.client_id, client_name: "Super Client 1", revenue: 123.99 } ] }
                 )
               end
             end

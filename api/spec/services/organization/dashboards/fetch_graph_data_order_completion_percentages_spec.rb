@@ -138,7 +138,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataOrderCompletionPercentage
         expect(ActionCable.server).to have_received(:broadcast).with(
           websocket_channel_id,
           {
-            'type' => 'GraphDataOrderCOmpletionPercentagesGenerated',
+            'type' => 'GraphDataOrderCompletionPercentagesGenerated',
             'data' => []
           }
         )
