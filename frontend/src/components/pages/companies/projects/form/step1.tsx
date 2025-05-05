@@ -27,10 +27,12 @@ import { Link } from "@tanstack/react-router";
 import { Api } from "@/lib/openapi-fetch-query-client";
 
 const Step1 = ({
+  update,
   send,
   companyId,
   initialValues,
 }: {
+  update?: boolean;
   send: (e: EventFromLogic<typeof projectFormMachine>) => void;
   companyId: string;
   initialValues?: z.infer<typeof step1FormSchema>;
@@ -127,6 +129,7 @@ const Step1 = ({
               <Select
                 onValueChange={(v) => field.onChange(Number(v))}
                 defaultValue={field.value.toString()}
+                disabled={update}
               >
                 <FormControl>
                   <SelectTrigger>

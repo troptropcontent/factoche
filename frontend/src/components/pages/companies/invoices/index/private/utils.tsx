@@ -1,9 +1,10 @@
+import { ProformaCompact } from "../../../proformas/shared/types";
 import { ProjectVersionCompact } from "../../../project-versions/shared/types";
 import { OrderCompact } from "../../../projects/shared/types";
 import { InvoiceCompact } from "../../shared/types";
 
 const findOrder = (
-  invoice: InvoiceCompact,
+  invoice: InvoiceCompact | ProformaCompact,
   orderVersions: ProjectVersionCompact[],
   orders: OrderCompact[]
 ): OrderCompact | undefined => {

@@ -42,7 +42,7 @@ const Content = ({ companyId }: { companyId: string }) => {
               documentsData={
                 invoicesData
                   ? {
-                      invoices: invoicesData.results,
+                      documents: invoicesData.results,
                       orders: invoicesData.meta.orders,
                       orderVersions: invoicesData.meta.order_versions,
                     }

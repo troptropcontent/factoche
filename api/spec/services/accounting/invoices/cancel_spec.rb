@@ -1,20 +1,15 @@
 require 'rails_helper'
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
+require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
 RSpec.describe Accounting::Invoices::Cancel do
   describe '.call', :aggregate_failures do
-    include_context 'a company with a project with three items'
+    include_context 'a company with an order'
 
     let(:issue_date) { Time.current }
     let(:original_invoice) {
-      draft_invoice = Organization::Invoices::Create.call(project_version.id, {
-        invoice_amounts: [
-          { original_item_uuid: first_item.original_item_uuid, invoice_amount: 1 },
-          { original_item_uuid: second_item.original_item_uuid, invoice_amount: 2 }
-        ]
-      }).data
-
-      Accounting::Invoices::Post.call(draft_invoice.id).data
+      proforma = ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
+      Accounting::Proformas::Post.call(proforma.id).data
     }
     let(:invoice_id) { original_invoice.id }
 
@@ -125,7 +120,7 @@ RSpec.describe Accounting::Invoices::Cancel do
 
     context 'when invoice is not in posted status' do
       before do
-        original_invoice.update!(status: :draft, number: "PRO-2024-0001")
+        original_invoice.update!(status: :cancelled)
       end
 
       it 'returns failure' do

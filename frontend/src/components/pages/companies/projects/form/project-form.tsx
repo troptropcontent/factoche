@@ -3,17 +3,20 @@ import { z } from "zod";
 import { formSchema } from "./project-form.schema";
 
 type ProjectFormProps = {
+  update?: boolean;
   companyId: string;
   initialValues: z.infer<typeof formSchema>;
   submitFunction: (data: z.infer<typeof formSchema>) => void;
 };
 const ProjectForm = ({
+  update,
   companyId,
   initialValues,
   submitFunction,
 }: ProjectFormProps) => {
   return (
     <ProjectFormContent
+      update={update}
       companyId={companyId}
       initialProjectFormValues={initialValues}
       submitFunction={submitFunction}

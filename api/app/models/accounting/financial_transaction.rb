@@ -4,6 +4,7 @@ module Accounting
 
     InvoiceType = "Invoice".freeze
     CreditNoteType = "CreditNote".freeze
+    ProformaType = "Proforma".freeze
 
     has_many :lines,
              class_name: "Accounting::FinancialTransactionLine",
@@ -20,6 +21,7 @@ module Accounting
                 scope: :company_id,
                 message: "has already been taken for this company"
               }
+    validate :valid_number
 
     def total_amount
       total_excl_tax_amount
@@ -44,8 +46,18 @@ module Accounting
     end
 
     def valid_type_name?
-      unless type.demodulize == InvoiceType || type.demodulize == CreditNoteType
-        errors.add(:type, "must either be Invoice or CreditNote")
+      unless type.demodulize == InvoiceType || type.demodulize == CreditNoteType || type.demodulize == ProformaType
+        errors.add(:type, "must either be Invoice, CreditNote or Proforma")
+      end
+    end
+
+    def valid_number
+      return unless self.number.present?
+      prefix = self.class.const_get("NUMBER_PREFIX")
+
+      regex = /^#{prefix}-\d{4}-\d+$/
+      unless number.match?(regex)
+        errors.add(:number, "must match format #{prefix}-YEAR-SEQUENCE")
       end
     end
   end

@@ -7,7 +7,7 @@ class PrintsController < ApplicationController
   # GET  /prints/quotes/:quote_id/quote_versions/:id
   def quote_version
     @locale = :fr
-    @project_type = "quotes"
+    @project_type = "quote"
     @project = Organization::Quote.find(params[:quote_id])
     @project_version = @project.versions.find(params[:id])
     @project_version_total_excl_tax_amount = @project_version.items.sum("quantity * unit_price_amount")
