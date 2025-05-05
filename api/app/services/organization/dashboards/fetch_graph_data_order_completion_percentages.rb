@@ -5,7 +5,7 @@ module Organization
       include Broadcastable
 
       # The notification type key used for websocket broadcasts
-      WEB_SOCKET_NOTIFICATION_KEY = "GraphDataOrderCOmpletionPercentagesGenerated".freeze
+      WEB_SOCKET_NOTIFICATION_KEY = "GraphDataOrderCompletionPercentagesGenerated".freeze
 
       def call(company_id:, end_date: Time.current, websocket_channel_id: nil)
         @company = Company.find(company_id)

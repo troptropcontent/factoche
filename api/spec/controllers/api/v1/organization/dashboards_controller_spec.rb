@@ -346,6 +346,66 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               end
             end
           end
+
+          describe "order_completion_percentages" do
+            context "when there is no revenues recorded" do
+              run_test!("It shoudl return an empty array") do
+                expect(JSON.parse(response.body).dig("result", "charts_data", "revenue_by_client")).to eq([])
+              end
+            end
+
+            context "when there is revenues recorded" do
+              before do
+                first_proforma = Organization::Proformas::Create.call(
+                  order.last_version.id,
+                  {
+                    invoice_amounts: [
+                      { original_item_uuid: order.last_version.items.first.original_item_uuid, invoice_amount: 600 },
+                      { original_item_uuid: order.last_version.items.third.original_item_uuid, invoice_amount: 2000 }
+                    ]
+                  }
+                ).data
+                Accounting::Proformas::Post.call(first_proforma.id)
+              end
+
+              run_test!("It shoudl return an empty array") do
+                expect(JSON.parse(response.body).dig("result", "charts_data", "order_completion_percentages")).to eq(
+                  [
+                    {
+                      "id"=>order.id,
+                      "name"=>order.name,
+                      "order_total_amount"=>"3194.83",
+                      "invoiced_total_amount"=>"2600.0",
+                      "completion_percentage" => "0.81"
+                    }
+                  ]
+                )
+              end
+
+              it "broadcasts to the company notifications channel" do |example|
+                allow(ActionCable.server).to receive(:broadcast)
+
+                submit_request(example.metadata)
+                assert_response_matches_metadata(example.metadata)
+
+                expect(ActionCable.server).to have_received(:broadcast).with(
+                  company.websocket_channel,
+                  {
+                    'type' => 'GraphDataOrderCompletionPercentagesGenerated',
+                    'data' => [
+                      {
+                        id: order.id,
+                        name: order.name,
+                        order_total_amount: 3194.83,
+                        invoiced_total_amount: 2600.0,
+                        completion_percentage: 0.81
+                      }
+                    ]
+                  }
+                )
+              end
+            end
+          end
         end
       end
 

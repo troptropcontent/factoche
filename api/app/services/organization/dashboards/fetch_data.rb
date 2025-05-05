@@ -16,7 +16,8 @@ module Organization
           },
           charts_data: {
             monthly_revenues: fetch_monthly_revenues!,
-            revenue_by_client: fetch_revenue_by_client!
+            revenue_by_client: fetch_revenue_by_client!,
+            order_completion_percentages: fetch_order_completion_percentages!
           }
         }
       end
@@ -56,6 +57,13 @@ module Organization
 
       def fetch_revenue_by_client!
         r = FetchGraphDataRevenueByClients.call(company_id: @company.id, end_date: @end_date, websocket_channel_id: @websocket_channel_id)
+        raise r.error if r.failure?
+
+        r.data
+      end
+
+      def fetch_order_completion_percentages!
+        r = FetchGraphDataOrderCompletionPercentages.call(company_id: @company.id, end_date: @end_date, websocket_channel_id: @websocket_channel_id)
         raise r.error if r.failure?
 
         r.data
