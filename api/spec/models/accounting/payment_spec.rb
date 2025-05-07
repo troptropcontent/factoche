@@ -13,8 +13,8 @@ RSpec.describe Accounting::Payment, type: :model do
     }
 
     it { is_expected.to belong_to(:invoice).class_name("Accounting::Invoice") }
-  it { is_expected.to validate_presence_of(:amount) }
-  it { is_expected.to validate_numericality_of(:amount).is_greater_than(0) }
-  it { is_expected.to validate_presence_of(:received_at) }
+    it { is_expected.to validate_presence_of(:amount) }
+    it { is_expected.to validate_numericality_of(:amount).is_greater_than(0) }
+    it { is_expected.to validate_presence_of(:received_at) }
   end
 end
