@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
-import { DocumentTable } from "./private/document-table";
 import { TabTrigger } from "./private/tab-trigger";
 import { Api } from "@/lib/openapi-fetch-query-client";
+import { ProformasTable } from "./private/proformas-table";
 
 const TAB_VALUE = "proforma" as const;
 
@@ -46,7 +46,7 @@ const Content = ({ companyId }: { companyId: string }) => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <DocumentTable
+            <ProformasTable
               companyId={companyId}
               documentsData={
                 proformaData
@@ -57,7 +57,6 @@ const Content = ({ companyId }: { companyId: string }) => {
                     }
                   : undefined
               }
-              tab={TAB_VALUE}
             />
           </div>
         </CardContent>

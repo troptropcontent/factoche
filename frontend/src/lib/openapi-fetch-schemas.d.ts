@@ -1309,6 +1309,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Creates an new payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        invoice_id: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description successfully creates completion snapshot invoice */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Accounting::Payments::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description forbiden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description not_found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/orders/{order_id}/proformas": {
         parameters: {
             query?: never;
@@ -2162,6 +2227,16 @@ export interface components {
                 details: Record<string, never>;
             };
         };
+        "Accounting::Payments::ExtendedDto": {
+            invoice_id: number;
+            /** Format: decimal */
+            amount: string;
+            /** Format: date-time */
+            received_at: string;
+        };
+        "Accounting::Payments::ShowDto": {
+            result: components["schemas"]["Accounting::Payments::ExtendedDto"];
+        };
         "Organization::Clients::ExtendedDto": {
             id: number;
             name: string;
@@ -2225,6 +2300,26 @@ export interface components {
             retention_guarantee_rate: number;
             items: components["schemas"]["Organization::CreateProjecItemDto"][] | components["schemas"]["Organization::CreateProjectItemGroupDto"][];
         };
+        "Organization::Invoices::BaseCompactDto": {
+            holder_id: number;
+            id: number;
+            /** @enum {string} */
+            status: "posted" | "cancelled";
+            number: string;
+            /** Format: date-time */
+            issue_date: string;
+            /** Format: date-time */
+            updated_at: string;
+            /** Format: decimal */
+            total_amount: string;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
+            /** Format: decimal */
+            total_including_tax_amount: string;
+            /** Format: decimal */
+            total_excl_retention_guarantee_amount: string;
+            pdf_url?: string | null;
+        };
         "Organization::Invoices::CompactDto": {
             holder_id: number;
             id: number;
@@ -2244,6 +2339,8 @@ export interface components {
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
             pdf_url?: string | null;
+            /** @enum {string} */
+            payment_status: "paid" | "pending" | "overdue";
         };
         "Organization::CreditNotes::CompactDto": {
             invoice: components["schemas"]["Organization::Invoices::CompactDto"];
@@ -2465,6 +2562,8 @@ export interface components {
             total_excl_retention_guarantee_amount: string;
             holder_id: number;
             credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
+            /** @enum {string} */
+            payment_status: "paid" | "overdue" | "pending";
         };
         "Organization::ProjectVersions::CompactDto": {
             id: number;

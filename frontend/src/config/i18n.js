@@ -143,6 +143,10 @@ i18n
                                         }
                                     },
                                     "actions": {
+                                        "record_payment": "Marquer cette facture comme payée",
+                                        "record_payment_success_toast_title": "Facture marquée comme payée",
+                                        "record_payment_error_toast_title": "Echec de l'opération",
+                                        "record_payment_error_toast_description": "La facture n'a pas pu etre marquée comme payée. Notre équipe a été notifié",
                                         "download_invoice_pdf": "Télécharger la facture en pdf",
                                         "invoice_pdf_unavailable": "Facture pdf en cours de génération",
                                         "download_credit_note_pdf": "Télécharger l'avoir en pdf",
@@ -465,7 +469,14 @@ i18n
                                                     "date": "Date",
                                                     "status": "Status",
                                                     "amount": "Montant",
-                                                    "actions": "Actions"
+                                                    "actions": "Actions",
+                                                    "payment_status": {
+                                                        "label": "Paiement",
+                                                        "paid": "Payée",
+                                                        "pending": "Non échue",
+                                                        "pending": "Due",
+                                                    }
+                                                    
                                                 }
                                             },
                                             "invoices": {
@@ -474,6 +485,14 @@ i18n
                                                 "description": "Retrouvez toutes vos factures ci-dessous",
                                                 "empty_state": {
                                                     "title": "Aucune facture trouvée",
+                                                },
+                                                "status": {
+                                                    "cancelled": "Annulée"
+                                                },
+                                                "actions": {
+                                                    "record_payment": "Marquer comme payée",
+                                                    "view_details": "Voir les details",
+                                                    "open_actions_menu": "Voir le menu"
                                                 }
                                             },
                                             "creditNotes": {
