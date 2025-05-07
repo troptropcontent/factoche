@@ -49,6 +49,30 @@
 			"include_context 'a company with a client and a member'"
 		],
 	},
+	"a company with some quotes": {
+		"scope": "ruby",
+		"prefix": "scsq",
+		"body": [
+			"require 'support/shared_contexts/organization/projects/a_company_with_some_quotes'",
+			"include_context 'a company with some quotes'"
+		],
+	},
+	"a company with some draft orders": {
+		"scope": "ruby",
+		"prefix": "scsdo",
+		"body": [
+			"require 'support/shared_contexts/organization/projects/a_company_with_some_draft_orders'",
+			"include_context 'a company with some draft orders'"
+		],
+	},
+	"a company with some orders": {
+		"scope": "ruby",
+		"prefix": "scso",
+		"body": [
+			"require 'support/shared_contexts/organization/projects/a_company_with_some_orders'",
+			"include_context 'a company with some orders'"
+		],
+	},
 	"a company with a quote": {
 		"scope": "ruby",
 		"prefix": "scq",
