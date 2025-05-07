@@ -100,6 +100,7 @@ Rails.application.routes.draw do
           end
         end
         resources :credit_notes, only: [ :show ]
+        resources :payments, only: [ :create ]
       end
     end
   end
