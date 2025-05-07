@@ -8,7 +8,6 @@ import { OrderCompact } from "../../../projects/shared/types";
 import { useTranslation } from "react-i18next";
 import { findOrder } from "./utils";
 import { PaymentStatusBadge } from "../shared/payment-status-badge";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -18,17 +17,7 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-
-const CancelledBadge = () => {
-  const { t } = useTranslation();
-  return (
-    <Badge variant="outline" className="ml-2 border-red-500 text-red-500">
-      {t(
-        "pages.companies.projects.invoices.index.tabs.invoices.status.cancelled"
-      )}
-    </Badge>
-  );
-};
+import { CancelledInvoiceBadge } from "../../shared/cancelled-status-badge";
 
 const RowActions = ({
   invoice,
@@ -159,7 +148,7 @@ const InvoicesTableRow = ({
     <TableRow key={document.id}>
       <TableCell className="font-medium">
         {document.number}
-        {document.status === "cancelled" && <CancelledBadge />}
+        {document.status === "cancelled" && <CancelledInvoiceBadge />}
       </TableCell>
       <TableCell>{order.client.name}</TableCell>
       <TableCell>{order.name}</TableCell>
