@@ -43,5 +43,15 @@ module Accounting
          },
          default: :posted,
          validate: true
+
+    def payment_status
+      if payments.exists?
+        "paid"
+      elsif detail.due_date < Date.today
+        "overdue"
+      else
+        "pending"
+      end
+    end
   end
 end

@@ -9,20 +9,17 @@ import { OrderCompact } from "../../../projects/shared/types";
 import { useTranslation } from "react-i18next";
 import { findOrder } from "./utils";
 import { ProformaCompact } from "../../../proformas/shared/types";
-import { Tab } from "../shared/types";
 
-const DocumentTableRow = ({
+const ProformasTableRow = ({
   companyId,
   document,
   orderVersions,
   orders,
-  tab,
 }: {
   companyId: string;
   document: InvoiceCompact | ProformaCompact;
   orderVersions: ProjectVersionCompact[];
   orders: OrderCompact[];
-  tab: Tab;
 }) => {
   const { t } = useTranslation();
 
@@ -52,14 +49,9 @@ const DocumentTableRow = ({
         <div className="flex justify-end gap-2">
           <Button variant="outline" size="sm" asChild>
             <Link
-              to={
-                tab === "proforma"
-                  ? "/companies/$companyId/proformas/$proformaId"
-                  : "/companies/$companyId/invoices/$invoiceId"
-              }
+              to={"/companies/$companyId/proformas/$proformaId"}
               params={{
                 companyId: companyId,
-                invoiceId: document.id.toString(),
                 proformaId: document.id.toString(),
               }}
             >
@@ -86,4 +78,4 @@ const DocumentTableRow = ({
   );
 };
 
-export { DocumentTableRow };
+export { ProformasTableRow };

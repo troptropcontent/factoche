@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 import { useInvoicesQuery } from "../private/hooks";
-import { DocumentTable } from "./private/document-table";
+import { InvoicesTable } from "./private/invoices-table";
 import { TabTrigger } from "./private/tab-trigger";
+import { Api } from "@/lib/openapi-fetch-query-client";
 
 const TAB_VALUE = "invoices" as const;
 
@@ -20,7 +21,16 @@ const Trigger = ({ companyId }: { companyId: string }) => {
 };
 
 const Content = ({ companyId }: { companyId: string }) => {
-  const { data: invoicesData } = useInvoicesQuery(companyId);
+  const { data: invoicesData } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/invoices",
+    {
+      params: {
+        path: { company_id: Number(companyId) },
+      },
+    }
+  );
+
   const { t } = useTranslation();
   return (
     <TabsContent value={TAB_VALUE}>
@@ -37,7 +47,7 @@ const Content = ({ companyId }: { companyId: string }) => {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <DocumentTable
+            <InvoicesTable
               companyId={companyId}
               documentsData={
                 invoicesData
@@ -48,7 +58,6 @@ const Content = ({ companyId }: { companyId: string }) => {
                     }
                   : undefined
               }
-              tab={TAB_VALUE}
             />
           </div>
         </CardContent>

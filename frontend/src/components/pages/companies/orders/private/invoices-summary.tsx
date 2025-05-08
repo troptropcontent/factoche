@@ -58,7 +58,7 @@ const InvoicesSummary = ({
       select: ({ results }) =>
         results
           .map((proforma) => ({ ...proforma, type: "proforma" as const }))
-          .filter((proforma) => proforma.status !== "voided"),
+          .filter((proforma) => proforma.status == "draft"),
     }
   );
 

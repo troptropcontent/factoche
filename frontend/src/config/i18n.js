@@ -143,6 +143,10 @@ i18n
                                         }
                                     },
                                     "actions": {
+                                        "record_payment": "Marquer cette facture comme payée",
+                                        "record_payment_success_toast_title": "Facture marquée comme payée",
+                                        "record_payment_error_toast_title": "Echec de l'opération",
+                                        "record_payment_error_toast_description": "La facture n'a pas pu etre marquée comme payée. Notre équipe a été notifié",
                                         "download_invoice_pdf": "Télécharger la facture en pdf",
                                         "invoice_pdf_unavailable": "Facture pdf en cours de génération",
                                         "download_credit_note_pdf": "Télécharger l'avoir en pdf",
@@ -465,7 +469,13 @@ i18n
                                                     "date": "Date",
                                                     "status": "Status",
                                                     "amount": "Montant",
-                                                    "actions": "Actions"
+                                                    "actions": "Actions",
+                                                    "payment_status": {
+                                                        "label": "Paiement",
+                                                        "paid": "Payée",
+                                                        "pending": "Non échue",
+                                                    }
+                                                    
                                                 }
                                             },
                                             "invoices": {
@@ -474,6 +484,14 @@ i18n
                                                 "description": "Retrouvez toutes vos factures ci-dessous",
                                                 "empty_state": {
                                                     "title": "Aucune facture trouvée",
+                                                },
+                                                "status": {
+                                                    "cancelled": "Annulée"
+                                                },
+                                                "actions": {
+                                                    "record_payment": "Marquer comme payée",
+                                                    "view_details": "Voir les details",
+                                                    "open_actions_menu": "Voir le menu"
                                                 }
                                             },
                                             "creditNotes": {
@@ -490,10 +508,15 @@ i18n
                                                 "description": "Retrouvez toutes vos factures proforma ci-dessous",
                                                 "empty_state": {
                                                     "title": "Aucune facture proforma trouvée",
+                                                },
+                                                "status": {
+                                                    "posted": "Validé",
+                                                    "draft": "Brouillon",
+                                                    "voided": "Supprimé"
                                                 }
                                             }
                                         }
-                                    }
+                                    },
                                 },
                                 "proformas": {
                                     "show": {
@@ -575,8 +598,32 @@ i18n
                                         "update_order": "Modifier la commande",
                                     },
                                     "invoices_summary": {
+                                        "title": "Facturation",
+                                        "description": "Gérez les factures et proformas pour cette commandes", 
                                         "new_proforma_button": {
-                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule facture proforma en cours de rédaction"
+                                            "title": "Nouvelle facture proforma",
+                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule facture proforma en cours de rédaction" 
+                                        },
+                                        "draft_hint": "Une facture proforma est en cours de redaction, pour ajouter une nouvelle facture veuillez la valider ou la supprimer.",
+                                        "tabs": {
+                                            "invoices": {
+                                                "title": "Factures",
+                                                "columns": {
+                                                    "number": "Numéro",
+                                                    "amount": "Montant HT",
+                                                    "date": "Date",
+                                                    "status": "Status",
+                                                }
+                                            },
+                                            "proformas": {
+                                                "title": "Proformas",
+                                                "columns": {
+                                                    "number": "Numéro",
+                                                    "amount": "Montant HT",
+                                                    "date": "Date",
+                                                    "status": "Status",
+                                                }
+                                            }
                                         }
                                     }
                                 },
