@@ -474,7 +474,6 @@ i18n
                                                         "label": "Paiement",
                                                         "paid": "Payée",
                                                         "pending": "Non échue",
-                                                        "pending": "Due",
                                                     }
                                                     
                                                 }
@@ -509,10 +508,15 @@ i18n
                                                 "description": "Retrouvez toutes vos factures proforma ci-dessous",
                                                 "empty_state": {
                                                     "title": "Aucune facture proforma trouvée",
+                                                },
+                                                "status": {
+                                                    "posted": "Validé",
+                                                    "draft": "Brouillon",
+                                                    "voided": "Supprimé"
                                                 }
                                             }
                                         }
-                                    }
+                                    },
                                 },
                                 "proformas": {
                                     "show": {
@@ -594,8 +598,32 @@ i18n
                                         "update_order": "Modifier la commande",
                                     },
                                     "invoices_summary": {
+                                        "title": "Facturation",
+                                        "description": "Gérez les factures et proformas pour cette commandes", 
                                         "new_proforma_button": {
-                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule facture proforma en cours de rédaction"
+                                            "title": "Nouvelle facture proforma",
+                                            "disabled_hint": "Vous ne pouvez avoir qu'une seule facture proforma en cours de rédaction" 
+                                        },
+                                        "draft_hint": "Une facture proforma est en cours de redaction, pour ajouter une nouvelle facture veuillez la valider ou la supprimer.",
+                                        "tabs": {
+                                            "invoices": {
+                                                "title": "Factures",
+                                                "columns": {
+                                                    "number": "Numéro",
+                                                    "amount": "Montant HT",
+                                                    "date": "Date",
+                                                    "status": "Status",
+                                                }
+                                            },
+                                            "proformas": {
+                                                "title": "Proformas",
+                                                "columns": {
+                                                    "number": "Numéro",
+                                                    "amount": "Montant HT",
+                                                    "date": "Date",
+                                                    "status": "Status",
+                                                }
+                                            }
                                         }
                                     }
                                 },
