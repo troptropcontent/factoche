@@ -474,6 +474,7 @@ i18n
                                                         "label": "Paiement",
                                                         "paid": "Payée",
                                                         "pending": "Non échue",
+                                                        "overdue": "Due",
                                                     }
                                                     
                                                 }
