@@ -11,8 +11,8 @@ class Api::V1::ApiV1Controller < ApplicationController
     @current_user
   end
 
-  def load_and_authorise_resource(name: nil, class_name: nil, param_key: nil)
-    id = params[param_key || "id"]
+  def load_and_authorise_resource(name: nil, class_name: nil, param_key: nil, id: nil)
+    id = params[param_key || "id"] || id
     klass = (class_name || detect_resource_class).constantize
     instance_variable_name = name || klass.name.demodulize.underscore
     instance_variable_set("@#{instance_variable_name}", klass.find(id))

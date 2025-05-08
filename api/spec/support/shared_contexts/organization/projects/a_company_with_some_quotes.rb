@@ -4,9 +4,7 @@ RSpec.shared_context 'a company with some quotes' do |number_of_quotes: 1|
   let(:company) { FactoryBot.create(:company, :with_config) }
   ordinals = [ "first", "second", "third" ]
 
-  if number_of_quotes > ordinals.length
-    raise "Achtung, max number of quote that can be created is #{ordinals.length}"
-  end
+  before { raise "Achtung, max number of quote that can be created is #{ordinals.length}" if number_of_quotes > ordinals.length }
 
   number_of_quotes.times do |number_of_quote_index|
     let("#{ordinals[number_of_quote_index]}_client") { FactoryBot.create(:client, company: company) }

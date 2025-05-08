@@ -34,6 +34,7 @@ module Accounting
     NUMBER_PREFIX = "INV".freeze
 
     has_one :credit_note, class_name: "Accounting::CreditNote", foreign_key: :holder_id
+    has_many :payments, class_name: "Accounting::Payment", foreign_key: :invoice_id
 
     enum :status,
          {
@@ -42,5 +43,15 @@ module Accounting
          },
          default: :posted,
          validate: true
+
+    def payment_status
+      if payments.exists?
+        "paid"
+      elsif detail.due_date < Date.today
+        "overdue"
+      else
+        "pending"
+      end
+    end
   end
 end

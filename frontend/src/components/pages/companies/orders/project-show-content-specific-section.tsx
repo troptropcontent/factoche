@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { InvoicesSummary } from "./private/invoices-summary";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Download, Loader2, Pen } from "lucide-react";
 import { useChannelSubscription } from "@/hooks/use-channel-subscription";
+import InvoicingSection from "./private/invoicing-section";
 
 const ProjectShowContentSpecificSection = ({
   orderId,
@@ -62,7 +62,7 @@ const ProjectShowContentSpecificSection = ({
           {t("pages.companies.orders.show.actions.update_order")}
         </Link>
       </Button>
-      <InvoicesSummary companyId={companyId} orderId={orderId} />
+      <InvoicingSection companyId={companyId} orderId={orderId} />
     </>
   );
 };

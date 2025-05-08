@@ -7,28 +7,23 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import {} from "@/components/ui/table";
 import { useTranslation } from "react-i18next";
-import { InvoiceCompact } from "../../shared/types";
-import { Tab } from "../shared/types";
 import { t } from "i18next";
 import { ProjectVersionCompact } from "../../../project-versions/shared/types";
 import { OrderCompact } from "../../../projects/shared/types";
-import { DocumentTableRow } from "./document-table-row";
 import { ProformaCompact } from "../../../proformas/shared/types";
+import { ProformasTableRow } from "./proformas-table-row";
 
 const LoadedTableBody = ({
   companyId,
   documents,
   orderVersions,
   orders,
-  tab,
 }: {
   companyId: string;
-  documents: InvoiceCompact[] | ProformaCompact[];
+  documents: ProformaCompact[];
   orderVersions: ProjectVersionCompact[];
   orders: OrderCompact[];
-  tab: Tab;
 }) => {
   const { t } = useTranslation();
 
@@ -36,8 +31,7 @@ const LoadedTableBody = ({
     <TableBody>
       {documents.length > 0 ? (
         documents.map((document) => (
-          <DocumentTableRow
-            tab={tab}
+          <ProformasTableRow
             companyId={companyId}
             document={document}
             orderVersions={orderVersions}
@@ -51,7 +45,7 @@ const LoadedTableBody = ({
             className="text-center py-4 text-muted-foreground"
           >
             {t(
-              `pages.companies.projects.invoices.index.tabs.${tab}.empty_state.title`
+              `pages.companies.projects.invoices.index.tabs.proformas.empty_state.title`
             )}
           </TableCell>
         </TableRow>
@@ -89,18 +83,16 @@ const LoadingTableBody = () => {
   );
 };
 
-const DocumentTable = ({
+const ProformasTable = ({
   companyId,
   documentsData,
-  tab,
 }: {
   companyId: string;
   documentsData?: {
-    documents: InvoiceCompact[] | ProformaCompact[];
+    documents: ProformaCompact[];
     orders: OrderCompact[];
     orderVersions: ProjectVersionCompact[];
   };
-  tab: Tab;
 }) => {
   return (
     <Table>
@@ -151,11 +143,10 @@ const DocumentTable = ({
           documents={documentsData.documents}
           orderVersions={documentsData.orderVersions}
           orders={documentsData.orders}
-          tab={tab}
         />
       )}
     </Table>
   );
 };
 
-export { DocumentTable };
+export { ProformasTable };

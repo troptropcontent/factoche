@@ -1153,6 +1153,43 @@ paths:
           description: not_found
         '403':
           description: forbiden
+  "/api/v1/organization/payments":
+    post:
+      summary: Creates an new payment
+      tags:
+      - Payments
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: successfully creates completion snapshot invoice
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Accounting::Payments::ExtendedDto"
+        '403':
+          description: forbiden
+        '401':
+          description: unauthorized
+        '404':
+          description: not_found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - invoice_id
+              properties:
+                invoice_id:
+                  type: integer
+        required: true
   "/api/v1/organization/orders/{order_id}/proformas":
     post:
       summary: Creates an invoice
@@ -1986,6 +2023,28 @@ components:
           - details
       required:
       - error
+    Accounting::Payments::ExtendedDto:
+      type: object
+      required:
+      - invoice_id
+      - amount
+      - received_at
+      properties:
+        invoice_id:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+        received_at:
+          type: string
+          format: date-time
+    Accounting::Payments::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Accounting::Payments::ExtendedDto"
     Organization::Clients::ExtendedDto:
       type: object
       required:
@@ -2166,7 +2225,7 @@ components:
           - type: array
             items:
               "$ref": "#/components/schemas/Organization::CreateProjectItemGroupDto"
-    Organization::Invoices::CompactDto:
+    Organization::Invoices::BaseCompactDto:
       type: object
       required:
       - holder_id
@@ -2212,6 +2271,59 @@ components:
         pdf_url:
           type: string
           nullable: true
+    Organization::Invoices::CompactDto:
+      type: object
+      required:
+      - holder_id
+      - id
+      - status
+      - number
+      - issue_date
+      - updated_at
+      - total_amount
+      - total_excl_tax_amount
+      - total_including_tax_amount
+      - total_excl_retention_guarantee_amount
+      - payment_status
+      properties:
+        holder_id:
+          type: integer
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - posted
+          - cancelled
+        number:
+          type: string
+        issue_date:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        total_amount:
+          type: string
+          format: decimal
+        total_excl_tax_amount:
+          type: string
+          format: decimal
+        total_including_tax_amount:
+          type: string
+          format: decimal
+        total_excl_retention_guarantee_amount:
+          type: string
+          format: decimal
+        pdf_url:
+          type: string
+          nullable: true
+        payment_status:
+          type: string
+          enum:
+          - paid
+          - pending
+          - overdue
     Organization::CreditNotes::CompactDto:
       type: object
       required:
@@ -2720,6 +2832,7 @@ components:
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
       - holder_id
+      - payment_status
       properties:
         id:
           type: integer
@@ -2759,6 +2872,12 @@ components:
         credit_note:
           "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
           nullable: true
+        payment_status:
+          type: string
+          enum:
+          - paid
+          - overdue
+          - pending
     Organization::ProjectVersions::CompactDto:
       type: object
       required:

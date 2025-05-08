@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_05_143804) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_06_141016) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -96,6 +96,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_05_143804) do
     t.index ["company_id"], name: "index_accounting_financial_transactions_on_company_id"
     t.index ["context"], name: "index_accounting_financial_transactions_on_context", using: :gin
     t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
+  end
+
+  create_table "accounting_payments", force: :cascade do |t|
+    t.bigint "invoice_id", null: false
+    t.decimal "amount", null: false
+    t.datetime "received_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_accounting_payments_on_invoice_id"
   end
 
   create_table "action_text_rich_texts", force: :cascade do |t|
@@ -314,6 +323,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_05_143804) do
 
   add_foreign_key "accounting_financial_transaction_details", "accounting_financial_transactions", column: "financial_transaction_id"
   add_foreign_key "accounting_financial_transaction_lines", "accounting_financial_transactions", column: "financial_transaction_id"
+  add_foreign_key "accounting_payments", "accounting_financial_transactions", column: "invoice_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
