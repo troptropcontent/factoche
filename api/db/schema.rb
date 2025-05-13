@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_06_141016) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -493,5 +493,44 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_06_141016) do
      FROM ((orders
        LEFT JOIN last_versions ON ((orders.id = last_versions.project_id)))
        LEFT JOIN amount_invoiced_per_orders ON ((orders.id = amount_invoiced_per_orders.project_id)));
+  SQL
+  create_view "invoice_payment_statuses", sql_definition: <<-SQL
+      WITH invoices AS (
+           SELECT accounting_financial_transactions.id,
+              accounting_financial_transactions.company_id,
+              accounting_financial_transactions.holder_id,
+              accounting_financial_transactions.status,
+              accounting_financial_transactions.number,
+              accounting_financial_transactions.type,
+              accounting_financial_transactions.issue_date,
+              accounting_financial_transactions.context,
+              accounting_financial_transactions.created_at,
+              accounting_financial_transactions.updated_at,
+              accounting_financial_transactions.total_excl_tax_amount,
+              accounting_financial_transactions.total_including_tax_amount,
+              accounting_financial_transactions.total_excl_retention_guarantee_amount,
+              accounting_financial_transactions.client_id
+             FROM accounting_financial_transactions
+            WHERE ((accounting_financial_transactions.type)::text = 'Accounting::Invoice'::text)
+          ), invoice_payments AS (
+           SELECT invoices.id AS invoice_id,
+              sum(COALESCE(accounting_payments.amount, (0)::numeric)) AS invoice_payment
+             FROM (invoices
+               LEFT JOIN accounting_payments ON ((accounting_payments.invoice_id = invoices.id)))
+            GROUP BY invoices.id
+          ), invoice_balances AS (
+           SELECT invoices.id AS invoice_id,
+              (invoices.total_excl_retention_guarantee_amount - invoice_payments.invoice_payment) AS balance
+             FROM (invoices
+               LEFT JOIN invoice_payments ON ((invoice_payments.invoice_id = invoices.id)))
+          )
+   SELECT invoice_balances.invoice_id,
+          CASE
+              WHEN (invoice_balances.balance = (0)::numeric) THEN 'paid'::text
+              WHEN (accounting_financial_transaction_details.due_date < now()) THEN 'overdue'::text
+              ELSE 'pending'::text
+          END AS status
+     FROM (invoice_balances
+       LEFT JOIN accounting_financial_transaction_details ON ((accounting_financial_transaction_details.financial_transaction_id = invoice_balances.invoice_id)));
   SQL
 end
