@@ -406,6 +406,25 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               end
             end
           end
+
+          describe "invoice_payment_status_distribution" do
+            run_test!("It returns the correct orders details") do |response|
+              parsed_response = JSON.parse(response.body)
+              expect(parsed_response.dig("result", "charts_data", "invoice_payment_status_distribution")).to eq({
+                "overdue"   => "0.0",
+                "paid"  =>  "0.0",
+                "pending"     =>  "0.0"
+              })
+            end
+
+            it_behaves_like "it broadcasts to the websocket channel",
+                          type: "InvoiceStatusGraphDataGenerated",
+                          data: {
+                            overdue: 0.0,
+                            paid:  0.0,
+                            pending:  0.0
+                          }
+          end
         end
       end
 
