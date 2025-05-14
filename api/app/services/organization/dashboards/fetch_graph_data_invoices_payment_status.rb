@@ -1,5 +1,43 @@
 module Organization
   module Dashboards
+    # Service: Organization::Dashboards::FetchGraphDataInvoicesPaymentStatus
+    #
+    # Computes the percentage distribution of invoice payment statuses (`paid`, `pending`, `overdue`)
+    # for a given company within the current year (or up to a specified end date).
+    #
+    # This service:
+    # - Queries a view-backed model (`Accounting::InvoicePaymentStatus`) that computes invoice status in SQL
+    # - Filters invoices by company and issue date
+    # - Excludes cancelled invoices
+    # - Groups invoices by status and returns the distribution as percentage values
+    # - Optionally broadcasts the data to a websocket channel
+    #
+    # === Parameters
+    # * +company_id+ - ID of the company for which to fetch invoice data
+    # * +end_date+ - Optional cutoff date (default: Time.current); used to filter invoices and determine "overdue" status
+    # * +websocket_channel_id+ - Optional ID of a websocket channel to broadcast the result to
+    #
+    # === Returns
+    # A Hash with symbol keys for each payment status, and percentage values (rounded to two decimals).
+    # Example:
+    #   {
+    #     paid: 62.5,
+    #     pending: 25.0,
+    #     overdue: 12.5
+    #   }
+    #
+    # === Raises
+    # * +ActiveRecord::RecordNotFound+ if the company does not exist
+    #
+    # === WebSocket Broadcast
+    # If +websocket_channel_id+ is provided, the result is also broadcasted using the key:
+    #   "InvoiceStatusGraphDataGenerated"
+    #
+    # === Usage
+    #   Organization::Dashboards::FetchGraphDataInvoicesPaymentStatus.call(
+    #     company_id: 123,
+    #     websocket_channel_id: "dashboard:42"
+    #   )
     class FetchGraphDataInvoicesPaymentStatus
       include ApplicationService
       include Broadcastable
@@ -9,7 +47,7 @@ module Organization
 
       def call(company_id:, end_date: Time.current, websocket_channel_id: nil)
         @company = Company.find(company_id)
-        @end_date = end_date
+        @end_date = validate_end_date!(end_date)
         @websocket_channel_id = websocket_channel_id
 
         status_percentages = fetch_invoice_status_percentages
