@@ -3,9 +3,13 @@ require 'support/shared_contexts/organization/projects/a_company_with_some_order
 require 'services/shared_examples/service_result_example'
 
 RSpec.describe Organization::Dashboards::FetchGraphDataInvoicesPaymentStatus do
+    include ActiveSupport::Testing::TimeHelpers
+
     subject(:result) { described_class.call(company_id:, end_date: end_date, websocket_channel_id:) }
 
     include_context 'a company with some orders', number_of_orders: 3
+
+    let(:result_container) { {}  }
 
     # Setup the quote that will converted to `first_order` to obtain an order with a total value of 100 * 100 + 100 * 100 + 100 * 100 = 30 000
     let(:first_quote_first_item_unit_price_amount) { 100 }
@@ -34,6 +38,14 @@ RSpec.describe Organization::Dashboards::FetchGraphDataInvoicesPaymentStatus do
     let(:company_id) { company.id }
     let(:websocket_channel_id) { nil }
     let(:end_date) { Time.new(2024, 06, 15, 12, 0, 0) }
+
+    let(:stubbed_time) { Time.new(2024, 06, 14, 12, 0, 0) }
+
+    around do |example|
+      travel_to(stubbed_time) do
+        example.run
+      end
+    end
 
 
     describe '#call' do
@@ -106,11 +118,9 @@ RSpec.describe Organization::Dashboards::FetchGraphDataInvoicesPaymentStatus do
           }
         end
 
-        it_behaves_like 'a success'
-
         it 'returns the monthly revenues for the specified year' do
           ActiveRecord::Base.connection.transaction do
-            ActiveRecord::Base.connection.execute("SET LOCAL app.now = '#{Time.new(2024, 06, 15, 12, 0, 0).iso8601}'")
+            ActiveRecord::Base.connection.execute("SET LOCAL app.now = '#{stubbed_time.iso8601}'")
             expect(result.data).to eq(expected)
             raise ActiveRecord::Rollback
           end

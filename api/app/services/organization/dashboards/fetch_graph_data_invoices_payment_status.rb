@@ -28,6 +28,15 @@ module Organization
     #
     # === Raises
     # * +ActiveRecord::RecordNotFound+ if the company does not exist
+    # * +ArgumentError+ if +end_date+ is not in the same calendar year as +Time.current+
+    #
+    # === Notes
+    # This service relies on a PostgreSQL view (`accounting_invoice_payment_statuses`) which determines
+    # payment status based on a SQL-level current date (`now()` or a test-injected `app.now` value).
+    #
+    # For this reason, the +end_date+ parameter must be within the current calendar year (based on Time.current),
+    # as the SQL view always evaluates due dates relative to "today".
+    # If an +end_date+ from another year is passed, an ArgumentError is raised to prevent inconsistent logic.
     #
     # === WebSocket Broadcast
     # If +websocket_channel_id+ is provided, the result is also broadcasted using the key:
@@ -56,6 +65,17 @@ module Organization
       end
 
       private
+
+      def validate_end_date!(end_date)
+        now_year = Time.current.year
+        given_year = end_date.year
+
+        if now_year != given_year
+          raise ArgumentError, "end_date must be in the current year (#{now_year}), but was #{given_year}"
+        end
+
+        end_date
+      end
 
       def fetch_invoice_status_percentages
         base_query = Accounting::InvoicePaymentStatus
