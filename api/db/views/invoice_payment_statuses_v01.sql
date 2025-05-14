@@ -19,7 +19,11 @@ invoice_balances AS (
 SELECT invoice_balances.invoice_id,
     CASE
         WHEN invoice_balances.balance = 0 THEN 'paid'
-        WHEN accounting_financial_transaction_details.due_date < now() THEN 'overdue'
+        WHEN accounting_financial_transaction_details.due_date < COALESCE(
+            NULLIF(current_setting('app.now', true), '')::timestamp,
+            -- only for testing purposes in order to mock now()
+            now()
+        ) THEN 'overdue'
         ELSE 'pending'
     END AS status
 FROM invoice_balances

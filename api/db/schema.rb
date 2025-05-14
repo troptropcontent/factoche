@@ -527,7 +527,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
    SELECT invoice_balances.invoice_id,
           CASE
               WHEN (invoice_balances.balance = (0)::numeric) THEN 'paid'::text
-              WHEN (accounting_financial_transaction_details.due_date < now()) THEN 'overdue'::text
+              WHEN (accounting_financial_transaction_details.due_date < COALESCE(((NULLIF(current_setting('app.now'::text, true), ''::text))::timestamp without time zone)::timestamp with time zone, now())) THEN 'overdue'::text
               ELSE 'pending'::text
           END AS status
      FROM (invoice_balances
