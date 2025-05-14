@@ -2785,12 +2785,29 @@ components:
         completion_percentage:
           type: string
           format: decimal
+    Organization::Dashboards::InvoicePaymentStatusDistribution:
+      type: object
+      required:
+      - pending
+      - paid
+      - overdue
+      properties:
+        pending:
+          type: string
+          format: decimal
+        paid:
+          type: string
+          format: decimal
+        overdue:
+          type: string
+          format: decimal
     Organization::Dashboards::ChartsData:
       type: object
       required:
       - monthly_revenues
       - revenue_by_client
       - order_completion_percentages
+      - invoice_payment_status_distribution
       properties:
         monthly_revenues:
           "$ref": "#/components/schemas/Organization::Dashboards::MonthlyRevenues"
@@ -2802,6 +2819,8 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Dashboards::OrderCompletionPercentageSchema"
+        invoice_payment_status_distribution:
+          "$ref": "#/components/schemas/Organization::Dashboards::InvoicePaymentStatusDistribution"
     Organization::Dashboards::DashboardData:
       type: object
       required:

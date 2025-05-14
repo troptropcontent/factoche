@@ -69,7 +69,10 @@ module Accounting
         def create_details!
           detail_attributes = @original_proforma.detail.attributes.except(
                 "id", "invoice_id", "created_at", "updated_at"
-              )
+          ).merge({
+            "due_date" => @issue_date + @original_proforma.detail.payment_term_days.days
+          })
+
           @invoice.create_detail!(detail_attributes)
         end
 

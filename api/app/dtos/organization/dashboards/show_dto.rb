@@ -43,10 +43,17 @@ module Organization
       field "completion_percentage", :decimal
     end
 
+    class InvoicePaymentStatusDistribution < OpenApiDto
+      field "pending", :decimal
+      field "paid", :decimal
+      field "overdue", :decimal
+    end
+
     class ChartsData < OpenApiDto
       field "monthly_revenues", :object, subtype: MonthlyRevenues
       field "revenue_by_client", :array, subtype: RevenueByClient
       field "order_completion_percentages", :array, subtype: OrderCompletionPercentageSchema
+      field "invoice_payment_status_distribution", :object, subtype: InvoicePaymentStatusDistribution
     end
 
     class DashboardData < OpenApiDto
