@@ -94,6 +94,10 @@ i18n
                                     "major_orders_details": {
                                         "title": "Commandes en cours",
                                         "description": "Situation des commandes en cours de l'année",    
+                                    },
+                                    "invoice_payment_status_distribution": {
+                                        "title": "Status des factures",
+                                        "description": "Distribution des factures selon les statuts de paiement", 
                                     }
                                 }
                             },

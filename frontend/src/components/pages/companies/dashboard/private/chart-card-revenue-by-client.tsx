@@ -89,7 +89,7 @@ const ChartCardRevenueByClient = ({ companyId }: { companyId: number }) => {
   const { t } = useTranslation();
 
   return (
-    <Card>
+    <Card className="col-span-2 lg:col-span-1">
       <CardHeader>
         <CardTitle>
           {t("pages.companies.dashboard.charts.revenue_by_client.title")}
