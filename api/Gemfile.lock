@@ -488,6 +488,7 @@ DEPENDENCIES
   image_processing (~> 1.2)
   jwt
   kamal
+  nokogiri
   pg (~> 1.1)
   phonelib (~> 0.10.1)
   propshaft
