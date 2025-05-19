@@ -21,9 +21,8 @@ module Accounting
           end
 
           xml_string = builder.to_xml
-          save_xml_to_tmp(xml_string)
 
-          xml_string
+          write_to_tempfile(xml_string)
       end
 
       private
@@ -180,12 +179,11 @@ module Accounting
         end
       end
 
-      def save_xml_to_tmp(xml)
-        dir = Rails.root.join("tmp", "facturx")
-        FileUtils.mkdir_p(dir)
-        filename = "facturx_invoice_#{@invoice.number}.xml"
-        filepath = dir.join(filename)
-        File.write(filepath, xml)
+      def write_to_tempfile(xml_string)
+        tempfile = Tempfile.new([ "#{@invoice.number}", ".xml" ])
+        tempfile.write(xml_string)
+        tempfile.rewind
+        tempfile
       end
 
       def item(holder_id)
