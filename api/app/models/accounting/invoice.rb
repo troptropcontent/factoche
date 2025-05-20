@@ -31,6 +31,8 @@ module Accounting
       end
     end
 
+    include FacturXAttachable
+
     NUMBER_PREFIX = "INV".freeze
 
     has_one :credit_note, class_name: "Accounting::CreditNote", foreign_key: :holder_id
