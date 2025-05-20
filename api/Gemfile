@@ -23,6 +23,11 @@ gem "solid_cable"
 # For generating XML
 gem "nokogiri"
 
+# For http things
+gem "faraday"
+gem "faraday-multipart"
+
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -77,6 +82,7 @@ end
 group :test do
   gem "shoulda-matchers"
   gem "database_cleaner-active_record"
+  gem "webmock"
 end
 
 gem "phonelib", "~> 0.10.1"

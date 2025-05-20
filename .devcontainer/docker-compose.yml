@@ -48,7 +48,12 @@ services:
     ports:
       - "8081:8081"
     working_dir: /factoche/api
-    command: bundle exec dotenv -f config/.env.development rails s -p 8081 -b 0.0.0.0
+    command: sh -c "bundle install && bundle exec dotenv -f config/.env.development rails s -p 8081 -b 0.0.0.0"
+  factur_x:
+    build:
+      dockerfile: DockerfileFacturX
+    networks:
+      - development
   db:
     image: postgres:15.4
     restart: unless-stopped
