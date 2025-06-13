@@ -45,6 +45,8 @@ env:
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
     - POSTGRES_PASSWORD
+    - ACCESS_TOKEN_SECRET
+    - REFRESH_TOKEN_SECRET
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
