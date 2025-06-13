@@ -1,5 +1,5 @@
 require_relative "production"
 
 Rails.application.configure do
-  # Staging overrides
+  config.action_cable.allowed_request_origins = [ "https://app.staging.fabati.fr" ]
 end
