@@ -9,7 +9,7 @@ RSpec.describe JwtAuth do
     let(:decoded_token) do
       JWT.decode(
         access_token,
-        Rails.application.credentials.token_secrets.access,
+        ENV.fetch("ACCESS_TOKEN_SECRET"),
       ).first
     end
 
@@ -41,7 +41,7 @@ RSpec.describe JwtAuth do
     let(:decoded_token) do
       JWT.decode(
         refresh_token,
-        Rails.application.credentials.token_secrets.refresh,
+        ENV.fetch("REFRESH_TOKEN_SECRET"),
         true
       ).first
     end
@@ -133,11 +133,11 @@ RSpec.describe JwtAuth do
 
       # Verify that tokens can't be decoded with wrong secrets
       expect {
-        JWT.decode(access_token, Rails.application.credentials.token_secrets.refresh)
+        JWT.decode(access_token,  ENV.fetch("REFRESH_TOKEN_SECRET"))
       }.to raise_error(JWT::VerificationError)
 
       expect {
-        JWT.decode(refresh_token, Rails.application.credentials.token_secrets.access)
+        JWT.decode(refresh_token,  ENV.fetch("ACCESS_TOKEN_SECRET"))
       }.to raise_error(JWT::VerificationError)
     end
   end

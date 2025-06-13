@@ -10,7 +10,7 @@ module JwtAuth
   # - exp: the expiration time
   # - jti: the jwt id
   def self.decode_access_token(token)
-    JWT.decode(token, Rails.application.credentials.token_secrets.access, true)[0]
+    JWT.decode(token, ENV.fetch("ACCESS_TOKEN_SECRET"), true)[0]
   end
 
   # This method is used to decode the refresh token
@@ -20,7 +20,7 @@ module JwtAuth
   # - exp: the expiration time
   # - jti: the jwt id
   def self.decode_refresh_token(token)
-    JWT.decode(token, Rails.application.credentials.token_secrets.refresh, true)[0]
+    JWT.decode(token, ENV.fetch("REFRESH_TOKEN_SECRET"), true)[0]
   end
 
   # This method is used to generate the access token
@@ -34,7 +34,7 @@ module JwtAuth
     }
     JWT.encode(
       payload,
-      Rails.application.credentials.token_secrets.access
+      ENV.fetch("ACCESS_TOKEN_SECRET")
     )
   end
 
@@ -47,9 +47,10 @@ module JwtAuth
       exp: REFRESH_TOKEN_EXPIRATION_TIME.from_now.to_i,
       jti: SecureRandom.uuid
     }
+
     JWT.encode(
       payload,
-      Rails.application.credentials.token_secrets.refresh
+      ENV.fetch("REFRESH_TOKEN_SECRET")
     )
   end
 
