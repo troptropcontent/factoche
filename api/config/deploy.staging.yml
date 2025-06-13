@@ -11,6 +11,7 @@ servers:
       - 51.178.142.109
     proxy:
       host: api.staging.fabati.fr
+      ssl: true
   jobs:
     hosts:
       - 51.178.142.109
