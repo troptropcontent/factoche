@@ -70,6 +70,8 @@ RSpec.describe HeadlessBrowserPdfGenerator do
     end
 
     before do
+      WebMock.allow_net_connect!
+
       server.mount_proc '/' do |_, response|
         response.content_type = 'text/html'
         response.status = response_status
@@ -82,6 +84,7 @@ RSpec.describe HeadlessBrowserPdfGenerator do
     end
 
     after do
+      WebMock.disable_net_connect!
       server.shutdown
     end
 
