@@ -6,6 +6,10 @@ deploy-production:
 	bundle exec dotenv -f config/.env.production kamal deploy -d production
 deploy-staging:
 	bundle exec kamal deploy -d staging
+console-staging:
+	bundle exec kamal console -d staging
+logs-staging:
+	bundle exec kamal logs -d staging
 boot_chromium:
 	bundle exec dotenv -f config/.env.production kamal accessory boot -d production chromium
 production:
