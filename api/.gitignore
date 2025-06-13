@@ -13,3 +13,11 @@ log
 node_modules
 
 storage/
+
+/config/credentials/staging.key
+
+/config/credentials/production.key
+
+/config/credentials/development.key
+
+/config/credentials/test.key
