@@ -19,25 +19,25 @@ RSpec.describe JwtAuth do
     end
 
     it 'generates a valid JWT token' do
-      expect { decoded_token }.not_to raise_error
+      expect { payload }.not_to raise_error
     end
 
     it 'includes the correct resource_id in the subject claim' do
-      expect(decoded_token['sub']).to eq(resource_id.to_s)
+      expect(payload['sub']).to eq(resource_id.to_s)
     end
 
     it 'sets the correct expiration time' do
       expected_exp = Time.now.to_i + expiration
-      expect(decoded_token['exp']).to be_within(5).of(expected_exp)
+      expect(payload['exp']).to be_within(5).of(expected_exp)
     end
 
     it 'includes issued at time' do
-      expect(decoded_token['iat']).to be_within(5).of(Time.now.to_i)
+      expect(payload['iat']).to be_within(5).of(Time.now.to_i)
     end
 
     it 'includes a JWT ID', :aggregate_failures do
-      expect(decoded_token['jti']).to be_present
-      expect(decoded_token['jti']).to match(/^[0-9a-f-]{36}$/) # UUID format
+      expect(payload['jti']).to be_present
+      expect(payload['jti']).to match(/^[0-9a-f-]{36}$/) # UUID format
     end
   end
   # rubocop:enable RSpec/MultipleMemoizedHelpers
