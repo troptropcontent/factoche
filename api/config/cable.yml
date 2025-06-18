@@ -1,6 +1,6 @@
 development:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
+  url: "<%= ENV.fetch('REDIS_URL') %>"
   channel_prefix: fabati_development
 
 test:
@@ -8,10 +8,10 @@ test:
 
 staging:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
+  url: "<%= ENV.fetch('REDIS_URL') %>"
   channel_prefix: fabati_staging
 
 production:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
+  url: "<%= ENV.fetch('REDIS_URL') %>"
   channel_prefix: fabati_production
