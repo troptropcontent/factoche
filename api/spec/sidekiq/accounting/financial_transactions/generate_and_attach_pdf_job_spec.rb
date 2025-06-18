@@ -47,7 +47,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
           host: "html_pdf:8081"
         )
 
-        expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(expected_url)
+        expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(%r{^http://html_pdf:8081/accounting/prints/published_invoices/\d+\?token=.+$})
       end
     end
 
@@ -55,10 +55,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => proforma.id)
 
-        expected_url = Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
-          proforma,
-          host: "html_pdf:8081"
-        )
+        expected_url = %r{^http://html_pdf:8081/accounting/prints/unpublished_invoices/\d+\?token=.+$}
 
         expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(expected_url)
       end
@@ -70,10 +67,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => credit_note.id)
 
-        expected_url = Rails.application.routes.url_helpers.accounting_prints_credit_note_url(
-          credit_note,
-          host: "html_pdf:8081"
-        )
+        expected_url = %r{^http://html_pdf:8081/accounting/prints/credit_notes/\d+\?token=.+$}
 
         expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(expected_url)
       end

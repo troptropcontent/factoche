@@ -1,5 +1,5 @@
 server:
-	rm -f tmp/pids/server.pid && bundle exec dotenv -f config/.env.development rails server -p 8080
+	rm -f tmp/pids/server.pid && bundle exec dotenv -f config/.env.development rails server -b 0.0.0.0 -p 8080
 rails:
 	bundle exec dotenv -f config/.env.development rails $(ARGS)
 deploy-production:

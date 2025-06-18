@@ -3,6 +3,12 @@ module JwtAuth
   REFRESH_TOKEN_EXPIRATION_TIME = 30.days
   TOKEN_REGEXP = /Bearer (.+)/
 
+  # This method is used to decode a token
+  # It returns the payload of the token or fails
+  def self.decode_token(token, secret)
+    JWT.decode(token, secret, true)[0]
+  end
+
   # This method is used to decode the access token
   # It returns the payload of the token wich is a hash with the following keys:
   # - sub: the subject of the token (the user id)
@@ -10,7 +16,7 @@ module JwtAuth
   # - exp: the expiration time
   # - jti: the jwt id
   def self.decode_access_token(token)
-    JWT.decode(token, ENV.fetch("ACCESS_TOKEN_SECRET"), true)[0]
+    decode_token(token, ENV.fetch("ACCESS_TOKEN_SECRET"))
   end
 
   # This method is used to decode the refresh token
@@ -20,38 +26,34 @@ module JwtAuth
   # - exp: the expiration time
   # - jti: the jwt id
   def self.decode_refresh_token(token)
-    JWT.decode(token, ENV.fetch("REFRESH_TOKEN_SECRET"), true)[0]
+    decode_token(token, ENV.fetch("REFRESH_TOKEN_SECRET"))
+  end
+
+  # This method is used to generate a token
+  # It returns the token as a string
+  def self.generate_token(resource_id, secret, exp)
+    payload = {
+      sub: resource_id.to_s,
+      iat: Time.now.to_i,
+      exp: exp.from_now.to_i,
+      jti: SecureRandom.uuid
+    }
+    JWT.encode(
+      payload,
+      secret
+    )
   end
 
   # This method is used to generate the access token
   # It returns the token as a string
   def self.generate_access_token(user_id)
-    payload = {
-      sub: user_id.to_s,
-      iat: Time.now.to_i,
-      exp: ACCESS_TOKEN_EXPIRATION_TIME.from_now.to_i,
-      jti: SecureRandom.uuid
-    }
-    JWT.encode(
-      payload,
-      ENV.fetch("ACCESS_TOKEN_SECRET")
-    )
+    generate_token(user_id, ENV.fetch("ACCESS_TOKEN_SECRET"), ACCESS_TOKEN_EXPIRATION_TIME)
   end
 
   # This method is used to generate the refresh token
   # It returns the token as a string
   def self.generate_refresh_token(user_id)
-    payload = {
-      sub: user_id.to_s,
-      iat: Time.now.to_i,
-      exp: REFRESH_TOKEN_EXPIRATION_TIME.from_now.to_i,
-      jti: SecureRandom.uuid
-    }
-
-    JWT.encode(
-      payload,
-      ENV.fetch("REFRESH_TOKEN_SECRET")
-    )
+    generate_token(user_id, ENV.fetch("REFRESH_TOKEN_SECRET"), REFRESH_TOKEN_EXPIRATION_TIME)
   end
 
   # This method is used to find the token in the request headers

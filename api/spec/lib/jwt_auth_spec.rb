@@ -4,6 +4,44 @@ require 'rails_helper'
 RSpec.describe JwtAuth do
   let(:user_id) { 123 }
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  describe '.generate_token' do
+    let(:secret) { "abcde" }
+    let(:expiration) { 1.hours }
+    let(:resource_id) { 0 }
+    let(:token) { described_class.generate_token(resource_id, secret, expiration) }
+
+    let(:payload) do
+      JWT.decode(
+        token,
+        secret,
+      ).first
+    end
+
+    it 'generates a valid JWT token' do
+      expect { payload }.not_to raise_error
+    end
+
+    it 'includes the correct resource_id in the subject claim' do
+      expect(payload['sub']).to eq(resource_id.to_s)
+    end
+
+    it 'sets the correct expiration time' do
+      expected_exp = Time.now.to_i + expiration
+      expect(payload['exp']).to be_within(5).of(expected_exp)
+    end
+
+    it 'includes issued at time' do
+      expect(payload['iat']).to be_within(5).of(Time.now.to_i)
+    end
+
+    it 'includes a JWT ID', :aggregate_failures do
+      expect(payload['jti']).to be_present
+      expect(payload['jti']).to match(/^[0-9a-f-]{36}$/) # UUID format
+    end
+  end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
+
   describe '.generate_access_token' do
     let(:access_token) { described_class.generate_access_token(user_id) }
     let(:decoded_token) do
@@ -66,6 +104,34 @@ RSpec.describe JwtAuth do
     it 'includes a JWT ID', :aggregate_failures do
       expect(decoded_token['jti']).to be_present
       expect(decoded_token['jti']).to match(/^[0-9a-f-]{36}$/) # UUID format
+    end
+  end
+
+  describe '.decode_token' do
+    let(:secret) { "abcde" }
+    let(:expiration) { 1.hours }
+    let(:resource_id) { 0 }
+    let(:token) { described_class.generate_token(resource_id, secret, expiration) }
+
+    it 'successfully decodes a valid access token' do
+      decoded_payload = described_class.decode_token(token, secret)
+
+      expect(decoded_payload["sub"]).to eq(resource_id.to_s)
+    end
+
+    it 'raises JWT::DecodeError when token is invalid' do
+      expect {
+        described_class.decode_token("invalid_token", secret)
+      }.to raise_error(JWT::DecodeError)
+    end
+
+    it 'raises JWT::DecodeError when token is expired' do
+      token
+      travel_to(1.days.from_now) do
+        expect {
+          described_class.decode_token(token, secret)
+        }.to raise_error(JWT::ExpiredSignature)
+      end
     end
   end
 

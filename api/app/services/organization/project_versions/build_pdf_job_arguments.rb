@@ -23,13 +23,14 @@ module Organization
         private
 
         def find_print_url(version)
+          route_params =  { host: ENV.fetch("PRINT_MICROSERVICE_HOST"), params: { token: JwtAuth.generate_token(0, ENV.fetch("PRINT_TOKEN_SECRET"), 1.hours) } }
           case version.project.class.name
           when "Organization::Quote"
-            Rails.application.routes.url_helpers.quote_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+            Rails.application.routes.url_helpers.quote_prints_url(version.project.id, version.id, route_params)
           when "Organization::DraftOrder"
-            Rails.application.routes.url_helpers.draft_order_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+            Rails.application.routes.url_helpers.draft_order_prints_url(version.project.id, version.id, route_params)
           when "Organization::Order"
-            Rails.application.routes.url_helpers.order_prints_url(version.project.id, version.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") })
+            Rails.application.routes.url_helpers.order_prints_url(version.project.id, version.id, route_params)
           else
             raise Error::UnprocessableEntityError, "Unsupported project type"
           end

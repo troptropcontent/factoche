@@ -27,11 +27,11 @@ module Accounting
             result = described_class.call(financial_transaction_id)
 
             expect(result).to be_success
-            expect(result.data).to eq(
-              Rails.application.routes.url_helpers.accounting_prints_published_invoice_url(
+            expect(result.data).to start_with(
+              "#{Rails.application.routes.url_helpers.accounting_prints_published_invoice_url(
                 invoice.id,
                 host: ENV.fetch("PRINT_MICROSERVICE_HOST")
-              )
+              )}?token="
             )
           end
         end
@@ -43,11 +43,11 @@ module Accounting
             result = described_class.call(financial_transaction_id)
 
             expect(result).to be_success
-            expect(result.data).to eq(
-              Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
-                proforma.id,
+            expect(result.data).to start_with(
+              "#{Rails.application.routes.url_helpers.accounting_prints_unpublished_invoice_url(
+                financial_transaction_id,
                 host: ENV.fetch("PRINT_MICROSERVICE_HOST")
-              )
+              )}?token="
             )
           end
         end
@@ -59,11 +59,12 @@ module Accounting
             result = described_class.call(financial_transaction_id)
 
             expect(result).to be_success
-            expect(result.data).to eq(
-              Rails.application.routes.url_helpers.accounting_prints_credit_note_url(
+
+            expect(result.data).to start_with(
+              "#{Rails.application.routes.url_helpers.accounting_prints_credit_note_url(
                 credit_note.id,
                 host: ENV.fetch("PRINT_MICROSERVICE_HOST")
-              )
+              )}?token="
             )
           end
         end
