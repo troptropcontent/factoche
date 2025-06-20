@@ -82,13 +82,13 @@ jobs:
         uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          export-env: true
         env:
           ACCESS_TOKEN_SECRET: op://FABATI/CI/ACCESS_TOKEN_SECRET
           REFRESH_TOKEN_SECRET: op://FABATI/CI/REFRESH_TOKEN_SECRET
-          TEST_SECRET: op://FABATI/CI
 
       - name: Print masked secret
-        run: 'echo "Secret: $TEST_SECRET"'
+        run: 'echo "Secret: $ACCESS_TOKEN_SECRET"'
 
       - name: Run tests
         working-directory: api
