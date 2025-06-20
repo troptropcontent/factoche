@@ -85,9 +85,10 @@ jobs:
         env:
           ACCESS_TOKEN_SECRET: op://FABATI/CI/ACCESS_TOKEN_SECRET
           REFRESH_TOKEN_SECRET: op://FABATI/CI/REFRESH_TOKEN_SECRET
+          TEST_SECRET: op://FABATI/CI
 
       - name: Print masked secret
-        run: 'echo "Secret: $ACCESS_TOKEN_SECRET"'
+        run: 'echo "Secret: $TEST_SECRET"'
 
       - name: Run tests
         working-directory: api
