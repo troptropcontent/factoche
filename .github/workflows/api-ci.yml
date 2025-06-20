@@ -36,7 +36,8 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ./api/.ruby-version
+          working-directory: api
+          ruby-version: .ruby-version
           bundler-cache: true
 
       - name: Lint code for consistent style
