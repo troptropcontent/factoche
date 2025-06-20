@@ -50,6 +50,10 @@ jobs:
       run:
         working-directory: api
     services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
       postgres:
         image: postgres
         env:
@@ -69,6 +73,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          working-directory: api
           ruby-version: .ruby-version
           bundler-cache: true
 
@@ -76,5 +81,5 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          # REDIS_URL: redis://localhost:6379/0
+          REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare && bin/rspec
