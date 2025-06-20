@@ -78,17 +78,17 @@ jobs:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y postgresql-client
 
-      - name: Load secrets into environment variables
-        uses: 1password/load-secrets-action/configure@v2
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
         with:
-          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          # Export loaded secrets as environment variables
           export-env: true
         env:
-          ACCESS_TOKEN_SECRET: op://FABATI/CI/ACCESS_TOKEN_SECRET
-          REFRESH_TOKEN_SECRET: op://FABATI/CI/REFRESH_TOKEN_SECRET
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          SECRET: op://FABATI/CI/ACCESS_TOKEN_SECRET
 
       - name: Print masked secret
-        run: 'echo "Secret: $ACCESS_TOKEN_SECRET"'
+        run: 'echo "Secret: $SECRET"'
 
       - name: Run tests
         working-directory: api
