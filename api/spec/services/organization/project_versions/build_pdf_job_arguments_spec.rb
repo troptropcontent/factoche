@@ -12,9 +12,9 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
     let(:host) { 'http://example.com' }
 
     scenarios = [
-      { project_class: Organization::Quote, version_identifier: "QUO-001-0001", url: /^http:\/\/html_pdf:8081\/prints\/quotes\/\d+\/quote_versions\/\d+\?token=.*$/ },
-      { project_class: Organization::DraftOrder, version_identifier: "DRA-001-0001", url: /^http:\/\/html_pdf:8081\/prints\/draft_orders\/\d+\/draft_order_versions\/\d+\?token=.*$/ },
-      { project_class: Organization::Order, version_identifier: "ORD-001-0001", url: /^http:\/\/html_pdf:8081\/prints\/orders\/\d+\/order_versions\/\d+\?token=.*$/ }
+      { project_class: Organization::Quote, version_identifier: "QUO-001-0001", url: /^http:\/\/#{Regexp.escape(ENV.fetch("PRINT_MICROSERVICE_HOST"))}\/prints\/quotes\/\d+\/quote_versions\/\d+\?token=.*$/ },
+      { project_class: Organization::DraftOrder, version_identifier: "DRA-001-0001", url: /^http:\/\/#{Regexp.escape(ENV.fetch("PRINT_MICROSERVICE_HOST"))}\/prints\/draft_orders\/\d+\/draft_order_versions\/\d+\?token=.*$/ },
+      { project_class: Organization::Order, version_identifier: "ORD-001-0001", url: /^http:\/\/#{Regexp.escape(ENV.fetch("PRINT_MICROSERVICE_HOST"))}\/prints\/orders\/\d+\/order_versions\/\d+\?token=.*$/ }
     ]
 
     scenarios.each do |scenario|
@@ -29,7 +29,9 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
         context 'when successful' do
           it 'returns a success result with correct arguments', :aggregate_failures do
             expect(result).to be_success
-
+            ap 80*"*"
+            ap ENV.fetch("PRINT_MICROSERVICE_HOST")
+            ap 80*"*"
             expect(result.data).to include(
               "class_name" => version.class.name,
               "id" => version.id,
