@@ -1,4 +1,4 @@
-if %w[production staging].include?(ENV.fetch["RAILS_ENV"])
+if %w[production staging].include?(ENV.fetch("RAILS_ENV"))
   Sentry.init do |config|
     config.dsn = ENV.fetch("SENTRY_DSN")
     config.environment = ENV.fetch("RAILS_ENV")
