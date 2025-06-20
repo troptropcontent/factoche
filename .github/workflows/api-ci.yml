@@ -46,9 +46,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
+      
     services:
       redis:
         image: redis
@@ -78,6 +76,7 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
+        working-directory: api
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
