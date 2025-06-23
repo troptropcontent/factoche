@@ -63,7 +63,7 @@ jobs:
       chromium:
         image: browserless/chrome:latest
         ports:
-          - "9222:3000"
+          - 9222:3000
         env:
           CONNECTION_TIMEOUT: -1
           TOKEN: ${{ secrets.HEADLESS_BROWSER_TOKEN }}
