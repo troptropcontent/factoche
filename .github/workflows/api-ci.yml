@@ -105,5 +105,5 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           HEADLESS_BROWSER_WS: ws://localhost:9222
           HEADLESS_BROWSER_TOKEN: 123456789
-          SERVER_HOST: localhost
+          HEADLESS_BROWSER_PDF_GENERATOR_TEST_URL: https://www.google.com/
         run: bin/rails db:test:prepare && bundle exec rspec
