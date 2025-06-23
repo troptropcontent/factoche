@@ -30,7 +30,7 @@ RSpec.describe Organization::ProjectVersions::BuildPdfJobArguments do
           it 'returns a success result with correct arguments', :aggregate_failures do
             expect(result).to be_success
             ap "*"*80
-            ap ENV.fetch("PRINT_MICROSERVICE_HOST")
+            ap ENV.fetch("PRINT_MICROSERVICE_HOST").length
             ap "*"*80
             expect(result.data).to include(
               "class_name" => version.class.name,
