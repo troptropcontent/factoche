@@ -106,4 +106,5 @@ jobs:
           HEADLESS_BROWSER_WS: ws://localhost:9222
           HEADLESS_BROWSER_TOKEN: 123456789
           HEADLESS_BROWSER_PDF_GENERATOR_TEST_URL: https://www.google.com/
+          HEADLESS_BROWSER_PDF_GENERATOR_TEST_NOT_FOUND_URL: https://www.google.com/404
         run: bin/rails db:test:prepare && bundle exec rspec

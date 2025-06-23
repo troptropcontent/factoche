@@ -108,6 +108,7 @@ RSpec.describe HeadlessBrowserPdfGenerator do
 
     context "when the server responde with a non 200" do
       let(:response_status) { 404 }
+      let(:url) { ENV["HEADLESS_BROWSER_PDF_GENERATOR_TEST_NOT_FOUND_URL"] || "http://#{server_host}:#{server_port}" }
 
       it 'raises an error', :aggregate_failures do
         expect { described_class.call(url) }.to raise_error('Failed to load page: print server responded with a 404')
