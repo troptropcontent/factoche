@@ -47,7 +47,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
           host: "html_pdf:8081"
         )
 
-        expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(%r{^http://html_pdf:8081/accounting/prints/published_invoices/\d+\?token=.+$})
+        expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(%r{/accounting/prints/published_invoices/\d+\?token=.+$})
       end
     end
 
