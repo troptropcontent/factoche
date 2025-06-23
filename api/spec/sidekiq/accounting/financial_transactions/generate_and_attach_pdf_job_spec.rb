@@ -55,7 +55,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => proforma.id)
 
-        expected_url = %r{^http://html_pdf:8081/accounting/prints/unpublished_invoices/\d+\?token=.+$}
+        expected_url = %r{/accounting/prints/unpublished_invoices/\d+\?token=.+$}
 
         expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(expected_url)
       end
@@ -67,7 +67,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => credit_note.id)
 
-        expected_url = %r{^http://html_pdf:8081/accounting/prints/credit_notes/\d+\?token=.+$}
+        expected_url = %r{/accounting/prints/credit_notes/\d+\?token=.+$}
 
         expect(HeadlessBrowserPdfGenerator).to have_received(:call).with(expected_url)
       end
