@@ -59,7 +59,8 @@ RSpec.describe HeadlessBrowserPdfGenerator do
 
     let(:response_status) { 200 }
     let(:server_port) { 3999 } # Use a fixed port
-    let(:url) { "http://app:#{server_port}" }
+    let(:server_host) { ENV["SERVER_HOST"] || "app" } # Use a fixed port
+    let(:url) { "http://#{server_host}:#{server_port}" }
     let(:server) do
       WEBrick::HTTPServer.new(
         Port: server_port,
