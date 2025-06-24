@@ -3,11 +3,15 @@ module Accounting
     class FindPrintUrl
       include ApplicationService
 
+
       def call(financial_transaction_id)
         raise ArgumentError, "Financial transaction ID is required" if financial_transaction_id.blank?
 
         financial_transaction = FinancialTransaction.find(financial_transaction_id)
-        route_args = [ financial_transaction.id, { host: ENV.fetch("PRINT_MICROSERVICE_HOST") } ]
+        host = ENV.fetch("PRINT_MICROSERVICE_HOST")
+        token = JwtAuth.generate_token(0, ENV.fetch("PRINT_TOKEN_SECRET"), 1.hours)
+
+        route_args = [ financial_transaction.id, { host: host, params:  { token: token } } ]
 
         url = case financial_transaction
         when CreditNote

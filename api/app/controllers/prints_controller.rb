@@ -2,7 +2,7 @@ class PrintsController < ApplicationController
   include Error::Handler
   include ActionView::Layouts
 
-  before_action :ensure_microservice_env!
+  before_action :require_print_token!
 
   # GET  /prints/quotes/:quote_id/quote_versions/:id
   def quote_version
@@ -39,9 +39,19 @@ class PrintsController < ApplicationController
 
   private
 
-  def ensure_microservice_env!
-    unless ENV.fetch("RAILS_PRINT_MICROSERVICE", nil).present?
-      raise Error::UnprocessableEntityError, "This endpoint is only available in the print microservice"
+  def require_print_token!
+    token = params[:token]
+    raise Error::ForbiddenError, "Forbiden" unless token.present?
+
+    secret = ENV.fetch("PRINT_TOKEN_SECRET", nil)
+    raise Error::UnprocessableEntityError, "PRINT_TOKEN_SECRET seems not to be set" unless secret.present?
+
+    begin
+      JwtAuth.decode_token(token, secret)
+    rescue JWT::ExpiredSignature
+      raise Error::ForbiddenError, "Expired token"
+    rescue JWT::DecodeError
+      raise Error::ForbiddenError, "Invalid token"
     end
   end
 end

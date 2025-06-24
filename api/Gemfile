@@ -20,6 +20,14 @@ gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
 
+# For generating XML
+gem "nokogiri"
+
+# For http things
+gem "faraday"
+gem "faraday-multipart"
+
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -53,7 +61,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
+  gem "brakeman", "~> 7.0.2", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
@@ -74,6 +82,7 @@ end
 group :test do
   gem "shoulda-matchers"
   gem "database_cleaner-active_record"
+  gem "webmock"
 end
 
 gem "phonelib", "~> 0.10.1"
@@ -97,3 +106,7 @@ gem "rswag-api"
 gem "rswag-ui"
 
 gem "aws-sdk-s3", require: false
+
+gem "sentry-ruby"
+gem "sentry-rails"
+gem "sentry-sidekiq"

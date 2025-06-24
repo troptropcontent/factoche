@@ -1,0 +1,26 @@
+business_process_id: "A1"
+guideline_id: "urn:cen.eu:en16931:2017"
+typecodes:
+  invoice: "380"
+quantity:
+  unit_code: "C62"
+main_tag_attributes:
+  "xmlns:qdt": "urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
+  "xmlns:ram": "urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100"
+  "xmlns:rsm": "urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100"
+  "xmlns:udt": "urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+  "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+currency: "EUR"
+specified_tax_registration_code: "VA"
+date_time_format_code: "102"
+country: "FR"
+payment_means:
+  type_code: "42"
+  information: "VIREMENT"
+tax:
+  type_code: "VAT"
+  category_code: "K"
+  rate: "0.00"
+allowance_total_amount: "0.00"
+charge_total_amount: "0.00"
+prepaid_amount: "0.00"

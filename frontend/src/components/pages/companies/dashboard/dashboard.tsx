@@ -4,6 +4,7 @@ import { KpiCardOrdersDetails } from "./private/kpi-card-orders-details";
 import { ChartCardRevenueOverTime } from "./private/chart-card-revenue-over-time";
 import { ChartCardRevenueByClient } from "./private/chart-card-revenue-by-client";
 import { ChartDataUncompletedOrdersDetails } from "./private/chart-data-uncompleted-orders-details";
+import { ChartCardInvoicesPaymentStatus } from "./private/chart-card-invoices-payment-status";
 
 export default function Dashboard({ companyId }: { companyId: number }) {
   return (
@@ -19,6 +20,7 @@ export default function Dashboard({ companyId }: { companyId: number }) {
           {/* Charts Section */}
           <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <ChartCardRevenueOverTime companyId={companyId} />
+            <ChartCardInvoicesPaymentStatus companyId={companyId} />
             <ChartCardRevenueByClient companyId={companyId} />
             <ChartDataUncompletedOrdersDetails companyId={companyId} />
           </div>

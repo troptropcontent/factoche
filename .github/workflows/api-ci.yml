@@ -1,4 +1,4 @@
-name: CI
+name: API CI
 
 on:
   pull_request:
@@ -18,6 +18,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          working-directory: api
           ruby-version: .ruby-version
           bundler-cache: true
 
@@ -36,6 +37,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          working-directory: api
           ruby-version: .ruby-version
           bundler-cache: true
 
@@ -44,10 +46,12 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
+      
     services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
       postgres:
         image: postgres
         env:
@@ -56,6 +60,14 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+      chromium:
+        image: browserless/chrome:latest
+        ports:
+          - 9222:3000
+        env:
+          CONNECTION_TIMEOUT: -1
+          TOKEN: 123456789
+          DEFAULT_LAUNCH_ARGS: '["--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]'
 
     steps:
       - name: Install packages
@@ -67,12 +79,32 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          working-directory: api
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y postgresql-client
+
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        with:
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          PRINT_TOKEN_SECRET: op://FABATI/CI/PRINT_TOKEN_SECRET
+          ACCESS_TOKEN_SECRET: op://FABATI/CI/ACCESS_TOKEN_SECRET
+          REFRESH_TOKEN_SECRET: op://FABATI/CI/REFRESH_TOKEN_SECRET
+          PRINT_MICROSERVICE_HOST: op://FABATI/CI/PRINT_MICROSERVICE_HOST
+
       - name: Run tests
+        working-directory: api
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare && bin/rspec
+          REDIS_URL: redis://localhost:6379/0
+          HEADLESS_BROWSER_WS: ws://localhost:9222
+          HEADLESS_BROWSER_TOKEN: 123456789
+          HEADLESS_BROWSER_PDF_GENERATOR_TEST_URL: https://www.google.com/
+          HEADLESS_BROWSER_PDF_GENERATOR_TEST_NOT_FOUND_URL: https://www.google.com/404
+        run: bin/rails db:test:prepare && bundle exec rspec

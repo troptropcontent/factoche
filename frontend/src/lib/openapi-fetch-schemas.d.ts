@@ -2531,10 +2531,19 @@ export interface components {
             /** Format: decimal */
             completion_percentage: string;
         };
+        "Organization::Dashboards::InvoicePaymentStatusDistribution": {
+            /** Format: decimal */
+            pending: string;
+            /** Format: decimal */
+            paid: string;
+            /** Format: decimal */
+            overdue: string;
+        };
         "Organization::Dashboards::ChartsData": {
             monthly_revenues: components["schemas"]["Organization::Dashboards::MonthlyRevenues"];
             revenue_by_client: components["schemas"]["Organization::Dashboards::RevenueByClient"][];
             order_completion_percentages: components["schemas"]["Organization::Dashboards::OrderCompletionPercentageSchema"][];
+            invoice_payment_status_distribution: components["schemas"]["Organization::Dashboards::InvoicePaymentStatusDistribution"];
         };
         "Organization::Dashboards::DashboardData": {
             kpis: components["schemas"]["Organization::Dashboards::Kpis"];

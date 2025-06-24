@@ -1,5 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
+require 'webmock/rspec'
 require 'database_cleaner/active_record'
 require 'support/helpers/authentication'
 ENV['RAILS_ENV'] ||= 'test'

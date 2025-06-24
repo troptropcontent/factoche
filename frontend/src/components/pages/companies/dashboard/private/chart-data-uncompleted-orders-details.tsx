@@ -64,7 +64,7 @@ const ChartDataUncompletedOrdersDetails = ({
   const data = useUncompletedOrdersDetailsFromApiResponseOrWebsocket(companyId);
 
   return (
-    <Card className="col-span-full">
+    <Card className="col-span-2">
       <CardHeader>
         <CardTitle>
           {t("pages.companies.dashboard.charts.major_orders_details.title")}

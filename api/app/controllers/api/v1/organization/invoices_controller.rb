@@ -9,7 +9,7 @@ module Api
           invoices = policy_scope(Accounting::Invoice).where(company_id: params[:company_id])
             .then { |invoices| filter_by_status(invoices) }
             .then { |invoices| filter_by_order(invoices) }
-            .includes(:detail, :payments)
+            .includes(:invoice_payment_status)
             .order(:number)
 
           order_versions = ::Organization::ProjectVersion.where(id: invoices.pluck(:holder_id))
