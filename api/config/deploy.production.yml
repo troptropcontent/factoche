@@ -1,57 +1,44 @@
-# Name of your application. Used to uniquely configure containers.
-service: fabati
 
-# Name of the container image.
-image: troptropcontent/fabati
+service: fabati-production
 
-# Deploy to these servers.
+image: troptropcontent/fabati-production
+
 servers:
   web:
+    hosts:
+      - 51.83.33.169
     proxy:
       ssl: true
       host: api.fabati.fr
+  jobs:
     hosts:
       - 51.83.33.169
-  job:
-    hosts:
-      - 51.68.196.119
     cmd: bundle exec sidekiq
-  print_micro_service:
-    proxy:
-      ssl: true
-      host: print.fabati.fr
-    hosts:
-      - 51.75.205.51
-    env:
-      RAILS_PRINT_MICROSERVICE: true
 
 ssh:
   user: ubuntu
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
-#
-# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-
-# Credentials for your image host.
 registry:
   username: troptropcontent
   password:
     - KAMAL_REGISTRY_PASSWORD
 
-# Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
+  clear:
+    RAILS_ENV: production
   secret:
     - RAILS_MASTER_KEY
     - HEADLESS_BROWSER_TOKEN
     - DATABASE_URL
     - REDIS_URL
     - HEADLESS_BROWSER_WS
-    - PRINT_MICROSERVICE_URL
     - PRINT_MICROSERVICE_HOST
-    - PRINT_MICROSERVICE_PORT
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
+    - POSTGRES_PASSWORD
+    - ACCESS_TOKEN_SECRET
+    - REFRESH_TOKEN_SECRET
+    - SENTRY_DSN
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
@@ -59,38 +46,15 @@ aliases:
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
-volumes:
-  - "api_storage:/rails/storage"
-
-# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
-# hitting 404 on in-flight requests. Combines all files from new and old
-# version inside the asset_path.
 asset_path: /rails/public/assets
 
-# Configure the image builder.
 builder:
   arch: amd64
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: ruby-3.3.6
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
 accessories:
   chromium:
     image: browserless/chrome:latest
-    port: "9222:3000"
+    port: 9222:3000
     options:
       restart: unless-stopped
     env:
@@ -100,26 +64,4 @@ accessories:
         CONNECTION_TIMEOUT: "-1"
         DEFAULT_LAUNCH_ARGS: '["--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]'
     roles:
-      - job
       - web
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: redis:7.0
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
