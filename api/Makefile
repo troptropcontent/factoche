@@ -8,8 +8,12 @@ deploy-staging:
 	bundle exec kamal deploy -d staging
 console-staging:
 	bundle exec kamal console -d staging
+shell-production-jobs:
+	bundle exec kamal shell -d production -r jobs
 logs-staging:
 	bundle exec kamal logs -d staging
+logs-production:
+	bundle exec kamal logs -d production
 boot_chromium:
 	bundle exec dotenv -f config/.env.production kamal accessory boot -d production chromium
 production:
