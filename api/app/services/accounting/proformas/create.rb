@@ -41,7 +41,7 @@ module Accounting
     #   - invoice_amount [Integer] Amount to invoice for this item
     # @param issue_date [Time] When the invoice is issued (defaults to current time)
     #
-    # @return [ServiceResult] Success with CompletionSnapshotInvoice or failure with error message
+    # @return [ServiceResult] Success with Invoice or failure with error message
     class Create
     include ApplicationService
 
