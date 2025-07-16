@@ -3,42 +3,48 @@ module Accounting
     class FindInvoicedAmountForHolderIds
       include ApplicationService
 
-      CREDIT_NOTE_LINE_TYPE = "credit_note_amount".freeze
-      INVOICE_LINE_TYPE = "invoice_amount".freeze
+      LINE_TYPES = {
+        invoice: "invoice_line",
+        credit_note: "credit_note_line"
+      }.freeze
+
+      def initialize
+        @lines = []
+      end
 
       def call(holder_ids, issue_date = Time.current)
-        @holder_ids =  holder_ids
-        @issue_date =  issue_date
-        @lines = []
+        @holder_ids = holder_ids
+        @issue_date = issue_date
 
-        fetch_invoice_amounts!
-
-        fetch_credit_note_amounts!
-
-        build_amounts_for_holder_ids!
+        fetch_invoice_lines
+        fetch_credit_note_lines
+        calculate_amounts_per_holder
       end
 
       private
 
-      def fetch_invoice_amounts!
-        @lines += Accounting::FinancialTransactionLine.joins(:financial_transaction)
-                                                      .where(holder_id: @holder_ids,
-                                                            financial_transaction: { issue_date: ...@issue_date, type: Accounting::Invoice.name })
-                                                      .select("accounting_financial_transaction_lines.holder_id, SUM(total_excl_tax_amount) as sum, '#{INVOICE_LINE_TYPE}' as type")
-                                                      .group("holder_id")
+      def fetch_invoice_lines
+        @invoice_lines = Accounting::FinancialTransactionLine
+                         .joins(:financial_transaction)
+                         .where(holder_id: @holder_ids, financial_transaction: { type: Accounting::Invoice.name, issue_date: ...@issue_date })
+        append_lines(@invoice_lines, LINE_TYPES[:invoice])
       end
 
-      def fetch_credit_note_amounts!
-        @lines += Accounting::FinancialTransactionLine.joins(:financial_transaction)
-                                                      .where(holder_id: @holder_ids,
-                                                            financial_transaction: { issue_date: ...@issue_date, type: CreditNote.name })
-                                                      .select("accounting_financial_transaction_lines.holder_id, SUM(total_excl_tax_amount) as sum, '#{CREDIT_NOTE_LINE_TYPE}' as type")
-                                                      .group("holder_id")
+      def fetch_credit_note_lines
+        @credit_note_lines = Accounting::FinancialTransactionLine
+                             .joins(:financial_transaction)
+                             .where(holder_id: @holder_ids, financial_transaction: { type: Accounting::CreditNote.name, issue_date: ...@issue_date })
+        append_lines(@credit_note_lines, LINE_TYPES[:credit_note])
       end
 
-      def build_amounts_for_holder_ids!
-        @lines.each_with_object(Hash.new { |hash, key| hash[key] = { invoices_amount: 0, credit_notes_amount: 0 } }) do |line, result|
-          amount_key = line.type == INVOICE_LINE_TYPE ? :invoices_amount : :credit_notes_amount
+      def append_lines(lines, line_type)
+        @lines += lines.select("accounting_financial_transaction_lines.holder_id, SUM(excl_tax_amount) as sum, '#{line_type}' as type")
+                       .group(:holder_id)
+      end
+
+      def calculate_amounts_per_holder
+        @lines.each_with_object(Hash.new { |hash, key| hash[key] = { invoices_amount: 0.to_d, credit_notes_amount: 0.to_d } }) do |line, result|
+          amount_key = line.type == LINE_TYPES[:invoice] ? :invoices_amount : :credit_notes_amount
           result[line.holder_id][amount_key] += line.sum
         end
       end

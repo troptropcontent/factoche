@@ -1,8 +1,8 @@
 import { ClientSummaryCard } from "@/components/pages/companies/clients/shared/client-summary-card";
-import { ProjectSummaryCard } from "@/components/pages/companies/projects/shared/project-summary-card";
 import { ProformaExtended } from "../shared/types";
 import { FinancialTransactionShowProformaSpecificContentActions } from "./financial-transaction-show-proforma-specific-content-actions";
 import { Api } from "@/lib/openapi-fetch-query-client";
+import { OrderSummaryCard } from "../../orders/shared/order-summary-card";
 
 const FinancialTransactionShowProformaSpecificContent = ({
   companyId,
@@ -25,15 +25,6 @@ const FinancialTransactionShowProformaSpecificContent = ({
     { select: ({ result }) => result, enabled: orderVersion !== undefined }
   );
 
-  const projectSummaryCardProps =
-    order === undefined
-      ? {
-          name: proforma.context.project_name,
-          version_date: proforma.context.project_version_date,
-          version_number: proforma.context.project_version_number,
-        }
-      : { orderId: order.id };
-
   const clientSummaryCardProps =
     order === undefined
       ? {
@@ -45,7 +36,11 @@ const FinancialTransactionShowProformaSpecificContent = ({
 
   return (
     <>
-      <ProjectSummaryCard {...projectSummaryCardProps} />
+      {order == undefined ? (
+        <OrderSummaryCard isLoading />
+      ) : (
+        <OrderSummaryCard companyId={companyId} orderId={order.id} />
+      )}
       <ClientSummaryCard {...clientSummaryCardProps} />
       <FinancialTransactionShowProformaSpecificContentActions
         proforma={proforma}
