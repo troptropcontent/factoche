@@ -30,6 +30,7 @@ fr:
     accounting:
       invoice:
         shared:
+          vat_rate: "TVA %{rate}"
           number: "Numéro"
           billing_date: "Date de facturation"
           delivery_date: "Date de livraison"
