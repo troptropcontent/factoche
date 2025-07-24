@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_24_085732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -63,7 +63,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
   end
 
   create_table "accounting_financial_transaction_lines", force: :cascade do |t|
-    t.string "holder_id", null: false
+    t.string "holder_id"
     t.bigint "financial_transaction_id", null: false
     t.string "unit", null: false
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
@@ -305,6 +305,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
     t.bigint "original_project_version_id"
     t.boolean "posted", default: false, null: false
     t.datetime "posted_at"
+    t.string "address_street", null: false
+    t.string "address_zipcode", null: false
+    t.string "address_city", null: false
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
     t.index ["company_id", "type", "number"], name: "index_organization_projects_on_company_id_and_type_and_number", unique: true
     t.index ["company_id"], name: "index_organization_projects_on_company_id"
