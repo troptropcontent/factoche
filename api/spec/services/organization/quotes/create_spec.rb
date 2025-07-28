@@ -12,6 +12,9 @@ module Organization
             name: "Construction Project",
             description: "Building renovation",
             retention_guarantee_rate: 0.05,
+            address_street: "10 Rue de la Paix",
+            address_zipcode: "75002",
+            address_city: "Paris",
             groups: [
               {
                 uuid: "group-1",

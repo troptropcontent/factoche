@@ -5,6 +5,9 @@ module Organization
         required(:name).filled(:string)
         optional(:description).maybe(:string)
         required(:retention_guarantee_rate).filled(:decimal)
+        optional(:address_street).filled(:string)
+        optional(:address_zipcode).filled(:string)
+        optional(:address_city).filled(:string)
         required(:items).filled(:array).array(:hash) do
           optional(:group_uuid).maybe(:string)
           required(:name).filled(:string)

@@ -167,6 +167,9 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           {
             name: "Updated Quote",
             retention_guarantee_rate: 0.05,
+            address_street: "10 Rue de la Paix",
+            address_zipcode: "75002",
+            address_city: "Paris",
             groups: [
               { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
             ],
@@ -413,6 +416,9 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           name: "New Quote",
           description: "Description of the new quote",
           retention_guarantee_rate: 0.05,
+          address_street: "10 Rue de la Paix",
+          address_zipcode: "75002",
+          address_city: "Paris",
           groups: [
             { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
           ],
