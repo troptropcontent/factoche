@@ -37,6 +37,9 @@ const ProjectFormContent = ({
           description,
           items,
           groups,
+          address_city,
+          address_street,
+          address_zipcode,
         },
       },
     },
@@ -77,6 +80,9 @@ const ProjectFormContent = ({
                   retention_guarantee_rate,
                   client_id,
                   description,
+                  address_city,
+                  address_street,
+                  address_zipcode,
                 }}
               />
             );
@@ -94,6 +100,9 @@ const ProjectFormContent = ({
                   description,
                   items,
                   groups,
+                  address_city,
+                  address_street,
+                  address_zipcode,
                 }}
                 submitFunction={submitFunction}
               />

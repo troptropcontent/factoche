@@ -32,7 +32,10 @@ module Organization
             client_id: client_id,
             number: find_next_quote_number!(company_id),
             name: validated_params[:name],
-            description: validated_params[:description]
+            description: validated_params[:description],
+            address_street: validated_params[:address_street],
+            address_zipcode: validated_params[:address_zipcode],
+            address_city: validated_params[:address_city]
           )
         end
 

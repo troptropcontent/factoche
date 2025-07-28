@@ -50,6 +50,9 @@ module Api
             :name,
             :description,
             :retention_guarantee_rate,
+            :address_street,
+            :address_zipcode,
+            :address_city,
             items: [
               :group_uuid,
               :name,

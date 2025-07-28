@@ -5,6 +5,9 @@ const step1FormSchema = z.object({
   description: z.string().optional(),
   client_id: z.number().min(1),
   retention_guarantee_rate: z.number(),
+  address_street: z.string(),
+  address_city: z.string(),
+  address_zipcode: z.string(),
 });
 
 const step2FormSchema = z.object({

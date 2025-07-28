@@ -352,6 +352,7 @@
                     "project_summary": {
                         "title": "Information sur la commande",
                         "name": "<strong>Nom :</strong> {{name}}",
+                        "address": "<strong>Adresse :</strong> {{address_street}}, {{address_city}} {{address_zipcode}}",
                         "description": "<strong>Description :</strong> {{description}}",
                         "version_label": "<strong>Version :</strong> N°{{number}} du {{createdAt, datetime}}"
                     },
