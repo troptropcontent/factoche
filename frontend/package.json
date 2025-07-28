@@ -10,7 +10,7 @@
     "format": "prettier --write .",
     "preview": "vite preview",
     "backend": "(cd ../api && make server)",
-    "open-api": "(cd ../api && make rswag) && openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/lib/openapi-fetch-schemas.d.ts"
+    "open-api": "(cd ../api && RAILS_ENV=test make rswag) && openapi-typescript ../api/swagger/v1/swagger.yaml -o ./src/lib/openapi-fetch-schemas.d.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

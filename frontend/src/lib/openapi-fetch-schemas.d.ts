@@ -2774,6 +2774,9 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
         };
         "Organization::Projects::CompactDto": {
             id: number;
@@ -2804,6 +2807,9 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
             original_project_version_id: number;
             posted: boolean;
             /** Format: date-time */
@@ -2817,6 +2823,9 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
             original_project_version_id: number;
             /** Format: decimal */
             invoiced_amount: string;
@@ -2879,6 +2888,9 @@ export interface components {
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
             posted: boolean;
             /** Format: date-time */
             posted_at?: string | null;

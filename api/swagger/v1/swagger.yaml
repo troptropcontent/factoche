@@ -3428,6 +3428,9 @@ components:
       - name
       - client
       - last_version
+      - address_street
+      - address_zipcode
+      - address_city
       properties:
         id:
           type: integer
@@ -3442,6 +3445,12 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        address_street:
+          type: string
+        address_zipcode:
+          type: string
+        address_city:
+          type: string
     Organization::Projects::CompactDto:
       type: object
       required:
@@ -3510,6 +3519,9 @@ components:
       - name
       - client
       - last_version
+      - address_street
+      - address_zipcode
+      - address_city
       - original_project_version_id
       - posted
       - orders
@@ -3527,6 +3539,12 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        address_street:
+          type: string
+        address_zipcode:
+          type: string
+        address_city:
+          type: string
         original_project_version_id:
           type: integer
         posted:
@@ -3547,6 +3565,9 @@ components:
       - name
       - client
       - last_version
+      - address_street
+      - address_zipcode
+      - address_city
       - original_project_version_id
       - invoiced_amount
       properties:
@@ -3563,6 +3584,12 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        address_street:
+          type: string
+        address_zipcode:
+          type: string
+        address_city:
+          type: string
         original_project_version_id:
           type: integer
         invoiced_amount:
@@ -3713,6 +3740,9 @@ components:
       - name
       - client
       - last_version
+      - address_street
+      - address_zipcode
+      - address_city
       - posted
       - draft_orders
       properties:
@@ -3729,6 +3759,12 @@ components:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
+        address_street:
+          type: string
+        address_zipcode:
+          type: string
+        address_city:
+          type: string
         posted:
           type: boolean
         posted_at:
