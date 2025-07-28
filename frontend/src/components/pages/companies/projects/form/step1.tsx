@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Link } from "@tanstack/react-router";
 import { Api } from "@/lib/openapi-fetch-query-client";
+import { AddressAutofill } from "@mapbox/search-js-react";
 
 const Step1 = ({
   update,
@@ -166,6 +167,83 @@ const Step1 = ({
                   }}
                 />
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address_street"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t(
+                  "pages.companies.settings.forms.general.fields.address_street"
+                )}
+              </FormLabel>
+              <FormControl>
+                <AddressAutofill
+                  accessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
+                >
+                  <Input
+                    className="mt-2"
+                    placeholder={t(
+                      "pages.companies.settings.forms.general.fields.address_street_placeholder"
+                    )}
+                    autoComplete="address-line1"
+                    {...field}
+                  />
+                </AddressAutofill>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address_city"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t(
+                  "pages.companies.settings.forms.general.fields.address_city"
+                )}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "pages.companies.settings.forms.general.fields.address_city_placeholder"
+                  )}
+                  autoComplete="address-level2"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address_zipcode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t(
+                  "pages.companies.settings.forms.general.fields.address_zipcode"
+                )}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "pages.companies.settings.forms.general.fields.address_zipcode_placeholder"
+                  )}
+                  autoComplete="postal-code"
+                  {...field}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

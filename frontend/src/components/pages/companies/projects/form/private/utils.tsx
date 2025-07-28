@@ -91,6 +91,9 @@ const buildProjectFormInitialValue = (
     name: project.name,
     description: project.description || "",
     client_id: project.client.id,
+    address_city: project.address_city || "",
+    address_street: project.address_street || "",
+    address_zipcode: project.address_zipcode || "",
     retention_guarantee_rate:
       Number(project.last_version.retention_guarantee_rate) * 100,
     items: project.last_version.items.map((item) => ({
