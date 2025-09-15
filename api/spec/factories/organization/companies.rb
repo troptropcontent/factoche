@@ -15,5 +15,9 @@ FactoryBot.define do
     trait :with_config do
       after(:create) { |company| create(:company_config, company: company) }
     end
+
+    trait :with_bank_detail do
+      after(:create) { |company| create(:bank_detail, company: company) }
+    end
   end
 end
