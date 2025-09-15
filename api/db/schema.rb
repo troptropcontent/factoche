@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_24_085732) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_15_090352) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -143,6 +143,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_085732) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "organization_bank_details", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "iban", null: false
+    t.string "bic", null: false
+    t.bigint "company_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id", "iban"], name: "index_organization_bank_details_on_company_id_and_iban", unique: true
+    t.index ["company_id"], name: "index_organization_bank_details_on_company_id"
   end
 
   create_table "organization_clients", force: :cascade do |t|
@@ -329,6 +340,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_24_085732) do
   add_foreign_key "accounting_payments", "accounting_financial_transactions", column: "invoice_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "organization_bank_details", "organization_companies", column: "company_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
