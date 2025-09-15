@@ -5,6 +5,8 @@ class Organization::Company < ApplicationRecord
   has_many :projects, through: :clients, class_name: "Organization::Project"
   has_one :config, dependent: :destroy, class_name: "Organization::CompanyConfig"
   has_many :users, through: :members, class_name: "User"
+  has_many :bank_details, class_name: "Organization::BankDetail"
+  accepts_nested_attributes_for :bank_details
 
   enum :legal_form, {
     sasu: "sasu",
