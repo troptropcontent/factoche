@@ -26,8 +26,9 @@ module Api
         def create
           company = policy_scope(::Organization::Company).find(params[:company_id])
           client = company.clients.find(params[:client_id])
+          bank_detail = company.bank_details.find(params[:bank_detail_id])
 
-          result = ::Organization::Quotes::Create.call(company.id, client.id, quote_params.to_h)
+          result = ::Organization::Quotes::Create.call(company.id, client.id, bank_detail.id, quote_params.to_h)
           raise result.error if result.failure?
 
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json, status: :created
