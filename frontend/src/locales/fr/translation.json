@@ -770,6 +770,21 @@
                             "default_vat_rate": "Taux de TVA par défaut",
                             "general_terms_and_condition": "Conditions générales"
                         }
+                    },
+                    "bank_details": {
+                        "title": "Coordonnées bancaires",
+                        "description": "Configurez les coordonnées bancaires de votre entreprise",
+                        "no_bank_details": "Aucune coordonnée bancaire configurée",
+                        "add_bank_detail": "Ajouter des coordonnées bancaires",
+                        "bank_detail_title": "Coordonnées bancaires {{number}}",
+                        "fields": {
+                            "name": "Nom de la banque",
+                            "name_placeholder": "Nom de la banque",
+                            "iban": "IBAN",
+                            "iban_placeholder": "FR76 1234 5678 9012 3456 7890 123",
+                            "bic": "Code BIC",
+                            "bic_placeholder": "Code BIC"
+                        }
                     }
                 }
             },

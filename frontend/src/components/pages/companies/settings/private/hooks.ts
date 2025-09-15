@@ -13,6 +13,8 @@ const useSettingsFormInitialValues = ({
     { select: ({ result }) => result }
   );
 
+  
+
   return {
     name: company.name,
     registration_number: company.registration_number,
@@ -26,6 +28,7 @@ const useSettingsFormInitialValues = ({
     rcs_number: company.rcs_number,
     vat_number: company.vat_number,
     capital_amount: company.capital_amount,
+    bank_details_attributes: company.bank_details.map((bankDetail) => ({...bankDetail, record_id: bankDetail.id.toString()})),
     configs: {
       general_terms_and_conditions: company.config.general_terms_and_conditions,
       default_vat_rate: Number(company.config.default_vat_rate) * 100,

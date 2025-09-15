@@ -518,6 +518,17 @@ paths:
                   type: string
                 capital_amount:
                   type: number
+                bank_details_attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      bic:
+                        type: string
+                      iban:
+                        type: string
                 configs:
                   type: object
                   properties:
@@ -2045,6 +2056,22 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Accounting::Payments::ExtendedDto"
+    Organization::BankDetails::ExtendedDto:
+      type: object
+      required:
+      - id
+      - name
+      - iban
+      - bic
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        iban:
+          type: string
+        bic:
+          type: string
     Organization::Clients::ExtendedDto:
       type: object
       required:
@@ -2097,6 +2124,7 @@ components:
       - vat_number
       - capital_amount
       - config
+      - bank_details
       properties:
         id:
           type: integer
@@ -2133,6 +2161,10 @@ components:
           format: decimal
         config:
           "$ref": "#/components/schemas/Organization::CompanyConfigs::ExtendedDto"
+        bank_details:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
     Organization::CompanyConfigs::ExtendedDto:
       type: object
       required:

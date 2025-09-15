@@ -455,6 +455,11 @@ export interface paths {
                         rcs_number?: string;
                         vat_number?: string;
                         capital_amount?: number;
+                        bank_details_attributes?: {
+                            name?: string;
+                            bic?: string;
+                            iban?: string;
+                        }[];
                         configs?: {
                             general_terms_and_conditions?: string;
                             default_vat_rate?: number;
@@ -2237,6 +2242,12 @@ export interface components {
         "Accounting::Payments::ShowDto": {
             result: components["schemas"]["Accounting::Payments::ExtendedDto"];
         };
+        "Organization::BankDetails::ExtendedDto": {
+            id: number;
+            name: string;
+            iban: string;
+            bic: string;
+        };
         "Organization::Clients::ExtendedDto": {
             id: number;
             name: string;
@@ -2267,6 +2278,7 @@ export interface components {
             /** Format: decimal */
             capital_amount: string;
             config: components["schemas"]["Organization::CompanyConfigs::ExtendedDto"];
+            bank_details: components["schemas"]["Organization::BankDetails::ExtendedDto"][];
         };
         "Organization::CompanyConfigs::ExtendedDto": {
             /** Format: decimal */
