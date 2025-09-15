@@ -9,6 +9,11 @@ RSpec.describe Organization::Companies::Update do
     let(:params) do
       {
         name: 'Updated Company Name',
+        bank_details_attributes: [ {
+          name: "SUPER BANQUE",
+          iban: "FR761234",
+          bic: "SB1234"
+        } ],
         configs: {
           default_vat_rate: "0.3"
         }
@@ -24,6 +29,10 @@ RSpec.describe Organization::Companies::Update do
 
       it 'updates company configs' do
         expect { result }.to change { company.reload.config.default_vat_rate }.to(0.3)
+      end
+
+      it 'creates bank details' do
+        expect { result }.to change { company.reload.bank_details.count }.from(0).to(1)
       end
     end
 
