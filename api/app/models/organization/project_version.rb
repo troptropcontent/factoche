@@ -16,6 +16,9 @@ class Organization::ProjectVersion < ApplicationRecord
   has_one :order, class_name: "Organization::Order", foreign_key: :original_project_version_id, dependent: :destroy
   has_one :draft_order, class_name: "Organization::DraftOrder", foreign_key: :original_project_version_id, dependent: :destroy
 
+  belongs_to :bank_detail, class_name: "Organization::BankDetail"
+  validates :bank_detail_id, presence: true
+
   validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   validates :number, presence: true, uniqueness: { scope: :project_id }
