@@ -20,6 +20,11 @@ module Organization
           optional(:payment_term_days).filled(:integer)
           optional(:payment_term_accepted_methods).filled(:array)
         end
+        optional(:bank_details_attributes).array(:hash) do
+          optional(:name).filled(:string)
+          optional(:iban).filled(:string)
+          optional(:bic).filled(:string)
+        end
       end
     end
   end

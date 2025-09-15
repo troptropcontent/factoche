@@ -40,6 +40,11 @@ class Api::V1::Organization::CompaniesController < Api::V1::ApiV1Controller
       :rcs_number,
       :vat_number,
       :capital_amount,
+      bank_details_attributes: %i[
+        name
+        iban
+        bic
+      ],
       configs: %i[
         general_terms_and_conditions
         default_vat_rate
