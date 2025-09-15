@@ -4,6 +4,7 @@ module Organization
       params do
         required(:name).filled(:string)
         optional(:description).maybe(:string)
+        required(:bank_detail_id).filled(:integer)
         required(:retention_guarantee_rate).filled(:decimal)
         required(:new_items).array(:hash) do
           optional(:group_uuid).maybe(:string)

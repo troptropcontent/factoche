@@ -16,7 +16,9 @@ module Api
 
         # PUT    /api/v1/organization/quotes/:id
         def update
-          result = ::Organization::Quotes::Update.call(@quote, update_quote_params.to_h)
+          bank_detail = @quote.company.bank_details.find(params.require(:quote).require(:bank_detail_id))
+
+          result = ::Organization::Quotes::Update.call(@quote, update_quote_params.to_h.merge({ bank_detail_id: bank_detail.id }))
           raise result.error if result.failure?
 
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json

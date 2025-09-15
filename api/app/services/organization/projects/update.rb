@@ -59,6 +59,7 @@ module Organization
       def map_params(validated_params)
         {
           retention_guarantee_rate: validated_params[:retention_guarantee_rate],
+          bank_detail_id: validated_params[:bank_detail_id],
           items: combine_items(validated_params),
           groups: validated_params[:groups]
         }

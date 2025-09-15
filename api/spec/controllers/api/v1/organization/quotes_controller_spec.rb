@@ -107,6 +107,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           name: { type: :string },
           description: { type: :string },
           retention_guarantee_rate: { type: :number },
+          bank_detail_id: { type: :number },
           new_items: {
             type: :array,
             items: {
@@ -164,6 +165,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
         ::Organization::Quotes::Create.call(
           company.id,
           client.id,
+          company.bank_details.last.id,
           {
             name: "Updated Quote",
             retention_guarantee_rate: 0.05,
@@ -203,6 +205,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           name: "Updated Quote",
           description: "Updated Description of the new quote",
           retention_guarantee_rate: 0.05,
+          bank_detail_id: company.bank_details.last.id,
           groups: [
             { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
           ],
@@ -284,10 +287,11 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
 
       response "422", "unprocessable entity" do
         context "when the params are not valid" do
-          context "when a required qui is missing" do
+          context "when a required key is missing" do
             let(:body) { body_without_name }
             let(:body_without_name) do
               {
+                bank_detail_id: company.bank_details.last.id,
                 description: "Updated Description of the new quote",
                 retention_guarantee_rate: 0.05,
                 groups: [

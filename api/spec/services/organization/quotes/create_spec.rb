@@ -147,7 +147,7 @@ module Organization
             end
           end
 
-          context 'with invalid bank_account_id' do
+          context 'with invalid bank_detail_id' do
             it 'returns failure', :aggregate_failures do
               result = described_class.call(company.id, client.id, -1, valid_params)
 
