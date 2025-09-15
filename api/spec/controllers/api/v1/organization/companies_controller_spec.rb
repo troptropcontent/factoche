@@ -111,6 +111,17 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
           rcs_number: { type: :string },
           vat_number: { type: :string },
           capital_amount: { type: :number },
+          bank_details_attributes: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                name: { type: :string },
+                bic: { type: :string },
+                iban: { type: :string }
+              }
+            }
+          },
           configs: {
             type: :object,
             properties: {
@@ -141,6 +152,11 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
               address_city: 'New City',
               address_street: 'New Street',
               address_zipcode: '12345',
+              bank_details_attributes: [ {
+                name: "Super banque",
+                iban: "FR76189",
+                bic: "SB123"
+              } ],
               configs: {
                 default_vat_rate: "0.1"
               }
@@ -157,6 +173,7 @@ RSpec.describe Api::V1::Organization::CompaniesController, type: :request do
           expect(data.dig("result", "address_street")).to eq('New Street')
           expect(data.dig("result", "address_zipcode")).to eq('12345')
           expect(data.dig("result", "config", "default_vat_rate")).to eq("0.1")
+          expect(data.dig("result", "bank_details", 0, "name")).to eq("Super banque")
         end
       end
 
