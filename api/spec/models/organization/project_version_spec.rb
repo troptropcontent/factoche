@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Organization::ProjectVersion, type: :model do
-  subject(:project_version) { FactoryBot.create(:project_version, project: project) }
+  subject(:project_version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:quote, client: client, company: company) }
 
@@ -55,7 +55,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
 
         context 'when there are existing versions' do
           before do
-            FactoryBot.create(:project_version, project: project)
+            FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last)
           end
 
           it 'sets number to the next available number' do
@@ -67,11 +67,11 @@ RSpec.describe Organization::ProjectVersion, type: :model do
 
         context 'when number set directly' do
           before do
-            FactoryBot.create(:project_version, project: project)
+            FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last)
           end
 
           it 'overwrites the number set' do
-            version = FactoryBot.build(:project_version, project: project, number: 10)
+            version = FactoryBot.build(:project_version, project: project, number: 10, bank_detail: company.bank_details.last)
             version.valid?
             expect(version.number).to eq(2)
           end
@@ -79,7 +79,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
       end
 
       context 'when updating an existing version' do
-        let(:version) { FactoryBot.create(:project_version, project: project) }
+        let(:version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last) }
 
         it 'does not change the number' do
           expect {
@@ -93,12 +93,12 @@ RSpec.describe Organization::ProjectVersion, type: :model do
   describe 'scopes' do
     describe ".lasts" do
       before {
-        FactoryBot.create(:project_version, project: project)
-        FactoryBot.create(:project_version, project: project)
+        FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last)
+        FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last)
         another_project = FactoryBot.create(:quote, client: client, company: company, name: "AnotherProject")
-        FactoryBot.create(:project_version, project: another_project)
-        FactoryBot.create(:project_version, project: another_project)
-        FactoryBot.create(:project_version, project: another_project)
+        FactoryBot.create(:project_version, project: another_project, bank_detail: company.bank_details.last)
+        FactoryBot.create(:project_version, project: another_project, bank_detail: company.bank_details.last)
+        FactoryBot.create(:project_version, project: another_project, bank_detail: company.bank_details.last)
       }
 
       it "only returns the last project versions", :aggregate_failures do
@@ -112,8 +112,8 @@ RSpec.describe Organization::ProjectVersion, type: :model do
   describe "instance methods" do
     describe "#is_last_versions?" do
       before {
-        FactoryBot.create(:project_version, project: project)
-        FactoryBot.create(:project_version, project: project)
+        FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last)
+        FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last)
       }
 
       context "when the record is the last version" do

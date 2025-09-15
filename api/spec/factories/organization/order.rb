@@ -9,7 +9,7 @@ FactoryBot.define do
     address_city { "Paris" }
     trait :with_version do
       after(:create) { |order|
-        version = create(:project_version, project: order)
+        version = create(:project_version, project: order, bank_detail: order.company.bank_details.last)
 
         [ "first", "second", "third" ].each_with_index do |ordinal, index|
           FactoryBot.create(

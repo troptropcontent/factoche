@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe Organization::Projects::Update do
   subject(:result) { described_class.call(project, params) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:project, company: company, client: client, type: "Organization::Quote") }
-  let(:project_version) { FactoryBot.create(:project_version, project: project) }
+  let(:project_version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last) }
   let!(:existing_item) do
     FactoryBot.create(:item,
       project_version: project_version,
@@ -27,6 +27,7 @@ RSpec.describe Organization::Projects::Update do
             name: "Updated Project",
             description: "New description",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [
               {
                 name: "New Item",
@@ -94,6 +95,7 @@ RSpec.describe Organization::Projects::Update do
           {
             name: "Updated Project",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [],
             updated_items: [
               {
@@ -120,6 +122,7 @@ RSpec.describe Organization::Projects::Update do
           {
             name: "",  # Invalid: empty name
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [],
             updated_items: [],
             groups: []
@@ -138,6 +141,7 @@ RSpec.describe Organization::Projects::Update do
           {
             name: "Updated Project",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [
               {
                 name: "New Item",

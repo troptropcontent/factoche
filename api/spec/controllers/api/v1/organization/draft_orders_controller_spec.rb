@@ -166,6 +166,7 @@ module Api
               ::Organization::Quotes::Create.call(
                 company.id,
                 client.id,
+                company.bank_details.last.id,
                 {
                   name: "Quote",
                   description: "Quote description",

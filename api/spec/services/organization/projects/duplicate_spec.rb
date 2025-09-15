@@ -6,7 +6,7 @@ module Organization
     RSpec.describe Duplicate, type: :service do
       define_negated_matcher :not_change, :change
       describe '#call', :aggregate_failures do
-      let(:company) { FactoryBot.create(:company) }
+      let(:company) { FactoryBot.create(:company, :with_bank_detail) }
       let(:client) { FactoryBot.create(:client, company:) }
 
       subject(:result) { described_class.call(original_project, new_project_class) }
@@ -24,7 +24,7 @@ module Organization
         context "when the original project is a #{scenario[:original_project_class].name} and the new project class is a #{scenario[:new_project_class].name}" do
             let(:new_project_class) { scenario[:new_project_class] }
             let(:original_project) { FactoryBot.create(:project, company: company, client: client, type: scenario[:original_project_class].name) }
-            let(:original_project_version) { FactoryBot.create(:project_version, project: original_project) }
+            let(:original_project_version) { FactoryBot.create(:project_version, project: original_project, bank_detail: company.bank_details.last) }
 
             context "when the project have groups" do
               let(:original_project_version_group) { FactoryBot.create(:item_group, project_version: original_project_version) }

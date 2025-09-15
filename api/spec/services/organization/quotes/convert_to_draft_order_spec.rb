@@ -5,10 +5,10 @@ module Organization
     # rubocop:disable RSpec/ExampleLength, RSpec/MultipleMemoizedHelpers
     RSpec.describe ConvertToDraftOrder do
       describe '.call', :aggregate_failures do
-        let(:company) { FactoryBot.create(:company) }
+        let(:company) { FactoryBot.create(:company, :with_bank_detail) }
         let(:client) { FactoryBot.create(:client, company: company) }
         let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
-        let!(:quote_version) { FactoryBot.create(:project_version, project: quote) }
+        let!(:quote_version) { FactoryBot.create(:project_version, project: quote, bank_detail: company.bank_details.last) }
 
         context 'when successful' do
           before {  # Create groups

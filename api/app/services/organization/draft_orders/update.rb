@@ -19,7 +19,7 @@ module Organization
       end
 
       def update_draft_order_and_enqueue_pdf_generation_job!
-        result = Projects::Update.call(@draft_order, @params)
+        result = Projects::Update.call(@draft_order, @params.merge({ bank_detail_id: @draft_order.last_version.bank_detail.id }))
         raise Error::UnprocessableEntityError, result.error if result.failure?
 
         ProjectVersions::GeneratePdfJob.perform_async({ "project_version_id"=>result.data[:version].id })

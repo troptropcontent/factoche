@@ -4,7 +4,7 @@ require 'services/shared_examples/service_result_example'
 RSpec.describe Organization::DraftOrders::Update do
   subject(:result) { described_class.call(draft_order, params) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:quote) { FactoryBot.create(:quote, :with_version, company: company, client: client) }
   let!(:draft_order) { Organization::Quotes::ConvertToDraftOrder.call(quote.id).data }

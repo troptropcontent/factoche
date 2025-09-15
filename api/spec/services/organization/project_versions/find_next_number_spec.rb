@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Organization::ProjectVersions::FindNextNumber do
   describe '.call' do
-    let(:company) { FactoryBot.create(:company) }
+    let(:company) { FactoryBot.create(:company, :with_bank_detail) }
     let(:client) { FactoryBot.create(:client, company: company) }
     let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
-    let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
+    let(:quote_version) { FactoryBot.create(:project_version, project: quote, bank_detail: company.bank_details.last) }
     let(:project) { quote }
 
     context 'when there are no existing versions' do
@@ -18,7 +18,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
 
     context 'when there are existing versions' do
       before do
-        FactoryBot.create_list(:project_version, 3, project: project)
+        FactoryBot.create_list(:project_version, 3, project: project, bank_detail: company.bank_details.last)
       end
 
       it 'returns the next version number', :aggregate_failures do

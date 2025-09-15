@@ -37,7 +37,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
   end
 
   let(:another_quote) do
-    Organization::Quotes::Create.call(company.id, client.id, another_quote_params).data
+    Organization::Quotes::Create.call(company.id, client.id, company.bank_details.last.id, another_quote_params).data
   end
 
   let(:another_draft_order) do
