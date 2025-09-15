@@ -54,8 +54,6 @@ accessories:
   chromium:
     image: browserless/chrome:latest
     port: 9222:3000
-    options:
-      restart: unless-stopped
     env:
       secret:
         - HEADLESS_BROWSER_TOKEN
