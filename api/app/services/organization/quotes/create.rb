@@ -2,12 +2,12 @@ module Organization
   module Quotes
     class Create
       class << self
-        def call(company_id, client_id, params)
+        def call(company_id, client_id, bank_detail_id, params)
           validated_params = validate_params!(params)
 
           quote, version = ActiveRecord::Base.transaction do
             quote = create_quote!(company_id, client_id, validated_params)
-            version = create_version!(quote, validated_params)
+            version = create_version!(quote, validated_params.merge({ bank_detail_id: bank_detail_id }))
             [ quote, version ]
           end
 
@@ -39,8 +39,8 @@ module Organization
           )
         end
 
-        def create_version!(quote, validated_params)
-          result = ProjectVersions::Create.call(quote, validated_params)
+        def create_version!(quote, params)
+          result = ProjectVersions::Create.call(quote, params)
           raise Error::UnprocessableEntityError.new("Failed to create project version") if result.failure?
 
           result.data[:version]
