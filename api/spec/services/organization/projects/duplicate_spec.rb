@@ -23,8 +23,8 @@ module Organization
       ].each do |scenario|
         context "when the original project is a #{scenario[:original_project_class].name} and the new project class is a #{scenario[:new_project_class].name}" do
             let(:new_project_class) { scenario[:new_project_class] }
-            let(:original_project) { FactoryBot.create(:project, company: company, client: client, type: scenario[:original_project_class].name) }
-            let(:original_project_version) { FactoryBot.create(:project_version, project: original_project, bank_detail: company.bank_details.last) }
+            let(:original_project) { FactoryBot.create(:project, company: company, client: client, type: scenario[:original_project_class].name, bank_detail: company.bank_details.last) }
+            let(:original_project_version) { FactoryBot.create(:project_version, project: original_project) }
 
             context "when the project have groups" do
               let(:original_project_version_group) { FactoryBot.create(:item_group, project_version: original_project_version) }
