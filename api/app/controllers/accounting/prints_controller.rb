@@ -3,7 +3,7 @@ module Accounting
     include Error::Handler
     include ActionView::Layouts
 
-    before_action :require_token!
+    before_action :require_token!, unless: -> { Rails.env.development? }
 
     # GET /accounting/prints/published_invoices/:id
     def published_invoice

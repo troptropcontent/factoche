@@ -17,6 +17,9 @@ module Accounting
     #     - general_terms_and_conditions [String] General terms and conditions
     #     - payment_term [Hash] Payment terms containing:
     #       - days [Integer] Number of days until payment is due
+    #   - bank_detail [Hash] Company bank details to display on the invoice:
+    #     - iban [String] Iban of the company
+    #     - bic [String] Bic of the company
     # @param client [Hash] Client data
     # @param project_version [Hash] Project version data containing:
     #   - id [Integer] The project version ID

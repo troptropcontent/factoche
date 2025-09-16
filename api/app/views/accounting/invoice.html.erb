@@ -82,17 +82,25 @@
     </div>
   </header>
 
-  <footer class="footer text-xs ml-[-113.336px]">
+  <footer class="footer text-xs ml-[-113.336px] flex flex-col">
     <p>
       <%= [
         t("views.organization.completion_snapshots.invoice.seller_details.legal_form.#{@invoice.detail.seller_legal_form}",
           capital_amount: number_to_currency(@invoice.detail.seller_capital_amount)),
         t("views.organization.completion_snapshots.invoice.seller_details.rcs",
           city: @invoice.detail.seller_rcs_city,
-          number: @invoice.detail.seller_rcs_number),
-        t("views.organization.completion_snapshots.invoice.seller_details.vat_number",
-          number: @invoice.detail.seller_vat_number)
+          number: @invoice.detail.seller_rcs_number)
       ].join(" - ") %>
+    </p>
+    <p>
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.vat_number_html",
+        number: @invoice.detail.seller_vat_number) %>
+    </p>
+    <p>
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.iban_html",
+          number: @invoice.detail.bank_detail_iban) %>
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.bic_html",
+          number: @invoice.detail.bank_detail_bic) %> 
     </p>
   </footer>
 
