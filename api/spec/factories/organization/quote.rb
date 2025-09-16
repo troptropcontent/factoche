@@ -8,7 +8,7 @@ FactoryBot.define do
     address_zipcode { "75002" }
     address_city { "Paris" }
     trait :with_version do
-      after(:create) { |quote| create(:project_version, project: quote, bank_detail: quote.company.bank_details.last) }
+      after(:create) { |quote| create(:project_version, project: quote) }
     end
   end
 end
