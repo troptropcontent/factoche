@@ -6,8 +6,8 @@ RSpec.describe Organization::Quotes::Update do
 
   let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:quote) { FactoryBot.create(:quote, company: company, client: client) }
-  let(:quote_version) { FactoryBot.create(:project_version, project: quote, bank_detail: company.bank_details.last) }
+  let(:quote) { FactoryBot.create(:quote, company: company, client: client, bank_detail: company.bank_details.last) }
+  let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
   let(:params) do
     {
       name: "Updated Quote Name",
@@ -63,7 +63,8 @@ RSpec.describe Organization::Quotes::Update do
         FactoryBot.create(:draft_order,
           company: company,
           client: client,
-          original_project_version: quote_version
+          original_project_version: quote_version,
+          bank_detail: company.bank_details.last
         )
       end
 
