@@ -77,6 +77,8 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
           payment_term_days: company[:config][:payment_term_days],
           payment_term_accepted_methods: company[:config][:payment_term_accepted_methods],
           general_terms_and_conditions: company[:config][:general_terms_and_conditions],
+          bank_detail_iban: company[:bank_detail][:iban],
+          bank_detail_bic: company[:bank_detail][:bic],
           client_name: client[:name],
           client_registration_number: client[:registration_number],
           client_address_zipcode: client[:address_zipcode],
@@ -88,7 +90,7 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
           delivery_address_zipcode: client[:address_zipcode],
           delivery_address_street: client[:address_street],
           delivery_address_city: client[:address_city],
-          purchase_order_number: project_version[:id]
+          purchase_order_number: project_version[:id],
         )
       end
       # rubocop:enable RSpec/ExampleLength
