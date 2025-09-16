@@ -23,6 +23,10 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
           payment_term_days: 30,
           payment_term_accepted_methods: [ 'transfer' ],
           general_terms_and_conditions: '<h1>Condition<h1/>'
+        },
+        bank_detail: {
+          iban: 'IBAN',
+          bic: 'BIC'
         }
       }
     end
