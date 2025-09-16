@@ -6,6 +6,9 @@ class Organization::Project < ApplicationRecord
   has_one :last_version, -> { order(created_at: :desc) }, class_name: "Organization::ProjectVersion"
   accepts_nested_attributes_for :versions
 
+  belongs_to :bank_detail, class_name: "Organization::BankDetail"
+  validates :bank_detail_id, presence: true
+
   validates :name, presence: true, uniqueness: { scope: [ :client_id, :type ] }
 
   validates :posted_at, absence: true, unless: :posted?
