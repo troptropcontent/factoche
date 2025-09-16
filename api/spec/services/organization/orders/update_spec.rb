@@ -6,8 +6,9 @@ RSpec.describe Organization::Orders::Update do
 
   let(:args) { [ order.id, params ] }
   let(:company) { FactoryBot.create(:company, :with_bank_detail) }
+  let(:second_bank_detail) { FactoryBot.create(:bank_detail, company: company) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:quote) { FactoryBot.create(:quote, :with_version, company: company, client: client) }
+  let(:quote) { FactoryBot.create(:quote, :with_version, company: company, client: client, bank_detail: company.bank_details.last) }
   let(:draft_order) { Organization::Quotes::ConvertToDraftOrder.call(quote.id).data }
   let!(:order) { Organization::DraftOrders::ConvertToOrder.call(draft_order.id).data }
   let(:params) do
@@ -15,7 +16,7 @@ RSpec.describe Organization::Orders::Update do
       name: "Updated Order Name",
       description: "Updated description",
       retention_guarantee_rate: 0.05,
-      bank_detail_id: company.bank_details.last.id,
+      bank_detail_id: second_bank_detail.id,
       new_items: [ {
         name: "New Item",
         description: "New Item Description",
@@ -38,6 +39,7 @@ RSpec.describe Organization::Orders::Update do
         expect(result.data).to be_a(Organization::Order)
         expect(result.data.name).to eq("Updated Order Name")
         expect(result.data.description).to eq("Updated description")
+        expect(result.data.bank_detail_id).to eq(second_bank_detail.id)
       end
 
       it 'creates a new version' do
