@@ -44,6 +44,14 @@ const Step1 = ({
     "/api/v1/organization/companies/{company_id}/clients",
     { params: { path: { company_id: Number(companyId) } } }
   );
+
+  const { data: bank_details = [] } = Api.useQuery(
+    "get",
+    "/api/v1/organization/companies/{company_id}/bank_details",
+    { params: { path: { company_id: Number(companyId) } } },
+    { select: (data) => data.results }
+  );
+
   const form = useForm<z.infer<typeof step1FormSchema>>({
     resolver: zodResolver(step1FormSchema),
     defaultValues: initialValues,
@@ -160,6 +168,59 @@ const Step1 = ({
                     a: (
                       <Link
                         to="/companies/$companyId/clients"
+                        params={{ companyId }}
+                        className="underline"
+                      />
+                    ),
+                  }}
+                />
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="bank_detail_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t(
+                  "pages.companies.projects.form.basic_info_step.bank_detail_id_input_label"
+                )}
+              </FormLabel>
+              <Select
+                onValueChange={(v) => field.onChange(Number(v))}
+                defaultValue={field.value.toString()}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t(
+                        "pages.companies.projects.form.basic_info_step.bank_detail_id_input_placeholder"
+                      )}
+                    />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {bank_details.map((bank_detail) => (
+                    <SelectItem
+                      key={`bank-details-select-${bank_detail.id}`}
+                      value={bank_detail.id.toString()}
+                    >
+                      {bank_detail.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                <Trans
+                  i18nKey="pages.companies.projects.form.basic_info_step.bank_detail_id_input_description"
+                  components={{
+                    a: (
+                      <Link
+                        to="/companies/$companyId/settings"
                         params={{ companyId }}
                         className="underline"
                       />

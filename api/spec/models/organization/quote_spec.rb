@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Organization::Quote, type: :model do
   describe 'validations' do
-    let(:company) { FactoryBot.create(:company) }
+    let(:company) { FactoryBot.create(:company, :with_bank_detail) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:quote) { FactoryBot.build(:quote, client: client, company: company) }
+    let(:quote) { FactoryBot.build(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
 
     it 'is valid without original_project_version_id' do
       expect(quote).to be_valid
@@ -12,7 +12,7 @@ RSpec.describe Organization::Quote, type: :model do
 
     it 'is invalid with original_project_version_id', :aggregate_failures do
       # Create a project version to reference
-      other_quote = FactoryBot.create(:quote, client: client, company: company)
+      other_quote = FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last)
       version = FactoryBot.create(:project_version, project: other_quote)
 
       quote.original_project_version_id = version.id

@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Organization::ProjectVersions::FindNextNumber do
   describe '.call' do
-    let(:company) { FactoryBot.create(:company) }
+    let(:company) { FactoryBot.create(:company, :with_bank_detail) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
+    let(:quote) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
     let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
     let(:project) { quote }
 
@@ -29,7 +29,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
     end
 
     context 'when the project is a order' do
-      let(:project) { FactoryBot.create(:order, original_project_version: quote_version, client: client, company: company) }
+      let(:project) { FactoryBot.create(:order, original_project_version: quote_version, client: client, company: company, bank_detail: company.bank_details.last) }
 
       it 'returns the first version number with the relevant prefix', :aggregate_failures do
         result = described_class.call(project)

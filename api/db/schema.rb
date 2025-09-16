@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_15_090352) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_15_123751) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -319,6 +319,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_15_090352) do
     t.string "address_street", null: false
     t.string "address_zipcode", null: false
     t.string "address_city", null: false
+    t.bigint "bank_detail_id"
+    t.index ["bank_detail_id"], name: "index_organization_projects_on_bank_detail_id"
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
     t.index ["company_id", "type", "number"], name: "index_organization_projects_on_company_id_and_type_and_number", unique: true
     t.index ["company_id"], name: "index_organization_projects_on_company_id"
@@ -354,6 +356,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_15_090352) do
   add_foreign_key "organization_members", "organization_companies", column: "company_id"
   add_foreign_key "organization_members", "users"
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"
+  add_foreign_key "organization_projects", "organization_bank_details", column: "bank_detail_id"
   add_foreign_key "organization_projects", "organization_clients", column: "client_id"
   add_foreign_key "organization_projects", "organization_companies", column: "company_id"
   add_foreign_key "organization_projects", "organization_project_versions", column: "original_project_version_id"

@@ -107,6 +107,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           name: { type: :string },
           description: { type: :string },
           retention_guarantee_rate: { type: :number },
+          bank_detail_id: { type: :number },
           new_items: {
             type: :array,
             items: {
@@ -164,6 +165,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
         ::Organization::Quotes::Create.call(
           company.id,
           client.id,
+          company.bank_details.last.id,
           {
             name: "Updated Quote",
             retention_guarantee_rate: 0.05,
@@ -203,6 +205,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           name: "Updated Quote",
           description: "Updated Description of the new quote",
           retention_guarantee_rate: 0.05,
+          bank_detail_id: company.bank_details.last.id,
           groups: [
             { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
           ],
@@ -284,10 +287,11 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
 
       response "422", "unprocessable entity" do
         context "when the params are not valid" do
-          context "when a required qui is missing" do
+          context "when a required key is missing" do
             let(:body) { body_without_name }
             let(:body_without_name) do
               {
+                bank_detail_id: company.bank_details.last.id,
                 description: "Updated Description of the new quote",
                 retention_guarantee_rate: 0.05,
                 groups: [
@@ -369,6 +373,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       parameter name: :body, in: :body, schema: {
         type: :object,
         properties: {
+          client_id: { type: :number },
           name: { type: :string },
           description: { type: :string },
           retention_guarantee_rate: { type: :number },
@@ -410,9 +415,11 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       let!(:member) { FactoryBot.create(:member, user:, company:) }
       let(:company_id) { company.id }
       let(:client_id) { client.id }
+      let(:bank_detail_id) { company.bank_details.last.id }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       let(:body) do
         {
+          bank_detail_id: bank_detail_id,
           name: "New Quote",
           description: "Description of the new quote",
           retention_guarantee_rate: 0.05,
@@ -448,7 +455,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
       end
 
       response "422", "unprocessable entity" do
-        let(:body) { { name: "" } } # Invalid params
+        let(:body) { { bank_detail_id: bank_detail_id, name: "" } } # Invalid params
 
         run_test! do
           parsed_response = JSON.parse(response.body)
@@ -484,6 +491,25 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
 
         context "when the client does not exists" do
           let(:client_id) { -1 }
+
+          run_test! do
+            expect(response.body).to include("Resource not found")
+          end
+        end
+      end
+
+      response "404", "bank_detail not found" do
+        context "when the bank_detail is not one of the comapny's bank_details" do
+          let(:another_company) { FactoryBot.create(:company) }
+          let(:bank_detail_id) { FactoryBot.create(:bank_detail, company: another_company).id }
+
+          run_test! do
+            expect(response.body).to include("Resource not found")
+          end
+        end
+
+        context "when the bank_detail does not exists" do
+          let(:bank_detail_id) { -1 }
 
           run_test! do
             expect(response.body).to include("Resource not found")

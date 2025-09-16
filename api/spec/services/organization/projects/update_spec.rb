@@ -4,6 +4,9 @@ RSpec.describe Organization::Projects::Update do
   subject(:result) { described_class.call(project, params) }
 
   let(:company) { FactoryBot.create(:company) }
+  let(:first_bank_detail) { FactoryBot.create(:bank_detail, company: company) }
+  let(:second_bank_detail) { FactoryBot.create(:bank_detail, company: company) }
+
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project) { FactoryBot.create(:project, company: company, client: client, type: "Organization::Quote") }
   let(:project_version) { FactoryBot.create(:project_version, project: project) }
@@ -19,7 +22,7 @@ RSpec.describe Organization::Projects::Update do
 
   describe '#call', :aggregate_failures do
   [ Organization::Quote, Organization::Order, Organization::DraftOrder ].each do |project_class|
-    let(:project) { FactoryBot.create(:project, company: company, client: client, type: project_class.name) }
+    let(:project) { FactoryBot.create(:project, company: company, client: client, type: project_class.name, bank_detail: first_bank_detail) }
     context "when the project is a #{project_class}" do
       context 'with valid params' do
         let(:params) do
@@ -27,6 +30,7 @@ RSpec.describe Organization::Projects::Update do
             name: "Updated Project",
             description: "New description",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: second_bank_detail.id,
             new_items: [
               {
                 name: "New Item",
@@ -55,6 +59,7 @@ RSpec.describe Organization::Projects::Update do
           expect(result).to be_success
           expect(result.data[:project].name).to eq "Updated Project"
           expect(result.data[:project].description).to eq "New description"
+          expect(result.data[:project].bank_detail_id).to eq second_bank_detail.id
 
           new_version = result.data[:version]
           expect(new_version).to be_persisted
@@ -94,6 +99,7 @@ RSpec.describe Organization::Projects::Update do
           {
             name: "Updated Project",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [],
             updated_items: [
               {
@@ -120,6 +126,7 @@ RSpec.describe Organization::Projects::Update do
           {
             name: "",  # Invalid: empty name
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [],
             updated_items: [],
             groups: []
@@ -138,6 +145,7 @@ RSpec.describe Organization::Projects::Update do
           {
             name: "Updated Project",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             new_items: [
               {
                 name: "New Item",

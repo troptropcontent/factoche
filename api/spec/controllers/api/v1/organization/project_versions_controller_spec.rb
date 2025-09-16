@@ -42,7 +42,7 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
         context "when the order does not belong to the company" do
           let(:another_company) { FactoryBot.create(:company) }
           let(:another_client) { FactoryBot.create(:client, company: another_company) }
-          let(:another_order) { FactoryBot.create(:quote, client: another_client, company: another_company) }
+          let(:another_order) { FactoryBot.create(:quote, client: another_client, company: another_company, bank_detail_id: company.bank_details.first.id) }
           let(:order_id) { another_order.id }
 
 
@@ -85,9 +85,9 @@ RSpec.describe Api::V1::Organization::ProjectVersionsController, type: :request 
 
       include_context 'a company with a project with three items'
 
-      let(:another_company) { FactoryBot.create(:company) }
+      let(:another_company) { FactoryBot.create(:company, :with_bank_detail) }
       let(:another_client) { FactoryBot.create(:client, company: another_company) }
-      let!(:another_company_order) { FactoryBot.create(:quote, client: another_client, company: another_company) }
+      let!(:another_company_order) { FactoryBot.create(:quote, client: another_client, company: another_company, bank_detail: company.bank_details.first) }
       let!(:another_company_project_version) { FactoryBot.create(:project_version, project: another_company_order) }
       let!(:member) { FactoryBot.create(:member, user:, company:) }
       let(:company_id) { company.id }

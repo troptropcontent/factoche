@@ -1,7 +1,7 @@
 # rubocop:disable RSpec/MultipleMemoizedHelpers
 # rubocop:disable RSpec/ContextWording
 RSpec.shared_context 'a company with some quotes' do |number_of_quotes: 1|
-  let(:company) { FactoryBot.create(:company, :with_config) }
+  let(:company) { FactoryBot.create(:company, :with_config, :with_bank_detail) }
   ordinals = [ "first", "second", "third" ]
 
   before { raise "Achtung, max number of quote that can be created is #{ordinals.length}" if number_of_quotes > ordinals.length }
@@ -33,7 +33,7 @@ RSpec.shared_context 'a company with some quotes' do |number_of_quotes: 1|
       }},
       groups: []
     }}
-    let("#{ordinals[number_of_quote_index]}_quote") { Organization::Quotes::Create.call(company.id, send("#{ordinals[number_of_quote_index]}_client").id, send("#{ordinals[number_of_quote_index].capitalize}_create_quote_params")).data }
+    let("#{ordinals[number_of_quote_index]}_quote") { Organization::Quotes::Create.call(company.id, send("#{ordinals[number_of_quote_index]}_client").id, company.bank_details.last.id, send("#{ordinals[number_of_quote_index].capitalize}_create_quote_params")).data }
     let!("#{ordinals[number_of_quote_index]}_quote_version") { send("#{ordinals[number_of_quote_index]}_quote").last_version }
     ordinals.each_with_index do |ordinal, index|
       let("#{ordinals[number_of_quote_index]}_quote_#{ordinal}_item") { quote_version.items[index] }

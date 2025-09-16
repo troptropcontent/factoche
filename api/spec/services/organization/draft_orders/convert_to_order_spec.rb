@@ -8,8 +8,8 @@ module Organization
 
         include_context 'a company with a client and a member'
 
-        let(:quote) { FactoryBot.create(:quote, :with_version, company: company, client: client) }
-        let(:draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: quote.last_version) }
+        let(:quote) { FactoryBot.create(:quote, :with_version, company: company, client: client, bank_detail: company.bank_details.last) }
+        let(:draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: quote.last_version, bank_detail: company.bank_details.last) }
         let(:draft_order_id) { draft_order.id }
 
         context 'when the draft order is valid' do
@@ -62,7 +62,7 @@ module Organization
 
         context 'when the draft order has already been converted' do
           context 'when posted is true' do
-            let(:draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: quote.last_version, posted: true, posted_at: Time.current) }
+            let(:draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: quote.last_version, bank_detail: company.bank_details.last, posted: true, posted_at: Time.current) }
 
             it 'raises an UnprocessableEntityError' do
               expect(result.error.message).to include("Draft order has already been converted to an order")

@@ -14,6 +14,7 @@ import { useSettingsFormInitialValues } from "./private/hooks";
 import { SettingsForm as SettingsFormType } from "./private/types";
 import { settingsFormSchema } from "./private/schemas";
 import { BillingConfigForm } from "./settings-billing-info-form";
+import { BankDetailsForm } from "./settings-bank-details-form";
 import { t } from "i18next";
 import { z } from "zod";
 import { Api } from "@/lib/openapi-fetch-query-client";
@@ -38,6 +39,7 @@ export function SettingsForm({ companyId }: { companyId: number }) {
         body: {
           ...data,
           capital_amount: Number(data.capital_amount),
+          bank_details_attributes: data.bank_details_attributes.reduce((memo, bank_detail)=> bank_detail.record_id == null ? [...memo, bank_detail] : memo, [] as typeof data.bank_details_attributes),
           configs: {
             ...data.configs,
             default_vat_rate: data.configs.default_vat_rate / 100,
@@ -73,12 +75,15 @@ export function SettingsForm({ companyId }: { companyId: number }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Tabs defaultValue="company-info" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="company-info">
               {t("pages.companies.settings.forms.general.title")}
             </TabsTrigger>
             <TabsTrigger value="billing-config">
               {t("pages.companies.settings.forms.billing.title")}
+            </TabsTrigger>
+            <TabsTrigger value="bank-details">
+              {t("pages.companies.settings.forms.bank_details.title")}
             </TabsTrigger>
           </TabsList>
 
@@ -109,6 +114,24 @@ export function SettingsForm({ companyId }: { companyId: number }) {
               </CardHeader>
               <CardContent>
                 <BillingConfigForm />
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <FormSubmit>
+                  {t("pages.companies.settings.forms.shared.submit")}
+                </FormSubmit>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="bank-details">
+            <Card>
+              <CardHeader>
+                <CardDescription>
+                  {t("pages.companies.settings.forms.bank_details.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <BankDetailsForm />
               </CardContent>
               <CardFooter className="flex justify-end">
                 <FormSubmit>

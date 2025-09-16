@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       namespace :organization do
         resources :companies, only: [ :index, :show, :update ] do
           resource :dashboard, only: [ :show ]
+          resources :bank_details, only: [ :index ]
           resources :clients, only: [ :create, :index ] do
             resources :quotes, only: [ :create ]
           end

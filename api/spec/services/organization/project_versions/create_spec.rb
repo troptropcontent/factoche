@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Organization::ProjectVersions::Create do
   subject(:result) { described_class.call(project, params) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_config, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
 
   # rubocop:disable RSpec/NestedGroups
@@ -11,7 +11,7 @@ RSpec.describe Organization::ProjectVersions::Create do
   # rubocop:disable RSpec/ExampleLength
   describe '#call' do
     [ Organization::Quote, Organization::Order, Organization::DraftOrder ].each do |project_class|
-      let(:project) { FactoryBot.create(:project, company: company, client: client, type: project_class.name) }
+      let(:project) { FactoryBot.create(:project, company: company, client: client, type: project_class.name, bank_detail: company.bank_details.last) }
       context "when the project is a #{project_class}" do
         context 'with valid params' do
           context 'without groups' do
@@ -58,6 +58,7 @@ RSpec.describe Organization::ProjectVersions::Create do
             let(:params) do
               {
                 retention_guarantee_rate: 0.05,
+                bank_detail_id: company.bank_details.first.id,
                 items: [
                   {
                     name: 'Item 1',
@@ -105,6 +106,7 @@ RSpec.describe Organization::ProjectVersions::Create do
               let(:params) do
                 {
                   retention_guarantee_rate: 0.05,
+                  bank_detail_id: company.bank_details.first.id,
                   items: [
                     {
                       name: 'Item 1',
@@ -132,6 +134,7 @@ RSpec.describe Organization::ProjectVersions::Create do
               let(:params) do
                 {
                   retention_guarantee_rate: 0.05,
+                  bank_detail_id: company.bank_details.first.id,
                   items: [
                     {
                       name: 'Item 1',
@@ -173,6 +176,7 @@ RSpec.describe Organization::ProjectVersions::Create do
             let(:params) do
               {
                 retention_guarantee_rate: 0.05,
+                bank_detail_id: company.bank_details.first.id,
                 items: [
                   {
                     name: 'Item 1',

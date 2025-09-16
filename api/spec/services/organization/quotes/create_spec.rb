@@ -4,7 +4,8 @@ module Organization
   module Quotes
     RSpec.describe Create do
       describe '.call' do
-        let(:company) { FactoryBot.create(:company) }
+        let(:company) { FactoryBot.create(:company, :with_bank_detail) }
+        let(:bank_detail_id) { company.bank_details.first.id }
         let(:client) { FactoryBot.create(:client, company: company) }
 
         let(:valid_params) do
@@ -55,7 +56,7 @@ module Organization
         end
 
         context 'when params are valid' do
-          subject(:result) { described_class.call(company.id, client.id, valid_params) }
+          subject(:result) { described_class.call(company.id, client.id, bank_detail_id, valid_params) }
 
           it 'creates a quote with all associated records' do
             expect { result }.to change(Quote, :count).by(1)
@@ -77,6 +78,7 @@ module Organization
             expect(quote.name).to eq("Construction Project")
             expect(quote.description).to eq("Building renovation")
             expect(quote.client_id).to eq(client.id)
+            expect(quote.bank_detail_id).to eq(bank_detail_id)
 
             version = quote.versions.first
             expect(version.retention_guarantee_rate).to eq(0.05)
@@ -116,7 +118,7 @@ module Organization
           end
 
           it 'creates items without groups', :aggregate_failures do
-            result = described_class.call(company.id, client.id, params_without_groups)
+            result = described_class.call(company.id, client.id, bank_detail_id, params_without_groups)
 
             expect(result).to be_success
             expect(result.data.versions.first.items.count).to eq(1)
@@ -129,7 +131,7 @@ module Organization
             let(:invalid_params) { valid_params.except(:name) }
 
             it 'returns failure with validation errors', :aggregate_failures do
-              result = described_class.call(company.id, client.id, invalid_params)
+              result = described_class.call(company.id, client.id, bank_detail_id, invalid_params)
 
               expect(result).to be_failure
               expect(result.error).to be_a(Error::UnprocessableEntityError)
@@ -138,7 +140,16 @@ module Organization
 
           context 'with invalid client_id' do
             it 'returns failure', :aggregate_failures do
-              result = described_class.call(company.id, -1, valid_params)
+              result = described_class.call(company.id, -1, bank_detail_id, valid_params)
+
+              expect(result).to be_failure
+              expect(result.error).to be_a(StandardError)
+            end
+          end
+
+          context 'with invalid bank_detail_id' do
+            it 'returns failure', :aggregate_failures do
+              result = described_class.call(company.id, client.id, -1, valid_params)
 
               expect(result).to be_failure
               expect(result.error).to be_a(StandardError)
@@ -154,7 +165,7 @@ module Organization
 
             it 'rolls back the transaction' do
               expect {
-                described_class.call(company.id, client.id, params_with_invalid_group)
+                described_class.call(company.id, client.id, bank_detail_id, params_with_invalid_group)
               }.not_to change(Quote, :count)
             end
           end
@@ -167,12 +178,12 @@ module Organization
 
           it 'rolls back all changes' do
             expect {
-              described_class.call(company.id, client.id, valid_params)
+              described_class.call(company.id, client.id, bank_detail_id, valid_params)
             }.not_to change(Quote, :count)
           end
 
           it 'returns failure', :aggregate_failures do
-            result = described_class.call(company.id, client.id, valid_params)
+            result = described_class.call(company.id, client.id, bank_detail_id, valid_params)
 
             expect(result).to be_failure
             expect(result.error).to be_a(Error::UnprocessableEntityError)

@@ -118,6 +118,45 @@ paths:
                     - details
                 required:
                 - error
+  "/api/v1/organization/companies/{company_id}/bank_details":
+    get:
+      summary: Lists clients for a company
+      tags:
+      - Bank Details
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: bank_details found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
+        '404':
+          description: company not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: unauthorised
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
   "/api/v1/organization/companies/{company_id}/clients":
     post:
       summary: Creates a client for a company
@@ -518,6 +557,17 @@ paths:
                   type: string
                 capital_amount:
                   type: number
+                bank_details_attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      bic:
+                        type: string
+                      iban:
+                        type: string
                 configs:
                   type: object
                   properties:
@@ -717,6 +767,8 @@ paths:
                 description:
                   type: string
                 retention_guarantee_rate:
+                  type: number
+                bank_detail_id:
                   type: number
                 new_items:
                   type: array
@@ -1052,6 +1104,8 @@ paths:
                 description:
                   type: string
                 retention_guarantee_rate:
+                  type: number
+                bank_detail_id:
                   type: number
                 new_items:
                   type: array
@@ -1667,6 +1721,8 @@ paths:
                   type: string
                 retention_guarantee_rate:
                   type: number
+                bank_detail_id:
+                  type: number
                 new_items:
                   type: array
                   items:
@@ -1769,7 +1825,7 @@ paths:
         '422':
           description: unprocessable entity
         '404':
-          description: client not found
+          description: bank_detail not found
         '403':
           description: forbiden
       requestBody:
@@ -1778,6 +1834,8 @@ paths:
             schema:
               type: object
               properties:
+                client_id:
+                  type: number
                 name:
                   type: string
                 description:
@@ -2045,6 +2103,31 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Accounting::Payments::ExtendedDto"
+    Organization::BankDetails::ExtendedDto:
+      type: object
+      required:
+      - id
+      - name
+      - iban
+      - bic
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        iban:
+          type: string
+        bic:
+          type: string
+    Organization::BankDetails::ShowDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
     Organization::Clients::ExtendedDto:
       type: object
       required:
@@ -2097,6 +2180,7 @@ components:
       - vat_number
       - capital_amount
       - config
+      - bank_details
       properties:
         id:
           type: integer
@@ -2133,6 +2217,10 @@ components:
           format: decimal
         config:
           "$ref": "#/components/schemas/Organization::CompanyConfigs::ExtendedDto"
+        bank_details:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
     Organization::CompanyConfigs::ExtendedDto:
       type: object
       required:
@@ -3427,6 +3515,7 @@ components:
       - number
       - name
       - client
+      - bank_detail
       - last_version
       - address_street
       - address_zipcode
@@ -3443,6 +3532,8 @@ components:
           nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        bank_detail:
+          "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         address_street:
@@ -3518,6 +3609,7 @@ components:
       - number
       - name
       - client
+      - bank_detail
       - last_version
       - address_street
       - address_zipcode
@@ -3537,6 +3629,8 @@ components:
           nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        bank_detail:
+          "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         address_street:
@@ -3564,6 +3658,7 @@ components:
       - number
       - name
       - client
+      - bank_detail
       - last_version
       - address_street
       - address_zipcode
@@ -3582,6 +3677,8 @@ components:
           nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        bank_detail:
+          "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         address_street:
@@ -3739,6 +3836,7 @@ components:
       - number
       - name
       - client
+      - bank_detail
       - last_version
       - address_street
       - address_zipcode
@@ -3757,6 +3855,8 @@ components:
           nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
+        bank_detail:
+          "$ref": "#/components/schemas/Organization::BankDetails::ExtendedDto"
         last_version:
           "$ref": "#/components/schemas/Organization::ProjectVersions::ExtendedDto"
         address_street:

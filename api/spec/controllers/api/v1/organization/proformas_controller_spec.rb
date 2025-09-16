@@ -133,9 +133,9 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
             before do
               # another order
-              another_quote = FactoryBot.create(:quote, :with_version, company: company, client: client, number: 2)
-              another_draft_order = FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: another_quote.last_version, number: 2)
-              another_order = FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2)
+              another_quote = FactoryBot.create(:quote, :with_version, company: company, client: client, number: 2, bank_detail: company.bank_details.first)
+              another_draft_order = FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: another_quote.last_version, number: 2, bank_detail: company.bank_details.first)
+              another_order = FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2, bank_detail: company.bank_details.first)
 
               # A proforma from another order
               another_order_proforma = Organization::Proformas::Create.call(another_order.last_version.id, { invoice_amounts: [ { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
