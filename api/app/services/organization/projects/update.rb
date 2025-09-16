@@ -11,7 +11,7 @@ module Organization
         ensure_original_item_uuids_exist!(validated_params)
 
         transaction do
-          @project.update!(validated_params.slice(:name, :description))
+          @project.update!(validated_params.slice(:name, :description, :bank_detail_id))
           version = create_new_version!(validated_params)
 
           { project: @project, version: version }
