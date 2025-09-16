@@ -4,8 +4,8 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
   describe '.call' do
     let(:company) { FactoryBot.create(:company, :with_bank_detail) }
     let(:client) { FactoryBot.create(:client, company: company) }
-    let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
-    let(:quote_version) { FactoryBot.create(:project_version, project: quote, bank_detail: company.bank_details.last) }
+    let(:quote) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
+    let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
     let(:project) { quote }
 
     context 'when there are no existing versions' do
@@ -18,7 +18,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
 
     context 'when there are existing versions' do
       before do
-        FactoryBot.create_list(:project_version, 3, project: project, bank_detail: company.bank_details.last)
+        FactoryBot.create_list(:project_version, 3, project: project)
       end
 
       it 'returns the next version number', :aggregate_failures do
@@ -29,7 +29,7 @@ RSpec.describe Organization::ProjectVersions::FindNextNumber do
     end
 
     context 'when the project is a order' do
-      let(:project) { FactoryBot.create(:order, original_project_version: quote_version, client: client, company: company) }
+      let(:project) { FactoryBot.create(:order, original_project_version: quote_version, client: client, company: company, bank_detail: company.bank_details.last) }
 
       it 'returns the first version number with the relevant prefix', :aggregate_failures do
         result = described_class.call(project)
