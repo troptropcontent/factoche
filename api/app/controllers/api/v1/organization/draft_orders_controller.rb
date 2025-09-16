@@ -38,6 +38,7 @@ module Api
             :name,
             :description,
             :retention_guarantee_rate,
+            :bank_detail_id,
             new_items: [
               :group_uuid,
               :name,

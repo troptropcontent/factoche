@@ -110,6 +110,7 @@ module Api
                 name: { type: :string },
                 description: { type: :string },
                 retention_guarantee_rate: { type: :number },
+                bank_detail_id: { type: :number },
                 new_items: {
                   type: :array,
                   items: {
@@ -196,6 +197,7 @@ module Api
             let!(:draft_order) {
               ::Organization::Quotes::ConvertToDraftOrder.call(quote.id).data
             }
+            let(:second_bank_detail) { FactoryBot.create(:bank_detail, company: company) }
             let(:id) { draft_order.id }
             let(:body) { valid_body }
             let(:valid_body) do
@@ -203,6 +205,7 @@ module Api
                 name: "Updated Draft Order",
                 description: "Updated Description of the new draft order",
                 retention_guarantee_rate: 0.05,
+                bank_detail_id: second_bank_detail.id,
                 groups: [
                   { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
                 ],
@@ -240,6 +243,8 @@ module Api
                   .to not_change(::Organization::DraftOrder, :count)
                   .and change(::Organization::ProjectVersion, :count).by(1)
                   .and change(::Organization::Item, :count).by(2)
+
+                expect(JSON.parse(response.body).dig("result", "bank_detail", "id")).to eq(second_bank_detail.id)
 
                 assert_response_matches_metadata(example.metadata)
               end
