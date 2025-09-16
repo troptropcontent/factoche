@@ -3,7 +3,6 @@ module Organization
     class CreateContract < Dry::Validation::Contract
       params do
         required(:retention_guarantee_rate).filled(:decimal)
-        required(:bank_detail_id).filled(:integer)
         required(:groups).type(:array).each do
           schema do
             required(:name).filled(:string)

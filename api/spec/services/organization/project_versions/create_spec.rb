@@ -11,14 +11,13 @@ RSpec.describe Organization::ProjectVersions::Create do
   # rubocop:disable RSpec/ExampleLength
   describe '#call' do
     [ Organization::Quote, Organization::Order, Organization::DraftOrder ].each do |project_class|
-      let(:project) { FactoryBot.create(:project, company: company, client: client, type: project_class.name) }
+      let(:project) { FactoryBot.create(:project, company: company, client: client, type: project_class.name, bank_detail: company.bank_details.last) }
       context "when the project is a #{project_class}" do
         context 'with valid params' do
           context 'without groups' do
             let(:params) do
               {
                 retention_guarantee_rate: 0.05,
-                bank_detail_id: company.bank_details.first.id,
                 items: [
                   {
                     name: 'Item 1',
@@ -102,7 +101,7 @@ RSpec.describe Organization::ProjectVersions::Create do
 
           context 'when original_item_uuid is provided for some items' do
             context "when the original_item_uuid belongs to a previous version of the project" do
-              let(:project_version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.first, total_excl_tax_amount: 0) }
+              let(:project_version) { FactoryBot.create(:project_version, project: project, total_excl_tax_amount: 0) }
               let(:project_version_item) { FactoryBot.create(:item, project_version: project_version, original_item_uuid: "2bd8f435-dd31-41d1-a0bc-7cffb3b72fb1") }
               let(:params) do
                 {
