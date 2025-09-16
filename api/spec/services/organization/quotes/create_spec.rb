@@ -78,10 +78,10 @@ module Organization
             expect(quote.name).to eq("Construction Project")
             expect(quote.description).to eq("Building renovation")
             expect(quote.client_id).to eq(client.id)
+            expect(quote.bank_detail_id).to eq(bank_detail_id)
 
             version = quote.versions.first
             expect(version.retention_guarantee_rate).to eq(0.05)
-            expect(version.bank_detail_id).to eq(bank_detail_id)
 
             groups = version.item_groups
             expect(groups.count).to eq(2)

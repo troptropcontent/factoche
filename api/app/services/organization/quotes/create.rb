@@ -6,8 +6,8 @@ module Organization
           validated_params = validate_params!(params)
 
           quote, version = ActiveRecord::Base.transaction do
-            quote = create_quote!(company_id, client_id, validated_params)
-            version = create_version!(quote, validated_params.merge({ bank_detail_id: bank_detail_id }))
+            quote = create_quote!(company_id, client_id, bank_detail_id, validated_params)
+            version = create_version!(quote, validated_params)
             [ quote, version ]
           end
 
@@ -26,10 +26,11 @@ module Organization
           result.to_h
         end
 
-        def create_quote!(company_id, client_id, validated_params)
+        def create_quote!(company_id, client_id, bank_detail_id, validated_params)
           Organization::Quote.create!(
             company_id: company_id,
             client_id: client_id,
+            bank_detail_id: bank_detail_id,
             number: find_next_quote_number!(company_id),
             name: validated_params[:name],
             description: validated_params[:description],
