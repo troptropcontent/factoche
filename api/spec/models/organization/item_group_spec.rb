@@ -5,8 +5,8 @@ RSpec.describe Organization::ItemGroup, type: :model do
 
   let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company:) }
-  let(:project) { FactoryBot.create(:quote, client: client, company: company) }
-  let(:project_version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last) }
+  let(:project) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
+  let(:project_version) { FactoryBot.create(:project_version, project: project) }
   let(:item_group_name) { "my_first_item_group" }
 
 

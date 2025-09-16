@@ -6,8 +6,8 @@ RSpec.describe Organization::Item, type: :model do
 
   let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company:) }
-  let(:project) { FactoryBot.create(:quote, client: client, company: company) }
-  let(:project_version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last) }
+  let(:project) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
+  let(:project_version) { FactoryBot.create(:project_version, project: project) }
   let(:item_name) { "super_item" }
 
 
@@ -43,7 +43,7 @@ RSpec.describe Organization::Item, type: :model do
 
     describe "item_group_belongs_to_same_project_version" do
       let(:item_group) { FactoryBot.create(:item_group, project_version: project_version) }
-      let(:other_project_version) { FactoryBot.create(:project_version, project: project, bank_detail: company.bank_details.last) }
+      let(:other_project_version) { FactoryBot.create(:project_version, project: project) }
       let(:other_item_group) { FactoryBot.create(:item_group, project_version: other_project_version) }
 
       context "when item_group is nil" do
