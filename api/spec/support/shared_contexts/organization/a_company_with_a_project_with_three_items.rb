@@ -6,14 +6,14 @@ RSpec.shared_context 'a company with a project with three items' do
   let(:bank_detail_id) { company.bank_details.last.id }
   let(:client) { FactoryBot.create(:client, company: company) }
   # Create the quote
-  let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
-  let(:quote_version) { FactoryBot.create(:project_version, bank_detail_id: bank_detail_id, project: quote, retention_guarantee_rate: project_version_retention_guarantee_rate) }
+  let(:quote) { FactoryBot.create(:quote, client: client, company: company, bank_detail_id: bank_detail_id) }
+  let(:quote_version) { FactoryBot.create(:project_version, project: quote, retention_guarantee_rate: project_version_retention_guarantee_rate) }
   # Create the draft order
-  let(:draft_order) { FactoryBot.create(:draft_order, client: client, company: company, original_project_version: quote_version) }
-  let(:draft_order_version) { FactoryBot.create(:project_version, bank_detail_id: bank_detail_id, project: draft_order, retention_guarantee_rate: project_version_retention_guarantee_rate) }
+  let(:draft_order) { FactoryBot.create(:draft_order, client: client, company: company, original_project_version: quote_version, bank_detail_id: bank_detail_id) }
+  let(:draft_order_version) { FactoryBot.create(:project_version, project: draft_order, retention_guarantee_rate: project_version_retention_guarantee_rate) }
   # Create the order
-  let(:project) { FactoryBot.create(:order, client: client, company: company, original_project_version: draft_order_version) }
-  let!(:project_version) { FactoryBot.create(:project_version, bank_detail_id: bank_detail_id, project: project, retention_guarantee_rate: project_version_retention_guarantee_rate) }
+  let(:project) { FactoryBot.create(:order, client: client, company: company, original_project_version: draft_order_version, bank_detail_id: bank_detail_id) }
+  let!(:project_version) { FactoryBot.create(:project_version, project: project, retention_guarantee_rate: project_version_retention_guarantee_rate) }
   let(:order) { project }
   let(:order_version) { project_version }
   let(:project_version_retention_guarantee_rate) { 0.05 }

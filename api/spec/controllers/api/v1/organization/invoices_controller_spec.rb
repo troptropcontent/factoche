@@ -89,9 +89,9 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
             let(:proforma_related_to_order) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
             let!(:invoice_related_to_order) { ::Accounting::Proformas::Post.call(proforma_related_to_order.id).data }
 
-            let(:another_quote) { FactoryBot.create(:quote, :with_version, company: company, client: client, number: 2) }
-            let(:another_draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: another_quote.last_version, number: 2) }
-            let(:another_order) { FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2) }
+            let(:another_quote) { FactoryBot.create(:quote, :with_version, company: company, client: client, number: 2, bank_detail: company.bank_details.first) }
+            let(:another_draft_order) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: another_quote.last_version, number: 2, bank_detail: company.bank_details.first) }
+            let(:another_order) { FactoryBot.create(:order, :with_version, company: company, client: client, original_project_version: another_draft_order.last_version, number: 2, bank_detail: company.bank_details.first) }
             let(:proforma_not_related_to_order) { ::Organization::Proformas::Create.call(another_order.versions.last.id, { invoice_amounts: [ { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
             let!(:invoice_not_related_to_order) { ::Accounting::Proformas::Post.call(proforma_not_related_to_order.id).data }
 
