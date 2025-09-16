@@ -34,9 +34,13 @@ const ProjectFormContent = ({
           name,
           retention_guarantee_rate,
           client_id,
+          bank_detail_id,
           description,
           items,
           groups,
+          address_city,
+          address_street,
+          address_zipcode,
         },
       },
     },
@@ -76,7 +80,11 @@ const ProjectFormContent = ({
                   name,
                   retention_guarantee_rate,
                   client_id,
+                  bank_detail_id,
                   description,
+                  address_city,
+                  address_street,
+                  address_zipcode,
                 }}
               />
             );
@@ -88,12 +96,16 @@ const ProjectFormContent = ({
                 send={send}
                 companyId={companyId}
                 previousStepsData={{
+                  bank_detail_id,
                   name,
                   retention_guarantee_rate,
                   client_id,
                   description,
                   items,
                   groups,
+                  address_city,
+                  address_street,
+                  address_zipcode,
                 }}
                 submitFunction={submitFunction}
               />

@@ -20,6 +20,8 @@ module Accounting
               seller_rcs_city: company.fetch(:rcs_city),
               seller_rcs_number: company.fetch(:rcs_number),
               seller_legal_form: company.fetch(:legal_form),
+              bank_detail_iban: company.fetch(:bank_detail).fetch(:iban),
+              bank_detail_bic: company.fetch(:bank_detail).fetch(:bic),
               seller_capital_amount: company.fetch(:capital_amount),
               client_vat_number: client.fetch(:vat_number),
               client_name: client.fetch(:name),

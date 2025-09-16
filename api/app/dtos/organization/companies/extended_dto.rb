@@ -15,6 +15,7 @@ module Organization
         field "vat_number", :string
         field "capital_amount", :decimal
         field "config", :object, subtype: CompanyConfigs::ExtendedDto
+        field "bank_details", :array, subtype: BankDetails::ExtendedDto
     end
   end
 end

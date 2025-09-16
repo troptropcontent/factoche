@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe Organization::ProjectVersion, type: :model do
   subject(:project_version) { FactoryBot.create(:project_version, project: project) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:project) { FactoryBot.create(:quote, client: client, company: company) }
+  let(:project) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -95,7 +95,7 @@ RSpec.describe Organization::ProjectVersion, type: :model do
       before {
         FactoryBot.create(:project_version, project: project)
         FactoryBot.create(:project_version, project: project)
-        another_project = FactoryBot.create(:quote, client: client, company: company, name: "AnotherProject")
+        another_project = FactoryBot.create(:quote, client: client, company: company, name: "AnotherProject", bank_detail: company.bank_details.last)
         FactoryBot.create(:project_version, project: another_project)
         FactoryBot.create(:project_version, project: another_project)
         FactoryBot.create(:project_version, project: another_project)

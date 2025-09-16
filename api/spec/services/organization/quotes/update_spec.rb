@@ -4,15 +4,16 @@ require 'services/shared_examples/service_result_example'
 RSpec.describe Organization::Quotes::Update do
   subject(:result) { described_class.call(quote, params) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:quote) { FactoryBot.create(:quote, company: company, client: client) }
+  let(:quote) { FactoryBot.create(:quote, company: company, client: client, bank_detail: company.bank_details.last) }
   let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
   let(:params) do
     {
       name: "Updated Quote Name",
       description: "Updated description",
       retention_guarantee_rate: 0.05,
+      bank_detail_id: company.bank_details.last.id,
       new_items: [ {
         name: "New Item",
         description: "New Item Description",
@@ -62,7 +63,8 @@ RSpec.describe Organization::Quotes::Update do
         FactoryBot.create(:draft_order,
           company: company,
           client: client,
-          original_project_version: quote_version
+          original_project_version: quote_version,
+          bank_detail: company.bank_details.last
         )
       end
 
@@ -70,7 +72,7 @@ RSpec.describe Organization::Quotes::Update do
     end
 
     context 'when update params are invalid' do
-      let(:params) { { name: "" } }
+      let(:params) { { bank_detail_id: company.bank_details.last.id, name: "" } }
 
       it_behaves_like 'a failure'
     end
@@ -90,6 +92,7 @@ RSpec.describe Organization::Quotes::Update do
         {
           name: "Updated Quote Name",
           retention_guarantee_rate: 0.05,
+          bank_detail_id: company.bank_details.last.id,
           updated_items: [
             {
               original_item_uuid: existing_item.original_item_uuid,
@@ -144,6 +147,7 @@ RSpec.describe Organization::Quotes::Update do
           {
             name: "Updated Quote Name",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             updated_items: [
               {
                 original_item_uuid: "non-existent-uuid",
@@ -165,6 +169,7 @@ RSpec.describe Organization::Quotes::Update do
         {
           name: "Updated Quote Name",
           retention_guarantee_rate: 0.05,
+          bank_detail_id: company.bank_details.last.id,
           groups: [
             {
               uuid: "group-1",
@@ -231,6 +236,7 @@ RSpec.describe Organization::Quotes::Update do
           {
             name: "Updated Quote Name",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             groups: [
               {
                 uuid: "group-1",
@@ -263,6 +269,7 @@ RSpec.describe Organization::Quotes::Update do
           {
             name: "Updated Quote Name",
             retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
             groups: [
               {
                 uuid: "empty-group",

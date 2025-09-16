@@ -31,7 +31,7 @@ rollback:
 routesc:
 	bundle exec dotenv -f config/.env.development rails routes -c $(filter-out $@,$(MAKECMDGOALS))
 rspec:
-	bundle exec dotenv -f config/.env.development rspec $(filter-out $@,$(MAKECMDGOALS))
+	RAILS_ENV=test bundle exec dotenv -f config/.env.development rspec $(filter-out $@,$(MAKECMDGOALS))
 frontend:
 	(cd ../frontend && pnpm run dev)
 tailwindcss:

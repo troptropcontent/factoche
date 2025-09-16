@@ -101,12 +101,14 @@ fr:
               auto_entrepreneur: "Auto-entrepreneur"
             rcs: "RCS %{city} %{number}"
             siret_label: "SIRET"
-            vat_number: "NºTVA FR %{number}"
+            vat_number_html: "<strong>Nº TVA</strong> : %{number}"
             title: "Vendeur"
             name_label: "Nom"
             address_label: "Adresse"
             address_value: "%{street} %{zip} %{city}"
             phone_label: "Téléphone"
+            iban_html: "<strong>IBAN</strong> : %{number}"
+            bic_html: "<strong>BIC</strong> : %{number}"
           billing_address:
             title: "Adresse de facturation"
           delivery_address:

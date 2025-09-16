@@ -110,6 +110,7 @@ module Api
                 name: { type: :string },
                 description: { type: :string },
                 retention_guarantee_rate: { type: :number },
+                bank_detail_id: { type: :number },
                 new_items: {
                   type: :array,
                   items: {
@@ -166,10 +167,14 @@ module Api
               ::Organization::Quotes::Create.call(
                 company.id,
                 client.id,
+                company.bank_details.last.id,
                 {
                   name: "Quote",
                   description: "Quote description",
                   retention_guarantee_rate: 0.05,
+                  address_street: "10 Rue de la Paix",
+                  address_zipcode: "75002",
+                  address_city: "Paris",
                   groups: [
                     { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
                   ],
@@ -204,6 +209,7 @@ module Api
                 name: "Updated Order",
                 description: "Updated Description of the new order",
                 retention_guarantee_rate: 0.05,
+                bank_detail_id: company.bank_details.last.id,
                 groups: [
                   { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
                 ],
@@ -379,7 +385,7 @@ module Api
                         "original_item_uuid" => order_version.items.third.original_item_uuid,
                         "invoiced_amount" => "0.0"
                       }
-                    ]
+                    ].sort_by { |a| a["original_item_uuid"] }
                   }
                 end
 
@@ -407,7 +413,7 @@ module Api
                           "original_item_uuid" => order_version.items.third.original_item_uuid,
                           "invoiced_amount" => "0.0"
                         }
-                      ]
+                      ].sort_by { |a| a["original_item_uuid"] }
                     }
                   end
 
@@ -439,7 +445,7 @@ module Api
                           "original_item_uuid" => order_version.items.third.original_item_uuid,
                           "invoiced_amount" => "0.0"
                         }
-                      ]
+                      ].sort_by { |a| a["original_item_uuid"] }
                     }
                   end
 

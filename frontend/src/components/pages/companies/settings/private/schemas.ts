@@ -22,8 +22,15 @@ const billingConfigSchema = z.object({
   general_terms_and_conditions: z.string(),
 });
 
+const bankDetailsSchema = z.array(z.object({
+  name: z.string(),
+  iban: z.string(),
+  bic: z.string(),
+  record_id: z.string().nullable()
+}));
+
 const settingsFormSchema = companyInfoSchema.and(
   z.object({ configs: billingConfigSchema })
-);
+).and(z.object({ bank_details_attributes: bankDetailsSchema }));
 
 export { settingsFormSchema };

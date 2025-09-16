@@ -124,6 +124,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/bank_details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists clients for a company */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description bank_details found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::BankDetails::ExtendedDto"][];
+                        };
+                    };
+                };
+                /** @description unauthorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description company not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/clients": {
         parameters: {
             query?: never;
@@ -455,6 +513,11 @@ export interface paths {
                         rcs_number?: string;
                         vat_number?: string;
                         capital_amount?: number;
+                        bank_details_attributes?: {
+                            name?: string;
+                            bic?: string;
+                            iban?: string;
+                        }[];
                         configs?: {
                             general_terms_and_conditions?: string;
                             default_vat_rate?: number;
@@ -767,6 +830,7 @@ export interface paths {
                         name: string;
                         description?: string;
                         retention_guarantee_rate: number;
+                        bank_detail_id?: number;
                         new_items?: {
                             group_uuid?: string;
                             name: string;
@@ -1187,6 +1251,7 @@ export interface paths {
                         name: string;
                         description?: string;
                         retention_guarantee_rate: number;
+                        bank_detail_id?: number;
                         new_items?: {
                             group_uuid?: string;
                             name: string;
@@ -1953,6 +2018,7 @@ export interface paths {
                         name: string;
                         description?: string;
                         retention_guarantee_rate: number;
+                        bank_detail_id?: number;
                         new_items?: {
                             group_uuid?: string;
                             name: string;
@@ -2044,6 +2110,7 @@ export interface paths {
             requestBody?: {
                 content: {
                     "application/json": {
+                        client_id?: number;
                         name: string;
                         description?: string;
                         retention_guarantee_rate: number;
@@ -2085,7 +2152,7 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description client not found */
+                /** @description bank_detail not found */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -2237,6 +2304,15 @@ export interface components {
         "Accounting::Payments::ShowDto": {
             result: components["schemas"]["Accounting::Payments::ExtendedDto"];
         };
+        "Organization::BankDetails::ExtendedDto": {
+            id: number;
+            name: string;
+            iban: string;
+            bic: string;
+        };
+        "Organization::BankDetails::ShowDto": {
+            results: components["schemas"]["Organization::BankDetails::ExtendedDto"][];
+        };
         "Organization::Clients::ExtendedDto": {
             id: number;
             name: string;
@@ -2267,6 +2343,7 @@ export interface components {
             /** Format: decimal */
             capital_amount: string;
             config: components["schemas"]["Organization::CompanyConfigs::ExtendedDto"];
+            bank_details: components["schemas"]["Organization::BankDetails::ExtendedDto"][];
         };
         "Organization::CompanyConfigs::ExtendedDto": {
             /** Format: decimal */
@@ -2773,7 +2850,11 @@ export interface components {
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
         };
         "Organization::Projects::CompactDto": {
             id: number;
@@ -2803,7 +2884,11 @@ export interface components {
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
             original_project_version_id: number;
             posted: boolean;
             /** Format: date-time */
@@ -2816,7 +2901,11 @@ export interface components {
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
             original_project_version_id: number;
             /** Format: decimal */
             invoiced_amount: string;
@@ -2878,7 +2967,11 @@ export interface components {
             name: string;
             description?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
+            bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
+            address_street: string;
+            address_zipcode: string;
+            address_city: string;
             posted: boolean;
             /** Format: date-time */
             posted_at?: string | null;

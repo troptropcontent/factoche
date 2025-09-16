@@ -1288,6 +1288,9 @@
   .break-inside-avoid {
     break-inside: avoid;
   }
+  .flex-col {
+    flex-direction: column;
+  }
   .flex-wrap {
     flex-wrap: wrap;
   }

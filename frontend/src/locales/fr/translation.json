@@ -187,6 +187,9 @@
                         "client_id_input_label": "Client",
                         "client_id_input_placeholder": "Sélectionner un client",
                         "client_id_input_description": "Vous pouvez ajouter un client dans votre section <a >clients</a>",
+                        "bank_detail_id_input_label": "RIB",
+                        "bank_detail_id_input_placeholder": "Sélectionner un RIB",
+                        "bank_detail_id_input_description": "Vous pouvez ajouter un RIB dans votre section <a >réglages</a>",
                         "retention_guarantee_rate_input_label": "Retenue de garantie (%)",
                         "retention_guarantee_rate_input_description": "Retenue de garantie (%) qui sera appliquée sur les factures de situation.",
                         "name_input_label": "Nom",
@@ -352,6 +355,8 @@
                     "project_summary": {
                         "title": "Information sur la commande",
                         "name": "<strong>Nom :</strong> {{name}}",
+                        "bank_detail": "<strong>RIB associé :</strong> {{name}}",
+                        "address": "<strong>Adresse :</strong> {{address_street}}, {{address_city}} {{address_zipcode}}",
                         "description": "<strong>Description :</strong> {{description}}",
                         "version_label": "<strong>Version :</strong> N°{{number}} du {{createdAt, datetime}}"
                     },
@@ -768,6 +773,21 @@
                             "payment_term_accepted_methods": "Méthodes de paiement acceptées",
                             "default_vat_rate": "Taux de TVA par défaut",
                             "general_terms_and_condition": "Conditions générales"
+                        }
+                    },
+                    "bank_details": {
+                        "title": "Coordonnées bancaires",
+                        "description": "Configurez les coordonnées bancaires de votre entreprise",
+                        "no_bank_details": "Aucune coordonnée bancaire configurée",
+                        "add_bank_detail": "Ajouter des coordonnées bancaires",
+                        "bank_detail_title": "Coordonnées bancaires {{number}}",
+                        "fields": {
+                            "name": "Nom de la banque",
+                            "name_placeholder": "Nom de la banque",
+                            "iban": "IBAN",
+                            "iban_placeholder": "FR76 1234 5678 9012 3456 7890 123",
+                            "bic": "Code BIC",
+                            "bic_placeholder": "Code BIC"
                         }
                     }
                 }

@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe Organization::ItemGroup, type: :model do
   subject { FactoryBot.create(:item_group, project_version: project_version, name: item_group_name) }
 
-  let(:company) { FactoryBot.create(:company) }
+  let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company:) }
-  let(:project) { FactoryBot.create(:quote, client: client, company: company) }
+  let(:project) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
   let(:project_version) { FactoryBot.create(:project_version, project: project) }
   let(:item_group_name) { "my_first_item_group" }
 

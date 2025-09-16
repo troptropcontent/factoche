@@ -19,6 +19,9 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
       name: "New windows in Biarritz",
       description: "A brand new set of windows for the police station",
       retention_guarantee_rate: 0.05,
+      address_street: "10 Rue de la Paix",
+      address_zipcode: "75002",
+      address_city: "Paris",
       items: [
         {
           name: "Screws",
@@ -34,7 +37,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
   end
 
   let(:another_quote) do
-    Organization::Quotes::Create.call(company.id, client.id, another_quote_params).data
+    Organization::Quotes::Create.call(company.id, client.id, company.bank_details.last.id, another_quote_params).data
   end
 
   let(:another_draft_order) do

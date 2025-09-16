@@ -92,6 +92,10 @@ module Organization
             payment_term_days: @company.config.payment_term_days,
             payment_term_accepted_methods: @company.config.payment_term_accepted_methods,
             general_terms_and_conditions:  @company.config.general_terms_and_conditions
+          },
+          bank_detail: {
+            iban: @order.bank_detail.iban,
+            bic: @order.bank_detail.bic
           }
         }
 

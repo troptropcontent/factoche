@@ -25,6 +25,13 @@ export function ProjectSummary({
     return null;
   }
 
+  const {
+    name,
+    address_city,
+    address_street,
+    address_zipcode,
+    bank_detail: { name: bank_detail_name },
+  } = data.result;
   return (
     <Card>
       <CardHeader>
@@ -36,7 +43,19 @@ export function ProjectSummary({
         <p>
           <Trans
             i18nKey="pages.companies.projects.show.project_summary.name"
-            values={{ name: data.result.name }}
+            values={{ name }}
+          />
+        </p>
+        <p>
+          <Trans
+            i18nKey="pages.companies.projects.show.project_summary.address"
+            values={{ address_city, address_street, address_zipcode }}
+          />
+        </p>
+        <p>
+          <Trans
+            i18nKey="pages.companies.projects.show.project_summary.bank_detail"
+            values={{ name: bank_detail_name }}
           />
         </p>
       </CardContent>

@@ -91,6 +91,10 @@ const buildProjectFormInitialValue = (
     name: project.name,
     description: project.description || "",
     client_id: project.client.id,
+    bank_detail_id: project.bank_detail.id,
+    address_city: project.address_city || "",
+    address_street: project.address_street || "",
+    address_zipcode: project.address_zipcode || "",
     retention_guarantee_rate:
       Number(project.last_version.retention_guarantee_rate) * 100,
     items: project.last_version.items.map((item) => ({
@@ -158,6 +162,7 @@ const buildUpdateProjectBody = (
     name: inputs.name,
     description: inputs.description,
     retention_guarantee_rate: Number(inputs.retention_guarantee_rate) / 100,
+    bank_detail_id: inputs.bank_detail_id,
     updated_items: buildUpdatedItemInput(inputs.items),
     new_items: buildNewItemInput(inputs.items),
     groups: buildGroupsInput(inputs.groups),

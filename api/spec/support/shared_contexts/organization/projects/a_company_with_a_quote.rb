@@ -1,7 +1,8 @@
 # rubocop:disable RSpec/MultipleMemoizedHelpers
 # rubocop:disable RSpec/ContextWording
 RSpec.shared_context 'a company with a quote' do
-  let(:company) { FactoryBot.create(:company, :with_config) }
+  let(:company) { FactoryBot.create(:company, :with_config, :with_bank_detail) }
+  let(:bank_detail_id) { company.bank_details.last.id }
   let(:client) { FactoryBot.create(:client, company: company) }
   let(:project_version_retention_guarantee_rate) { 0.05 }
   ordinals = [ "first", "second", "third" ]
@@ -17,6 +18,9 @@ RSpec.shared_context 'a company with a quote' do
     name: "New hall in Biarritz",
     description: "A brand new hall for the police station",
     retention_guarantee_rate: project_version_retention_guarantee_rate,
+    address_street: "10 Rue de la Paix",
+    address_zipcode:  "75002",
+    address_city: "Paris",
     items: ordinals.map.with_index { |ordinal, index|  {
       name: send("#{ordinal}_item_name"),
       quantity: send("#{ordinal}_item_quantity"),
@@ -27,7 +31,7 @@ RSpec.shared_context 'a company with a quote' do
     }},
     groups: []
   }}
-  let(:quote) { Organization::Quotes::Create.call(company.id, client.id, create_quote_params).data }
+  let(:quote) { Organization::Quotes::Create.call(company.id, client.id, bank_detail_id, create_quote_params).data }
   let(:quote_version) { quote.last_version }
   ordinals.each_with_index do |ordinal, index|
     let("#{ordinal}_item") { quote_version.items[index] }

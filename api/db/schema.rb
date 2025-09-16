@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_16_125531) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -59,11 +59,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
     t.integer "payment_term_days", null: false
     t.string "payment_term_accepted_methods", default: [], null: false, array: true
     t.text "general_terms_and_conditions"
+    t.string "bank_detail_iban", null: false
+    t.string "bank_detail_bic", null: false
     t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_a3f0028db5"
   end
 
   create_table "accounting_financial_transaction_lines", force: :cascade do |t|
-    t.string "holder_id", null: false
+    t.string "holder_id"
     t.bigint "financial_transaction_id", null: false
     t.string "unit", null: false
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
@@ -143,6 +145,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "organization_bank_details", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "iban", null: false
+    t.string "bic", null: false
+    t.bigint "company_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id", "iban"], name: "index_organization_bank_details_on_company_id_and_iban", unique: true
+    t.index ["company_id"], name: "index_organization_bank_details_on_company_id"
   end
 
   create_table "organization_clients", force: :cascade do |t|
@@ -305,6 +318,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
     t.bigint "original_project_version_id"
     t.boolean "posted", default: false, null: false
     t.datetime "posted_at"
+    t.string "address_street", null: false
+    t.string "address_zipcode", null: false
+    t.string "address_city", null: false
+    t.bigint "bank_detail_id"
+    t.index ["bank_detail_id"], name: "index_organization_projects_on_bank_detail_id"
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
     t.index ["company_id", "type", "number"], name: "index_organization_projects_on_company_id_and_type_and_number", unique: true
     t.index ["company_id"], name: "index_organization_projects_on_company_id"
@@ -326,6 +344,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
   add_foreign_key "accounting_payments", "accounting_financial_transactions", column: "invoice_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "organization_bank_details", "organization_companies", column: "company_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
   add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
@@ -339,6 +358,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_151451) do
   add_foreign_key "organization_members", "organization_companies", column: "company_id"
   add_foreign_key "organization_members", "users"
   add_foreign_key "organization_project_versions", "organization_projects", column: "project_id"
+  add_foreign_key "organization_projects", "organization_bank_details", column: "bank_detail_id"
   add_foreign_key "organization_projects", "organization_clients", column: "client_id"
   add_foreign_key "organization_projects", "organization_companies", column: "company_id"
   add_foreign_key "organization_projects", "organization_project_versions", column: "original_project_version_id"
