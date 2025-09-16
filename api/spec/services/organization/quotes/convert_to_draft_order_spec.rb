@@ -7,8 +7,8 @@ module Organization
       describe '.call', :aggregate_failures do
         let(:company) { FactoryBot.create(:company, :with_bank_detail) }
         let(:client) { FactoryBot.create(:client, company: company) }
-        let(:quote) { FactoryBot.create(:quote, client: client, company: company) }
-        let!(:quote_version) { FactoryBot.create(:project_version, project: quote, bank_detail: company.bank_details.last) }
+        let(:quote) { FactoryBot.create(:quote, client: client, company: company, bank_detail: company.bank_details.last) }
+        let!(:quote_version) { FactoryBot.create(:project_version, project: quote) }
 
         context 'when successful' do
           before {  # Create groups
@@ -67,6 +67,7 @@ module Organization
             expect(order).to be_a(DraftOrder)
             expect(order.client).to eq(quote.client)
             expect(order.name).to eq(quote.name)
+            expect(order.bank_detail.id).to eq(quote.bank_detail.id)
             expect(order.original_project_version).to eq(quote_version)
 
             # Check version attributes
