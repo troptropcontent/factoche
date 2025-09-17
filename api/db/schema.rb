@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_16_125531) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_17_083737) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -94,10 +94,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_16_125531) do
     t.decimal "total_including_tax_amount", precision: 15, scale: 2, null: false
     t.decimal "total_excl_retention_guarantee_amount", precision: 15, scale: 2, null: false
     t.bigint "client_id", null: false
+    t.bigint "financial_year_id"
     t.index ["client_id"], name: "index_accounting_financial_transactions_on_client_id"
     t.index ["company_id"], name: "index_accounting_financial_transactions_on_company_id"
     t.index ["context"], name: "index_accounting_financial_transactions_on_context", using: :gin
+    t.index ["financial_year_id"], name: "index_accounting_financial_transactions_on_financial_year_id"
     t.index ["holder_id"], name: "index_accounting_financial_transactions_on_holder_id"
+  end
+
+  create_table "accounting_financial_years", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_accounting_financial_years_on_company_id"
   end
 
   create_table "accounting_payments", force: :cascade do |t|
@@ -201,6 +212,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_16_125531) do
     t.integer "payment_term_days", null: false
     t.string "payment_term_accepted_methods", default: [], null: false, array: true
     t.text "general_terms_and_conditions", null: false
+    t.integer "financial_year_start_month", default: 1, null: false
     t.index ["company_id"], name: "index_organization_company_configs_on_company_id"
     t.index ["settings"], name: "index_organization_company_configs_on_settings", using: :gin
   end
@@ -341,6 +353,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_16_125531) do
 
   add_foreign_key "accounting_financial_transaction_details", "accounting_financial_transactions", column: "financial_transaction_id"
   add_foreign_key "accounting_financial_transaction_lines", "accounting_financial_transactions", column: "financial_transaction_id"
+  add_foreign_key "accounting_financial_transactions", "accounting_financial_years", column: "financial_year_id"
   add_foreign_key "accounting_payments", "accounting_financial_transactions", column: "invoice_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"

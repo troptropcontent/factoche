@@ -6,6 +6,8 @@ module Accounting
     CreditNoteType = "CreditNote".freeze
     ProformaType = "Proforma".freeze
 
+    belongs_to :financial_year, class_name: "Accounting::FinancialYear"
+
     has_many :lines,
              class_name: "Accounting::FinancialTransactionLine",
              dependent: :destroy
