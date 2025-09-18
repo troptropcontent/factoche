@@ -37,6 +37,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataInvoicesPaymentStatus do
 
     let(:company_id) { company.id }
     let(:websocket_channel_id) { nil }
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: end_date.beginning_of_year, end_date: end_date.end_of_year) }
     let(:end_date) { Time.new(2024, 06, 15, 12, 0, 0) }
 
     let(:stubbed_time) { Time.new(2024, 06, 14, 12, 0, 0) }

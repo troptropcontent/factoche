@@ -10,7 +10,7 @@ module Organization
         subject(:result) { described_class.call(proforma_id, params) }
 
         include_context 'a company with an order'
-
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
         let(:proforma_id) { proforma.id }
         let("first_item_unit_price_amount") { 200 } # 200 €
         let("first_item_quantity") { 3 } # => total possible amount 3 * 200 € = 600 €

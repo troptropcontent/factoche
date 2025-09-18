@@ -37,6 +37,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
       include_context 'a company with a project with three items'
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
       response '200', 'successfully creates completion snapshot invoice' do
         schema Organization::Proformas::ShowDto.to_schema
@@ -87,6 +88,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       let(:order_id) { nil }
       let(:company_id) { company.id }
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let(:user) { FactoryBot.create(:user) }
       let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
       include_context 'a company with an order'
@@ -110,7 +112,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
           run_test!("it returns the invoices") do
             parsed_response = JSON.parse(response.body)
             expect(parsed_response["results"].count).to eq(1)
-            expect(parsed_response.dig("results", 0)).to include({ "number"=> "PRO-#{Time.current.year}-000001" })
+            expect(parsed_response.dig("results", 0)).to include({ "number"=> "PRO-#{Time.current.year}-#{Time.current.month.to_s.rjust(2, "0")}-000001" })
           end
         end
 
@@ -152,7 +154,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
             run_test!("it returns the filtered invoices") do
               parsed_response = JSON.parse(response.body)
-              expect(parsed_response.dig("results", 0, "number")).to eq("PRO-#{Time.current.year}-000002")
+              expect(parsed_response.dig("results", 0, "number")).to eq("PRO-#{Time.current.year}-#{Time.current.month.to_s.rjust(2, "0")}-000002")
               expect(parsed_response.dig("results").length).to eq(1)
             end
           end
@@ -171,6 +173,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       include_context 'a company with an order'
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
       let(:id) { proforma.id }
       let(:company_id) { company.id }
@@ -228,6 +231,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       include_context 'a company with an order'
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let!(:proforma) {
         ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: "0.2" } ] }).data
       }
@@ -327,6 +331,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       include_context 'a company with an order'
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let(:proforma) {
         Organization::Proformas::Create.call(order_version.id, {
           invoice_amounts: [
@@ -400,6 +405,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
 
       include_context 'a company with an order'
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let!(:proforma) {
         ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" }, { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: "0.2" } ] }).data
       }

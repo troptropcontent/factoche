@@ -6,6 +6,7 @@ RSpec.describe Accounting::CreditNote, type: :model do
   describe "validations" do
     subject(:credit_note) { Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:invoice) {
       proforma = Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
       Accounting::Proformas::Post.call(proforma.id).data
@@ -17,7 +18,7 @@ RSpec.describe Accounting::CreditNote, type: :model do
     describe "#valid_number" do
       context "with valid format" do
         it "is valid" do
-          credit_note.number = "CN-2024-001"
+          credit_note.number = "CN-2024-05-001"
 
           expect(credit_note).to be_valid
         end
@@ -27,19 +28,19 @@ RSpec.describe Accounting::CreditNote, type: :model do
         it "is invalid", :aggregate_failures do
           credit_note.number = "INVALID-001"
           expect(credit_note).not_to be_valid
-          expect(credit_note.errors[:number]).to include("must match format CN-YEAR-SEQUENCE")
+          expect(credit_note.errors[:number]).to include("must match format CN-YEAR-MONTH-SEQUENCE")
         end
 
         it "is invalid without year", :aggregate_failures do
           credit_note.number = "CN-001"
           expect(credit_note).not_to be_valid
-          expect(credit_note.errors[:number]).to include("must match format CN-YEAR-SEQUENCE")
+          expect(credit_note.errors[:number]).to include("must match format CN-YEAR-MONTH-SEQUENCE")
         end
 
         it "is invalid without sequence", :aggregate_failures do
           credit_note.number = "CN-2024"
           expect(credit_note).not_to be_valid
-          expect(credit_note.errors[:number]).to include("must match format CN-YEAR-SEQUENCE")
+          expect(credit_note.errors[:number]).to include("must match format CN-YEAR-MONTH-SEQUENCE")
         end
       end
     end

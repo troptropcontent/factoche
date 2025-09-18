@@ -7,6 +7,8 @@ module Accounting
       describe '.call' do
         subject(:result) { described_class.call(company[:id], client[:id], project, project_version, new_invoice_items, issue_date) }
 
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company[:id]) }
+
         let(:issue_date) { Time.current }
 
         let(:project) { { name: "Super Project" } }

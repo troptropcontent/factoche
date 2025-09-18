@@ -6,6 +6,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataOrderCompletionPercentage
   subject(:result) { described_class.call(company_id:, end_date:, websocket_channel_id:) }
 
   include_context 'a company with some orders', number_of_orders: 3
+  let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
   # Setup the quote that will converted to `first_order` to obtain an order with a total value of 100 * 100 + 100 * 100 + 100 * 100 = 30 000
   let(:first_quote_first_item_unit_price_amount) { 100 }

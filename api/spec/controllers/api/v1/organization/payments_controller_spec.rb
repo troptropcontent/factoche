@@ -23,6 +23,7 @@ RSpec.describe Api::V1::Organization::PaymentsController, type: :request do
 
       include_context 'a company with some orders', number_of_orders: 2
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let(:invoice) {
           proforma = ::Organization::Proformas::Create.call(first_order.last_version.id, {
             invoice_amounts: [

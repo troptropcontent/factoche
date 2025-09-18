@@ -6,6 +6,8 @@ RSpec.describe Accounting::Invoice, type: :model do
     Accounting::Proformas::Post.call(proforma.id).data
   }
 
+  let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+
   include_context 'a company with an order'
 
   describe "validations" do
@@ -17,7 +19,7 @@ RSpec.describe Accounting::Invoice, type: :model do
 
         invoice.number = "INV-001"
         expect(invoice).not_to be_valid
-        expect(invoice.errors[:number]).to include("must match format INV-YEAR-SEQUENCE")
+        expect(invoice.errors[:number]).to include("must match format INV-YEAR-MONTH-SEQUENCE")
       end
     end
 

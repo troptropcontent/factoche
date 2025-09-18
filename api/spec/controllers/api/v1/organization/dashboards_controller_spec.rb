@@ -27,6 +27,9 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
       let(:Authorization) { access_token(user) }
 
       let(:company_id) { company.id }
+      let(:financial_year_this_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+      let(:financial_year_one_year_ago) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year_this_year.start_date.last_year, end_date: financial_year_this_year.end_date.last_year) }
+      let!(:financial_year_two_year_ago) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year_one_year_ago.start_date.last_year, end_date: financial_year_one_year_ago.end_date.last_year) }
       let(:end_date)   { Time.current }
 
       response '200', 'client created' do

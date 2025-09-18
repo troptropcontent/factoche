@@ -6,7 +6,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
   describe '#perform' do
     include_context 'a company with an order'
     include_context 'a company with a project with three items'
-
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
     let(:proforma) do
                   ::Organization::Proformas::Create.call(order_version.id, {
@@ -62,7 +62,7 @@ RSpec.describe Accounting::FinancialTransactions::GenerateAndAttachPdfJob do
     end
 
     context "when the financial transaction is a credit note" do
-      let (:credit_note) { FactoryBot.create(:credit_note, :posted, company_id: company.id, client_id: client.id, holder_id: invoice.id, number: "CN-2024-00001") }
+      let (:credit_note) { FactoryBot.create(:credit_note, :posted, company_id: company.id, client_id: client.id, holder_id: invoice.id, number: "CN-2024-01-00001", financial_year: financial_year) }
 
       it 'calls the PDF generator with the correct URL' do
         described_class.new.perform("financial_transaction_id" => credit_note.id)

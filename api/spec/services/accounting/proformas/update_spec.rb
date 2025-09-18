@@ -7,6 +7,7 @@ module Accounting
       describe '.call' do
         subject(:result) { described_class.call(proforma_id, company, client, project, project_version, new_invoice_items, issue_date) }
         let(:proforma_id) { original_proforma.id }
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company[:id], start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year) }
         let(:issue_date) { Date.new(2024, 1, 9) }
         let(:company_id) { 1 }
         let(:new_invoice_items) { [ {
@@ -108,7 +109,7 @@ module Accounting
 
             expect(original_proforma.reload.status).to eq("voided")
             expect(result.data.status).to eq("draft")
-            expect(result.data.number).to eq("PRO-2024-000002")
+            expect(result.data.number).to eq("PRO-2024-01-000002")
           end
           # rubocop:enable RSpec/ExampleLength
         end

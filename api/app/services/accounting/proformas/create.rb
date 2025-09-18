@@ -52,8 +52,10 @@ module Accounting
           proforma = ActiveRecord::Base.transaction do
             # Create a proforma record
             base_proforma_attributes = build_proforma_attributes!(company.fetch(:id), client.fetch(:id), project, project_version, new_invoice_items, issue_date)
-            proforma_number = find_next_available_proforma_number!(company.fetch(:id), issue_date)
-            proforma = Proforma.create!(base_proforma_attributes.merge({ number: proforma_number }))
+
+            financial_year = find_financial_year!(issue_date, company.fetch(:id))
+            proforma_number = find_next_available_proforma_number!(company.fetch(:id), financial_year.id, issue_date)
+            proforma = Proforma.create!(base_proforma_attributes.merge({ number: proforma_number, financial_year:  financial_year }))
 
             # Create proforma line records
             proforma_lines_attributes = build_proforma_lines_attributes!(proforma.context, new_invoice_items)
@@ -76,6 +78,13 @@ module Accounting
 
         private
 
+        def find_financial_year!(issue_date, company_id)
+          result = FinancialYears::FindFromDate.call(company_id, issue_date)
+
+          raise result.error if result.failure?
+          result.data
+        end
+
         def build_proforma_attributes!(company_id, client_id, project, project_version, new_invoice_items, issue_date)
           result = BuildAttributes.call(company_id, client_id, project, project_version, new_invoice_items, issue_date)
 
@@ -97,8 +106,8 @@ module Accounting
           result.data
         end
 
-        def find_next_available_proforma_number!(company_id, issue_date)
-          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: company_id, prefix: Proforma::NUMBER_PREFIX, issue_date: issue_date)
+        def find_next_available_proforma_number!(company_id, financial_year_id, issue_date)
+          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: company_id, prefix: Proforma::NUMBER_PREFIX, financial_year_id: financial_year_id, issue_date: issue_date)
 
           raise result.error if result.failure?
           result.data

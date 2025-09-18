@@ -14,6 +14,7 @@ RSpec.describe Accounting::Proformas::Void do
 
     include_context 'a company with an order'
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:proforma) {
       Organization::Proformas::Create.call(order_version.id, {
         invoice_amounts: [
