@@ -27,6 +27,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
 
         let(:order_id) { nil }
         let(:company_id) { company.id }
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
         let(:user) { FactoryBot.create(:user) }
         let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
@@ -118,6 +119,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
 
       include_context 'a company with an order'
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
       let!(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
 
@@ -162,6 +164,7 @@ RSpec.describe Api::V1::Organization::InvoicesController, type: :request do
 
       include_context 'a company with an order'
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
       let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
       let!(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
 

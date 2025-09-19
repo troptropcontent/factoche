@@ -5,7 +5,7 @@ RSpec.describe Organization::Dashboards::FetchKpiOrdersDetails do
   subject(:result) { described_class.call(company_id:, end_date:, websocket_channel_id:) }
 
   include_context 'a company with an order'
-
+  let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
   # Setup items to have a project version total equal to (200 * 3) + (35 * 17) + (60 * 2) = 1 315 €
   let(:first_item_unit_price_amount) { 200 }
   let(:first_item_quantity) { 3 }

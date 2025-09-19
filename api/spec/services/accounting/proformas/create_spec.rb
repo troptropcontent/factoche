@@ -91,13 +91,15 @@ module Accounting
         } }
 
         before do
+          FactoryBot.create(:financial_year, company_id: company[:id], start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year)
           # Create a previous proforma
           previous_posted_proforma_items = [ {
             original_item_uuid: first_item_uuid,
             invoice_amount: 50
-          } ]
+            } ]
 
           result = described_class.call(company, client, project, project_version, previous_posted_proforma_items, issue_date)
+
           previous_posted_proforma = result.data
 
           previous_posted_proforma = Accounting::Proformas::Post.call(previous_posted_proforma.id).data
@@ -118,7 +120,7 @@ module Accounting
             expect(proforma.company_id).to eq(company_id)
             expect(proforma.holder_id).to eq(project_version_id)
             expect(proforma.status).to eq("draft")
-            expect(proforma.number).to eq("PRO-2024-000002")
+            expect(proforma.number).to eq("PRO-2024-03-000002")
 
             expect(proforma.context["project_name"]).to eq("Super Project")
             expect(proforma.context["project_version_number"]).to eq(1)

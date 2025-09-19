@@ -10,6 +10,7 @@ module Organization
         subject(:result) { described_class.call(order_version_id, params) }
 
         include_context 'a company with an order'
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
         let(:order_version_id) { order_version.id }
         let(:params) {

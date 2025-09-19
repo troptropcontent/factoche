@@ -14,14 +14,19 @@ module Accounting
             # Cancel original invoice
             original_invoice.update!(status: :cancelled)
 
+            # Find financial year
+            financial_year = find_financial_year!(issue_date, original_invoice.company_id)
+
             # Find next available number
             next_available_credit_note_number = find_next_available_credit_note_number!(
               original_invoice.company_id,
+              financial_year.id,
               issue_date
             )
 
             credit_note = create_credit_note!(
               original_invoice,
+              financial_year,
               next_available_credit_note_number,
               issue_date
             )
@@ -40,16 +45,24 @@ module Accounting
 
         private
 
+        def find_financial_year!(issue_date, company_id)
+          result = FinancialYears::FindFromDate.call(company_id, issue_date)
+
+          raise result.error if result.failure?
+          result.data
+        end
+
         def ensure_invoice_is_posted!(invoice)
           unless invoice.posted?
             raise Error::UnprocessableEntityError, "Cannot cancel invoice that is not in posted status"
           end
         end
 
-        def find_next_available_credit_note_number!(company_id, issue_date)
+        def find_next_available_credit_note_number!(company_id, financial_year_id, issue_date)
           result = FinancialTransactions::FindNextAvailableNumber.call(
             company_id: company_id,
             prefix: CreditNote::NUMBER_PREFIX,
+            financial_year_id: financial_year_id,
             issue_date: issue_date
           )
 
@@ -57,13 +70,14 @@ module Accounting
           result.data
         end
 
-        def create_credit_note!(original_invoice, number, issue_date)
+        def create_credit_note!(original_invoice, financial_year, number, issue_date)
           # Create credit note
 
           credit_note = Accounting::CreditNote.create!(
             original_invoice.attributes.except(
               "id", "number", "status", "created_at", "updated_at", "type"
             ).merge(
+              "financial_year_id" => financial_year.id,
               "number" => number,
               "status" => "posted",
               "issue_date" => issue_date,

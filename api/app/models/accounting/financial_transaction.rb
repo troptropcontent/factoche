@@ -6,6 +6,8 @@ module Accounting
     CreditNoteType = "CreditNote".freeze
     ProformaType = "Proforma".freeze
 
+    belongs_to :financial_year, class_name: "Accounting::FinancialYear"
+
     has_many :lines,
              class_name: "Accounting::FinancialTransactionLine",
              dependent: :destroy
@@ -55,9 +57,9 @@ module Accounting
       return unless self.number.present?
       prefix = self.class.const_get("NUMBER_PREFIX")
 
-      regex = /^#{prefix}-\d{4}-\d+$/
+      regex = /^#{prefix}-\d{4}-\d{2}-\d+$/
       unless number.match?(regex)
-        errors.add(:number, "must match format #{prefix}-YEAR-SEQUENCE")
+        errors.add(:number, "must match format #{prefix}-YEAR-MONTH-SEQUENCE")
       end
     end
   end

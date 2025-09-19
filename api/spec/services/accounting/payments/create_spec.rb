@@ -8,6 +8,7 @@ RSpec.describe Accounting::Payments::Create do
 
     include_context 'a company with some orders', number_of_orders: 2
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:proforma) do
       ::Organization::Proformas::Create.call(first_order.last_version.id, {
         invoice_amounts: [

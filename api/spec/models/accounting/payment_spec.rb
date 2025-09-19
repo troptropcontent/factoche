@@ -7,6 +7,8 @@ RSpec.describe Accounting::Payment, type: :model do
 
     include_context 'a company with an order'
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+
     let(:invoice) {
       proforma = Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
       Accounting::Proformas::Post.call(proforma.id).data

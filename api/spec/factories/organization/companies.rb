@@ -19,5 +19,9 @@ FactoryBot.define do
     trait :with_bank_detail do
       after(:create) { |company| create(:bank_detail, company: company) }
     end
+
+    trait :with_exercice do
+      after(:create) { |company| create(:financial_year, company_id: company.id, start_date: Time.current.beginning_of_year, end_date: Time.current.end_of_year) }
+    end
   end
 end

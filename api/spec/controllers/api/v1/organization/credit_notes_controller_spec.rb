@@ -14,6 +14,7 @@ module Api
             security [ bearerAuth: [] ]
             produces 'application/json'
             parameter name: :company_id, in: :path, type: :integer
+            let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
             let(:company_id) { company.id }
             let(:user) { FactoryBot.create(:user) }
             let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
@@ -31,6 +32,7 @@ module Api
               end
 
               context "when there are credit notes" do
+                let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
                 let(:proforma) do
                   ::Organization::Proformas::Create.call(order_version.id, {
                     invoice_amounts: [
@@ -84,6 +86,7 @@ module Api
             produces 'application/json'
             parameter name: :id, in: :path, type: :integer
 
+            let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
             let(:proforma) { ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data }
             let(:invoice) { ::Accounting::Proformas::Post.call(proforma.id).data }
             let(:credit_note) { ::Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }

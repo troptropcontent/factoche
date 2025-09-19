@@ -49,6 +49,7 @@ RSpec.describe Organization::Dashboards::FetchKpiAverageOrdersCompletionPercenta
     Organization::DraftOrders::ConvertToOrder.call(another_draft_order.id).data
   end
 
+  let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: end_date.beginning_of_year, end_date: end_date.end_of_year) }
   let(:end_date) { Time.current }
   let(:company_id) { company.id }
   let(:websocket_channel_id) { nil }

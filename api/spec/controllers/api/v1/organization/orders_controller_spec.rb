@@ -24,6 +24,7 @@ module Api
             include_context 'a company with a project with three item groups'
 
             let(:company_id) { company.id }
+            let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
             let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
 
             response "200", "list company's orders" do
@@ -358,6 +359,7 @@ module Api
 
             include_context 'a company with an order'
 
+            let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
             let(:Authorization) { "Bearer #{JwtAuth.generate_access_token(user.id)}" }
             let(:user) { FactoryBot.create(:user) }
 
