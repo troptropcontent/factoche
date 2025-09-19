@@ -16,6 +16,8 @@ module Accounting
           ActiveRecord::Base.transaction do
             post_original_proforma!
 
+            find_financial_year!
+
             find_next_available_invoice_number!
 
             create_invoice_from_original_proforma!
@@ -28,12 +30,20 @@ module Accounting
 
         private
 
+        def find_financial_year!
+          result = FinancialYears::FindFromDate.call(@original_proforma.company_id, @issue_date)
+
+          raise ArgumentError, "Financial year not found for the given date" unless result.success?
+
+          @financial_year = result.data
+        end
+
         def post_original_proforma!
           @original_proforma.update!(status: :posted)
         end
 
         def find_next_available_invoice_number!
-          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: @original_proforma.company_id, prefix: Invoice::NUMBER_PREFIX, issue_date: @issue_date)
+          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: @original_proforma.company_id, financial_year_id: @financial_year.id, prefix: Invoice::NUMBER_PREFIX, issue_date: @issue_date)
 
           raise result.error unless result.success?
 

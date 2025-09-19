@@ -6,6 +6,8 @@ RSpec.describe Organization::Dashboards::FetchKpiYtdTotalRevenue do
   subject(:result) { described_class.call(company_id: company.id, end_date: end_date, websocket_channel_id:) }
 
   include_context 'a company with an order'
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+  let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
 
   let(:first_item_unit_price_amount) { 200 }
   let(:first_item_quantity) { 3 }

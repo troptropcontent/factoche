@@ -80,6 +80,9 @@ RSpec.describe Accounting::FinancialTransaction, type: :model do
         Accounting::Proformas::Post.call(proforma.id).data
        }
 
+      let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+
+
       include_context 'a company with an order'
 
 

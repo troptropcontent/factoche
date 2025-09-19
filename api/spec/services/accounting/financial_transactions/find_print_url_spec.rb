@@ -7,6 +7,7 @@ module Accounting
       describe '.call', :aggregate_failures do
         include_context 'a company with an order'
 
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
         let(:proforma) do
           ::Organization::Proformas::Create.call(
             order_version.id,

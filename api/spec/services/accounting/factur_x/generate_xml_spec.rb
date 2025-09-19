@@ -7,6 +7,8 @@ RSpec.describe Accounting::FacturX::GenerateXml do
 
     include_context 'a company with some orders'
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+
     let(:invoice) do
       proforma = Organization::Proformas::Create.call(first_order.last_version.id, {
         invoice_amounts: [

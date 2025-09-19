@@ -6,6 +6,7 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
   subject(:result) { described_class.call(order_id, issue_date) }
 
   include_context 'a company with an order'
+  let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
   let(:order_id) { order.id }
   let(:version) { create(:order_version, order: order) }
@@ -27,8 +28,9 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
           company_id: company.id,
           client_id: client.id,
           holder_id: order_version.id,
-          number: "INV-2024-00001",
+          number: "INV-2024-01-00001",
           status: :posted,
+          financial_year: financial_year,
           issue_date: Time.current - 1.day
         ).tap { |invoice|
           FactoryBot.create(:financial_transaction_line,
@@ -43,8 +45,9 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
           company_id: company.id,
           client_id: client.id,
           holder_id: first_invoice.id,
-          number: "CN-2024-00001",
+          number: "CN-2024-01-00001",
           status: :posted,
+          financial_year: financial_year,
           issue_date: Time.current - 1.day
         ).tap { |invoice|
           FactoryBot.create(:financial_transaction_line,
@@ -59,8 +62,9 @@ RSpec.describe Organization::Orders::FetchInvoicedAmountPerItems do
           company_id: company.id,
           client_id: client.id,
           holder_id: order_version.id,
-          number: "INV-2024-00002",
+          number: "INV-2024-01-00002",
           status: :posted,
+          financial_year: financial_year,
           issue_date: Time.current - 1.day
         ).tap { |invoice|
           FactoryBot.create(:financial_transaction_line,

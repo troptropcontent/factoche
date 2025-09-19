@@ -1,20 +1,24 @@
 require "rails_helper"
+require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'
 
 RSpec.describe Accounting::Proforma, type: :model do
   describe "validations" do
-    subject(:proforma) { FactoryBot.build(:proforma) }
+    subject(:proforma) { FactoryBot.build(:proforma, financial_year: financial_year) }
+
+    include_context 'a company with a client and a member'
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
     it { is_expected.to define_enum_for(:status).backed_by_column_of_type(:enum).with_values(draft: "draft", voided: "voided", posted: "posted").with_default(:draft) }
 
     describe "#valid_number" do
       it "validates number respect the expected format", :aggregate_failures do
         proforma.status = "draft"
-        proforma.number = "PRO-2024-001"
+        proforma.number = "PRO-2024-01-001"
         expect(proforma).to be_valid
 
         proforma.number = "INV-001"
         expect(proforma).not_to be_valid
-        expect(proforma.errors[:number]).to include("must match format PRO-YEAR-SEQUENCE")
+        expect(proforma.errors[:number]).to include("must match format PRO-YEAR-MONTH-SEQUENCE")
       end
     end
 
@@ -48,7 +52,7 @@ RSpec.describe Accounting::Proforma, type: :model do
         end
 
         before {
-          proforma.number = "PRO-2024-00001"
+          proforma.number = "PRO-2024-01-00001"
           proforma.context = context
         }
 

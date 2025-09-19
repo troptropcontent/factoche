@@ -7,6 +7,8 @@ RSpec.describe Accounting::FinancialTransactions::FindInvoicedAmountForHolderIds
   subject(:result) { described_class.call(holder_ids, issue_date) }
 
     include_context 'a company with an order'
+
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:first_item_unit_price_amount) { 100 }
     let(:first_item_quantity) { 3 }
 

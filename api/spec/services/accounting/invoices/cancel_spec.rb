@@ -7,6 +7,7 @@ RSpec.describe Accounting::Invoices::Cancel do
     include_context 'a company with an order'
 
     let(:issue_date) { Time.current }
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:original_invoice) {
       proforma = ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
       Accounting::Proformas::Post.call(proforma.id).data
@@ -20,7 +21,7 @@ RSpec.describe Accounting::Invoices::Cancel do
           prefix: Accounting::CreditNote::NUMBER_PREFIX,
           issue_date: issue_date
         ))
-        .and_return(ServiceResult.success("CN-2024-000001"))
+        .and_return(ServiceResult.success("CN-2024-01-000001"))
 
       allow(Accounting::FinancialTransactions::GenerateAndAttachPdfJob).to receive(:perform_async)
     end
@@ -44,7 +45,7 @@ RSpec.describe Accounting::Invoices::Cancel do
         result = described_class.call(invoice_id, issue_date)
         credit_note = result.data[:credit_note]
 
-        expect(credit_note.number).to eq("CN-2024-000001")
+        expect(credit_note.number).to eq("CN-2024-01-000001")
         expect(credit_note.status).to eq("posted")
         expect(credit_note.issue_date).to be_within(1.second).of(issue_date)
         expect(credit_note.company_id).to eq(original_invoice.company_id)

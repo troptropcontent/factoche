@@ -4,6 +4,7 @@ require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 RSpec.describe "Accounting::Prints", type: :request do
   describe "GET /accounting/prints/unpublished_invoice/:id" do
     include_context 'a company with an order'
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:proforma) do
       Organization::Proformas::Create.call(order_version.id, {
         invoice_amounts: [
@@ -12,7 +13,6 @@ RSpec.describe "Accounting::Prints", type: :request do
         ]
         }).data
       end
-
     let(:id) { proforma.id }
     let(:path) { "/accounting/prints/unpublished_invoices/#{id}" }
 
@@ -78,6 +78,7 @@ RSpec.describe "Accounting::Prints", type: :request do
   describe "GET /accounting/prints/published_invoice/:id" do
     include_context 'a company with an order'
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:proforma) do
       Organization::Proformas::Create.call(order_version.id, {
         invoice_amounts: [
@@ -153,6 +154,7 @@ RSpec.describe "Accounting::Prints", type: :request do
   describe "GET /accounting/prints/credit_notes/:id" do
     include_context 'a company with an order'
 
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
     let(:proforma) do
       Organization::Proformas::Create.call(order_version.id, {
         invoice_amounts: [
@@ -164,7 +166,10 @@ RSpec.describe "Accounting::Prints", type: :request do
 
     let(:invoice) { Accounting::Proformas::Post.call(proforma.id).data }
 
-    let(:credit_note) { Accounting::Invoices::Cancel.call(invoice.id).data[:credit_note] }
+    let(:credit_note) {
+      r = Accounting::Invoices::Cancel.call(invoice.id)
+      r.data[:credit_note]
+    }
 
     let(:id) { credit_note.id }
     let(:path) { "/accounting/prints/credit_notes/#{id}" }

@@ -2,6 +2,7 @@ require 'rails_helper'
 require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 RSpec.describe Accounting::FinancialTransactionLine, type: :model do
   include_context 'a company with an order'
+  let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:financial_transaction).class_name('Accounting::FinancialTransaction') }

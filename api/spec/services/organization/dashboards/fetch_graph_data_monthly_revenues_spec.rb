@@ -6,6 +6,9 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
 
   include_context 'a company with an order'
 
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(year, 1, 1).beginning_of_year, end_date: DateTime.new(year, 12, 31)) }
+  let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
+
   let(:first_item_unit_price_amount) { 100 }
   let(:first_item_quantity) { 1 }
   let(:second_item_unit_price_amount) { 200 }
@@ -81,8 +84,10 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
-          }
+          },
+          financial_year.start_date
         ).data
+
         Accounting::Proformas::Post.call(first_proforma.id, DateTime.new(2024, 1, 1)).data
 
         # Create another invoice with an issue date of February 1 2024, this one should be counted
@@ -92,7 +97,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
-          }
+          },
+          financial_year.start_date
         ).data
         Accounting::Proformas::Post.call(second_proforma.id, DateTime.new(2024, 2, 1)).data
 
@@ -103,7 +109,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
-          }
+          },
+          financial_year_last_year.start_date
         ).data
         Accounting::Proformas::Post.call(third_proforma.id, DateTime.new(2023, 12, 31)).data
       end

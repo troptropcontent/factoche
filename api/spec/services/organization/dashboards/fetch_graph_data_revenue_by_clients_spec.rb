@@ -7,6 +7,9 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
 
   include_context 'a company with some orders', number_of_orders: 3
 
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(2024, 1, 1).beginning_of_year, end_date: DateTime.new(2024, 12, 31)) }
+  let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
+
   # Max allowed invoices allowed for this item 100 * 100 => 10 000 €
   let(:first_quote_first_item_unit_price_amount) { 100 }
   let(:first_quote_first_item_quantity) { 100 }
@@ -42,7 +45,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: first_order.last_version.items.first.original_item_uuid, invoice_amount: 123.99 }
             ]
-          }
+          },
+          financial_year.start_date
         ).data
         Accounting::Proformas::Post.call(first_proforma.id, DateTime.new(2024, 1, 1)).data
 
@@ -53,7 +57,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 321.99 }
             ]
-          }
+          },
+          financial_year.start_date
         ).data
         second_invoice = Accounting::Proformas::Post.call(second_proforma.id, DateTime.new(2024, 2, 1)).data
 
@@ -67,7 +72,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 999.99 }
             ]
-          }
+          },
+          financial_year.start_date
         ).data
         Accounting::Proformas::Post.call(third_proforma.id, DateTime.new(2024, 4, 1)).data
 
@@ -78,7 +84,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: third_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
-          }
+          },
+          financial_year_last_year.start_date
         ).data
         Accounting::Proformas::Post.call(third_proforma.id, DateTime.new(2023, 12, 31)).data
       end

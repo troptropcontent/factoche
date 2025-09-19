@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
   describe '.call', :aggregate_failures do
     let(:company_id) { 1 }
+    let(:financial_year) { FactoryBot.create(:financial_year, company_id: company_id, start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year) }
     let(:client_id) { 1 }
     let(:another_company_id) { 2 }
     let(:issue_date) { Time.new(2024, 3, 20) }
@@ -12,70 +13,75 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
       it 'generates first number when no invoices exist' do
         result = described_class.call(
           company_id: company_id,
+          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
 
         expect(result).to be_success
-        expect(result.data).to eq("INV-2024-000001")
+        expect(result.data).to eq("INV-2024-03-000001")
       end
 
       it 'generates sequential numbers based on existing invoices' do
-        FactoryBot.create(:invoice, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "INV-2024-00001", issue_date: issue_date - 2.days)
-        FactoryBot.create(:invoice, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "INV-2024-00002", issue_date: issue_date - 2.days)
-        FactoryBot.create(:invoice, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "INV-2024-00003", issue_date: issue_date - 2.days)
+        FactoryBot.create(:invoice, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "INV-2024-01-00001", issue_date: issue_date - 2.days)
+        FactoryBot.create(:invoice, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "INV-2024-02-00002", issue_date: issue_date - 2.days)
+        FactoryBot.create(:invoice, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "INV-2024-02-00003", issue_date: issue_date - 2.days)
 
         result = described_class.call(
           company_id: company_id,
+          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
 
         expect(result).to be_success
 
-        expect(result.data).to eq("INV-2024-000004")
+        expect(result.data).to eq("INV-2024-03-000004")
       end
 
       it 'only counts invoices from the same year' do
-        FactoryBot.create(:invoice, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "INV-2023-00001", issue_date: issue_date.last_year)
-        FactoryBot.create(:invoice, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "INV-2024-00001", issue_date: issue_date - 2.days)
+        FactoryBot.create(:invoice, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "INV-2023-03-00001", issue_date: issue_date.last_year)
+        FactoryBot.create(:invoice, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "INV-2024-03-00001", issue_date: issue_date - 2.days)
 
         result = described_class.call(
           company_id: company_id,
+          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
 
         expect(result).to be_success
-        expect(result.data).to eq("INV-2024-000002")
+        expect(result.data).to eq("INV-2024-03-000002")
       end
 
       it 'only counts invoices with matching prefix' do
-        invoice = FactoryBot.create(:invoice, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "INV-2023-00001", issue_date: issue_date.last_year)
-        FactoryBot.create(:credit_note, :posted, company_id: company_id, client_id: client_id, holder_id: 1, number: "CN-2023-00001", invoice: invoice, issue_date: issue_date - 2.days)
+        invoice = FactoryBot.create(:invoice, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "INV-2023-03-00001", issue_date: issue_date.last_year)
+        FactoryBot.create(:credit_note, :posted, company_id: company_id, financial_year: financial_year, client_id: client_id, holder_id: 1, number: "CN-2023-03-00001", invoice: invoice, issue_date: issue_date - 2.days)
 
         result = described_class.call(
           company_id: company_id,
+          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
 
         expect(result).to be_success
-        expect(result.data).to eq("INV-2024-000001")
+        expect(result.data).to eq("INV-2024-03-000001")
       end
 
       it 'only counts invoices for the specified company' do
-        FactoryBot.create(:invoice, :posted, company_id: another_company_id, client_id: client_id, holder_id: 2, number: "INV-2024-00001", issue_date: issue_date - 2.days)
+        FactoryBot.create(:invoice, :posted, company_id: another_company_id, financial_year: financial_year, client_id: client_id, holder_id: 2, number: "INV-2024-03-00001", issue_date: issue_date - 2.days)
 
 
         result = described_class.call(
           company_id: company_id,
+          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
 
         expect(result).to be_success
-        expect(result.data).to eq("INV-2024-000001")
+        expect(result.data).to eq("INV-2024-03-000001")
       end
     end
 
@@ -84,6 +90,7 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
         it 'returns failure' do
           result = described_class.call(
             company_id: nil,
+            financial_year_id: financial_year.id,
             prefix: prefix,
             issue_date: issue_date
           )
@@ -97,6 +104,7 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
         it 'returns failure' do
           result = described_class.call(
             company_id: company_id,
+            financial_year_id: financial_year.id,
             prefix: nil,
             issue_date: issue_date
           )
@@ -115,6 +123,7 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
       it 'returns failure' do
         result = described_class.call(
           company_id: company_id,
+          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )

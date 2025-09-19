@@ -5,6 +5,8 @@ RSpec.describe Accounting::Proformas::Post do
     include_context 'a company with a project with three items'
 
     let(:issue_date) { Time.current }
+    let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+
     let(:original_proforma) {
       Organization::Proformas::Create.call(project_version.id, {
         invoice_amounts: [
@@ -18,8 +20,8 @@ RSpec.describe Accounting::Proformas::Post do
     context 'when successful' do
       before do
         allow(Accounting::FinancialTransactions::FindNextAvailableNumber).to receive(:call)
-          .with(company_id: original_proforma.company_id, prefix: "INV", issue_date: issue_date)
-          .and_return(ServiceResult.success("INV-2024-00001"))
+          .with(company_id: original_proforma.company_id, prefix: "INV", financial_year_id: financial_year.id,  issue_date: issue_date)
+          .and_return(ServiceResult.success("INV-2024-01-00001"))
 
         allow(Accounting::FinancialTransactions::GenerateAndAttachPdfJob).to receive(:perform_async)
       end
@@ -42,7 +44,7 @@ RSpec.describe Accounting::Proformas::Post do
         result = described_class.call(proforma_id, issue_date)
         posted_invoice = result.data
 
-        expect(posted_invoice.number).to eq("INV-2024-00001")
+        expect(posted_invoice.number).to eq("INV-2024-01-00001")
         expect(posted_invoice.status).to eq("posted")
         expect(posted_invoice.issue_date).to be_within(1.second).of(issue_date)
         expect(posted_invoice.company_id).to eq(original_proforma.company_id)
