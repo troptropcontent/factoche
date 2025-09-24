@@ -14,9 +14,7 @@ module Organization
 
         ensure_invoiced_item_remains_within_limits!
 
-        accounting_service_arguments = build_accounting_service_arguments!
-
-        update_proforma!([ proforma_id, *accounting_service_arguments ])
+        update_proforma!(@validated_params[:issue_date] || Time.current)
       end
 
       private
@@ -73,7 +71,7 @@ module Organization
         end
       end
 
-      def build_accounting_service_arguments!
+      def build_accounting_service_arguments!(proforma_id, issue_date)
         company_hash = {
           id: @company.id,
           name: @company.name,
@@ -141,10 +139,12 @@ module Organization
           }
         }
 
-        [ company_hash, client_hash, project_hash, project_version_hash, @validated_params[:invoice_amounts] ]
+        [ proforma_id, company_hash, client_hash, project_hash, project_version_hash, @validated_params[:invoice_amounts], issue_date ]
       end
 
-      def update_proforma!(args)
+      def update_proforma!(issue_date)
+        args = build_accounting_service_arguments!(@proforma.id, issue_date)
+
         result = Accounting::Proformas::Update.call(*args)
 
         raise result.error if result.failure?
