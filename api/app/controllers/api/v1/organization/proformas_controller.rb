@@ -74,7 +74,7 @@ module Api
         private
 
         def proforma_params
-          params.require(:proforma).permit(invoice_amounts: [ :original_item_uuid, :invoice_amount ])
+          params.require(:proforma).permit(:issue_date, invoice_amounts: [ :original_item_uuid, :invoice_amount ])
         end
 
         def filter_by_order(proformas)
