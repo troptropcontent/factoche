@@ -76,6 +76,7 @@ module Organization
       field "total_including_tax_amount", :decimal
       field "total_excl_retention_guarantee_amount", :decimal
       field "holder_id", :integer
+      field "issue_date", :timestamp
     end
   end
 end
