@@ -2524,6 +2524,8 @@ export interface components {
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
             holder_id: number;
+            /** Format: date-time */
+            issue_date: string;
         };
         "Organization::CreditNotes::ExtendedDto": {
             id: number;
@@ -2543,6 +2545,8 @@ export interface components {
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
             holder_id: number;
+            /** Format: date-time */
+            issue_date: string;
         };
         "Organization::CreditNotes::IndexDto": {
             results: components["schemas"]["Organization::CreditNotes::CompactDto"][];
@@ -2647,6 +2651,8 @@ export interface components {
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
             holder_id: number;
+            /** Format: date-time */
+            issue_date: string;
             credit_note?: components["schemas"]["Organization::Invoices::BaseExtendedDto"];
             /** @enum {string} */
             payment_status: "paid" | "overdue" | "pending";
@@ -2750,6 +2756,8 @@ export interface components {
             /** Format: decimal */
             total_excl_retention_guarantee_amount: string;
             holder_id: number;
+            /** Format: date-time */
+            issue_date: string;
         };
         "Organization::Proformas::IndexDto": {
             results: components["schemas"]["Organization::Proformas::CompactDto"][];
