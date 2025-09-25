@@ -255,7 +255,7 @@ const PostButton = ({
               control={form.control}
               name="issue_date"
               render={({ field }) => (
-                <FormItem className="flex space-y-0 gap-2">
+                <FormItem className="flex space-y-0 gap-2 justify-between">
                   <FormLabel className="my-auto">
                     {t(
                       "pages.companies.projects.invoices.completion_snapshot.show.actions.post_dialog.input_label"

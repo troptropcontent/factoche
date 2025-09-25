@@ -456,7 +456,7 @@
                                 "new_completion_percentage": "Nouvel avancement",
                                 "new_invoice_amount": "Nouvelle facture"
                             },
-                            "date": "Date de la facture proforma",
+                            "date": "Date de la facture proforma de situation",
                             "toast": {
                                 "create_success_toast_title": "Nouvelle facture d'avancement enregistrée"
                             },
