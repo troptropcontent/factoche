@@ -402,6 +402,12 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       produces 'application/json'
       consumes 'application/json'
       parameter name: :id, in: :path, type: :integer
+      parameter name: :body, in: :body, schema: {
+              type: :object,
+              properties: {
+                issue_date: { type: :string }
+              }
+            }
 
       include_context 'a company with an order'
 
@@ -418,7 +424,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       response '200', 'invoice posted' do
         schema Organization::Proformas::ShowDto.to_schema
 
-        it "Posts the proforma by voiding the proforma and creating a new instance of Invoice", :aggregate_failures do |example|
+        it "Posts the proforma by voiding the proforma and creating a new instance of Invoice at the proforma date", :aggregate_failures do |example|
           expect { submit_request(example.metadata) }
             .to change(Accounting::Invoice, :count).by(1)
             .and change(Accounting::FinancialTransactionDetail, :count).by(1)
@@ -431,6 +437,27 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
           expect(parsed_response.dig("result", "id")).not_to eq(proforma.id)
           expect(parsed_response.dig("result", "status")).to eq("posted")
           expect(parsed_response.dig("result", "number")).to end_with("001")
+          expect(Date.parse(parsed_response.dig("result", "issue_date"))).to eq(proforma.issue_date.to_date)
+        end
+
+        context "when an issue_date is provided" do
+          let(:body) { { issue_date: (Date.current - 2.days).strftime("%d-%m-%Y") } }
+
+           it "Posts the proforma by voiding the proforma and creating a new instance of Invoice with the provided issue_date", :aggregate_failures do |example|
+          expect { submit_request(example.metadata) }
+            .to change(Accounting::Invoice, :count).by(1)
+            .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+            .and change(Accounting::FinancialTransactionLine, :count).by(2)
+
+          assert_response_matches_metadata(example.metadata)
+
+          parsed_response = JSON.parse(response.body)
+
+          expect(parsed_response.dig("result", "id")).not_to eq(proforma.id)
+          expect(parsed_response.dig("result", "status")).to eq("posted")
+          expect(parsed_response.dig("result", "number")).to end_with("001")
+          expect(Date.parse(parsed_response.dig("result", "issue_date"))).to eq(Date.current - 2.days)
+        end
         end
       end
 

@@ -1686,7 +1686,13 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        issue_date?: string;
+                    };
+                };
+            };
             responses: {
                 /** @description invoice posted */
                 200: {

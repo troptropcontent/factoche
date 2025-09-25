@@ -1560,6 +1560,14 @@ paths:
           description: unprocessable entity
         '403':
           description: forbiden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issue_date:
+                  type: string
   "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions":
     get:
       summary: List all the order's versions
