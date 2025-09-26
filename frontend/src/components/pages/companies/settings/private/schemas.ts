@@ -3,7 +3,7 @@ import { z } from "zod";
 const companyInfoSchema = z.object({
   name: z.string().min(1, "Company name is required"),
   registration_number: z.string(),
-  email: z.string().email("Invalid email address"),
+  email: z.email("Invalid email address"),
   phone: z.string(),
   address_city: z.string(),
   address_street: z.string(),
@@ -16,21 +16,23 @@ const companyInfoSchema = z.object({
 });
 
 const billingConfigSchema = z.object({
-  payment_term_days: z.coerce.number().int().min(0),
+  payment_term_days: z.number().int().min(0),
   payment_term_accepted_methods: z.array(z.enum(["transfer", "card", "cash"])),
-  default_vat_rate: z.coerce.number().min(0),
+  default_vat_rate: z.number().min(0),
   general_terms_and_conditions: z.string(),
 });
 
-const bankDetailsSchema = z.array(z.object({
-  name: z.string(),
-  iban: z.string(),
-  bic: z.string(),
-  record_id: z.string().nullable()
-}));
+const bankDetailsSchema = z.array(
+  z.object({
+    name: z.string(),
+    iban: z.string(),
+    bic: z.string(),
+    record_id: z.string().nullable(),
+  })
+);
 
-const settingsFormSchema = companyInfoSchema.and(
-  z.object({ configs: billingConfigSchema })
-).and(z.object({ bank_details_attributes: bankDetailsSchema }));
+const settingsFormSchema = companyInfoSchema
+  .and(z.object({ configs: billingConfigSchema }))
+  .and(z.object({ bank_details_attributes: bankDetailsSchema }));
 
 export { settingsFormSchema };
