@@ -18,6 +18,7 @@ import { ProformaFormProjectSummary } from "./proforma-form-project-summary";
 import { ProformaFormInvoiceTotalInfo } from "./proforma-form-invoice-total-info";
 import { ProformaFormSubmitButton } from "./proforma-form-submit-button";
 import { ProformaFormItemGroup } from "./proforma-form-item-group";
+import { ProformaFormDateInput } from "./proforma-form-date-input";
 
 interface ProformaFormProps {
   companyId: number;
@@ -36,7 +37,7 @@ const ProformaForm = ({ companyId, order, proformaId }: ProformaFormProps) => {
   const formInitialValues = useMemo(
     () =>
       proforma
-        ? buildInitialValuesFromProforma(proforma)
+        ? buildInitialValuesFromProforma(proforma, order)
         : buildInitialValuesFromOrder(order),
     [order, proforma]
   );
@@ -64,6 +65,7 @@ const ProformaForm = ({ companyId, order, proformaId }: ProformaFormProps) => {
 
   const mutateFunction = async (data: z.infer<typeof proformaFormSchema>) => {
     const body = {
+      issue_date: data.issue_date,
       invoice_amounts: data.invoice_amounts.reduce<
         Array<{
           original_item_uuid: string;
@@ -166,6 +168,7 @@ const ProformaForm = ({ companyId, order, proformaId }: ProformaFormProps) => {
             key={itemGroup.id}
           />
         ))}
+        <ProformaFormDateInput />
         <div className="flex justify-between">
           <ProformaFormInvoiceTotalInfo />
           <ProformaFormSubmitButton />

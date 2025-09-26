@@ -11,7 +11,6 @@ import {
 import { Form, FormSubmit } from "@/components/ui/form";
 import { CompanyInfoForm } from "./settings-company-info-form";
 import { useSettingsFormInitialValues } from "./private/hooks";
-import { SettingsForm as SettingsFormType } from "./private/types";
 import { settingsFormSchema } from "./private/schemas";
 import { BillingConfigForm } from "./settings-billing-info-form";
 import { BankDetailsForm } from "./settings-bank-details-form";
@@ -23,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 export function SettingsForm({ companyId }: { companyId: number }) {
   const { toast } = useToast();
   const initialValues = useSettingsFormInitialValues({ companyId: companyId });
-  const form = useForm<SettingsFormType>({
+  const form = useForm<z.infer<typeof settingsFormSchema>>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues: initialValues,
   });
@@ -39,7 +38,11 @@ export function SettingsForm({ companyId }: { companyId: number }) {
         body: {
           ...data,
           capital_amount: Number(data.capital_amount),
-          bank_details_attributes: data.bank_details_attributes.reduce((memo, bank_detail)=> bank_detail.record_id == null ? [...memo, bank_detail] : memo, [] as typeof data.bank_details_attributes),
+          bank_details_attributes: data.bank_details_attributes.reduce(
+            (memo, bank_detail) =>
+              bank_detail.record_id == null ? [...memo, bank_detail] : memo,
+            [] as typeof data.bank_details_attributes
+          ),
           configs: {
             ...data.configs,
             default_vat_rate: data.configs.default_vat_rate / 100,

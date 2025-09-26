@@ -13,14 +13,13 @@ module Organization
         let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
         let(:order_version_id) { order_version.id }
-        let(:params) {
-            {
+        let(:base_params) { {
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 99 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 20 }
             ]
-          }
-        }
+          }}
+        let(:params) { base_params }
         let("first_item_unit_price_amount") { 200 } # 200 €
         let("first_item_quantity") { 3 } # => total possible amount 3 * 200 € = 600 €
         let("second_item_unit_price_amount") { 50 } # 50 €
@@ -34,13 +33,38 @@ module Organization
 
             result
 
-            expect(Accounting::Proformas::Create).to have_received(:call) do |company_hash, client_hash, project_hash, project_version_hash, amounts|
+            expect(Accounting::Proformas::Create).to have_received(:call) do |company_hash, client_hash, project_hash, project_version_hash, amounts, issue_date|
               expect(company_hash[:id]).to eq(company.id)
               expect(client_hash[:id]).to eq(client.id)
               expect(client_hash[:name]).to eq(client.name)
               expect(project_hash[:name]).to eq(order.name)
               expect(project_version_hash[:id]).to eq(order_version.id)
               expect(amounts).to match_array(params[:invoice_amounts])
+              expect(issue_date).to be_within(5).of(Time.now)
+            end
+          end
+
+          context "when an issue_date is provided" do
+            let(:params) {
+                base_params.merge({ issue_date: "2025-09-24" })
+            }
+
+            it { is_expected.to be_success }
+
+            it "calls the accounting service with correct arguments", :aggregate_failures do
+              allow(Accounting::Proformas::Create).to receive(:call)
+
+              result
+
+              expect(Accounting::Proformas::Create).to have_received(:call) do |company_hash, client_hash, project_hash, project_version_hash, amounts, issue_date|
+                expect(company_hash[:id]).to eq(company.id)
+                expect(client_hash[:id]).to eq(client.id)
+                expect(client_hash[:name]).to eq(client.name)
+                expect(project_hash[:name]).to eq(order.name)
+                expect(project_version_hash[:id]).to eq(order_version.id)
+                expect(amounts).to match_array(params[:invoice_amounts])
+                expect(issue_date).to eq(Date.parse("2025-09-24"))
+              end
             end
           end
         end

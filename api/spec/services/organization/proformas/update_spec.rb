@@ -7,7 +7,9 @@ module Organization
     RSpec.describe Update do
       # rubocop:disable RSpec/MultipleMemoizedHelpers
       describe ".call" do
-        subject(:result) { described_class.call(proforma_id, params) }
+        subject(:result) {
+          described_class.call(proforma_id, params)
+        }
 
         include_context 'a company with an order'
         let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
@@ -28,6 +30,7 @@ module Organization
 
         let(:params) do
           {
+            issue_date: "2025-09-02",
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 2.00 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 3.00 }
@@ -43,13 +46,14 @@ module Organization
 
             result
 
-            expect(Accounting::Proformas::Update).to have_received(:call) do |proforma_id, company_hash, client_hash, project_hash, project_version_hash, amounts|
+            expect(Accounting::Proformas::Update).to have_received(:call) do |proforma_id, company_hash, client_hash, project_hash, project_version_hash, amounts, issue_date|
               expect(proforma_id).to eq(proforma.id)
               expect(company_hash[:id]).to eq(company.id)
               expect(client_hash[:name]).to eq(client.name)
               expect(project_hash[:name]).to eq(order.name)
               expect(project_version_hash[:id]).to eq(order_version.id)
               expect(amounts).to match_array(params[:invoice_amounts])
+              expect(issue_date).to eq(Date.parse("2025-09-02"))
             end
           end
         end

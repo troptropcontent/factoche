@@ -5,17 +5,27 @@ import { OrderExtended } from "../../orders/shared/types";
 import { DeepPartial } from "react-hook-form";
 
 const buildInitialValuesFromProforma = (
-  proforma: ProformaExtended
+  proforma: ProformaExtended,
+  order: OrderExtended
 ): z.infer<typeof proformaFormSchema> => ({
-  invoice_amounts: proforma.lines.map((line) => ({
-    invoice_amount: Number(line.excl_tax_amount),
-    original_item_uuid: line.holder_id,
-  })),
+  issue_date: new Date(proforma.issue_date)
+    .toISOString()
+    .split("T")[0] as string,
+  invoice_amounts: order.last_version.items.map((item) => {
+    const proformaAmount = proforma.lines.find(
+      (line) => line.holder_id === item.original_item_uuid
+    )?.excl_tax_amount;
+    return {
+      invoice_amount: proformaAmount ? Number(proformaAmount) : 0,
+      original_item_uuid: item.original_item_uuid,
+    };
+  }),
 });
 
 const buildInitialValuesFromOrder = (
   order: OrderExtended
 ): z.infer<typeof proformaFormSchema> => ({
+  issue_date: new Date().toISOString().split("T")[0] as string,
   invoice_amounts: order.last_version.items.map((item) => ({
     invoice_amount: 0,
     original_item_uuid: item.original_item_uuid,

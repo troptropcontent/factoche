@@ -3,7 +3,7 @@ module Organization
     class Create
       include ApplicationService
 
-      def call(project_version_id, params, issue_date = Time.current)
+      def call(project_version_id, params)
         load_resources!(project_version_id)
 
         validate_params!(params)
@@ -16,7 +16,7 @@ module Organization
 
         ensure_invoiced_item_remains_within_limits!
 
-        create_proforma!(issue_date)
+        create_proforma!(@validated_params[:issue_date] || Time.current)
       end
 
       private

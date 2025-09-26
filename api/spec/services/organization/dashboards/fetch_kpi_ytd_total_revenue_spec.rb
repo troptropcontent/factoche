@@ -61,12 +61,12 @@ RSpec.describe Organization::Dashboards::FetchKpiYtdTotalRevenue do
         first_proforma = Organization::Proformas::Create.call(
           order_version.id,
           {
+            issue_date: (end_date.last_year - 2.days).to_date,
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 17 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 99 }
             ]
-          },
-          end_date.last_year - 2.days
+          }
         ).data
 
         # Create an invoice for 116 € as per the proforma with a date before end_date.last_year
@@ -85,12 +85,12 @@ RSpec.describe Organization::Dashboards::FetchKpiYtdTotalRevenue do
         second_proforma = Organization::Proformas::Create.call(
           order_version.id,
           {
+            issue_date: (end_date.last_year - 2.days).to_date,
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 33 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 110 }
             ]
-          },
-          end_date.last_year - 2.days
+          }
         ).data
 
         # Create a second invoice for 143 € as per the proforma with a date before end_date.last_year
@@ -104,12 +104,12 @@ RSpec.describe Organization::Dashboards::FetchKpiYtdTotalRevenue do
         first_proforma = Organization::Proformas::Create.call(
           order_version.id,
           {
+            issue_date: (end_date.last_year + 2.days).to_date,
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 22 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 33 }
             ]
           },
-          end_date.last_year + 2.days
         ).data
 
         # Create an invoice for 55 € as per the proforma with a date after end_date.last_year
@@ -127,13 +127,12 @@ RSpec.describe Organization::Dashboards::FetchKpiYtdTotalRevenue do
         # Create a second proforma for 299 € ( 69 € + 230 € ) with a date after end_date.last_year
         second_proforma = Organization::Proformas::Create.call(
           order_version.id,
-          {
+          { issue_date: (end_date.last_year + 2.days).to_date,
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 69 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 230 }
             ]
-          },
-          end_date.last_year + 2.days
+          }
         ).data
 
         # Create a second invoice for 299 € as per the proforma with a date after end_date.last_year

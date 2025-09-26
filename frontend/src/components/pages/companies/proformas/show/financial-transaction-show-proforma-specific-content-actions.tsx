@@ -4,9 +4,31 @@ import { toast } from "@/hooks/use-toast";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Pen } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { ProformaExtended } from "../shared/types";
 import { FinancialTransactionPdfDownloadButton } from "../../financial_transactions/shared/financial-transaction-pdf-download-button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const DownloadProformaPdfButton = ({
   proforma,
@@ -131,13 +153,27 @@ const PostButton = ({
   companyId: number;
 }) => {
   const { t } = useTranslation();
+
+  const schema = z.object({
+    issue_date: z.iso.date(),
+  });
+
+  const initialValues = {
+    issue_date: new Date(proforma.issue_date).toISOString().split("T")[0],
+  };
+
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: initialValues,
+  });
+
   const { mutateAsync: postInvoiceMutation } = Api.useMutation(
     "post",
     "/api/v1/organization/proformas/{id}"
   );
   const navigate = useNavigate();
 
-  const postProforma = async () => {
+  const postProforma = async ({ issue_date }: z.infer<typeof schema>) => {
     const onSuccess = ({ result: { id } }: { result: { id: number } }) => {
       toast({
         title: t(
@@ -164,9 +200,21 @@ const PostButton = ({
       });
     };
 
+    const proformaIssueDateInDate = new Date(proforma.issue_date)
+      .toISOString()
+      .split("T")[0];
+
+    const body =
+      issue_date != proformaIssueDateInDate
+        ? { issue_date: issue_date }
+        : undefined;
+
+    console.log({ issue_date, proformaIssueDateInDate, body });
+
     await postInvoiceMutation(
       {
         params: { path: { id: proforma.id } },
+        ...{ body },
       },
       {
         onSuccess,
@@ -176,11 +224,68 @@ const PostButton = ({
   };
 
   return (
-    <LoadingButton variant="default" onClick={postProforma}>
-      {t(
-        "pages.companies.projects.invoices.completion_snapshot.show.actions.post"
-      )}
-    </LoadingButton>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>
+          {t(
+            "pages.companies.projects.invoices.completion_snapshot.show.actions.post"
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(postProforma)}
+            className="space-y-8"
+          >
+            <DialogHeader>
+              <DialogTitle>
+                {t(
+                  "pages.companies.projects.invoices.completion_snapshot.show.actions.post_dialog.title"
+                )}
+              </DialogTitle>
+              <DialogDescription>
+                <Trans
+                  i18nKey="pages.companies.projects.invoices.completion_snapshot.show.actions.post_dialog.description"
+                  values={{ issue_date: new Date(proforma.issue_date) }}
+                />
+              </DialogDescription>
+            </DialogHeader>
+            <FormField
+              control={form.control}
+              name="issue_date"
+              render={({ field }) => (
+                <FormItem className="flex space-y-0 gap-2 justify-between">
+                  <FormLabel className="my-auto">
+                    {t(
+                      "pages.companies.projects.invoices.completion_snapshot.show.actions.post_dialog.input_label"
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" className="w-fit" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">
+                  {t(
+                    "pages.companies.projects.invoices.completion_snapshot.show.actions.post_dialog.close"
+                  )}
+                </Button>
+              </DialogClose>
+              <LoadingButton variant="default">
+                {t(
+                  "pages.companies.projects.invoices.completion_snapshot.show.actions.post_dialog.submit"
+                )}
+              </LoadingButton>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 };
 
