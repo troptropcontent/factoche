@@ -45,9 +45,9 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: first_order.last_version.items.first.original_item_uuid, invoice_amount: 123.99 }
             ]
-          },
-          financial_year.start_date
+          }
         ).data
+
         Accounting::Proformas::Post.call(first_proforma.id, DateTime.new(2024, 1, 1)).data
 
         # Create an invoice for the 'second_client' with an issue date of February 1, 2024 this one should be counted
@@ -58,7 +58,6 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 321.99 }
             ]
           },
-          financial_year.start_date
         ).data
         second_invoice = Accounting::Proformas::Post.call(second_proforma.id, DateTime.new(2024, 2, 1)).data
 
@@ -72,8 +71,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 999.99 }
             ]
-          },
-          financial_year.start_date
+          }
         ).data
         Accounting::Proformas::Post.call(third_proforma.id, DateTime.new(2024, 4, 1)).data
 
@@ -84,8 +82,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
             invoice_amounts: [
               { original_item_uuid: third_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
-          },
-          financial_year_last_year.start_date
+          }
         ).data
         Accounting::Proformas::Post.call(third_proforma.id, DateTime.new(2023, 12, 31)).data
       end
