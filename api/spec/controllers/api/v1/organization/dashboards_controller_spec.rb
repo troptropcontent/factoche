@@ -79,12 +79,12 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               first_proforma = Organization::Proformas::Create.call(
                 order_version.id,
                 {
+                  issue_date: (end_date.last_year - 2.days).to_date,
                   invoice_amounts: [
                     { original_item_uuid: order_version.items.first.original_item_uuid,  invoice_amount: 17 },
                     { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 99 }
                   ]
-                },
-                end_date.last_year - 2.days
+                }
               ).data
               first_invoice = Accounting::Proformas::Post.call(
                 first_proforma.id,
@@ -98,12 +98,13 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               second_proforma = Organization::Proformas::Create.call(
                 order_version.id,
                 {
+                  issue_date: (end_date.last_year - 2.days).to_date,
                   invoice_amounts: [
                     { original_item_uuid: order_version.items.first.original_item_uuid,  invoice_amount: 33 },
                     { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 110 }
                   ]
                 },
-                end_date.last_year - 2.days
+
               ).data
               Accounting::Proformas::Post.call(
                 second_proforma.id,
@@ -114,12 +115,12 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               first_proforma = Organization::Proformas::Create.call(
                 order_version.id,
                 {
+                  issue_date: (end_date.last_year + 2.days).to_date,
                   invoice_amounts: [
                     { original_item_uuid: order_version.items.first.original_item_uuid,  invoice_amount: 22 },
                     { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 33 }
                   ]
                 },
-                end_date.last_year + 2.days
               ).data
               first_invoice = Accounting::Proformas::Post.call(
                 first_proforma.id,
@@ -133,12 +134,12 @@ RSpec.describe Api::V1::Organization::DashboardsController, type: :request do
               second_proforma = Organization::Proformas::Create.call(
                 order_version.id,
                 {
+                  issue_date: (end_date.last_year + 2.days).to_date,
                   invoice_amounts: [
                     { original_item_uuid: order_version.items.first.original_item_uuid,  invoice_amount: 69 },
                     { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 230 }
                   ]
                 },
-                end_date.last_year + 2.days
               ).data
               Accounting::Proformas::Post.call(
                 second_proforma.id,

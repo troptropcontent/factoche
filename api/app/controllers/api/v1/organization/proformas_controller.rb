@@ -62,7 +62,8 @@ module Api
 
         # POST   /api/v1/organization/proformas/:id
         def post
-          result = ::Accounting::Proformas::Post.call(@proforma.id)
+          issue_date = post_proforma_params[:issue_date] ? Date.parse(post_proforma_params[:issue_date]) : @proforma.issue_date
+          result = ::Accounting::Proformas::Post.call(@proforma.id, issue_date)
 
           if result.failure?
             raise Error::UnprocessableEntityError, "Failed to post proforma: #{result.error}"
@@ -74,7 +75,11 @@ module Api
         private
 
         def proforma_params
-          params.require(:proforma).permit(invoice_amounts: [ :original_item_uuid, :invoice_amount ])
+          params.require(:proforma).permit(:issue_date, invoice_amounts: [ :original_item_uuid, :invoice_amount ])
+        end
+
+        def post_proforma_params
+          params.permit(:issue_date)
         end
 
         def filter_by_order(proformas)

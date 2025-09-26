@@ -1560,6 +1560,14 @@ paths:
           description: unprocessable entity
         '403':
           description: forbiden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                issue_date:
+                  type: string
   "/api/v1/organization/companies/{company_id}/orders/{order_id}/versions":
     get:
       summary: List all the order's versions
@@ -2648,6 +2656,7 @@ components:
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
       - holder_id
+      - issue_date
       properties:
         id:
           type: integer
@@ -2684,6 +2693,9 @@ components:
           format: decimal
         holder_id:
           type: integer
+        issue_date:
+          type: string
+          format: date-time
     Organization::CreditNotes::ExtendedDto:
       type: object
       required:
@@ -2697,6 +2709,7 @@ components:
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
       - holder_id
+      - issue_date
       properties:
         id:
           type: integer
@@ -2733,6 +2746,9 @@ components:
           format: decimal
         holder_id:
           type: integer
+        issue_date:
+          type: string
+          format: date-time
     Organization::CreditNotes::IndexDto:
       type: object
       required:
@@ -2939,6 +2955,7 @@ components:
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
       - holder_id
+      - issue_date
       - payment_status
       properties:
         id:
@@ -2976,6 +2993,9 @@ components:
           format: decimal
         holder_id:
           type: integer
+        issue_date:
+          type: string
+          format: date-time
         credit_note:
           "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto"
           nullable: true
@@ -3208,6 +3228,7 @@ components:
       - total_including_tax_amount
       - total_excl_retention_guarantee_amount
       - holder_id
+      - issue_date
       properties:
         id:
           type: integer
@@ -3245,6 +3266,9 @@ components:
           format: decimal
         holder_id:
           type: integer
+        issue_date:
+          type: string
+          format: date-time
     Organization::Proformas::IndexDto:
       type: object
       required:

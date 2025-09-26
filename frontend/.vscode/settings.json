@@ -8,5 +8,6 @@
   ],
   "workbench.colorCustomizations": {
     "statusBar.background": "#612602"
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -31,6 +31,7 @@ function RouteComponent() {
           <h1 className="text-3xl font-bold mr-auto">
             {t(`pages.companies.proformas.show.title`, {
               number: proforma.number,
+              issue_date: Date.parse(proforma.issue_date),
             })}
           </h1>
           <StatusBadge status={proforma.status} />

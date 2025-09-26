@@ -103,6 +103,7 @@
                     "project_info": {
                         "title": "Informations sur le projet",
                         "name": "Nom",
+                        "last_invoice_date": "Date de la denière situation",
                         "version": "Version",
                         "total_project_amount": "Montant total du projet",
                         "previous_completion_percentage": "Avancement précédent",
@@ -410,6 +411,13 @@
                             "actions": {
                                 "edit": "Modifier la facture proforma",
                                 "post": "Valider la facture proforma",
+                                "post_dialog": {
+                                    "title": "Valider la facture proforma",
+                                    "description": "La validation de cette facture proforma va entraîner la génération d'une facture. Par défaut la date de la facture proforma est prise (<strong>{{issue_date, datetime}}</strong>). Si vous souhaitez générer la facture à une autre date, veuillez la renseigner ci-dessous.",
+                                    "input_label": "Date de la facture :",
+                                    "submit": "Valider",
+                                    "close": "Annuler"
+                                },
                                 "post_success_toast_title": "Facture proforma validée",
                                 "post_success_toast_description": "La facture proforma a été validée et est désormais une facture",
                                 "void": "Supprimer la facture proforma",
@@ -448,6 +456,7 @@
                                 "new_completion_percentage": "Nouvel avancement",
                                 "new_invoice_amount": "Nouvelle facture"
                             },
+                            "date": "Date de la facture proforma de situation",
                             "toast": {
                                 "create_success_toast_title": "Nouvelle facture d'avancement enregistrée"
                             },
@@ -518,10 +527,10 @@
                 },
                 "proformas": {
                     "show": {
-                        "title": "Facture proforma N°{{number}}"
+                        "title": "Facture proforma N°{{number}} du {{issue_date}}"
                     },
                     "new": {
-                        "title": "Nouvelle facture proforma"
+                        "title": "Nouvelle facture proforma de situation"
                     }
                 }
             },
@@ -794,10 +803,10 @@
             },
             "proformas": {
                 "show": {
-                    "title": "Facture proforma N°{{number}}"
+                    "title": "Facture proforma N°{{number}} du {{issue_date, datetime}}"
                 },
                 "new": {
-                    "title": "Nouvelle facture proforma"
+                    "title": "Nouvelle facture proforma de situation"
                 }
             }
         }
