@@ -86,6 +86,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
           },
+          financial_year.start_date
         ).data
 
         Accounting::Proformas::Post.call(first_proforma.id, DateTime.new(2024, 1, 1)).data
@@ -99,6 +100,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
           },
+          financial_year.start_date
         ).data
         Accounting::Proformas::Post.call(second_proforma.id, DateTime.new(2024, 2, 1)).data
 
@@ -109,7 +111,8 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
-          }
+          },
+          financial_year_last_year.start_date
         ).data
         Accounting::Proformas::Post.call(third_proforma.id, DateTime.new(2023, 12, 31)).data
       end
