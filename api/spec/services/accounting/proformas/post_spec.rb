@@ -66,15 +66,17 @@ RSpec.describe Accounting::Proformas::Post do
         end
       end
 
-      it 'duplicates invoice details with an updated due_date', :aggregate_failures do
+      it 'duplicates invoice details with an updated due_date and delivery_date', :aggregate_failures do
         result = described_class.call(proforma_id, issue_date)
         posted_invoice = result.data
+        updated_attributes = [ 'id', 'financial_transaction_id', 'invoice_id', 'created_at', 'updated_at', 'due_date', 'delivery_date' ]
 
         expect(posted_invoice.detail).to be_present
-        expect(posted_invoice.detail.attributes.except('id', 'financial_transaction_id', 'invoice_id', 'created_at', 'updated_at', 'due_date'))
-          .to eq(original_proforma.detail.attributes.except('id', 'financial_transaction_id', 'invoice_id', 'created_at', 'updated_at', 'due_date'))
+        expect(posted_invoice.detail.attributes.except(*updated_attributes))
+          .to eq(original_proforma.detail.attributes.except(*updated_attributes))
 
         expect(posted_invoice.detail.due_date).to be_within(1).of(Time.current + 30.days)
+        expect(posted_invoice.detail.delivery_date).to be_within(1).of(issue_date)
       end
 
       it 'enqueues PDF generation job' do
