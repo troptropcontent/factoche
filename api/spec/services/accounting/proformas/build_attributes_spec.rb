@@ -97,10 +97,19 @@ module Accounting
 
         before do
           # Create a previously posted invoice for the item
-          Create.call(company, client, project, project_version, [ {
-            original_item_uuid: 'item-uuid-1',
-            invoice_amount: 50
-          } ], 1, 2.days.ago).tap { |proforma| Accounting::Proformas::Post.call(proforma.data.id) }
+          creation_service_result = Create.call(
+            company:,
+            client:,
+            project:,
+            project_version:,
+            new_invoice_items: [ {
+              original_item_uuid: 'item-uuid-1',
+              invoice_amount: 50
+            } ],
+            snapshot_number: 1,
+            issue_date: 2.days.ago
+          )
+          Accounting::Proformas::Post.call(creation_service_result.data.id)
         end
 
         it 'is a success' do

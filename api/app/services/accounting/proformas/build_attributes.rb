@@ -19,9 +19,9 @@ module Accounting
             required(:retention_guarantee_rate).filled(:decimal)
             required(:items).array(:hash) do
               required(:original_item_uuid).filled(:string)
-              required(:group_id).filled(:integer)
+              required(:group_id).maybe(:integer)
               required(:name).filled(:string)
-              required(:description).filled(:string)
+              required(:description).maybe(:string)
               required(:quantity).filled(:integer)
               required(:unit).filled(:string)
               required(:unit_price_amount).filled(:decimal)
@@ -30,7 +30,7 @@ module Accounting
             required(:item_groups).array(:hash) do
               required(:id).filled(:integer)
               required(:name).filled(:string)
-              required(:description).filled(:string)
+              required(:description).maybe(:string)
             end
           end
           required(:new_invoice_items).array(:hash) do
