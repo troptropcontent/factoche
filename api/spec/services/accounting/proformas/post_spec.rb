@@ -9,7 +9,7 @@ RSpec.describe Accounting::Proformas::Post do
 
     let(:original_proforma) {
       Organization::Proformas::Create.call(project_version.id, {
-        issue_date: (Time.current - 15.days).to_date,
+        issue_date: (Time.current - 15.days),
         invoice_amounts: [
           { original_item_uuid: first_item.original_item_uuid, invoice_amount: 1 },
           { original_item_uuid: second_item.original_item_uuid, invoice_amount: 2 }

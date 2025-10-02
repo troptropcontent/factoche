@@ -71,7 +71,7 @@ module Organization
         end
       end
 
-      def build_accounting_service_arguments!(proforma_id, issue_date)
+      def build_accounting_service_arguments!(issue_date)
         company_hash = {
           id: @company.id,
           name: @company.name,
@@ -139,13 +139,15 @@ module Organization
           }
         }
 
-        [ proforma_id, company_hash, client_hash, project_hash, project_version_hash, @validated_params[:invoice_amounts], issue_date ]
+        {
+          proforma_id: @proforma.id, company: company_hash, client: client_hash, project: project_hash, project_version: project_version_hash, new_invoice_items: @validated_params[:invoice_amounts], issue_date: issue_date, snapshot_number: @proforma.context["snapshot_number"]
+        }
       end
 
       def update_proforma!(issue_date)
-        args = build_accounting_service_arguments!(@proforma.id, issue_date)
+        args = build_accounting_service_arguments!(issue_date)
 
-        result = Accounting::Proformas::Update.call(*args)
+        result = Accounting::Proformas::Update.call(args)
 
         raise result.error if result.failure?
 

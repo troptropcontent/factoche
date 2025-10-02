@@ -39,21 +39,22 @@ module Organization
         end
 
         context "when all validations pass" do
-          it { is_expected.to be_success }
+          it {
+          expect(result).to be_success }
 
           it "calls the accounting service with correct arguments", :aggregate_failures do
             allow(Accounting::Proformas::Update).to receive(:call).and_return(ServiceResult.success(proforma))
 
             result
 
-            expect(Accounting::Proformas::Update).to have_received(:call) do |proforma_id, company_hash, client_hash, project_hash, project_version_hash, amounts, issue_date|
-              expect(proforma_id).to eq(proforma.id)
-              expect(company_hash[:id]).to eq(company.id)
-              expect(client_hash[:name]).to eq(client.name)
-              expect(project_hash[:name]).to eq(order.name)
-              expect(project_version_hash[:id]).to eq(order_version.id)
-              expect(amounts).to match_array(params[:invoice_amounts])
-              expect(issue_date).to eq(Date.parse("2025-09-02"))
+            expect(Accounting::Proformas::Update).to have_received(:call) do |received_args|
+              expect(received_args[:proforma_id]).to eq(proforma.id)
+              expect(received_args.dig(:company, :id)).to eq(company.id)
+              expect(received_args.dig(:client, :name)).to eq(client.name)
+              expect(received_args.dig(:project, :name)).to eq(order.name)
+              expect(received_args.dig(:project_version, :id)).to eq(order_version.id)
+              expect(received_args[:new_invoice_items]).to match_array(params[:invoice_amounts])
+              expect(received_args[:issue_date]).to eq(DateTime.parse("2025-09-02"))
             end
           end
         end

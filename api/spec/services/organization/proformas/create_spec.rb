@@ -33,14 +33,15 @@ module Organization
 
             result
 
-            expect(Accounting::Proformas::Create).to have_received(:call) do |company_hash, client_hash, project_hash, project_version_hash, amounts, issue_date|
-              expect(company_hash[:id]).to eq(company.id)
-              expect(client_hash[:id]).to eq(client.id)
-              expect(client_hash[:name]).to eq(client.name)
-              expect(project_hash[:name]).to eq(order.name)
-              expect(project_version_hash[:id]).to eq(order_version.id)
-              expect(amounts).to match_array(params[:invoice_amounts])
-              expect(issue_date).to be_within(5).of(Time.now)
+            expect(Accounting::Proformas::Create).to have_received(:call) do |args|
+              expect(args.dig(:company, :id)).to eq(company.id)
+              expect(args.dig(:client, :id)).to eq(client.id)
+              expect(args.dig(:client, :name)).to eq(client.name)
+              expect(args.dig(:project, :name)).to eq(order.name)
+              expect(args.dig(:project_version, :id)).to eq(order_version.id)
+              expect(args[:new_invoice_items]).to match_array(params[:invoice_amounts])
+              expect(args[:issue_date]).to be_within(5).of(Time.now)
+              expect(args[:snapshot_number]).to eq(1)
             end
           end
 
@@ -56,14 +57,14 @@ module Organization
 
               result
 
-              expect(Accounting::Proformas::Create).to have_received(:call) do |company_hash, client_hash, project_hash, project_version_hash, amounts, issue_date|
-                expect(company_hash[:id]).to eq(company.id)
-                expect(client_hash[:id]).to eq(client.id)
-                expect(client_hash[:name]).to eq(client.name)
-                expect(project_hash[:name]).to eq(order.name)
-                expect(project_version_hash[:id]).to eq(order_version.id)
-                expect(amounts).to match_array(params[:invoice_amounts])
-                expect(issue_date).to eq(Date.parse("2025-09-24"))
+              expect(Accounting::Proformas::Create).to have_received(:call) do |args|
+                expect(args.dig(:company, :id)).to eq(company.id)
+                expect(args.dig(:client, :id)).to eq(client.id)
+                expect(args.dig(:client, :name)).to eq(client.name)
+                expect(args.dig(:project, :name)).to eq(order.name)
+                expect(args.dig(:project_version, :id)).to eq(order_version.id)
+                expect(args[:new_invoice_items]).to match_array(params[:invoice_amounts])
+                expect(args[:issue_date]).to eq(DateTime.parse("2025-09-24"))
               end
             end
           end

@@ -7,7 +7,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
 
   include_context 'a company with some orders', number_of_orders: 3
 
-  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(2024, 1, 1).beginning_of_year, end_date: DateTime.new(2024, 12, 31)) }
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(2024, 1, 1).beginning_of_year, end_date: DateTime.new(2024, 12, 31).end_of_day) }
   let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
 
   # Max allowed invoices allowed for this item 100 * 100 => 10 000 €
@@ -41,7 +41,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create an invoice for the 'first_client' with an issue date of January 1, 2024 this one should be counted
         first_proforma = Organization::Proformas::Create.call(
           first_order.last_version.id,
-          { issue_date: financial_year.start_date.to_date,
+          { issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: first_order.last_version.items.first.original_item_uuid, invoice_amount: 123.99 }
             ]
@@ -53,7 +53,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create an invoice for the 'second_client' with an issue date of February 1, 2024 this one should be counted
         second_proforma = Organization::Proformas::Create.call(
           second_order.last_version.id,
-          { issue_date: financial_year.start_date.to_date,
+          { issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 321.99 }
             ]
@@ -67,7 +67,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create another invoice for the 'second_client' with an issue date of avril 1, 2024 this one should be counted
         third_proforma = Organization::Proformas::Create.call(
           second_order.last_version.id,
-          { issue_date: financial_year.start_date.to_date,
+          { issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 999.99 }
             ]
@@ -78,7 +78,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create an invoice for the 'third_client' with an issue date of December 31, 2023 this one should not be counted
         third_proforma = Organization::Proformas::Create.call(
           third_order.last_version.id,
-          { issue_date: financial_year_last_year.start_date.to_date,
+          { issue_date: financial_year_last_year.start_date,
             invoice_amounts: [
               { original_item_uuid: third_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]

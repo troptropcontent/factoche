@@ -5,7 +5,8 @@ module Accounting
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe Create do
       describe '.call' do
-        subject(:result) { described_class.call(company, client, project, project_version, proforma_items, issue_date) }
+        subject(:result) { described_class.call({ company:, client:, project:, project_version:, new_invoice_items: proforma_items, issue_date:, snapshot_number: }) }
+        let(:snapshot_number) { 1 }
         let(:issue_date) { Time.new(2024, 3, 20) }
         let(:company_id) { 1 }
         let(:client_id) { 1 }
@@ -98,7 +99,7 @@ module Accounting
             invoice_amount: 50
             } ]
 
-          result = described_class.call(company, client, project, project_version, previous_posted_proforma_items, issue_date)
+          result = described_class.call({ company:, client:, project:, project_version:, new_invoice_items: previous_posted_proforma_items, issue_date:, snapshot_number: })
 
           previous_posted_proforma = result.data
 
@@ -124,7 +125,7 @@ module Accounting
 
             expect(proforma.context["project_name"]).to eq("Super Project")
             expect(proforma.context["project_version_number"]).to eq(1)
-            expect(proforma.context["project_total_amount"]).to eq(250) # (2 * 100 € ) + (1 * 50 €)
+            expect(proforma.context["project_total_amount"]).to eq("250.0") # (2 * 100 € ) + (1 * 50 €)
             expect(proforma.context["project_version_items"]).to be_present
             expect(proforma.context["project_version_item_groups"]).to be_present
           end
