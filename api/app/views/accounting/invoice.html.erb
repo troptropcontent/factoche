@@ -31,25 +31,6 @@
               <%= @invoice.number %>
             </td>
           </tr>
-          <% if @invoice.number.start_with?("CN") %>
-            <tr>
-              <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
-                <%= t("views.accounting.invoice.credit_note.original_invoice_number") %>
-              </th>
-              <td class="px-2 text-right border-1 border-t-0 border-l-0">
-                <%= @invoice.invoice.number %>
-              </td>
-            </tr>
-          <% else %>
-            <tr>
-              <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
-                <%= t("views.accounting.invoice.shared.snapshot_number") %>
-              </th>
-              <td class="px-2 text-right border-1 border-t-0 border-l-0">
-                <%= @invoice.context["snapshot_number"] %>
-              </td>
-            </tr>
-          <% end %>
           <tr>
             <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
               <%= t("views.accounting.invoice.shared.billing_date") %>
@@ -58,32 +39,33 @@
               <%= l(@invoice.issue_date, format: :short) %>
             </td>
           </tr>
-          <tr>
-            <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
-              <%= t("views.accounting.invoice.shared.delivery_date") %>
-            </th>
-            <td class="px-2 text-right border-1 border-t-0 border-l-0">
-              <%= l(@invoice.detail.delivery_date, format: :short) %>
-            </td>
-          </tr>
-          <tr>
-            <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
-              <%= t("views.accounting.invoice.shared.payment_term.days_label") %>
-            </th>
-            <td class="px-2 text-right border-1 border-t-0 border-l-0">
-              <%= t("views.accounting.invoice.shared.payment_term.days_value", count: @invoice.detail.payment_term_days) %>
-            </td>
-          </tr>
-          <tr>
-            <th class="text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
-              <%= t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_label", count: @invoice.detail.payment_term_accepted_methods.length) %>
-            </th>
-            <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
-              <%= @invoice.detail.payment_term_accepted_methods
-                    .map { |method| t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_value.#{method}") }
-                    .join(", ") %>
-            </td>
-          </tr>
+          <% if @invoice.number.start_with?("CN") %>
+            <tr>
+              <th class="text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
+                <%= t("views.accounting.invoice.credit_note.original_invoice_number") %>
+              </th>
+              <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
+                <%= @invoice.invoice.number %>
+              </td>
+            </tr>
+          <% else %>
+            <tr>
+              <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
+                <%= t("views.accounting.invoice.shared.due_date") %>
+              </th>
+              <td class="px-2 text-right border-1 border-t-0 border-l-0">
+                <%= l(@invoice.detail.due_date, format: :short) %>
+              </td>
+            </tr>
+            <tr>
+              <th class="text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
+                <%= t("views.accounting.invoice.shared.snapshot_number") %>
+              </th>
+              <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
+                <%= @invoice.context["snapshot_number"] %>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
       </table>
     </div>
