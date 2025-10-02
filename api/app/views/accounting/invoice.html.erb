@@ -40,6 +40,15 @@
                 <%= @invoice.invoice.number %>
               </td>
             </tr>
+            <% else %>
+            <tr>
+              <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
+                <%= t("views.accounting.invoice.shared.snapshot_number") %>
+              </th>
+              <td class="px-2 text-right border-1 border-t-0 border-l-0">
+                <%= @invoice.context["snapshot_number"] %>
+              </td>
+            </tr>
           <% end %>
           <tr>
             <th class="text-left px-2 bg-gray-200 border-1 border-t-0">

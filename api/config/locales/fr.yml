@@ -30,6 +30,7 @@ fr:
     accounting:
       invoice:
         shared:
+          snapshot_number: "Numéro de la situation"
           vat_rate: "TVA %{rate}"
           number: "Numéro"
           billing_date: "Date de facturation"
