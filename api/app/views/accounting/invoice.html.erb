@@ -9,7 +9,7 @@
               <%= case @invoice.number.split("-")[0]
                   when "PRO"
                     t("views.accounting.invoice.unpublished.title")
-                  when "INV" 
+                  when "INV"
                     t("views.accounting.invoice.published.title")
                   when "CN"
                     t("views.accounting.invoice.credit_note.title")
@@ -21,7 +21,7 @@
               <%= case @invoice.number.split("-")[0]
                   when "PRO"
                     t("views.accounting.invoice.unpublished.number")
-                  when "INV" 
+                  when "INV"
                     t("views.accounting.invoice.published.number")
                   when "CN"
                     t("views.accounting.invoice.credit_note.number")
@@ -40,7 +40,7 @@
                 <%= @invoice.invoice.number %>
               </td>
             </tr>
-            <% else %>
+          <% else %>
             <tr>
               <th class="text-left px-2 bg-gray-200 border-1 border-t-0">
                 <%= t("views.accounting.invoice.shared.snapshot_number") %>
@@ -71,14 +71,12 @@
               <%= t("views.accounting.invoice.shared.payment_term.days_label") %>
             </th>
             <td class="px-2 text-right border-1 border-t-0 border-l-0">
-              <%= t("views.accounting.invoice.shared.payment_term.days_value",
-                  count: @invoice.detail.payment_term_days) %>
+              <%= t("views.accounting.invoice.shared.payment_term.days_value", count: @invoice.detail.payment_term_days) %>
             </td>
           </tr>
           <tr>
             <th class="text-left px-2 bg-gray-200 border-1 border-t-0 rounded-bl">
-              <%= t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_label",
-                  count: @invoice.detail.payment_term_accepted_methods.length) %>
+              <%= t("views.organization.completion_snapshots.invoice.payment_term.accepted_methods_label", count: @invoice.detail.payment_term_accepted_methods.length) %>
             </th>
             <td class="px-2 text-right border-1 border-t-0 border-l-0 rounded-br">
               <%= @invoice.detail.payment_term_accepted_methods
@@ -94,22 +92,19 @@
   <footer class="footer text-xs ml-[-113.336px] flex flex-col">
     <p>
       <%= [
-        t("views.organization.completion_snapshots.invoice.seller_details.legal_form.#{@invoice.detail.seller_legal_form}",
-          capital_amount: number_to_currency(@invoice.detail.seller_capital_amount)),
-        t("views.organization.completion_snapshots.invoice.seller_details.rcs",
-          city: @invoice.detail.seller_rcs_city,
-          number: @invoice.detail.seller_rcs_number)
-      ].join(" - ") %>
+            t("views.organization.completion_snapshots.invoice.seller_details.legal_form.#{@invoice.detail.seller_legal_form}",
+              capital_amount: number_to_currency(@invoice.detail.seller_capital_amount)),
+            t("views.organization.completion_snapshots.invoice.seller_details.rcs",
+              city: @invoice.detail.seller_rcs_city,
+              number: @invoice.detail.seller_rcs_number)
+          ].join(" - ") %>
     </p>
     <p>
-      <%= t("views.organization.completion_snapshots.invoice.seller_details.vat_number_html",
-        number: @invoice.detail.seller_vat_number) %>
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.vat_number_html", number: @invoice.detail.seller_vat_number) %>
     </p>
     <p>
-      <%= t("views.organization.completion_snapshots.invoice.seller_details.iban_html",
-          number: @invoice.detail.bank_detail_iban) %>
-      <%= t("views.organization.completion_snapshots.invoice.seller_details.bic_html",
-          number: @invoice.detail.bank_detail_bic) %> 
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.iban_html", number: @invoice.detail.bank_detail_iban) %>
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.bic_html", number: @invoice.detail.bank_detail_bic) %>
     </p>
   </footer>
 
@@ -135,11 +130,10 @@
               <%= t("views.organization.completion_snapshots.invoice.seller_details.address_label") %>
             </th>
             <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
-              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_value", 
-                street: @invoice.detail.seller_address_street,
-                city: @invoice.detail.seller_address_city,
-                zip: @invoice.detail.seller_address_zipcode
-              ) %>
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_value",
+                    street: @invoice.detail.seller_address_street,
+                    city: @invoice.detail.seller_address_city,
+                    zip: @invoice.detail.seller_address_zipcode) %>
             </td>
           </tr>
           <tr>
@@ -172,7 +166,10 @@
             <tr>
               <td class="px-2 py-1 border-1 border-t-0 rounded-b">
                 <strong><%= @invoice.detail.client_name %></strong><br>
-                <%= t("common.address.value", street: @invoice.detail.client_address_street, city: @invoice.detail.client_address_city, zip: @invoice.detail.client_address_zipcode) %>
+                <%= t("common.address.value",
+                      street: @invoice.detail.client_address_street,
+                      city: @invoice.detail.client_address_city,
+                      zip: @invoice.detail.client_address_zipcode) %>
               </td>
             </tr>
           </tbody>
@@ -187,7 +184,10 @@
             <tr>
               <td class="px-2 py-1 border-1 border-t-0 rounded-b">
                 <strong><%= @invoice.detail.delivery_name %></strong><br>
-                <%= t("common.address.value", street: @invoice.detail.delivery_address_street, city: @invoice.detail.delivery_address_city, zip: @invoice.detail.delivery_address_zipcode) %>
+                <%= t("common.address.value",
+                      street: @invoice.detail.delivery_address_street,
+                      city: @invoice.detail.delivery_address_city,
+                      zip: @invoice.detail.delivery_address_zipcode) %>
               </td>
             </tr>
           </tbody>
@@ -203,8 +203,7 @@
           </tr>
           <tr>
             <td class="px-2 py-1 border-1 border-t-0 rounded-b">
-              <%= t("views.accounting.invoice.shared.context.project_html",
-                    name: @invoice.context.fetch("project_name")) %><br>
+              <%= t("views.accounting.invoice.shared.context.project_html", name: @invoice.context.fetch("project_name")) %><br>
               <%= t("views.accounting.invoice.shared.context.project_version_html",
                     version_number: @invoice.context.fetch("project_version_number"),
                     version_date: l(DateTime.parse(@invoice.context.fetch("project_version_date")))) %><br>
@@ -220,13 +219,12 @@
       </table>
     </section>
 
-    <% @invoice.context.fetch("project_version_item_groups").map do |item_group| %>
-        <%= render "accounting/group", invoice: @invoice, item_group: item_group %>
+    <% @invoice.context.fetch("project_version_item_groups").each do |item_group| %>
+      <%= render "accounting/group", invoice: @invoice, item_group: item_group %>
     <% end %>
 
     <%= render "accounting/totals", invoice: @invoice %>
 
-    
     <% if @invoice.detail.general_terms_and_conditions %>
       <section class="break-before-page prose prose-sm mx-auto">
         <h1 class="text-center text-xl font-bold"><%= t("views.accounting.invoice.shared.conditions.title") %></h1>
