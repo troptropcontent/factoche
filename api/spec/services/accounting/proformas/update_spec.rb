@@ -5,15 +5,21 @@ module Accounting
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe Update do
       describe '.call' do
-        subject(:result) { described_class.call(proforma_id, company, client, project, project_version, new_invoice_items, issue_date) }
+        subject(:result) { described_class.call({ proforma_id:, company:, client:, project:, project_version:, new_invoice_items:, issue_date:, snapshot_number: }) }
+
         let(:proforma_id) { original_proforma.id }
+        let(:snapshot_number) { 1 }
         let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company[:id], start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year) }
-        let(:issue_date) { Date.new(2024, 1, 9) }
+        let(:issue_date) { Date.new(2024, 1, 9).to_time }
         let(:company_id) { 1 }
-        let(:new_invoice_items) { [ {
-          original_item_uuid: first_item_uuid,
-          invoice_amount: "125.23"
-        } ] }
+        let(:new_invoice_items) do
+          [
+            {
+              original_item_uuid: first_item_uuid,
+              invoice_amount: "125.23"
+            }
+          ]
+        end
         let(:project) { { name: "Super Project" } }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
@@ -54,52 +60,66 @@ module Accounting
             ]
           }
         end
-        let(:company) { {
-          id: company_id,
-          name: "New Name",
-          registration_number: "123456789",
-          address_zipcode: "75001",
-          address_street: "1 rue de la Paix",
-          address_city: "Paris",
-          vat_number: "FR123456789",
-          phone: "+33123456789",
-          email: "contact@acmecorp.com",
-          rcs_city: "Paris",
-          rcs_number: "RCS123456",
-          legal_form: "sas",
-          capital_amount: 10000,
-          config: {
-            payment_term_days: 30,
-            payment_term_accepted_methods: [ 'transfer' ],
-            general_terms_and_conditions: '<h1>Condition<h1/>'
-          },
-          bank_detail: {
-          iban: 'IBAN',
-          bic: 'BIC'
-        }
-        } }
-        let(:client) { {
-          id: 1,
-          name: "Client Corp",
-          registration_number: "987654321",
-          address_zipcode: "75002",
-          address_street: "2 avenue des Champs-Élysées",
-          address_city: "Paris",
-          vat_number: "FR987654321",
-          phone: "+33987654321",
-          email: "contact@clientcorp.com"
-        } }
+        let(:company) do
+          {
+            id: company_id,
+            name: "New Name",
+            registration_number: "123456789",
+            address_zipcode: "75001",
+            address_street: "1 rue de la Paix",
+            address_city: "Paris",
+            vat_number: "FR123456789",
+            phone: "+33123456789",
+            email: "contact@acmecorp.com",
+            rcs_city: "Paris",
+            rcs_number: "RCS123456",
+            legal_form: "sas",
+            capital_amount: 10000,
+            config: {
+              payment_term_days: 30,
+              payment_term_accepted_methods: [ 'transfer' ],
+              general_terms_and_conditions: '<h1>Condition<h1/>'
+            },
+            bank_detail: {
+              iban: 'IBAN',
+              bic: 'BIC'
+            }
+          }
+        end
+        let(:client) do
+          {
+            id: 1,
+            name: "Client Corp",
+            registration_number: "987654321",
+            address_zipcode: "75002",
+            address_street: "2 avenue des Champs-Élysées",
+            address_city: "Paris",
+            vat_number: "FR987654321",
+            phone: "+33987654321",
+            email: "contact@clientcorp.com"
+          }
+        end
 
-        let!(:original_proforma) {
-          Create.call(company.merge({ name: "OLD NAME" }), client.merge({ name: "OLD Client NAME" }), project, project_version, [ {
-          original_item_uuid: first_item_uuid,
-          invoice_amount: 50
-        } ], issue_date).data}
+        let!(:original_proforma) do
+          Create.call({
+            company: company.merge({ name: "OLD NAME" }),
+            client: client.merge({ name: "OLD Client NAME" }),
+            project:,
+            project_version:,
+            new_invoice_items: [
+              {
+                original_item_uuid: first_item_uuid,
+                invoice_amount: 50
+              }
+            ],
+            issue_date:,
+            snapshot_number:
+          }).data
+        end
 
         context 'when successful' do
           # rubocop:disable RSpec/ExampleLength
-
-          it { is_expected.to be_success }
+          it { expect(result).to be_success }
 
           it 'voids the invoice and create a new one', :aggregate_failures do
             expect { result }
@@ -115,12 +135,12 @@ module Accounting
         end
 
         context 'when there is an error' do
-          let(:proforma_id) { "an_id_that_dont_exists" }
+          let(:proforma_id) { -1 }
 
           it { is_expected.to be_failure }
 
           it 'returns a failure result', :aggregate_failures do
-            expect(result.error.message).to include("Couldn't find Accounting::Proforma with 'id'=an_id_that_dont_exists")
+            expect(result.error.message).to include("Couldn't find Accounting::Proforma with 'id'=-1")
           end
         end
       end
