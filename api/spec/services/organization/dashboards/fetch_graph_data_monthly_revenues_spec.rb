@@ -6,7 +6,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
 
   include_context 'a company with an order'
 
-  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(year, 1, 1).beginning_of_year, end_date: DateTime.new(year, 12, 31)) }
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(year, 1, 1).beginning_of_year, end_date: DateTime.new(year, 12, 31).end_of_day) }
   let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
 
   let(:first_item_unit_price_amount) { 100 }

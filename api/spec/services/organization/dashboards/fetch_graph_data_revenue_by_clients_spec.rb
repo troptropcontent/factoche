@@ -7,7 +7,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
 
   include_context 'a company with some orders', number_of_orders: 3
 
-  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(2024, 1, 1).beginning_of_year, end_date: DateTime.new(2024, 12, 31)) }
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(2024, 1, 1).beginning_of_year, end_date: DateTime.new(2024, 12, 31).end_of_day) }
   let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
 
   # Max allowed invoices allowed for this item 100 * 100 => 10 000 €
