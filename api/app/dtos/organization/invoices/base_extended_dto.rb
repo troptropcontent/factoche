@@ -54,6 +54,7 @@ module Organization
           field "description", :string, required: false
         end
 
+        field "snapshot_number", :integer
         field "project_name", :string
         field "project_version_retention_guarantee_rate", :decimal
         field "project_version_number", :integer

@@ -2,7 +2,7 @@ module Organization
   module Proformas
     class CreateContract < Dry::Validation::Contract
       params do
-        optional(:issue_date).value(:date)
+        optional(:issue_date).value(:time)
         required(:invoice_amounts).filled(:array).array(:hash) do
           required(:original_item_uuid).filled(:string)
           required(:invoice_amount).filled(:decimal)

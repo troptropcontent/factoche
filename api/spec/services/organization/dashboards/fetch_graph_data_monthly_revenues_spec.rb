@@ -6,7 +6,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
 
   include_context 'a company with an order'
 
-  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(year, 1, 1).beginning_of_year, end_date: DateTime.new(year, 12, 31)) }
+  let(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: DateTime.new(year, 1, 1).beginning_of_year, end_date: DateTime.new(year, 12, 31).end_of_day) }
   let!(:financial_year_last_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: financial_year.start_date.last_year, end_date: financial_year.end_date.last_year) }
 
   let(:first_item_unit_price_amount) { 100 }
@@ -81,7 +81,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
         first_proforma = Organization::Proformas::Create.call(
           another_order.last_version.id,
           {
-            issue_date: financial_year.start_date.to_date,
+            issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
@@ -94,7 +94,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
         second_proforma = Organization::Proformas::Create.call(
           another_order.last_version.id,
           {
-            issue_date: financial_year.start_date.to_date,
+            issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
@@ -105,7 +105,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
         # Create another invoice with an issue date of December 31 2023, this one should NOT be counted
         third_proforma = Organization::Proformas::Create.call(
           another_order.last_version.id,
-          { issue_date: financial_year_last_year.start_date.to_date,
+          { issue_date: financial_year_last_year.start_date,
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]

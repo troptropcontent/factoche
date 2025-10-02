@@ -9,6 +9,7 @@ FactoryBot.define do
 
     context do
       {
+        snapshot_number: 1,
         project_name: "Super Project",
         project_version_retention_guarantee_rate: BigDecimal("0.05"),
         project_version_number: 1,

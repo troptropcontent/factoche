@@ -27,6 +27,7 @@ RSpec.describe Accounting::Proforma, type: :model do
         let(:context) do
           {
             project_name: "toto",
+            snapshot_number: 1,
             project_version_retention_guarantee_rate: 0.1,
             project_version_number: 1,
             project_version_date: Time.current.iso8601,

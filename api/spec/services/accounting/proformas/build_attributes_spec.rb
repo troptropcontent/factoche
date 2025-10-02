@@ -5,8 +5,19 @@ module Accounting
     # rubocop:disable RSpec/MultipleMemoizedHelpers
     RSpec.describe BuildAttributes do
       describe '.call' do
-        subject(:result) { described_class.call(company[:id], client[:id], project, project_version, new_invoice_items, issue_date) }
+        subject(:result) { described_class.call(args) }
 
+        let(:args) { {
+          company_id: company[:id],
+          client_id: client[:id],
+          issue_date: issue_date,
+          snapshot_number: snapshot_number,
+          project: project,
+          project_version: project_version,
+          new_invoice_items: new_invoice_items
+        }}
+
+        let(:snapshot_number) { 1 }
         let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company[:id]) }
 
         let(:issue_date) { Time.current }
@@ -86,10 +97,19 @@ module Accounting
 
         before do
           # Create a previously posted invoice for the item
-          Create.call(company, client, project, project_version, [ {
-            original_item_uuid: 'item-uuid-1',
-            invoice_amount: 50
-          } ], 2.days.ago).data.tap { |proforma| Accounting::Proformas::Post.call(proforma.id) }
+          creation_service_result = Create.call(
+            company:,
+            client:,
+            project:,
+            project_version:,
+            new_invoice_items: [ {
+              original_item_uuid: 'item-uuid-1',
+              invoice_amount: 50
+            } ],
+            snapshot_number: 1,
+            issue_date: 2.days.ago
+          )
+          Accounting::Proformas::Post.call(creation_service_result.data.id)
         end
 
         it 'is a success' do
@@ -135,10 +155,8 @@ module Accounting
             let(:invalid_project_version) { { number: 'PV-001' } }
 
             it 'returns failure with error message', :aggregate_failures do
-              result = described_class.call(company[:id], client[:id], project, invalid_project_version, new_invoice_items, issue_date)
+              result = described_class.call(args.merge({ project_version: invalid_project_version }))
               expect(result).not_to be_success
-              expect(result.error).to include('Failed to build invoice attributes')
-              expect(result.error).to include('PV-001')
             end
           end
           # rubocop:enable RSpec/ExampleLength

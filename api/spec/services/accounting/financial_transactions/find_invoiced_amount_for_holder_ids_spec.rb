@@ -17,7 +17,7 @@ RSpec.describe Accounting::FinancialTransactions::FindInvoicedAmountForHolderIds
 
     before {
       # Create an initial proforma
-      proforma = Organization::Proformas::Create.call(order_version.id, { issue_date: 2.days.ago.to_date, invoice_amounts: [ {
+      proforma = Organization::Proformas::Create.call(order_version.id, { issue_date: 2.days.ago, invoice_amounts: [ {
         original_item_uuid: order_version.items.first.original_item_uuid,
         invoice_amount: 50
       } ] }).data
@@ -29,7 +29,7 @@ RSpec.describe Accounting::FinancialTransactions::FindInvoicedAmountForHolderIds
       Accounting::Invoices::Cancel.call(invoice.id, 1.days.ago).data
 
       # Create another proforma
-      proforma = Organization::Proformas::Create.call(order_version.id, { issue_date: 2.days.ago.to_date, invoice_amounts: [ {
+      proforma = Organization::Proformas::Create.call(order_version.id, { issue_date: 2.days.ago, invoice_amounts: [ {
         original_item_uuid: order_version.items.first.original_item_uuid,
         invoice_amount: 60
       } ] }).data

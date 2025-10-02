@@ -1,7 +1,7 @@
 class Accounting::FinancialYear < ApplicationRecord
   has_many :financial_transactions, class_name: "Accounting::FinancialTransaction"
   validates :start_date, :end_date, presence: true
-  validate :dates_consistency, :no_overlapping_exercises
+  validate :dates_consistency, :no_overlapping_exercises, :start_date_is_first_day_of_month, :end_date_is_last_day_of_month
 
   private
 
@@ -30,6 +30,22 @@ class Accounting::FinancialYear < ApplicationRecord
 
     if overlapping.exists?
       errors.add(:base, "dates overlap with existing financial year")
+    end
+  end
+
+  def start_date_is_first_day_of_month
+    return unless start_date
+
+    if start_date.beginning_of_month != start_date
+      errors.add(:start_date, "start_date must be the first day of a month")
+    end
+  end
+
+  def end_date_is_last_day_of_month
+    return unless end_date
+
+    if end_date.end_of_month.to_i != end_date.to_i
+      errors.add(:end_date, "end_date must be the last day of a month")
     end
   end
 end
