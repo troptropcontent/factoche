@@ -22,7 +22,6 @@ module Accounting
 
         let(:issue_date) { Time.current }
 
-        let(:project) { { name: "Super Project" } }
 
         let(:new_invoice_items) do
           [
@@ -30,70 +29,13 @@ module Accounting
           ]
         end
 
-        let(:project_version) do
-          {
-            id: 123,
-            number: 1,
-            created_at: 1.day.ago,
-            retention_guarantee_rate: 0.1,
-            items: [
-              {
-                original_item_uuid: 'item-uuid-1',
-                group_id: 1,
-                name: 'Item 1',
-                description: 'Description 1',
-                quantity: 2,
-                unit: 'pieces',
-                unit_price_amount: 100.0,
-                tax_rate: 0.2
-              }
-            ],
-            item_groups: [
-              {
-                id: 1,
-                name: 'Group 1',
-                description: 'Group Description'
-              }
-            ]
-          }
-        end
+        let(:project) { FactoryBot.build(:accounting_project_hash) }
 
-        let(:company) { {
-          id: 1,
-          name: "ACME Corp",
-          registration_number: "123456789",
-          address_zipcode: "75001",
-          address_street: "1 rue de la Paix",
-          address_city: "Paris",
-          vat_number: "FR123456789",
-          phone: "+33123456789",
-          email: "contact@acmecorp.com",
-          rcs_city: "Paris",
-          rcs_number: "RCS123456",
-          legal_form: "sas",
-          capital_amount: 10000,
-          config: {
-            payment_term_days: 30,
-            payment_term_accepted_methods: [ 'transfer' ],
-            general_terms_and_conditions: '<h1>Condition<h1/>'
-          },
-          bank_detail: {
-          iban: 'IBAN',
-          bic: 'BIC'
-        }
-        } }
+        let(:company) { FactoryBot.build(:accounting_company_hash, id: 1) }
 
-        let(:client) { {
-          id: 1,
-          name: "Client Corp",
-          registration_number: "987654321",
-          address_zipcode: "75002",
-          address_street: "2 avenue des Champs-Élysées",
-          address_city: "Paris",
-          vat_number: "FR987654321",
-          phone: "+33987654321",
-          email: "contact@clientcorp.com"
-        } }
+        let(:client) { FactoryBot.build(:accounting_client_hash, id: 1) }
+
+        let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: 123) }
 
         before do
           # Create a previously posted invoice for the item

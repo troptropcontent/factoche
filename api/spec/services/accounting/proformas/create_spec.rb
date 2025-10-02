@@ -16,7 +16,7 @@ module Accounting
         } ] }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
-        let(:project) { { name: "Super Project" } }
+        let(:project) { { name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes" } }
         let(:project_version) do
           {
             id: project_version_id,
@@ -169,9 +169,9 @@ module Accounting
               client_address_city: client[:address_city],
               delivery_name: client[:name],
               delivery_registration_number: client[:registration_number],
-              delivery_address_zipcode: client[:address_zipcode],
-              delivery_address_street: client[:address_street],
-              delivery_address_city: client[:address_city],
+              delivery_address_zipcode: project[:address_zipcode],
+              delivery_address_street: project[:address_street],
+              delivery_address_city: project[:address_city],
               purchase_order_number: project_version[:id].to_s
             )
           end

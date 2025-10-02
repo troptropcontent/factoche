@@ -9,30 +9,8 @@ module Accounting
           required(:client_id).filled(:integer)
           required(:snapshot_number).filled(:integer)
           required(:issue_date).filled(:time)
-          required(:project).value(:hash) do
-            required(:name).filled(:string)
-          end
-          required(:project_version).value(:hash) do
-            required(:id).filled(:integer)
-            required(:number).filled(:integer)
-            required(:created_at).filled(:time)
-            required(:retention_guarantee_rate).filled(:decimal)
-            required(:items).array(:hash) do
-              required(:original_item_uuid).filled(:string)
-              required(:group_id).maybe(:integer)
-              required(:name).filled(:string)
-              required(:description).maybe(:string)
-              required(:quantity).filled(:integer)
-              required(:unit).filled(:string)
-              required(:unit_price_amount).filled(:decimal)
-              required(:tax_rate).filled(:decimal)
-            end
-            required(:item_groups).array(:hash) do
-              required(:id).filled(:integer)
-              required(:name).filled(:string)
-              required(:description).maybe(:string)
-            end
-          end
+          required(:project).hash(ProjectSchema)
+          required(:project_version).hash(ProjectVersionSchema)
           required(:new_invoice_items).array(:hash) do
             required(:original_item_uuid).filled(:string)
             required(:invoice_amount).filled(:decimal)
