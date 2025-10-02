@@ -41,6 +41,7 @@ module Organization
               expect(args.dig(:project_version, :id)).to eq(order_version.id)
               expect(args[:new_invoice_items]).to match_array(params[:invoice_amounts])
               expect(args[:issue_date]).to be_within(5).of(Time.now)
+              expect(args[:snapshot_number]).to eq(1)
             end
           end
 
