@@ -30,10 +30,11 @@ fr:
     accounting:
       invoice:
         shared:
-          snapshot_number: "Numéro de la situation"
-          vat_rate: "TVA %{rate}"
           number: "Numéro"
+          snapshot_number: "Numéro de la situation"
           billing_date: "Date de facturation"
+          due_date: "Date d'échéance"
+          vat_rate: "TVA %{rate}"
           delivery_date: "Date de livraison"
           payment_term:
             days_label: "Délai de paiement"
