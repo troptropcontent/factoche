@@ -16,10 +16,19 @@ module Organization
 
         ensure_invoiced_item_remains_within_limits!
 
+        find_snapshot_number!
+
         create_proforma!(@validated_params[:issue_date] || Time.current)
       end
 
       private
+
+      def find_snapshot_number!
+        result = Invoices::FindNextSnapshotNumber.call(@project.id)
+        raise result.error if result.failure?
+
+        @snapshot_number = result.data
+      end
 
       def validate_params!(params)
         @validated_params = validate!(params, CreateContract)
@@ -134,13 +143,21 @@ module Organization
           }
         }
 
-        [ company_hash, client_hash, project_hash, project_version_hash, @validated_params["invoice_amounts"], issue_date ]
+        {
+          company: company_hash,
+          client: client_hash,
+          project: project_hash,
+          project_version: project_version_hash,
+          new_invoice_items: @validated_params["invoice_amounts"],
+          snapshot_number: @snapshot_number,
+          issue_date: issue_date
+        }
       end
 
       def create_proforma!(issue_date)
         accounting_service_arguments = build_accounting_service_arguments(issue_date)
 
-        result = Accounting::Proformas::Create.call(*accounting_service_arguments)
+        result = Accounting::Proformas::Create.call(accounting_service_arguments)
 
         if result.failure?
           raise result.error
