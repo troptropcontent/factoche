@@ -41,7 +41,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create an invoice for the 'first_client' with an issue date of January 1, 2024 this one should be counted
         first_proforma = Organization::Proformas::Create.call(
           first_order.last_version.id,
-          { issue_date: financial_year.start_date.to_date,
+          { issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: first_order.last_version.items.first.original_item_uuid, invoice_amount: 123.99 }
             ]
@@ -53,7 +53,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create an invoice for the 'second_client' with an issue date of February 1, 2024 this one should be counted
         second_proforma = Organization::Proformas::Create.call(
           second_order.last_version.id,
-          { issue_date: financial_year.start_date.to_date,
+          { issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 321.99 }
             ]
@@ -67,7 +67,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create another invoice for the 'second_client' with an issue date of avril 1, 2024 this one should be counted
         third_proforma = Organization::Proformas::Create.call(
           second_order.last_version.id,
-          { issue_date: financial_year.start_date.to_date,
+          { issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: second_order.last_version.items.first.original_item_uuid, invoice_amount: 999.99 }
             ]
@@ -78,7 +78,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataRevenueByClients do
         # Create an invoice for the 'third_client' with an issue date of December 31, 2023 this one should not be counted
         third_proforma = Organization::Proformas::Create.call(
           third_order.last_version.id,
-          { issue_date: financial_year_last_year.start_date.to_date,
+          { issue_date: financial_year_last_year.start_date,
             invoice_amounts: [
               { original_item_uuid: third_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
