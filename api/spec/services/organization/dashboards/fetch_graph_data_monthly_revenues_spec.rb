@@ -81,7 +81,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
         first_proforma = Organization::Proformas::Create.call(
           another_order.last_version.id,
           {
-            issue_date: financial_year.start_date.to_date,
+            issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
@@ -94,7 +94,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
         second_proforma = Organization::Proformas::Create.call(
           another_order.last_version.id,
           {
-            issue_date: financial_year.start_date.to_date,
+            issue_date: financial_year.start_date,
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
@@ -105,7 +105,7 @@ RSpec.describe Organization::Dashboards::FetchGraphDataMonthlyRevenues do
         # Create another invoice with an issue date of December 31 2023, this one should NOT be counted
         third_proforma = Organization::Proformas::Create.call(
           another_order.last_version.id,
-          { issue_date: financial_year_last_year.start_date.to_date,
+          { issue_date: financial_year_last_year.start_date,
             invoice_amounts: [
               { original_item_uuid: another_order.last_version.items.first.original_item_uuid, invoice_amount: 10 }
             ]
