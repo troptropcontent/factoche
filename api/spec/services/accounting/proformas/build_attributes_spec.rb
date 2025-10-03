@@ -35,7 +35,7 @@ module Accounting
 
         let(:client) { FactoryBot.build(:accounting_client_hash, id: 1) }
 
-        let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: 123) }
+        let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: 123, item_group_ids: [ 1 ]) }
 
         before do
           # Create a previously posted invoice for the item
@@ -51,6 +51,7 @@ module Accounting
             snapshot_number: 1,
             issue_date: 2.days.ago
           )
+
           Accounting::Proformas::Post.call(creation_service_result.data.id)
         end
 
@@ -87,8 +88,8 @@ module Accounting
 
           expect(context[:project_version_item_groups].first).to include(
             id: 1,
-            name: 'Group 1',
-            description: 'Group Description'
+            name: "Item Group 1",
+            description: "Item Group Description 1"
           )
         end
 
