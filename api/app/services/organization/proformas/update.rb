@@ -110,7 +110,10 @@ module Organization
         }
 
         project_hash = {
-          name: @order.name
+          name: @order.name,
+          address_zipcode: @order.address_zipcode,
+          address_street: @order.address_street,
+          address_city: @order.address_city
         }
 
         project_version_hash = {

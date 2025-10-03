@@ -7,6 +7,7 @@ module Accounting
         params do
           required(:company).hash(CompanySchema)
           required(:client).hash(ClientSchema)
+          required(:project).hash(ProjectSchema)
           required(:project_version).hash(ProjectVersionSchema)
           required(:issue_date).filled(:time)
         end
@@ -17,6 +18,7 @@ module Accounting
 
         company = @validated_params[:company]
         client = @validated_params[:client]
+        project = @validated_params[:project]
         project_version = @validated_params[:project_version]
         issue_date = @validated_params[:issue_date]
 
@@ -50,9 +52,9 @@ module Accounting
           client_email: client.fetch(:email),
           delivery_name: client.fetch(:name),
           delivery_registration_number: client.fetch(:registration_number),
-          delivery_address_zipcode: client.fetch(:address_zipcode),
-          delivery_address_street: client.fetch(:address_street),
-          delivery_address_city: client.fetch(:address_city),
+          delivery_address_zipcode: project.fetch(:address_zipcode),
+          delivery_address_street: project.fetch(:address_street),
+          delivery_address_city: project.fetch(:address_city),
           delivery_phone: client.fetch(:phone),
           delivery_email: client.fetch(:email),
           purchase_order_number: project_version.fetch(:id)
