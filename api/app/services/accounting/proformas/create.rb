@@ -40,7 +40,7 @@ module Accounting
           proforma.lines.create!(proforma_lines_attributes)
 
           # Create proforma details records
-          proforma_detail_attributes = build_proforma_detail_attributes!(company, client, project_version, issue_date)
+          proforma_detail_attributes = build_proforma_detail_attributes!(company, client, project, project_version, issue_date)
           proforma.create_detail!(proforma_detail_attributes)
 
           # Verify that totals recorded in draft_invoice are in line with its lines as this is crucial, better be safe than sorry
@@ -85,8 +85,8 @@ module Accounting
         result.data
       end
 
-      def build_proforma_detail_attributes!(company, client, project_version, issue_date)
-        result = BuildDetailAttributes.call({ company:, client:, project_version:, issue_date: })
+      def build_proforma_detail_attributes!(company, client, project, project_version, issue_date)
+        result = BuildDetailAttributes.call({ company:, client:, project:, project_version:, issue_date: })
 
         raise result.error if result.failure?
         result.data

@@ -5,77 +5,16 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
     let(:issue_date) { Time.current }
     let(:payment_term_days) { 30 }
 
-    let(:company) do
-      {
-        id: 1,
-        name: 'Acme Corp',
-        registration_number: '123456789',
-        address_zipcode: '12345',
-        address_street: '123 Company St',
-        address_city: 'Company City',
-        vat_number: 'VAT123456',
-        phone: '+33123456789',
-        email: 'contact@acmecorp.com',
-        rcs_city: 'Paris',
-        rcs_number: 'RCS123456',
-        legal_form: 'sas',
-        capital_amount: 10000,
-        config: {
-          payment_term_days: 30,
-          payment_term_accepted_methods: [ 'transfer' ],
-          general_terms_and_conditions: '<h1>Condition<h1/>'
-        },
-        bank_detail: {
-          iban: 'IBAN',
-          bic: 'BIC'
-        }
-      }
-    end
+    let(:project) { FactoryBot.build(:accounting_project_hash) }
 
-    let(:client) do
-      {
-        id: 1,
-        name: 'Client Corp',
-        registration_number: '987654321',
-        address_zipcode: '54321',
-        address_street: '456 Client St',
-        address_city: 'Client City',
-        vat_number: 'VAT987654',
-        phone: '+33123456789',
-        email: 'contact@clientcorp.com'
-      }
-    end
+    let(:company) { FactoryBot.build(:accounting_company_hash, id: 1) }
 
-    let(:project_version) do
-      {
-        id: 123,
-        number: 1,
-        created_at: 1.day.ago,
-        retention_guarantee_rate: 0.1,
-        items: [
-          {
-            original_item_uuid: 'item-uuid-1',
-            group_id: 1,
-            name: 'Item 1',
-            description: 'Description 1',
-            quantity: 2,
-            unit: 'pieces',
-            unit_price_amount: 100.0,
-            tax_rate: 0.2
-          }
-        ],
-        item_groups: [
-          {
-            id: 1,
-            name: 'Group 1',
-            description: 'Group Description'
-          }
-        ]
-      }
-    end
+    let(:client) { FactoryBot.build(:accounting_client_hash, id: 1) }
+
+    let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: 1) }
 
     context 'when all required data is present' do
-      subject(:result) { described_class.call({ company:, client:, project_version:, issue_date: }) }
+      subject(:result) { described_class.call({ company:, client:, project:, project_version:, issue_date: }) }
 
       it 'returns a successful service result' do
         expect(result).to be_success
@@ -111,9 +50,9 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
           client_vat_number: client[:vat_number],
           delivery_name: client[:name],
           delivery_registration_number: client[:registration_number],
-          delivery_address_zipcode: client[:address_zipcode],
-          delivery_address_street: client[:address_street],
-          delivery_address_city: client[:address_city],
+          delivery_address_zipcode: project[:address_zipcode],
+          delivery_address_street: project[:address_street],
+          delivery_address_city: project[:address_city],
           purchase_order_number: project_version[:id],
         )
       end
@@ -124,7 +63,7 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
       let(:company) { {} }
 
       it 'returns a failure result', :aggregate_failures do
-        result = described_class.call({ company:, client:, project_version:, issue_date: })
+        result = described_class.call({ company:, client:, project_version:, project:, issue_date: })
 
         expect(result).to be_failure
       end

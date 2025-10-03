@@ -11,49 +11,13 @@ module Accounting
         let(:company_id) { 1 }
         let(:client_id) { 1 }
         let(:proforma_items) { [ {
-          original_item_uuid: first_item_uuid,
+          original_item_uuid: project_version.dig(:items, 0, :original_item_uuid),
           invoice_amount: "125.23"
         } ] }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
-        let(:project) { { name: "Super Project" } }
-        let(:project_version) do
-          {
-            id: project_version_id,
-            number: 1,
-            created_at: 1.day.ago,
-            retention_guarantee_rate: "0.05",
-            items: [
-              {
-                original_item_uuid: first_item_uuid,
-                name: "Item 1",
-                description: "Description 1",
-                quantity: 2,
-                unit: "units",
-                unit_price_amount: 100,
-                tax_rate: "0.2",
-                group_id: 1
-              },
-              {
-                original_item_uuid: "item-2",
-                name: "Item 2",
-                description: "Description 2",
-                quantity: 1,
-                unit: "hours",
-                unit_price_amount: 50,
-                tax_rate: "0.2",
-                group_id: 1
-              }
-            ],
-            item_groups: [
-              {
-                id: 1,
-                name: "Group 1",
-                description: "Group Description 1"
-              }
-            ]
-          }
-        end
+        let(:project) { { name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes" } }
+        let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: project_version_id, item_count: 2, item_group_ids: [ 1, 2 ]) }
         let(:company) { {
           id: company_id,
           name: "ACME Corp",
@@ -95,7 +59,7 @@ module Accounting
           FactoryBot.create(:financial_year, company_id: company[:id], start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year)
           # Create a previous proforma
           previous_posted_proforma_items = [ {
-            original_item_uuid: first_item_uuid,
+            original_item_uuid: project_version.dig(:items, 0, :original_item_uuid),
             invoice_amount: 50
             } ]
 
@@ -125,7 +89,8 @@ module Accounting
 
             expect(proforma.context["project_name"]).to eq("Super Project")
             expect(proforma.context["project_version_number"]).to eq(1)
-            expect(proforma.context["project_total_amount"]).to eq("250.0") # (2 * 100 € ) + (1 * 50 €)
+            expected_project_total_amount = project_version.dig(:items, 0, :quantity) * project_version.dig(:items, 0, :unit_price_amount) + project_version.dig(:items, 1, :quantity) * project_version.dig(:items, 1, :unit_price_amount)
+            expect(proforma.context["project_total_amount"]).to eq(expected_project_total_amount.to_s)
             expect(proforma.context["project_version_items"]).to be_present
             expect(proforma.context["project_version_item_groups"]).to be_present
           end
@@ -169,9 +134,9 @@ module Accounting
               client_address_city: client[:address_city],
               delivery_name: client[:name],
               delivery_registration_number: client[:registration_number],
-              delivery_address_zipcode: client[:address_zipcode],
-              delivery_address_street: client[:address_street],
-              delivery_address_city: client[:address_city],
+              delivery_address_zipcode: project[:address_zipcode],
+              delivery_address_street: project[:address_street],
+              delivery_address_city: project[:address_city],
               purchase_order_number: project_version[:id].to_s
             )
           end
