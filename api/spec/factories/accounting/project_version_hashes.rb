@@ -31,7 +31,7 @@ FactoryBot.define do
     created_at { 1.day.ago }
     retention_guarantee_rate { 0.1 }
     items { build_list(:accounting_project_version_item_hash, item_count) { |item_hash, index|
-      item_hash[:group_id] = item_group_ids[index] if item_group_ids[index]
+      item_hash[:group_id] = item_group_ids[index] ? item_group_ids[index] : nil
     } }
     item_groups { build_list(:accounting_project_version_item_group_hash, item_group_ids.uniq.length) { |item_group_hash, index|
       item_group_hash[:id] = item_group_ids[index] if item_group_ids[index]
