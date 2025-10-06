@@ -26,7 +26,6 @@ RSpec.describe Accounting::FinancialTransactionDetail, type: :model do
     it { is_expected.to validate_presence_of(:delivery_address_zipcode) }
     it { is_expected.to validate_presence_of(:delivery_address_street) }
     it { is_expected.to validate_presence_of(:delivery_address_city) }
-    it { is_expected.to validate_presence_of(:purchase_order_number) }
     it { is_expected.to validate_presence_of(:due_date) }
   end
 end

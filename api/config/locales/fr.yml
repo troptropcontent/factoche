@@ -44,6 +44,7 @@ fr:
           context:
             project_html: "<strong>Projet :</strong> %{name}"
             project_version_html: "<strong>Version du projet :</strong> N° %{version_number} du %{version_date}"
+            project_po_number_html: "<strong>Référence interne client :</strong> %{po_number}"
             project_total_html: "<strong>Total HT du projet :</strong> %{total}"
             project_previously_billed_html: "<strong>Total HT des précédentes factures :</strong> %{previously_billed}"
           groups:

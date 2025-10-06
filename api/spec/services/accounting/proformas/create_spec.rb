@@ -16,7 +16,7 @@ module Accounting
         } ] }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
-        let(:project) { { name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes" } }
+        let(:project) { FactoryBot.build(:accounting_project_hash, name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes")  }
         let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: project_version_id, item_count: 2, item_group_ids: [ 1, 2 ]) }
         let(:company) { {
           id: company_id,
@@ -137,7 +137,7 @@ module Accounting
               delivery_address_zipcode: project[:address_zipcode],
               delivery_address_street: project[:address_street],
               delivery_address_city: project[:address_city],
-              purchase_order_number: project_version[:id].to_s
+              purchase_order_number: project[:po_number].to_s
             )
           end
           # rubocop:enable RSpec/ExampleLength
