@@ -53,7 +53,7 @@ RSpec.describe Accounting::Proformas::BuildDetailAttributes do
           delivery_address_zipcode: project[:address_zipcode],
           delivery_address_street: project[:address_street],
           delivery_address_city: project[:address_city],
-          purchase_order_number: project_version[:id],
+          purchase_order_number: project[:po_number],
         )
       end
       # rubocop:enable RSpec/ExampleLength

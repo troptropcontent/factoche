@@ -186,9 +186,10 @@
           <tr>
             <td class="px-2 py-1 border-1 border-t-0 rounded-b">
               <%= t("views.accounting.invoice.shared.context.project_html", name: @invoice.context.fetch("project_name")) %><br>
-              <%= t("views.accounting.invoice.shared.context.project_version_html",
-                    version_number: @invoice.context.fetch("project_version_number"),
-                    version_date: l(DateTime.parse(@invoice.context.fetch("project_version_date")))) %><br>
+              <% if @invoice.detail.purchase_order_number %>  
+              <%= t("views.accounting.invoice.shared.context.project_po_number_html",
+                    po_number: @invoice.detail.purchase_order_number) %><br>
+              <% end %>
               <%= t("views.accounting.invoice.shared.context.project_total_html",
                     total: number_to_currency(@invoice.context.fetch("project_total_amount").to_d)) %><br>
               <%= t("views.accounting.invoice.shared.context.project_previously_billed_html",

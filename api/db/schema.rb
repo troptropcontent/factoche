@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_03_125014) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_06_093228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -42,7 +42,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_03_125014) do
     t.string "delivery_address_zipcode", null: false
     t.string "delivery_address_street", null: false
     t.string "delivery_address_city", null: false
-    t.string "purchase_order_number", null: false
+    t.string "purchase_order_number"
     t.datetime "due_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

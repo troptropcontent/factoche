@@ -18,7 +18,6 @@ class Accounting::FinancialTransactionDetail < ApplicationRecord
             :delivery_address_zipcode,
             :delivery_address_street,
             :delivery_address_city,
-            :purchase_order_number,
             :due_date,
             presence: true
 end

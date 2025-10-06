@@ -5,6 +5,7 @@ FactoryBot.define do
     address_zipcode  { "75001" }
     address_street  { "1 rue de la Paix" }
     address_city  { "Paris" }
+    po_number  { "PO_1234567" }
 
     skip_create
     initialize_with { attributes }
