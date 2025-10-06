@@ -19,6 +19,7 @@ RSpec.shared_context 'a company with some quotes' do |number_of_quotes: 1|
     let("#{ordinals[number_of_quote_index].capitalize}_create_quote_params") { {
       name: "#{ordinals[number_of_quote_index].capitalize} new hall in Biarritz",
       description: "A brand new hall for the police station",
+      po_number: "#{ordinals[number_of_quote_index].upcase}_PO_NUMBER",
       retention_guarantee_rate: send("#{ordinals[number_of_quote_index]}_quote_version_retention_guarantee_rate"),
       address_street: "10 Rue de la Paix apt n° #{number_of_quote_index + 1}",
       address_zipcode: "75002",

@@ -19,6 +19,7 @@ RSpec.describe Organization::Dashboards::FetchKpiAverageOrdersCompletionPercenta
     {
       name: "New windows in Biarritz",
       description: "A brand new set of windows for the police station",
+      po_number: "PO654321",
       retention_guarantee_rate: 0.05,
       address_street: "10 Rue de la Paix",
       address_zipcode: "75002",

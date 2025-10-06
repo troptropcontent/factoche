@@ -12,6 +12,7 @@ module Organization
           {
             name: "Construction Project",
             description: "Building renovation",
+            po_number: "PO1234567",
             retention_guarantee_rate: 0.05,
             address_street: "10 Rue de la Paix",
             address_zipcode: "75002",
@@ -76,6 +77,7 @@ module Organization
             quote = result.data
 
             expect(quote.name).to eq("Construction Project")
+            expect(quote.po_number).to eq("PO1234567")
             expect(quote.description).to eq("Building renovation")
             expect(quote.client_id).to eq(client.id)
             expect(quote.bank_detail_id).to eq(bank_detail_id)

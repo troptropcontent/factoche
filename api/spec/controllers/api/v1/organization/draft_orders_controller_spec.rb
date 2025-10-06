@@ -111,6 +111,7 @@ module Api
                 description: { type: :string },
                 retention_guarantee_rate: { type: :number },
                 bank_detail_id: { type: :number },
+                po_number: { type: :string },
                 new_items: {
                   type: :array,
                   items: {
@@ -172,6 +173,7 @@ module Api
                   name: "Quote",
                   description: "Quote description",
                   retention_guarantee_rate: 0.05,
+                  po_number: "PO123456",
                   address_street: "10 Rue de la Paix",
                   address_zipcode: "75002",
                   address_city: "Paris",
@@ -204,6 +206,8 @@ module Api
               {
                 name: "Updated Draft Order",
                 description: "Updated Description of the new draft order",
+                po_number: "PO123456_UPDATED",
+                address_street: "10 Rue de la mise à jour",
                 retention_guarantee_rate: 0.05,
                 bank_detail_id: second_bank_detail.id,
                 groups: [
@@ -245,6 +249,8 @@ module Api
                   .and change(::Organization::Item, :count).by(2)
 
                 expect(JSON.parse(response.body).dig("result", "bank_detail", "id")).to eq(second_bank_detail.id)
+                expect(JSON.parse(response.body).dig("result", "po_number")).to eq("PO123456_UPDATED")
+                expect(JSON.parse(response.body).dig("result", "address_street")).to eq("10 Rue de la mise à jour")
 
                 assert_response_matches_metadata(example.metadata)
               end

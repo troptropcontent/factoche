@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_17_083737) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_03_125014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -334,6 +334,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_083737) do
     t.string "address_zipcode", null: false
     t.string "address_city", null: false
     t.bigint "bank_detail_id"
+    t.string "po_number"
     t.index ["bank_detail_id"], name: "index_organization_projects_on_bank_detail_id"
     t.index ["client_id"], name: "index_organization_projects_on_client_id"
     t.index ["company_id", "type", "number"], name: "index_organization_projects_on_company_id_and_type_and_number", unique: true
