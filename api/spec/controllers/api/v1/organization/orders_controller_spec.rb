@@ -110,6 +110,10 @@ module Api
               properties: {
                 name: { type: :string },
                 description: { type: :string },
+                po_number: { type: :string },
+                address_street: { type: :string },
+                address_city: { type: :string },
+                address_zipcode: { type: :string },
                 retention_guarantee_rate: { type: :number },
                 bank_detail_id: { type: :number },
                 new_items: {
@@ -173,6 +177,7 @@ module Api
                   name: "Quote",
                   description: "Quote description",
                   retention_guarantee_rate: 0.05,
+                  po_number: "PO123456",
                   address_street: "10 Rue de la Paix",
                   address_zipcode: "75002",
                   address_city: "Paris",
@@ -209,6 +214,8 @@ module Api
               {
                 name: "Updated Order",
                 description: "Updated Description of the new order",
+                po_number: "PO123456_UPDATED",
+                address_street: "10 Rue de la mise à jour",
                 retention_guarantee_rate: 0.05,
                 bank_detail_id: company.bank_details.last.id,
                 groups: [
@@ -250,6 +257,9 @@ module Api
                   .and change(::Organization::Item, :count).by(2)
 
                 assert_response_matches_metadata(example.metadata)
+
+                expect(JSON.parse(response.body).dig("result", "po_number")).to eq("PO123456_UPDATED")
+                expect(JSON.parse(response.body).dig("result", "address_street")).to eq("10 Rue de la mise à jour")
               end
 
               context "when there is updated items" do

@@ -39,6 +39,10 @@ module Api
             :description,
             :retention_guarantee_rate,
             :bank_detail_id,
+            :po_number,
+            :address_street,
+            :address_zipcode,
+            :address_city,
             new_items: [
               :group_uuid,
               :name,

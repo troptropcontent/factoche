@@ -4,10 +4,11 @@ module Organization
       params do
         required(:name).filled(:string)
         optional(:description).maybe(:string)
+        optional(:po_number).value(:string)
         required(:retention_guarantee_rate).filled(:decimal)
-        optional(:address_street).filled(:string)
-        optional(:address_zipcode).filled(:string)
-        optional(:address_city).filled(:string)
+        required(:address_street).filled(:string)
+        required(:address_zipcode).filled(:string)
+        required(:address_city).filled(:string)
         required(:items).filled(:array).array(:hash) do
           optional(:group_uuid).maybe(:string)
           required(:name).filled(:string)

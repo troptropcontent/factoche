@@ -169,6 +169,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           {
             name: "Updated Quote",
             retention_guarantee_rate: 0.05,
+            po_number: "PO123456",
             address_street: "10 Rue de la Paix",
             address_zipcode: "75002",
             address_city: "Paris",
@@ -206,6 +207,10 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           description: "Updated Description of the new quote",
           retention_guarantee_rate: 0.05,
           bank_detail_id: company.bank_details.last.id,
+          po_number: "PO123456_UPDATED",
+          address_street: "10 Rue de la mise à jour",
+          address_zipcode: "75002",
+          address_city: "Paris",
           groups: [
             { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
           ],
@@ -255,6 +260,12 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
             .and change(Organization::Item, :count).by(3)
 
           assert_response_matches_metadata(example.metadata)
+
+          response_json = JSON.parse(response.body)["result"]
+          expect(response_json["address_street"]).to eq("10 Rue de la mise à jour")
+          expect(response_json["address_zipcode"]).to eq("75002")
+          expect(response_json["address_city"]).to eq("Paris")
+          expect(response_json["po_number"]).to eq("PO123456_UPDATED")
         end
 
         context "when there is updated items" do
@@ -376,6 +387,10 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           client_id: { type: :number },
           name: { type: :string },
           description: { type: :string },
+          po_number: { type: :string },
+          address_street: { type: :string },
+          address_city: { type: :string },
+          address_zipcode: { type: :string },
           retention_guarantee_rate: { type: :number },
           items: {
             type: :array,
@@ -408,7 +423,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
             }
           }
         },
-        required: [ "name", "retention_guarantee_rate", "items" ]
+        required: [ "name", "retention_guarantee_rate", "items", "address_street", "address_zipcode", "address_city" ]
       }
 
       let(:user) { FactoryBot.create(:user) }
@@ -422,6 +437,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           bank_detail_id: bank_detail_id,
           name: "New Quote",
           description: "Description of the new quote",
+          po_number: "PO_123456",
           retention_guarantee_rate: 0.05,
           address_street: "10 Rue de la Paix",
           address_zipcode: "75002",
@@ -451,6 +467,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
         run_test! do
           parsed_response = JSON.parse(response.body)
           expect(parsed_response.dig("result", "name")).to eq("New Quote")
+          expect(parsed_response.dig("result", "po_number")).to eq("PO_123456")
         end
       end
 
