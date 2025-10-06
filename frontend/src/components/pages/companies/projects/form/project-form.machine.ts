@@ -15,6 +15,7 @@ const formInitialValues: z.infer<typeof formSchema> = {
   address_city: "",
   address_zipcode: "",
   retention_guarantee_rate: 0,
+  po_number: "",
   items: [],
   groups: [],
 };

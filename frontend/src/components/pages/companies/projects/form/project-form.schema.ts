@@ -9,6 +9,7 @@ const step1FormSchema = z.object({
   address_street: z.string(),
   address_city: z.string(),
   address_zipcode: z.string(),
+  po_number: z.string(),
 });
 
 const step2FormSchema = z.object({

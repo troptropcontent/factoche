@@ -31,6 +31,7 @@ const PROJECT_FORM_INITIAL_VALUES = {
   description: "",
   client_id: 0,
   bank_detail_id: 0,
+  po_number: "",
   address_street: "",
   address_city: "",
   address_zipcode: "",

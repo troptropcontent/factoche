@@ -124,6 +124,33 @@ const Step1 = ({
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="po_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t(
+                  "pages.companies.projects.form.basic_info_step.po_number_input_label"
+                )}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "pages.companies.projects.form.basic_info_step.po_number_input_placeholder"
+                  )}
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                {t(
+                  "pages.companies.projects.form.basic_info_step.po_number_input_description"
+                )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
