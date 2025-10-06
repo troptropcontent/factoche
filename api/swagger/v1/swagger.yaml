@@ -770,6 +770,8 @@ paths:
                   type: number
                 bank_detail_id:
                   type: number
+                po_number:
+                  type: string
                 new_items:
                   type: array
                   items:
@@ -1102,6 +1104,14 @@ paths:
                 name:
                   type: string
                 description:
+                  type: string
+                po_number:
+                  type: string
+                address_street:
+                  type: string
+                address_city:
+                  type: string
+                address_zipcode:
                   type: string
                 retention_guarantee_rate:
                   type: number
@@ -1848,6 +1858,14 @@ paths:
                   type: string
                 description:
                   type: string
+                po_number:
+                  type: string
+                address_street:
+                  type: string
+                address_city:
+                  type: string
+                address_zipcode:
+                  type: string
                 retention_guarantee_rate:
                   type: number
                 items:
@@ -1899,6 +1917,9 @@ paths:
               - name
               - retention_guarantee_rate
               - items
+              - address_street
+              - address_zipcode
+              - address_city
   "/api/v1/organization/quotes/{id}/convert_to_draft_order":
     post:
       summary: Convert a quote to an order
@@ -2611,6 +2632,7 @@ components:
     Organization::Invoices::BaseExtendedDto::Context:
       type: object
       required:
+      - snapshot_number
       - project_name
       - project_version_retention_guarantee_rate
       - project_version_number
@@ -2620,6 +2642,8 @@ components:
       - project_version_items
       - project_version_item_groups
       properties:
+        snapshot_number:
+          type: integer
         project_name:
           type: string
         project_version_retention_guarantee_rate:
@@ -3554,6 +3578,9 @@ components:
         description:
           type: string
           nullable: true
+        po_number:
+          type: string
+          nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         bank_detail:
@@ -3651,6 +3678,9 @@ components:
         description:
           type: string
           nullable: true
+        po_number:
+          type: string
+          nullable: true
         client:
           "$ref": "#/components/schemas/Organization::Clients::ExtendedDto"
         bank_detail:
@@ -3697,6 +3727,9 @@ components:
         name:
           type: string
         description:
+          type: string
+          nullable: true
+        po_number:
           type: string
           nullable: true
         client:
@@ -3875,6 +3908,9 @@ components:
         name:
           type: string
         description:
+          type: string
+          nullable: true
+        po_number:
           type: string
           nullable: true
         client:

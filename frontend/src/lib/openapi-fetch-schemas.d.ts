@@ -831,6 +831,7 @@ export interface paths {
                         description?: string;
                         retention_guarantee_rate: number;
                         bank_detail_id?: number;
+                        po_number?: string;
                         new_items?: {
                             group_uuid?: string;
                             name: string;
@@ -1250,6 +1251,10 @@ export interface paths {
                     "application/json": {
                         name: string;
                         description?: string;
+                        po_number?: string;
+                        address_street?: string;
+                        address_city?: string;
+                        address_zipcode?: string;
                         retention_guarantee_rate: number;
                         bank_detail_id?: number;
                         new_items?: {
@@ -2119,6 +2124,10 @@ export interface paths {
                         client_id?: number;
                         name: string;
                         description?: string;
+                        po_number?: string;
+                        address_street: string;
+                        address_city: string;
+                        address_zipcode: string;
                         retention_guarantee_rate: number;
                         items: {
                             group_uuid?: string;
@@ -2500,6 +2509,7 @@ export interface components {
             description?: string | null;
         };
         "Organization::Invoices::BaseExtendedDto::Context": {
+            snapshot_number: number;
             project_name: string;
             /** Format: decimal */
             project_version_retention_guarantee_rate: string;
@@ -2863,6 +2873,7 @@ export interface components {
             number: number;
             name: string;
             description?: string | null;
+            po_number?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
@@ -2897,6 +2908,7 @@ export interface components {
             number: number;
             name: string;
             description?: string | null;
+            po_number?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
@@ -2914,6 +2926,7 @@ export interface components {
             number: number;
             name: string;
             description?: string | null;
+            po_number?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
@@ -2980,6 +2993,7 @@ export interface components {
             number: number;
             name: string;
             description?: string | null;
+            po_number?: string | null;
             client: components["schemas"]["Organization::Clients::ExtendedDto"];
             bank_detail: components["schemas"]["Organization::BankDetails::ExtendedDto"];
             last_version: components["schemas"]["Organization::ProjectVersions::ExtendedDto"];
