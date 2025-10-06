@@ -5,6 +5,7 @@ module Organization
       field "number", :integer
       field "name", :string
       field "description", :string, required: false
+      field "po_number", :string, required: false
       field "client", :object, subtype: Organization::Clients::ExtendedDto
       field "bank_detail", :object, subtype: BankDetails::ExtendedDto
       field "last_version", :object, subtype: Organization::ProjectVersions::ExtendedDto

@@ -20,7 +20,7 @@ module Accounting
             }
           ]
         end
-        let(:project) { { name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes" } }
+        let(:project) { FactoryBot.build(:accounting_project_hash, name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes") }
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
         let(:project_version) do

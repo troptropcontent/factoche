@@ -117,7 +117,8 @@ module Organization
           name: @project.name,
           address_zipcode: @project.address_zipcode,
           address_street: @project.address_street,
-          address_city: @project.address_city
+          address_city: @project.address_city,
+          po_number: @project.po_number
         }
 
         project_version_hash = {

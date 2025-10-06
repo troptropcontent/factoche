@@ -6,14 +6,27 @@ RSpec.describe Organization::Quotes::Update do
 
   let(:company) { FactoryBot.create(:company, :with_bank_detail) }
   let(:client) { FactoryBot.create(:client, company: company) }
-  let(:quote) { FactoryBot.create(:quote, company: company, client: client, bank_detail: company.bank_details.last) }
+  let(:quote) { FactoryBot.create(
+      :quote,
+      company: company,
+      client: client,
+      bank_detail: company.bank_details.last,
+      po_number: "PO_12345",
+      address_street: "10 Rue de la Paix",
+      address_zipcode: "75002",
+      address_city: "Paris"
+  ) }
   let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
   let(:params) do
     {
       name: "Updated Quote Name",
       description: "Updated description",
       retention_guarantee_rate: 0.05,
+      po_number: "PO_12345_UPDATED",
       bank_detail_id: company.bank_details.last.id,
+      address_street: "10 Rue des chalets",
+      address_zipcode: "75018",
+      address_city: "Toulouse",
       new_items: [ {
         name: "New Item",
         description: "New Item Description",
@@ -36,6 +49,10 @@ RSpec.describe Organization::Quotes::Update do
         expect(result.data).to be_a(Organization::Quote)
         expect(result.data.name).to eq("Updated Quote Name")
         expect(result.data.description).to eq("Updated description")
+        expect(result.data.po_number).to eq("PO_12345_UPDATED")
+        expect(result.data.address_street).to eq("10 Rue des chalets")
+        expect(result.data.address_zipcode).to eq("75018")
+        expect(result.data.address_city).to eq("Toulouse")
       end
 
       it 'creates a new version' do

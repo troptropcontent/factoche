@@ -21,6 +21,7 @@ RSpec.shared_context 'a company with a quote' do
     address_street: "10 Rue de la Paix",
     address_zipcode:  "75002",
     address_city: "Paris",
+    po_number: "PO12345678",
     items: ordinals.map.with_index { |ordinal, index|  {
       name: send("#{ordinal}_item_name"),
       quantity: send("#{ordinal}_item_quantity"),

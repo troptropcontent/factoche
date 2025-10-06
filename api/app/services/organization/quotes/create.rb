@@ -31,6 +31,7 @@ module Organization
             company_id: company_id,
             client_id: client_id,
             bank_detail_id: bank_detail_id,
+            po_number: validated_params[:po_number],
             number: find_next_quote_number!(company_id),
             name: validated_params[:name],
             description: validated_params[:description],

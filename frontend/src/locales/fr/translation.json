@@ -198,7 +198,10 @@
                         "name_input_description": "Nom que vous souhaitez donner à la commande qui sera affiché dans l'application et sur les factures.",
                         "description_input_label": "Description",
                         "description_input_placeholder": "Description de la commande",
-                        "description_input_description": "Description de la commande qui sera affiché dans l'application, optionnel."
+                        "description_input_description": "Description de la commande qui sera affiché dans l'application, optionnel.",
+                        "po_number_input_label": "Référence interne client",
+                        "po_number_input_placeholder": "Référence interne client",
+                        "po_number_input_description": "Référence interne communiqué par le client pour rapprocher ce devis à un projet dans son système."
                     },
                     "composition_step": {
                         "progress_bar_label": "Composition de la commande",

@@ -31,7 +31,7 @@ module Organization
         field "delivery_address_city", :string
         field "delivery_phone", :string
         field "delivery_email", :string
-        field "purchase_order_number", :string
+        field "purchase_order_number", :string, required: false
         field "due_date", :timestamp
       end
 

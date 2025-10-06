@@ -113,7 +113,8 @@ module Organization
           name: @order.name,
           address_zipcode: @order.address_zipcode,
           address_street: @order.address_street,
-          address_city: @order.address_city
+          address_city: @order.address_city,
+          po_number: @order.po_number
         }
 
         project_version_hash = {

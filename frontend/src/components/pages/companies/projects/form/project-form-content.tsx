@@ -41,6 +41,7 @@ const ProjectFormContent = ({
           address_city,
           address_street,
           address_zipcode,
+          po_number,
         },
       },
     },
@@ -85,6 +86,7 @@ const ProjectFormContent = ({
                   address_city,
                   address_street,
                   address_zipcode,
+                  po_number,
                 }}
               />
             );
@@ -106,6 +108,7 @@ const ProjectFormContent = ({
                   address_city,
                   address_street,
                   address_zipcode,
+                  po_number,
                 }}
                 submitFunction={submitFunction}
               />

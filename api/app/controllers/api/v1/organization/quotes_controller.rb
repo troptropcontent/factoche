@@ -53,6 +53,7 @@ module Api
             :name,
             :description,
             :retention_guarantee_rate,
+            :po_number,
             :address_street,
             :address_zipcode,
             :address_city,
@@ -80,6 +81,10 @@ module Api
             :name,
             :description,
             :retention_guarantee_rate,
+            :po_number,
+            :address_street,
+            :address_zipcode,
+            :address_city,
             new_items: [
               :group_uuid,
               :name,
