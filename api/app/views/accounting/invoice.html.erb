@@ -95,7 +95,7 @@
       <table class="mb-8 w-full">
         <tbody>
           <tr>
-            <th colspan="2" class="px-2 py-0.5 bg-gray-200 rounded rounded-b-none border-1">
+            <th colspan="2" class="px-2 py-1 bg-gray-200 rounded rounded-b-none border-1">
               <%= t("views.organization.completion_snapshots.invoice.seller_details.title") %>
             </th>
           </tr>
@@ -141,7 +141,7 @@
         <table class="grow">
           <tbody>
             <tr>
-              <th colspan="2" class="px-2 py-1 bg-gray-200 border-1 rounded rounded-b-none">
+              <th colspan="2" class="px-2 py-1 bg-gray-200 border-1 rounded rounded-b-none h-[25.23px]">
                 <%= t("views.organization.completion_snapshots.invoice.billing_address.title") %>
               </th>
             </tr>
@@ -151,7 +151,8 @@
                 <%= t("common.address.value",
                       street: @invoice.detail.client_address_street,
                       city: @invoice.detail.client_address_city,
-                      zip: @invoice.detail.client_address_zipcode) %>
+                      zip: @invoice.detail.client_address_zipcode) %><br/>
+                <%= @invoice.detail.client_email %><br>
               </td>
             </tr>
           </tbody>
@@ -159,12 +160,12 @@
         <table class="grow">
           <tbody>
             <tr>
-              <th colspan="2" class="px-2 py-1 bg-gray-200 border-1 rounded rounded-b-none">
+              <th colspan="2" class="px-2 py-1 bg-gray-200 border-1 rounded rounded-b-none h-[25.23px]">
                 <%= t("views.organization.completion_snapshots.invoice.delivery_address.title") %>
               </th>
             </tr>
             <tr>
-              <td class="px-2 py-1 border-1 border-t-0 rounded-b">
+              <td class="px-2 py-1 border-1 border-t-0 rounded-b align-baseline">
                 <strong><%= @invoice.detail.delivery_name %></strong><br>
                 <%= t("common.address.value",
                       street: @invoice.detail.delivery_address_street,
