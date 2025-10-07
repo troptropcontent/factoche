@@ -1252,6 +1252,12 @@
   .table-row-group {
     display: table-row-group;
   }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
+  .h-\[25\.23px\] {
+    height: 25.23px;
+  }
   .w-\[17\.5\%\] {
     width: 17.5%;
   }
@@ -1382,6 +1388,9 @@
   }
   .text-right {
     text-align: right;
+  }
+  .align-baseline {
+    vertical-align: baseline;
   }
   .align-top {
     vertical-align: top;
