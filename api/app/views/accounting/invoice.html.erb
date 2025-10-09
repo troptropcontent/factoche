@@ -185,7 +185,8 @@
                 <%= t("common.address.value",
                       street: @invoice.detail.client_address_street,
                       city: @invoice.detail.client_address_city,
-                      zip: @invoice.detail.client_address_zipcode) %>
+                      zip: @invoice.detail.client_address_zipcode) %><br/>
+                <%= @invoice.detail.client_email %><br>
               </td>
             </tr>
           </tbody>

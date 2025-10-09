@@ -1270,6 +1270,9 @@
   .w-44 {
     width: calc(var(--spacing) * 44);
   }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
   .w-\[17\.5\%\] {
     width: 17.5%;
   }
