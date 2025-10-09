@@ -207,6 +207,8 @@ paths:
                   type: string
                 registration_number:
                   type: string
+                vat_number:
+                  type: string
                 email:
                   type: string
                 phone:
@@ -219,7 +221,6 @@ paths:
                   type: string
               required:
               - name
-              - registration_number
               - email
               - phone
               - address_street
@@ -2525,7 +2526,6 @@ components:
       - delivery_address_city
       - delivery_phone
       - delivery_email
-      - purchase_order_number
       - due_date
       properties:
         delivery_date:
@@ -2579,6 +2579,7 @@ components:
           type: string
         purchase_order_number:
           type: string
+          nullable: true
         due_date:
           type: string
           format: date-time

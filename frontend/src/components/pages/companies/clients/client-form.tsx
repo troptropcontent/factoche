@@ -5,6 +5,7 @@ import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Api } from "@/lib/openapi-fetch-query-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AddressAutofill } from "@mapbox/search-js-react";
 import { useNavigate } from "@tanstack/react-router";
 import { TFunction } from "i18next";
 import { useForm } from "react-hook-form";
@@ -14,13 +15,13 @@ import { z } from "zod";
 const clientFormSchema = (t: TFunction<"translation">) =>
   z.object({
     name: z.string().min(1, t("form.validation.required")),
-    registration_number: z.string().min(1, t("form.validation.required")),
+    registration_number: z.string().optional(),
+    vat_number: z.string().optional(),
     email: z.string().min(1, t("form.validation.required")).email(),
     phone: z.string().min(1, t("form.validation.required")),
     address_street: z.string().min(1, t("form.validation.required")),
     address_city: z.string().min(1, t("form.validation.required")),
     address_zipcode: z.string().min(1, t("form.validation.required")),
-    vat_number: z.string().min(1, t("form.validation.required")),
   });
 
 type ClientFormType = z.infer<ReturnType<typeof clientFormSchema>>;
@@ -84,7 +85,17 @@ const ClientForm = ({
 
   const onSubmit = async (values: ClientFormType) => {
     await createClientMutation.mutateAsync(
-      { body: values, params: { path: { company_id: Number(companyId) } } },
+      {
+        body: {
+          ...values,
+          registration_number:
+            values.registration_number == ""
+              ? undefined
+              : values.registration_number,
+          vat_number: values.vat_number == "" ? undefined : values.vat_number,
+        },
+        params: { path: { company_id: Number(companyId) } },
+      },
       {
         onError: handleError,
         onSuccess: () => {
@@ -108,7 +119,10 @@ const ClientForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("pages.companies.clients.form.name")}</FormLabel>
+              <FormLabel>
+                {t("pages.companies.clients.form.name")}
+                {" *"}
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder={t(
@@ -143,10 +157,33 @@ const ClientForm = ({
         />
         <FormField
           control={form.control}
+          name="vat_number"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t("pages.companies.clients.form.vat_number")}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={t(
+                    "pages.companies.clients.form.vat_number_placeholder"
+                  )}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("pages.companies.clients.form.email")}</FormLabel>
+              <FormLabel>
+                {t("pages.companies.clients.form.email")}
+                {" *"}
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder={t(
@@ -164,7 +201,10 @@ const ClientForm = ({
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("pages.companies.clients.form.phone")}</FormLabel>
+              <FormLabel>
+                {t("pages.companies.clients.form.phone")}
+                {" *"}
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder={t(
@@ -184,14 +224,20 @@ const ClientForm = ({
             <FormItem>
               <FormLabel>
                 {t("pages.companies.clients.form.address_street")}
+                {" *"}
               </FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t(
-                    "pages.companies.clients.form.address_street_placeholder"
-                  )}
-                  {...field}
-                />
+                <AddressAutofill
+                  accessToken={import.meta.env.VITE_MAPBOX_ACCESS_TOKEN}
+                >
+                  <Input
+                    placeholder={t(
+                      "pages.companies.clients.form.address_street_placeholder"
+                    )}
+                    autoComplete="address-line1"
+                    {...field}
+                  />
+                </AddressAutofill>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -204,12 +250,14 @@ const ClientForm = ({
             <FormItem>
               <FormLabel>
                 {t("pages.companies.clients.form.address_city")}
+                {" *"}
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder={t(
                     "pages.companies.clients.form.address_city_placeholder"
                   )}
+                  autoComplete="address-level2"
                   {...field}
                 />
               </FormControl>
@@ -224,32 +272,14 @@ const ClientForm = ({
             <FormItem>
               <FormLabel>
                 {t("pages.companies.clients.form.address_zipcode")}
+                {" *"}
               </FormLabel>
               <FormControl>
                 <Input
                   placeholder={t(
                     "pages.companies.clients.form.address_zipcode_placeholder"
                   )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="vat_number"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                {t("pages.companies.clients.form.vat_number")}
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t(
-                    "pages.companies.clients.form.vat_number_placeholder"
-                  )}
+                  autoComplete="postal-code"
                   {...field}
                 />
               </FormControl>

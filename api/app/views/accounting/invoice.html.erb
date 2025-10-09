@@ -82,6 +82,7 @@
           ].join(" - ") %>
     </p>
     <p>
+      <%= t("views.organization.completion_snapshots.invoice.seller_details.registration_number_html", number: @invoice.detail.seller_registration_number) %>
       <%= t("views.organization.completion_snapshots.invoice.seller_details.vat_number_html", number: @invoice.detail.seller_vat_number) %>
     </p>
     <p>
@@ -126,14 +127,47 @@
               <%= @invoice.detail.seller_phone %>
             </td>
           </tr>
+        </tbody>
+      </table>
+      <table class="mb-8 w-full">
+        <tbody>
           <tr>
-            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0 rounded-bl">
-              <%= t("views.organization.completion_snapshots.invoice.seller_details.siret_label") %>
+            <th colspan="2" class="px-2 py-1 bg-gray-200 rounded rounded-b-none border-1">
+              Client
             </th>
-            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0 rounded-br">
-              <%= @invoice.detail.seller_registration_number %>
-            </td>
           </tr>
+          <% [
+            {
+              label: t("views.accounting.invoice.shared.client_name_label"), 
+              content: @invoice.detail.client_name
+            },
+            {
+              label: t("views.accounting.invoice.shared.client_email_label"), 
+              content: @invoice.detail.client_email
+            },
+            {
+              label: t("views.accounting.invoice.shared.client_phone_label"), 
+              content: @invoice.detail.client_phone
+            },
+            {
+              label: t("views.accounting.invoice.shared.client_vat_number_label"), 
+              content: @invoice.detail.client_vat_number
+            },
+            {
+              label:t("views.accounting.invoice.shared.client_registration_number_label"), 
+              content: @invoice.detail.client_registration_number
+            },
+          ].each do |row| %>
+            <% next unless row[:content] %>
+            <tr class="group">
+              <th class="bg-gray-200 w-44 text-left px-2 py-0.5  border-1 border-t-0 group-last:rounded-bl">
+                <%= row[:label] %>
+              </th>
+              <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0 group-last:rounded-br">
+                <%= row[:content] || "NA" %>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
       </table>
 

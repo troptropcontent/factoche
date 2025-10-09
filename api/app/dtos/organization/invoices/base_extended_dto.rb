@@ -17,15 +17,15 @@ module Organization
         field "seller_phone", :string
         field "seller_email", :string
         field "client_name", :string
-        field "client_registration_number", :string
+        field "client_registration_number", :string, required: false
         field "client_address_zipcode", :string
         field "client_address_street", :string
         field "client_address_city", :string
-        field "client_vat_number", :string
+        field "client_vat_number", :string, required: false
         field "client_phone", :string
         field "client_email", :string
         field "delivery_name", :string
-        field "delivery_registration_number", :string
+        field "delivery_registration_number", :string, required: false
         field "delivery_address_zipcode", :string
         field "delivery_address_street", :string
         field "delivery_address_city", :string

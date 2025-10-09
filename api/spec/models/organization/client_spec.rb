@@ -9,8 +9,6 @@ RSpec.describe Organization::Client, type: :model do
     subject { FactoryBot.build(:client) }
 
     it { is_expected.to validate_presence_of(:name) }
-    it { is_expected.to validate_presence_of(:registration_number) }
-    it { is_expected.to validate_presence_of(:vat_number) }
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_presence_of(:phone) }
     it { is_expected.to validate_presence_of(:address_street) }
