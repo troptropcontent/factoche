@@ -245,7 +245,8 @@ export interface paths {
                 content: {
                     "application/json": {
                         name: string;
-                        registration_number: string;
+                        registration_number?: string;
+                        vat_number?: string;
                         email: string;
                         phone: string;
                         address_street: string;
@@ -2485,7 +2486,7 @@ export interface components {
             delivery_address_city: string;
             delivery_phone: string;
             delivery_email: string;
-            purchase_order_number: string;
+            purchase_order_number?: string | null;
             /** Format: date-time */
             due_date: string;
         };

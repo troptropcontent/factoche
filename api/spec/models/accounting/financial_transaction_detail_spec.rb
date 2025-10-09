@@ -16,13 +16,10 @@ RSpec.describe Accounting::FinancialTransactionDetail, type: :model do
     it { is_expected.to validate_presence_of(:seller_address_city) }
     it { is_expected.to validate_presence_of(:seller_vat_number) }
     it { is_expected.to validate_presence_of(:client_name) }
-    it { is_expected.to validate_presence_of(:client_registration_number) }
     it { is_expected.to validate_presence_of(:client_address_zipcode) }
     it { is_expected.to validate_presence_of(:client_address_street) }
     it { is_expected.to validate_presence_of(:client_address_city) }
-    it { is_expected.to validate_presence_of(:client_vat_number) }
     it { is_expected.to validate_presence_of(:delivery_name) }
-    it { is_expected.to validate_presence_of(:delivery_registration_number) }
     it { is_expected.to validate_presence_of(:delivery_address_zipcode) }
     it { is_expected.to validate_presence_of(:delivery_address_street) }
     it { is_expected.to validate_presence_of(:delivery_address_city) }
