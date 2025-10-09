@@ -36,6 +36,11 @@ fr:
           due_date: "Date d'échéance"
           vat_rate: "TVA %{rate}"
           delivery_date: "Date de livraison"
+          client_name_label: "Nom"
+          client_email_label: "Email"
+          client_phone_label: "Téléphone"
+          client_vat_number_label: "Numéro de TVA"
+          client_registration_number_label: "Siret"
           payment_term:
             days_label: "Délai de paiement"
             days_value:
@@ -104,6 +109,7 @@ fr:
               auto_entrepreneur: "Auto-entrepreneur"
             rcs: "RCS %{city} %{number}"
             siret_label: "SIRET"
+            registration_number_html: "<strong>SIRET</strong> : %{number}"
             vat_number_html: "<strong>Nº TVA</strong> : %{number}"
             title: "Vendeur"
             name_label: "Nom"

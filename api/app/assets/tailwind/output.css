@@ -1252,11 +1252,23 @@
   .table-row-group {
     display: table-row-group;
   }
-  .h-7 {
-    height: calc(var(--spacing) * 7);
-  }
   .h-\[25\.23px\] {
     height: 25.23px;
+  }
+  .w-5 {
+    width: calc(var(--spacing) * 5);
+  }
+  .w-8 {
+    width: calc(var(--spacing) * 8);
+  }
+  .w-9 {
+    width: calc(var(--spacing) * 9);
+  }
+  .w-11 {
+    width: calc(var(--spacing) * 11);
+  }
+  .w-44 {
+    width: calc(var(--spacing) * 44);
   }
   .w-\[17\.5\%\] {
     width: 17.5%;
@@ -1361,6 +1373,9 @@
   }
   .bg-gray-200 {
     background-color: var(--color-gray-200);
+  }
+  .bg-red-200 {
+    background-color: var(--color-red-200);
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);
@@ -1541,6 +1556,21 @@
     -webkit-user-select: all;
     user-select: all;
   }
+  .group-last\:rounded-br {
+    &:is(:where(.group):last-child *) {
+      border-bottom-right-radius: 0.25rem;
+    }
+  }
+  .group-last\:rounded-bl {
+    &:is(:where(.group):last-child *) {
+      border-bottom-left-radius: 0.25rem;
+    }
+  }
+  .group-last\:bg-amber-100 {
+    &:is(:where(.group):last-child *) {
+      background-color: var(--color-amber-100);
+    }
+  }
   .group-\[\:first-child\]\:rounded-tl {
     &:is(:where(.group):is(:first-child) *) {
       border-top-left-radius: 0.25rem;
@@ -1570,6 +1600,11 @@
   .last\:mb-0 {
     &:last-child {
       margin-bottom: calc(var(--spacing) * 0);
+    }
+  }
+  .last\:bg-red-200 {
+    &:last-child {
+      background-color: var(--color-red-200);
     }
   }
 }

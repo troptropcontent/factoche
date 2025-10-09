@@ -15,13 +15,14 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
         properties: {
           name: { type: :string },
           registration_number: { type: :string },
+          vat_number: { type: :string },
           email: { type: :string },
           phone: { type: :string },
           address_street: { type: :string },
           address_city: { type: :string },
           address_zipcode: { type: :string }
         },
-        required: [ 'name', 'registration_number', 'email', 'phone', 'address_street', 'address_city', 'address_zipcode' ]
+        required: [ 'name', 'email', 'phone', 'address_street', 'address_city', 'address_zipcode' ]
       }
 
       let(:user) { FactoryBot.create(:user) }
@@ -94,13 +95,6 @@ RSpec.describe Api::V1::Organization::ClientsController, type: :request do
 
         describe "when email is invalid" do
           let(:client) { valid_client_payload.merge(email: 'invalid-email') }
-
-          schema '$ref' => '#/components/schemas/error'
-          run_test!
-        end
-
-        describe "when registration number is missing" do
-          let(:client) { valid_client_payload.merge(registration_number: nil) }
 
           schema '$ref' => '#/components/schemas/error'
           run_test!

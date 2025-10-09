@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_093228) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_08_150213) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -32,13 +32,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_093228) do
     t.string "seller_address_city", null: false
     t.string "seller_vat_number", null: false
     t.string "client_name", null: false
-    t.string "client_registration_number", null: false
+    t.string "client_registration_number"
     t.string "client_address_zipcode", null: false
     t.string "client_address_street", null: false
     t.string "client_address_city", null: false
-    t.string "client_vat_number", null: false
+    t.string "client_vat_number"
     t.string "delivery_name", null: false
-    t.string "delivery_registration_number", null: false
+    t.string "delivery_registration_number"
     t.string "delivery_address_zipcode", null: false
     t.string "delivery_address_street", null: false
     t.string "delivery_address_city", null: false
@@ -172,7 +172,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_093228) do
   create_table "organization_clients", force: :cascade do |t|
     t.bigint "company_id", null: false
     t.string "name", null: false
-    t.string "registration_number", null: false
+    t.string "registration_number"
     t.string "email", null: false
     t.string "phone", null: false
     t.string "address_street", null: false
@@ -180,7 +180,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_093228) do
     t.string "address_zipcode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "vat_number", null: false
+    t.string "vat_number"
     t.index ["company_id"], name: "index_organization_clients_on_company_id"
     t.index ["registration_number", "company_id"], name: "idx_on_registration_number_company_id_fc061ed019", unique: true
   end
