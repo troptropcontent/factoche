@@ -33,7 +33,7 @@ export function AppSidebar() {
       icon: LayoutDashboard,
     },
     {
-      title: "Commandes",
+      title: "Chantiers",
       url: `orders`,
       icon: Cuboid,
     },
