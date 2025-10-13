@@ -32,10 +32,10 @@
                         "secondary_info": "{{percentage}} / n-1"
                     },
                     "average_orders_completion": {
-                        "title": "Avancement moyen des commandes"
+                        "title": "Avancement moyen des chantiers"
                     },
                     "orders_details": {
-                        "title": "Commandes",
+                        "title": "Chantiers",
                         "main_info": "{{count}} en cours",
                         "secondary_info_one": "{{count}} terminée cette année",
                         "secondary_info_other": "{{count}} terminées cette année"
@@ -46,7 +46,7 @@
                         "tooltip_label_month": "Mois",
                         "tooltip_label_revenue": "Chiffre d'affaires",
                         "title": "Chiffre d'affaires par mois",
-                        "description": "Toutes les commandes sont incluses",
+                        "description": "Tous les chantiers sont incluses",
                         "january": "Janvier",
                         "january_short": "Jan",
                         "february": "Février",
@@ -80,8 +80,8 @@
                         
                     },
                     "major_orders_details": {
-                        "title": "Commandes en cours",
-                        "description": "Situation des commandes en cours de l'année"   
+                        "title": "Chantiers en cours",
+                        "description": "Situation des chantiers en cours de l'année"   
                     },
                     "invoice_payment_status_distribution": {
                         "title": "Status des factures",
@@ -194,17 +194,17 @@
                         "retention_guarantee_rate_input_label": "Retenue de garantie (%)",
                         "retention_guarantee_rate_input_description": "Retenue de garantie (%) qui sera appliquée sur les factures de situation.",
                         "name_input_label": "Nom",
-                        "name_input_placeholder": "Nom de la commande",
-                        "name_input_description": "Nom que vous souhaitez donner à la commande qui sera affiché dans l'application et sur les factures.",
+                        "name_input_placeholder": "Nom du chantier",
+                        "name_input_description": "Nom que vous souhaitez donner au chantier qui sera affiché dans l'application et sur les factures.",
                         "description_input_label": "Description",
-                        "description_input_placeholder": "Description de la commande",
-                        "description_input_description": "Description de la commande qui sera affiché dans l'application, optionnel.",
+                        "description_input_placeholder": "Description du chantier",
+                        "description_input_description": "Description du chantier qui sera affiché dans l'application, optionnel.",
                         "po_number_input_label": "Référence interne client",
                         "po_number_input_placeholder": "Référence interne client",
                         "po_number_input_description": "Référence interne communiqué par le client pour rapprocher ce devis à un projet dans son système."
                     },
                     "composition_step": {
-                        "progress_bar_label": "Composition de la commande",
+                        "progress_bar_label": "Composition du chantier",
                         "item_name_input_label": "Nom",
                         "item_name_input_placeholder": "Nom de l'élément",
                         "item_name_input_description": "Nom de l'élément, ce nom sera repris dans les factures.",
@@ -319,7 +319,7 @@
                     },
                     "confirmation_step": {
                         "progress_bar_label": "Confirmation",
-                        "total_project_amount_label": "Total de la commande: {{total}}",
+                        "total_project_amount_label": "Total du chantier: {{total}}",
                         "group_total_label": "Total du groupe: {{total}}",
                         "toast": {
                             "success_toast_title": "Devis enregistré",
@@ -329,7 +329,7 @@
                         },
                         "item": "Element"
                     },
-                    "project_composition": "Composition de la commande",
+                    "project_composition": "Composition du chantier",
                     "project_confirmation": "Confirmation",
                     "add_item": "Ajouter un élément",
                     "add_item_group": "Ajouter un groupe d'éléments",
@@ -357,7 +357,7 @@
                         "email": "<strong>Email :</strong> {{email}}"
                     },
                     "project_summary": {
-                        "title": "Information sur la commande",
+                        "title": "Information sur le chantier",
                         "name": "<strong>Nom :</strong> {{name}}",
                         "bank_detail": "<strong>RIB associé :</strong> {{name}}",
                         "address": "<strong>Adresse :</strong> {{address_street}}, {{address_city}} {{address_zipcode}}",
@@ -365,7 +365,7 @@
                         "version_label": "<strong>Version :</strong> N°{{number}} du {{createdAt, datetime}}"
                     },
                     "project_composition": {
-                        "title": "Composition de la commande",
+                        "title": "Composition du chantier",
                         "project_total": "Total:"
                     },
                     "new_completion_snapshot": "Nouvelle situation de travaux",
@@ -473,7 +473,7 @@
                                 "columns": {
                                     "number": "Numéro",
                                     "client": "Client",
-                                    "order": "Commande",
+                                    "order": "Chantier",
                                     "invoice_number": "Facture originale",
                                     "date": "Date",
                                     "status": "Status",
@@ -544,12 +544,12 @@
                         "download_quote_pdf": "Télécharger le devis",
                         "quote_pdf_unavailable": "Devis en cours de génération",
                         "update_quote": "Modifier le devis",
-                        "convert_to_order": "Convertir en commande provisoire",
-                        "convert_to_order_success_toast_title": "Devis converti en commande provisoire",
-                        "convert_to_order_success_toast_description": "Le devis a bien été converti en commande provisoire",
+                        "convert_to_order": "Convertir en chantier provisoire",
+                        "convert_to_order_success_toast_title": "Devis converti en chantier provisoire",
+                        "convert_to_order_success_toast_description": "Le devis a bien été converti en chantier provisoire",
                         "convert_to_order_error_toast_title": "Une erreur est survenue",
-                        "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion du devis en commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible",
-                        "go_order": "Voir la commande provisoire liée"
+                        "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion du devis en chantier, notre équipe a été notifiée et va résoudre le problème le plus tôt possible",
+                        "go_order": "Voir le chantier provisoire lié"
                     }
                 },
                 "new": {
@@ -578,20 +578,20 @@
             },
             "draft_orders": {
                 "update": {
-                    "title": "Modifier la commande provisoire N°{{number}}"
+                    "title": "Modifier le chantier provisoire N°{{number}}"
                 },
                 "show": {
-                    "title": "Commande provisoire N°{{number}}",
+                    "title": "Chantier provisoire N°{{number}}",
                     "actions": {
-                        "update_draft_order": "Modifier la commande provisoire",
-                        "convert_to_order": "Convertir en commande",
-                        "download_draft_order_pdf": "Télécharger la commande provisoire en pdf",
-                        "draft_order_pdf_unavailable": "Commande provisoire en cours de génération",
-                        "go_to_order": "Voir la commande liée",
-                        "convert_to_order_success_toast_title": "Commande provisoire convertie en commande",
-                        "convert_to_order_success_toast_description": "La commande provisoire a bien été convertie en commande",
+                        "update_draft_order": "Modifier le chantier provisoire",
+                        "convert_to_order": "Convertir en chantier",
+                        "download_draft_order_pdf": "Télécharger le chantier provisoire en pdf",
+                        "draft_order_pdf_unavailable": "Chantier provisoire en cours de génération",
+                        "go_to_order": "Voir le chantier lié",
+                        "convert_to_order_success_toast_title": "Chantier provisoire converti en chantier",
+                        "convert_to_order_success_toast_description": "Le chantier provisoire a bien été converti en chantier",
                         "convert_to_order_error_toast_title": "Une erreur est survenue",
-                        "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion de la commande provisoire en commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
+                        "convert_to_order_error_toast_description": "Une erreur est survenue lors de la conversion du chantier provisoire en chantier, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
                     }
                 },
                 "badge": {
@@ -604,22 +604,22 @@
             "orders": {
                 "shared": {
                     "summary_card": {
-                        "title": "Information sur la commande",
+                        "title": "Information sur le chantier",
                         "name": "Nom :",
                         "version": "Version :",
                         "version_label": "N°{{number}} du {{createdAt, datetime}}"
                     }
                 },
                 "show": {
-                    "title": "Commande N°{{number}}",
+                    "title": "Chantier N°{{number}}",
                     "actions": {
-                        "download_order_pdf": "Télécharger la commande en pdf",
-                        "order_pdf_unavailable": "Commande en cours de génération",
-                        "update_order": "Modifier la commande"
+                        "download_order_pdf": "Télécharger le chantier en pdf",
+                        "order_pdf_unavailable": "Chantier en cours de génération",
+                        "update_order": "Modifier le chantier"
                     },
                     "invoices_summary": {
                         "title": "Facturation",
-                        "description": "Gérez les factures et proformas pour cette commandes", 
+                        "description": "Gérez les factures et proformas pour ce chantier", 
                         "new_proforma_button": {
                             "title": "Nouvelle facture proforma",
                             "disabled_hint": "Vous ne pouvez avoir qu'une seule facture proforma en cours de rédaction" 
@@ -648,23 +648,23 @@
                     }
                 },
                 "update": {
-                    "title": "Modifier la commande N°{{number}}",
+                    "title": "Modifier le chantier N°{{number}}",
                     "toasts": {
                         "success": {
-                            "title": "Commande modifiée",
-                            "description": "La commande a été modifiée avec succès"
+                            "title": "Chantier modifié",
+                            "description": "Le chantier a été modifié avec succès"
                         },
                         "error": {
                             "title": "Une erreur est survenue",
-                            "description": "Une erreur est survenue lors de la modification de la commande, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
+                            "description": "Une erreur est survenue lors de la modification du chantier, notre équipe a été notifiée et va résoudre le problème le plus tôt possible"
                         }
                     }
                 },
                 "index": {
-                    "title": "Mes commandes",
+                    "title": "Mes chantiers",
                     "tabs": {
                         "posted": {
-                            "title": "Commandes validées",
+                            "title": "Chantiers validés",
                             "columns": {
                                 "number": "Numéro",
                                 "name": "Nom",
@@ -675,7 +675,7 @@
                             }
                         },
                         "draft": {
-                            "title": "Commandes provisoires",
+                            "title": "Chantiers provisoires",
                             "columns": {
                                 "number": "Numéro",
                                 "name": "Nom",
