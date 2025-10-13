@@ -158,14 +158,14 @@ fr:
               unit_price: "Prix unitaire"
               total: "Total"
       draft_order:
-        title: "Commande provisoire"
-        number: "Numéro de commande provisoire"
+        title: "Chantier provisoire"
+        number: "Numéro de chantier provisoire"
         issue_date: "Date de création"
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
         version:
-          title: "Version de la commande provisoire"
+          title: "Version du chantier provisoire"
           number: "Numéro de version"
           groups:
             columns:
@@ -174,14 +174,14 @@ fr:
               unit_price: "Prix unitaire"
               total: "Total"
       order:
-        title: "Commande"
-        number: "Numéro de commande"
+        title: "Chantier"
+        number: "Numéro de chantier"
         issue_date: "Date de création"
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
         version:
-          title: "Version de la commande"
+          title: "Version du chantier"
           number: "Numéro de version"
           groups:
             columns:
