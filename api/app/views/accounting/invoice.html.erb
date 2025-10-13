@@ -132,6 +132,37 @@
       <table class="mb-8 w-full">
         <tbody>
           <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.name_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.detail.seller_name %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.address_value",
+                    street: @invoice.detail.seller_address_street,
+                    city: @invoice.detail.seller_address_city,
+                    zip: @invoice.detail.seller_address_zipcode) %>
+            </td>
+          </tr>
+          <tr>
+            <th class="text-left px-2 py-0.5 bg-gray-200 border-1 border-t-0">
+              <%= t("views.organization.completion_snapshots.invoice.seller_details.phone_label") %>
+            </th>
+            <td class="px-2 py-0.5 text-right border-1 border-t-0 border-l-0">
+              <%= @invoice.detail.seller_phone %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="mb-8 w-full">
+        <tbody>
+          <tr>
             <th colspan="2" class="px-2 py-1 bg-gray-200 rounded rounded-b-none border-1">
               Client
             </th>
