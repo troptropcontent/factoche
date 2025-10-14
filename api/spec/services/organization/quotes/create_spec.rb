@@ -4,7 +4,7 @@ module Organization
   module Quotes
     RSpec.describe Create do
       describe '.call' do
-        let(:company) { FactoryBot.create(:company, :with_bank_detail) }
+        let(:company) { FactoryBot.create(:company, :with_bank_detail, :with_config) }
         let(:bank_detail_id) { company.bank_details.first.id }
         let(:client) { FactoryBot.create(:client, company: company) }
 
@@ -84,6 +84,7 @@ module Organization
 
             version = quote.versions.first
             expect(version.retention_guarantee_rate).to eq(0.05)
+            expect(version.general_terms_and_conditions).to eq(company.config.general_terms_and_conditions)
 
             groups = version.item_groups
             expect(groups.count).to eq(2)
