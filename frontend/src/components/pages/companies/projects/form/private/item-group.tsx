@@ -46,6 +46,12 @@ const ItemGroup = ({ uuid, remove }: { uuid: string; remove: () => void }) => {
     .filter((itemInput) => itemInput.group_uuid === uuid)
     .sort((a, b) => a.position - b.position);
 
+  const groupTotal = positionnedItems.reduce(
+    (memo, positionnedItem) =>
+      memo + positionnedItem.quantity * positionnedItem.unit_price_amount,
+    0
+  );
+
   return (
     <ItemCardLayout remove={remove}>
       <FormField
@@ -85,10 +91,19 @@ const ItemGroup = ({ uuid, remove }: { uuid: string; remove: () => void }) => {
           )}
         </FormMessage>
       )}
-      <Button variant="outline" type="button" onClick={addNewItemInput}>
-        <Plus />{" "}
-        {t("pages.companies.projects.form.item_group_add_item_button_label")}
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button variant="outline" type="button" onClick={addNewItemInput}>
+          <Plus />{" "}
+          {t("pages.companies.projects.form.item_group_add_item_button_label")}
+        </Button>
+        <p>
+          {t("pages.companies.projects.form.composition_step.item_group_total")}
+          {" : "}
+          {t("common.number_in_currency", {
+            amount: groupTotal,
+          })}
+        </p>
+      </div>
     </ItemCardLayout>
   );
 };
