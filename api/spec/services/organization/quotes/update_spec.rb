@@ -16,7 +16,7 @@ RSpec.describe Organization::Quotes::Update do
       address_zipcode: "75002",
       address_city: "Paris"
   ) }
-  let(:quote_version) { FactoryBot.create(:project_version, project: quote) }
+  let!(:quote_version) { FactoryBot.create(:project_version, project: quote) }
   let(:params) do
     {
       name: "Updated Quote Name",

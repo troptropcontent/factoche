@@ -2,7 +2,7 @@ class PrintsController < ApplicationController
   include Error::Handler
   include ActionView::Layouts
 
-  before_action :require_print_token!
+  before_action :require_print_token!, unless: -> { Rails.env.development? }
 
   # GET  /prints/quotes/:quote_id/quote_versions/:id
   def quote_version

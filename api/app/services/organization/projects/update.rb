@@ -5,6 +5,7 @@ module Organization
 
       def call(project, params)
         @project = project
+        @last_version = project.last_version
         @project_items = fetch_project_items
 
         validated_params = validate!(params, UpdateContract)
@@ -59,6 +60,7 @@ module Organization
       def map_params(validated_params)
         {
           retention_guarantee_rate: validated_params[:retention_guarantee_rate],
+          general_terms_and_conditions: @last_version.general_terms_and_conditions,
           bank_detail_id: validated_params[:bank_detail_id],
           items: combine_items(validated_params),
           groups: validated_params[:groups]
