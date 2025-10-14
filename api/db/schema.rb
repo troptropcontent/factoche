@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_150213) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -315,6 +315,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_150213) do
     t.datetime "updated_at", null: false
     t.decimal "retention_guarantee_rate", precision: 3, scale: 2
     t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
+    t.string "general_terms_and_conditions"
     t.index ["project_id"], name: "index_organization_project_versions_on_project_id"
   end
 
