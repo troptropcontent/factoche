@@ -66,6 +66,10 @@ RSpec.describe Organization::Projects::Update do
           expect(new_version.retention_guarantee_rate).to eq 0.05
         end
 
+        it 'forwards general terms and conditions to the new version' do
+        expect(result.data[:version].general_terms_and_conditions).to eq(project_version.general_terms_and_conditions)
+      end
+
         it 'creates new items and updates existing ones' do
           new_version = result.data[:version]
 
