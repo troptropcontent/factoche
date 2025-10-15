@@ -79,6 +79,9 @@ ${line1}
 ${line2}`;
 };
 
+const groupAccordionItemValue = (group: { uuid: string }) =>
+  `item-group-${group.uuid}`;
+
 const buildProjectFormInitialValue = (
   project: ProjectExtended
 ): z.infer<typeof formSchema> => {
@@ -179,4 +182,5 @@ export {
   buildCsvTemplateData,
   buildProjectFormInitialValue,
   buildUpdateProjectBody,
+  groupAccordionItemValue,
 };

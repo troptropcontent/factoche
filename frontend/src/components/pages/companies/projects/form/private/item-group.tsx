@@ -5,16 +5,25 @@ import { Item } from "./item";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
-import { FormField, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormField, FormMessage } from "@/components/ui/form";
 import { FormControl } from "@/components/ui/form";
-import { FormDescription } from "@/components/ui/form";
 import { FormItem } from "@/components/ui/form";
-import { ItemCardLayout } from "./item-card-layout";
 import { step2FormSchema } from "../project-form.schema";
 import { z } from "zod";
-import { Plus } from "lucide-react";
-import { newItemInput } from "./utils";
+import { CornerLeftUp, CornerRightUp, Trash } from "lucide-react";
+import { groupAccordionItemValue, newItemInput } from "./utils";
 import { findNextPosition } from "../project-form.utils";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const ItemGroup = ({ uuid, remove }: { uuid: string; remove: () => void }) => {
   const { t } = useTranslation();
@@ -53,58 +62,74 @@ const ItemGroup = ({ uuid, remove }: { uuid: string; remove: () => void }) => {
   );
 
   return (
-    <ItemCardLayout remove={remove}>
-      <FormField
-        control={control}
-        name={`groups.${groupInputIndex}.name`}
-        render={({ field }) => (
-          <FormItem className="mb-4 only:mb-0">
-            <FormLabel>
-              {t(
-                "pages.companies.projects.form.composition_step.item_group_name_input_label"
+    <AccordionItem value={groupAccordionItemValue({ uuid })}>
+      <Card className="mb-4 last:mb-0">
+        <CardHeader className="flex flex-row items-center gap-4 bg-muted">
+          <FormField
+            control={control}
+            name={`groups.${groupInputIndex}.name`}
+            render={({ field }) => (
+              <FormItem className="flex-grow">
+                <FormControl>
+                  <Input
+                    placeholder={t(
+                      "pages.companies.projects.form.composition_step.item_group_name_input_description"
+                    )}
+                    className="bg-white"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <p>
+            {t(
+              "pages.companies.projects.form.composition_step.item_group_total"
+            )}
+            {" : "}
+            {t("common.number_in_currency", {
+              amount: groupTotal,
+            })}
+          </p>
+          <Button variant="outline" type="button" onClick={remove}>
+            <Trash />
+          </Button>
+          <AccordionTrigger />
+        </CardHeader>
+        <AccordionContent className="pb-0">
+          <CardContent className="flex p-0">
+            <div className="p-6 flex-grow">
+              {positionnedItems.map((item) => (
+                <Item inputId={item.uuid} key={item.uuid} />
+              ))}
+              {positionnedItems.length === 0 && formState.isSubmitted && (
+                <FormMessage className="mb-4">
+                  {t(
+                    "pages.companies.projects.form.composition_step.no_items_in_group_error"
+                  )}
+                </FormMessage>
               )}
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder={t(
-                  "pages.companies.projects.form.composition_step.item_group_name_input_placeholder"
-                )}
-                {...field}
-              />
-            </FormControl>
-            <FormDescription>
+            </div>
+          </CardContent>
+          <CardFooter className="flex gap-6">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={addNewItemInput}
+              className="border-dashed flex-grow flex gap-2 justify-center"
+              title="Prout"
+            >
+              <CornerLeftUp />
               {t(
-                "pages.companies.projects.form.composition_step.item_group_name_input_description"
+                "pages.companies.projects.form.item_group_add_item_button_label"
               )}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      {positionnedItems.map((item) => (
-        <Item inputId={item.uuid} key={item.uuid} />
-      ))}
-      {positionnedItems.length === 0 && formState.isSubmitted && (
-        <FormMessage className="mb-4">
-          {t(
-            "pages.companies.projects.form.composition_step.no_items_in_group_error"
-          )}
-        </FormMessage>
-      )}
-      <div className="flex items-center justify-between">
-        <Button variant="outline" type="button" onClick={addNewItemInput}>
-          <Plus />{" "}
-          {t("pages.companies.projects.form.item_group_add_item_button_label")}
-        </Button>
-        <p>
-          {t("pages.companies.projects.form.composition_step.item_group_total")}
-          {" : "}
-          {t("common.number_in_currency", {
-            amount: groupTotal,
-          })}
-        </p>
-      </div>
-    </ItemCardLayout>
+              <CornerRightUp />
+            </Button>
+          </CardFooter>
+        </AccordionContent>
+      </Card>
+    </AccordionItem>
   );
 };
 

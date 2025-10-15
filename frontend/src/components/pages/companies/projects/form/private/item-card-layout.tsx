@@ -18,6 +18,7 @@ const ItemCardLayout = ({
           variant="secondary"
           onClick={remove}
           className="h-auto rounded-l-none"
+          type="button"
         >
           <Trash />
         </Button>
