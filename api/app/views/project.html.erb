@@ -59,5 +59,10 @@
     <section class="mb-8">
       <%= render "project_total", project_version_total_excl_tax_amount: @project_version_total_excl_tax_amount, project_version_vat_amount: @project_version_vat_amount %>
     </section>
+
+    <section class="break-before-page prose prose-sm mx-auto">
+      <h1 class="text-center text-xl font-bold"><%= t("views.shared.general_terms_and_conditions") %></h1>
+      <%= sanitize(@project_version.general_terms_and_conditions) %>
+    </section>
   </main>
 <% end %>

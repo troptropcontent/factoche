@@ -3,6 +3,7 @@ module Organization
     class CreateContract < Dry::Validation::Contract
       params do
         required(:retention_guarantee_rate).filled(:decimal)
+        required(:general_terms_and_conditions).type(:string)
         required(:groups).type(:array).each do
           schema do
             required(:name).filled(:string)

@@ -27,6 +27,8 @@ fr:
       label: "Adresse"
       value: "%{street} %{zip} %{city}"
   views:
+    shared:
+      general_terms_and_conditions: "Conditions générales de ventes"
     accounting:
       invoice:
         shared:

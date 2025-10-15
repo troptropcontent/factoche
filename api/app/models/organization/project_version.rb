@@ -17,6 +17,7 @@ class Organization::ProjectVersion < ApplicationRecord
   has_one :draft_order, class_name: "Organization::DraftOrder", foreign_key: :original_project_version_id, dependent: :destroy
 
   validates :retention_guarantee_rate, presence: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+  validates :general_terms_and_conditions, presence: true
 
   validates :number, presence: true, uniqueness: { scope: :project_id }
   before_validation :set_number_to_next_available_number, on: :create

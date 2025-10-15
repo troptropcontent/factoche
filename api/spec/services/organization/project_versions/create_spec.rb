@@ -18,6 +18,7 @@ RSpec.describe Organization::ProjectVersions::Create do
             let(:params) do
               {
                 retention_guarantee_rate: 0.05,
+                general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION DU PROJET</h1>',
                 items: [
                   {
                     name: 'Item 1',
@@ -58,6 +59,7 @@ RSpec.describe Organization::ProjectVersions::Create do
             let(:params) do
               {
                 retention_guarantee_rate: 0.05,
+                general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION DU PROJET</h1>',
                 bank_detail_id: company.bank_details.first.id,
                 items: [
                   {
@@ -107,6 +109,7 @@ RSpec.describe Organization::ProjectVersions::Create do
                 {
                   retention_guarantee_rate: 0.05,
                   bank_detail_id: company.bank_details.first.id,
+                  general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION DU PROJET</h1>',
                   items: [
                     {
                       name: 'Item 1',
@@ -134,6 +137,7 @@ RSpec.describe Organization::ProjectVersions::Create do
               let(:params) do
                 {
                   retention_guarantee_rate: 0.05,
+                  general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION DU PROJET</h1>',
                   bank_detail_id: company.bank_details.first.id,
                   items: [
                     {
