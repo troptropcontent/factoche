@@ -54,7 +54,7 @@ module Organization
           field "description", :string, required: false
         end
 
-        field "snapshot_number", :integer
+        field "snapshot_number", :integer, required: false # temporary, as for now some old invoices do not have a snapshot number
         field "project_name", :string
         field "project_version_retention_guarantee_rate", :decimal
         field "project_version_number", :integer
