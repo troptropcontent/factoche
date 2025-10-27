@@ -60,7 +60,7 @@ module Organization
       def map_params(validated_params)
         {
           retention_guarantee_rate: validated_params[:retention_guarantee_rate],
-          general_terms_and_conditions: @last_version.general_terms_and_conditions,
+          general_terms_and_conditions: @last_version.general_terms_and_conditions || @project.company.config.general_terms_and_conditions, # use company's general terms and condition for legacy project that have not been created with general terms and conditions
           bank_detail_id: validated_params[:bank_detail_id],
           items: combine_items(validated_params),
           groups: validated_params[:groups]
