@@ -73,7 +73,7 @@ fr:
           title: "Facture proforma"
           number: "Numéro de facture proforma"
         published:
-          title: "Facture de situation"
+          title: "Facture"
           number: "Numéro de facture"
         credit_note:
           title: "Avoir"
