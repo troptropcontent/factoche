@@ -2,6 +2,11 @@ module Accounting
   module Proformas
     class Create
     include ApplicationService
+
+      # Acceptable tolerance for financial calculations (in cents)
+      # to account for floating-point precision errors
+      AMOUNT_TOLERANCE = 0.01
+
        class Contract < Dry::Validation::Contract
           params do
             required(:company).hash(CompanySchema)
@@ -101,17 +106,17 @@ module Accounting
 
       def ensure_totals_are_correct!(draft_invoice)
         expected_total_excl_tax_amount = draft_invoice.lines.sum("quantity * unit_price_amount")
-        unless (expected_total_excl_tax_amount - draft_invoice.total_excl_tax_amount).round(2).zero?
+        unless (expected_total_excl_tax_amount - draft_invoice.total_excl_tax_amount).abs < AMOUNT_TOLERANCE
           raise Error::UnprocessableEntityError, "Total excluding tax amount mismatch: expected #{expected_total_excl_tax_amount}, got #{draft_invoice.total_excl_tax_amount}"
         end
 
         expected_total_including_tax_amount = draft_invoice.lines.sum("quantity * unit_price_amount * (1 + tax_rate)")
-        unless (draft_invoice.total_including_tax_amount - expected_total_including_tax_amount).round(2).zero?
+        unless (draft_invoice.total_including_tax_amount - expected_total_including_tax_amount).abs < AMOUNT_TOLERANCE
           raise Error::UnprocessableEntityError, "Total including tax amount mismatch: expected #{expected_total_including_tax_amount}, got #{draft_invoice.total_including_tax_amount}"
         end
 
         expected_total_excl_retention_guarantee_amount = expected_total_including_tax_amount * (1 - draft_invoice.context.fetch("project_version_retention_guarantee_rate").to_d)
-        unless (draft_invoice.total_excl_retention_guarantee_amount - expected_total_excl_retention_guarantee_amount).round(2).zero?
+        unless (draft_invoice.total_excl_retention_guarantee_amount - expected_total_excl_retention_guarantee_amount).abs < AMOUNT_TOLERANCE
           raise StandardError, "Total excluding retention guarantee amount mismatch: expected #{expected_total_excl_retention_guarantee_amount}, got #{draft_invoice.total_excl_retention_guarantee_amount}"
         end
       end
