@@ -9,6 +9,8 @@ module Error
         private
 
         def render_application_error(error:, status:, code:, message:, details: nil)
+          Sentry.capture_exception(error)
+
           respond_to do |format|
             format.html do
               render "errors/error", locals: { error: error, status: status, code: code, message: message, details: details }, status: status
