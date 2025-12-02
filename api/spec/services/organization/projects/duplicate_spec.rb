@@ -72,6 +72,38 @@ module Organization
               end
             end
 
+            context "when the project has discounts" do
+              let!(:original_project_version_item) { FactoryBot.create(:item, project_version: original_project_version) }
+              let!(:original_discount) do
+                FactoryBot.create(:discount,
+                  project_version: original_project_version,
+                  kind: "fixed_amount",
+                  value: 100,
+                  amount: 100,
+                  position: 1
+                )
+              end
+
+              it_behaves_like 'a success'
+
+              it "creates a new #{scenario[:new_project_class].name}, a new ProjectVersion, n Item and n Discount" do
+                expect {
+                  result
+                }.to change(scenario[:new_project_class], :count).by(1)
+                 .and change(ProjectVersion, :count).by(1)
+                 .and change(Item, :count).by(1)
+                 .and change(Organization::Discount, :count).by(1)
+              end
+
+              it "copies the attributes of the original discount into the new discount" do
+                new_discount = result.data[:new_project_version].discounts.first
+                expect(new_discount).to have_attributes(original_discount.attributes.except(
+                  "id", "project_version_id", "created_at", "updated_at"
+                ))
+                expect(new_discount.original_discount_uuid).to eq(original_discount.original_discount_uuid)
+              end
+            end
+
             context "when the project have standalone items" do
               let!(:original_project_version_item) { FactoryBot.create(:item, project_version: original_project_version) }
 

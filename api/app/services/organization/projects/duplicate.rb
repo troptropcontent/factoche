@@ -27,6 +27,7 @@ module Organization
           create_new_project!(new_record_class)
           create_new_project_version!
           copy_groups_and_items!
+          copy_discounts!
 
           { new_project: @new_project, new_project_version: @new_project_version }
         end
@@ -101,6 +102,15 @@ module Organization
         @original_project_version.items.where(item_group_id: nil).order(:position).each do |original_item|
           copy_item!(original_item)
         end
+      end
+
+      def copy_discounts!
+        result = Discounts::Duplicate.call(
+          original_project_version: @original_project_version,
+          new_project_version: @new_project_version
+        )
+
+        raise result.error if result.failure?
       end
     end
   end
