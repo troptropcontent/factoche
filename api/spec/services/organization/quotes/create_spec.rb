@@ -129,6 +129,58 @@ module Organization
           end
         end
 
+        context 'when creating with discounts' do
+          let(:params_with_discounts) do
+            valid_params.merge(
+              discounts: [
+                {
+                  kind: 'fixed_amount',
+                  value: 50,
+                  position: 1,
+                  name: 'Early payment discount'
+                },
+                {
+                  kind: 'percentage',
+                  value: 0.05,
+                  position: 2,
+                  name: 'Volume discount'
+                }
+              ]
+            )
+          end
+
+          it 'creates a quote with discounts' do
+            expect {
+              described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)
+            }.to change(Quote, :count).by(1)
+              .and change(Organization::Discount, :count).by(2)
+          end
+
+          it 'sets the correct discount attributes', :aggregate_failures do
+            result = described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)
+            quote = result.data
+            version = quote.versions.first
+            discounts = version.discounts.order(:position)
+
+            expect(discounts.count).to eq(2)
+
+            first_discount = discounts.first
+            expect(first_discount.kind).to eq('fixed_amount')
+            expect(first_discount.value).to eq(50)
+            expect(first_discount.amount).to eq(50)
+            expect(first_discount.position).to eq(1)
+            expect(first_discount.name).to eq('Early payment discount')
+
+            second_discount = discounts.second
+            expect(second_discount.kind).to eq('percentage')
+            expect(second_discount.value).to eq(0.05)
+            # Total is 600 (500+100), after first discount: 550, then 5% of 550 = 27.50
+            expect(second_discount.amount).to eq(27.50)
+            expect(second_discount.position).to eq(2)
+            expect(second_discount.name).to eq('Volume discount')
+          end
+        end
+
         context 'when params are invalid' do
           context 'with missing required fields' do
             let(:invalid_params) { valid_params.except(:name) }

@@ -14,6 +14,7 @@ module Organization
         transaction do
           create_version!
           create_items_structure!
+          create_discounts!
 
           success(version: @version, items: @items, groups: @groups)
         end
@@ -87,6 +88,33 @@ module Organization
           project_version: version,
           item_group: group
         }
+      end
+
+      def create_discounts!
+        return unless @validated_params[:discounts].present?
+
+        # Calculate discount amounts based on items total
+        items_total = @validated_params[:items].sum { |item| item[:quantity] * item[:unit_price_amount] }
+
+        calculation_result = Discounts::CalculateAmounts.call(
+          items_total: items_total,
+          discounts: @validated_params[:discounts]
+        )
+
+        raise calculation_result.error if calculation_result.failure?
+
+        # Create discount records with calculated amounts
+        calculation_result.data[:discounts].each do |discount_data|
+          Organization::Discount.create!(
+            project_version: @version,
+            kind: discount_data[:kind],
+            value: discount_data[:value],
+            amount: discount_data[:amount],
+            position: discount_data[:position],
+            name: discount_data[:name],
+            original_discount_uuid: SecureRandom.uuid
+          )
+        end
       end
     end
   end

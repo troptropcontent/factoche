@@ -101,6 +101,63 @@ RSpec.describe Organization::ProjectVersions::Create do
             end
           end
 
+          context 'with discounts' do
+            let(:params) do
+              {
+                retention_guarantee_rate: 0.05,
+                general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION DU PROJET</h1>',
+                items: [
+                  {
+                    name: 'Item 1',
+                    description: 'Description 1',
+                    position: 1,
+                    quantity: 2,
+                    unit: 'days',
+                    unit_price_amount: 100.0,
+                    tax_rate: 0.2
+                  }
+                ],
+                groups: [],
+                discounts: [
+                  {
+                    kind: 'fixed_amount',
+                    value: 30,
+                    position: 1,
+                    name: 'Early bird discount'
+                  },
+                  {
+                    kind: 'percentage',
+                    value: 0.10,
+                    position: 2,
+                    name: 'Black friday'
+                  }
+                ]
+              }
+            end
+
+            it 'creates a new version with discounts', :aggregate_failures do
+              expect(result).to be_success
+              expect(result.data[:version]).to be_persisted
+              expect(result.data[:version].discounts.count).to eq 2
+
+              first_discount = result.data[:version].discounts.order(:position).first
+              expect(first_discount.kind).to eq 'fixed_amount'
+              expect(first_discount.value).to eq 30
+              expect(first_discount.amount).to eq 30
+              expect(first_discount.position).to eq 1
+              expect(first_discount.name).to eq 'Early bird discount'
+              expect(first_discount.original_discount_uuid).to be_present
+
+              second_discount = result.data[:version].discounts.order(:position).second
+              expect(second_discount.kind).to eq 'percentage'
+              expect(second_discount.value).to eq 0.10
+              expect(second_discount.amount).to eq 17
+              expect(second_discount.position).to eq 2
+              expect(second_discount.name).to eq 'Black friday'
+              expect(second_discount.original_discount_uuid).to be_present
+            end
+          end
+
           context 'when original_item_uuid is provided for some items' do
             context "when the original_item_uuid belongs to a previous version of the project" do
               let(:project_version) { FactoryBot.create(:project_version, project: project, total_excl_tax_amount: 0) }

@@ -25,6 +25,14 @@ module Organization
             optional(:group_uuid).filled(:string)
           end
         end
+        optional(:discounts).array do
+          schema do
+            required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
+            required(:value).filled(:decimal)
+            required(:position).filled(:integer)
+            optional(:name).type(:string)
+          end
+        end
       end
       rule(:items).each do
         group_uuid = value[:group_uuid]
