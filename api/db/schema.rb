@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_02_140502) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_02_141503) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_140502) do
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "accounting_financial_transaction_status", ["draft", "voided", "posted", "cancelled"]
   create_enum "credit_note_status", ["draft", "published"]
+  create_enum "financial_transaction_line_kind", ["charge", "discount"]
   create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
   create_enum "organization_discount_kind", ["percentage", "fixed_amount"]
@@ -76,9 +77,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_140502) do
     t.bigint "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.enum "kind", default: "charge", null: false, enum_type: "financial_transaction_line_kind"
     t.index ["financial_transaction_id"], name: "idx_on_financial_transaction_id_7c8e3e3158"
     t.index ["group_id"], name: "index_accounting_financial_transaction_lines_on_group_id"
     t.index ["holder_id"], name: "index_accounting_financial_transaction_lines_on_holder_id"
+    t.index ["kind"], name: "index_accounting_financial_transaction_lines_on_kind"
   end
 
   create_table "accounting_financial_transactions", force: :cascade do |t|
