@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_02_140502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
   create_enum "credit_note_status", ["draft", "published"]
   create_enum "invoice_status", ["draft", "published", "cancelled"]
   create_enum "legal_form", ["sasu", "sas", "eurl", "sa", "auto_entrepreneur"]
+  create_enum "organization_discount_kind", ["percentage", "fixed_amount"]
 
   create_table "accounting_financial_transaction_details", force: :cascade do |t|
     t.bigint "financial_transaction_id", null: false
@@ -217,6 +218,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
     t.index ["settings"], name: "index_organization_company_configs_on_settings", using: :gin
   end
 
+  create_table "organization_discounts", force: :cascade do |t|
+    t.bigint "project_version_id", null: false
+    t.enum "kind", null: false, enum_type: "organization_discount_kind"
+    t.decimal "value", precision: 15, scale: 6, null: false
+    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.integer "position", null: false
+    t.uuid "original_discount_uuid", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["original_discount_uuid"], name: "index_organization_discounts_on_original_discount_uuid"
+    t.index ["project_version_id", "position"], name: "index_discounts_on_version_and_position", unique: true
+    t.index ["project_version_id"], name: "index_organization_discounts_on_project_version_id"
+  end
+
   create_table "organization_item_groups", force: :cascade do |t|
     t.bigint "project_version_id", null: false
     t.string "name", null: false
@@ -310,6 +326,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
   add_foreign_key "organization_bank_details", "organization_companies", column: "company_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
+  add_foreign_key "organization_discounts", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
   add_foreign_key "organization_items", "organization_project_versions", column: "project_version_id"

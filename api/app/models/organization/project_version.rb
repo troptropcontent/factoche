@@ -8,6 +8,8 @@ class Organization::ProjectVersion < ApplicationRecord
   has_many :item_groups, dependent: :destroy, class_name: "Organization::ItemGroup"
   accepts_nested_attributes_for :item_groups
 
+  has_many :discounts, dependent: :destroy, class_name: "Organization::Discount"
+
   has_many :ungrouped_items, -> { where(item_group_id: nil) }, class_name: "Organization::Item"
   accepts_nested_attributes_for :ungrouped_items
 
