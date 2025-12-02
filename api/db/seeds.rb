@@ -30,6 +30,8 @@ ActiveRecord::Base.transaction do
 
   Organization::CompanyConfig.create!(company: company, payment_term_days: 30, default_vat_rate: 0.2, payment_term_accepted_methods: [ "transfer" ], general_terms_and_conditions: '<h1>CONDITIONS GÉNÉRALES DE VENTE ET DE PRESTATION</h1>')
 
+  bank_detail = Organization::BankDetail.create!(company: company, name: "CIC", iban: "FR76123456778", bic: "14556")
+
   Organization::Member.create!(
     user_id: user.id,
     company_id: company.id
@@ -48,8 +50,11 @@ ActiveRecord::Base.transaction do
     vat_number: "1234"
   )
 
-  result = Organization::Quotes::Create.call(company.id, client.id, {
+  result = Organization::Quotes::Create.call(company.id, client.id, bank_detail.id, {
     name: "Rénovation énergétique de 41 logements 1 et 3 rue Hugues Kraft",
+    address_street: "15 rue des mouette",
+    address_zipcode: "64200",
+    address_city: "Biarritz",
     retention_guarantee_rate: 0.05,
     groups: [
       group_1 = {
@@ -244,7 +249,7 @@ ActiveRecord::Base.transaction do
   })
 
   if result.failure?
-    raise "Unable to create quote : #{r.error}"
+    raise "Unable to create quote : #{result.error}"
   end
 
   quote = result.data
