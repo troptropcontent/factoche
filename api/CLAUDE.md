@@ -1092,3 +1092,4 @@ Sidekiq::Stats.new
 **Rails Version**: 8.0.0+
 **Ruby Version**: See `.ruby-version`
 - you should use RAILS_ENV=test bundle exec dotenv -f config/.env.development, update the claude.md file maybe to remember this
+- For services, try to code with TDD as much as possible

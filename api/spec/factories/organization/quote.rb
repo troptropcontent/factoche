@@ -1,5 +1,8 @@
 FactoryBot.define do
   factory :quote, class: 'Organization::Quote' do
+    transient do
+      version_number { 1 }
+    end
     company { nil }
     client { nil }
     sequence(:number) { |n| n }
@@ -7,8 +10,9 @@ FactoryBot.define do
     sequence(:address_street) { |n| "10 Rue de la Paix Apt #{n}" }
     address_zipcode { "75002" }
     address_city { "Paris" }
+
     trait :with_version do
-      after(:create) { |quote| create(:project_version, project: quote) }
+      after(:create) { |quote| create(:project_version, project: quote, number: version_number) }
     end
   end
 end

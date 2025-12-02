@@ -2,7 +2,7 @@ class Organization::Discount < ApplicationRecord
   belongs_to :project_version, class_name: "Organization::ProjectVersion"
 
   # Enum for discount kinds
-  enum kind: {
+  enum :kind, {
     percentage: "percentage",
     fixed_amount: "fixed_amount"
   }
