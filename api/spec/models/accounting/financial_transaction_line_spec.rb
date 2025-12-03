@@ -8,6 +8,10 @@ RSpec.describe Accounting::FinancialTransactionLine, type: :model do
     it { is_expected.to belong_to(:financial_transaction).class_name('Accounting::FinancialTransaction') }
   end
 
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:kind).backed_by_column_of_type(:enum).with_values(charge: "charge", discount: "discount") }
+  end
+
   describe 'validations' do
     subject(:line) {
       FactoryBot.build(:financial_transaction_line, financial_transaction_id: invoice.id)
