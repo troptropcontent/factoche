@@ -18,7 +18,8 @@ module Api
 
         # PUT    /api/v1/organization/orders/:id
         def update
-          result = ::Organization::Orders::Update.call(@order.id, update_order_params.to_h)
+          bank_detail = @order.company.bank_details.find(params.require(:order).require(:bank_detail_id))
+          result = ::Organization::Orders::Update.call(@order.id, params[:order].to_unsafe_h.merge({ bank_detail_id: bank_detail.id }))
           raise result.error if result.failure?
 
           render json: ::Organization::Projects::Orders::ShowDto.new({ result: result.data }).to_json
@@ -44,43 +45,7 @@ module Api
         end
 
         private
-
-        def update_order_params
-          params.require(:order).permit(
-            :name,
-            :description,
-            :retention_guarantee_rate,
-            :bank_detail_id,
-            :po_number,
-            :address_street,
-            :address_zipcode,
-            :address_city,
-            new_items: [
-              :group_uuid,
-              :name,
-              :description,
-              :quantity,
-              :unit,
-              :unit_price_amount,
-              :position,
-              :tax_rate
-            ],
-            updated_items: [
-              :original_item_uuid,
-              :group_uuid,
-              :quantity,
-              :unit_price_amount,
-              :position,
-              :tax_rate
-            ],
-            groups: [
-              :uuid,
-              :name,
-              :description,
-              :position
-            ]
-          )
-        end
+        # Strong params removed - validation is handled by dry-validation contracts in services
       end
     end
   end
