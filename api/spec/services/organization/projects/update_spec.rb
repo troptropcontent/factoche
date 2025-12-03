@@ -305,7 +305,8 @@ RSpec.describe Organization::Projects::Update do
                 original_discount_uuid: "invalid-discount-uuid-123",
                 kind: "percentage",
                 value: 0.1,
-                position: 1
+                position: 1,
+                name: "Test Discount"
               }
             ]
           }

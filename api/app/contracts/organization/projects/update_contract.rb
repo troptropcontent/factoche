@@ -38,14 +38,14 @@ module Organization
           required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
           required(:value).filled(:decimal)
           required(:position).filled(:integer)
-          optional(:name).maybe(:string)
+          required(:name).maybe(:string)
         end
         optional(:updated_discounts).array(:hash) do
           required(:original_discount_uuid).filled(:string)
           required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
           required(:value).filled(:decimal)
           required(:position).filled(:integer)
-          optional(:name).maybe(:string)
+          required(:name).maybe(:string)
         end
       end
 

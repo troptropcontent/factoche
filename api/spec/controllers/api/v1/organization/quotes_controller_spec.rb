@@ -3,7 +3,7 @@ require "swagger_helper"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_item_groups"
 require 'support/shared_contexts/organization/a_company_with_a_client_and_a_member'
 require_relative "shared_examples/an_authenticated_endpoint"
-
+# rubocop:disable RSpec/ExampleLength
 RSpec.describe Api::V1::Organization::QuotesController, type: :request do
   define_negated_matcher :not_change, :change
   path "/api/v1/organization/companies/{company_id}/quotes" do
@@ -151,9 +151,36 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
               },
               required: [ "uuid", "name", "position" ]
             }
+          },
+          new_discounts: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                name: { type: :string },
+                kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
+                value: { type: :number, format: :decimal },
+                position: { type: :integer }
+              },
+              required: [ "name", "kind", "value", "position" ]
+            }
+          },
+          updated_discounts: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                original_discount_uuid: { type: :string },
+                name: { type: :string },
+                kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
+                value: { type: :number, format: :decimal },
+                position: { type: :integer }
+              },
+              required: [ "name", "kind", "value", "position" ]
+            }
           }
         },
-        required: [ "name", "retention_guarantee_rate", "items" ]
+        required: [ "name", "retention_guarantee_rate", "new_items", "updated_items", "new_discounts", "updated_discounts" ]
       }
 
       include_context 'a company with a client and a member'
@@ -915,3 +942,4 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength
