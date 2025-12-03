@@ -34,6 +34,19 @@ module Organization
           optional(:description).maybe(:string)
           required(:position).filled(:integer)
         end
+        optional(:new_discounts).array(:hash) do
+          required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
+          required(:value).filled(:decimal)
+          required(:position).filled(:integer)
+          optional(:name).maybe(:string)
+        end
+        optional(:updated_discounts).array(:hash) do
+          required(:original_discount_uuid).filled(:string)
+          required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
+          required(:value).filled(:decimal)
+          required(:position).filled(:integer)
+          optional(:name).maybe(:string)
+        end
       end
 
       rule(:new_items, :updated_items).each do
@@ -49,7 +62,8 @@ module Organization
 
       rule(:groups).each do
         group_uuid = value[:uuid]
-        items = values[:new_items] + values[:updated_items]
+
+        items = values.fetch(:new_items, []) + values.fetch(:updated_items)
         unless items.find { |item| item[:group_uuid] == group_uuid }
           key([ key.path.first, key.path.last, :uuid ])
             .failure("is not used by any items - each group must contain at least one item")

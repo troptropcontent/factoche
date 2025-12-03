@@ -54,10 +54,11 @@ module Organization
           discount_amount = calculate_discount_amount(discount, running_total)
           running_total -= discount_amount
 
-          calculated_discounts << discount.merge(
+          merged_discount = discount.merge(
             amount: discount_amount.round(2),
             running_total_after: running_total.round(2)
           )
+          calculated_discounts << merged_discount
         end
 
         {

@@ -4,6 +4,7 @@ module Organization
       class Line < OpenApiDto
         field "holder_id", :string
         field "excl_tax_amount", :decimal
+        field "kind", :enum, subtype: [ "charge", "discount" ]
       end
 
       class Detail < OpenApiDto
@@ -54,6 +55,15 @@ module Organization
           field "description", :string, required: false
         end
 
+        class ProjectVersionDiscount < OpenApiDto
+          field "original_discount_uuid", :string
+          field "kind", :enum, subtype: [ "percentage", "fixed_amount" ]
+          field "value", :decimal
+          field "amount", :decimal
+          field "position", :integer
+          field "name", :string, required: false
+        end
+
         field "snapshot_number", :integer, required: false # temporary, as for now some old invoices do not have a snapshot number
         field "project_name", :string
         field "project_version_retention_guarantee_rate", :decimal
@@ -63,6 +73,7 @@ module Organization
         field "project_total_previously_billed_amount", :decimal
         field "project_version_items", :array, subtype: ProjectVersionItem
         field "project_version_item_groups", :array, subtype: ProjectVersionItemGroup
+        field "project_version_discounts", :array, subtype: ProjectVersionDiscount
       end
 
       field "id", :integer

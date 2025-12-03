@@ -112,7 +112,7 @@ module Organization
             amount: discount_data[:amount],
             position: discount_data[:position],
             name: discount_data[:name],
-            original_discount_uuid: SecureRandom.uuid
+            original_discount_uuid: discount_data[:original_discount_uuid] || SecureRandom.uuid
           )
         end
       end

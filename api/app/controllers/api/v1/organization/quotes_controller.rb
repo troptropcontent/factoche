@@ -17,8 +17,7 @@ module Api
         # PUT    /api/v1/organization/quotes/:id
         def update
           bank_detail = @quote.company.bank_details.find(params.require(:quote).require(:bank_detail_id))
-
-          result = ::Organization::Quotes::Update.call(@quote, update_quote_params.to_h.merge({ bank_detail_id: bank_detail.id }))
+          result = ::Organization::Quotes::Update.call(@quote, params[:quote].to_unsafe_h.merge({ bank_detail_id: bank_detail.id }))
           raise result.error if result.failure?
 
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json
@@ -30,7 +29,7 @@ module Api
           client = company.clients.find(params[:client_id])
           bank_detail = company.bank_details.find(params[:bank_detail_id])
 
-          result = ::Organization::Quotes::Create.call(company.id, client.id, bank_detail.id, quote_params.to_h)
+          result = ::Organization::Quotes::Create.call(company.id, client.id, bank_detail.id, params[:quote].to_unsafe_h)
           raise result.error if result.failure?
 
           render json: ::Organization::Projects::Quotes::ShowDto.new({ result: result.data }).to_json, status: :created
@@ -47,70 +46,7 @@ module Api
         end
 
         private
-
-        def quote_params
-          params.require(:quote).permit(
-            :name,
-            :description,
-            :retention_guarantee_rate,
-            :po_number,
-            :address_street,
-            :address_zipcode,
-            :address_city,
-            items: [
-              :group_uuid,
-              :name,
-              :description,
-              :quantity,
-              :unit,
-              :unit_price_amount,
-              :position,
-              :tax_rate
-            ],
-            groups: [
-              :uuid,
-              :name,
-              :description,
-              :position
-            ]
-          )
-        end
-
-        def update_quote_params
-          params.require(:quote).permit(
-            :name,
-            :description,
-            :retention_guarantee_rate,
-            :po_number,
-            :address_street,
-            :address_zipcode,
-            :address_city,
-            new_items: [
-              :group_uuid,
-              :name,
-              :description,
-              :quantity,
-              :unit,
-              :unit_price_amount,
-              :position,
-              :tax_rate
-            ],
-            updated_items: [
-              :original_item_uuid,
-              :group_uuid,
-              :quantity,
-              :unit_price_amount,
-              :position,
-              :tax_rate
-            ],
-            groups: [
-              :uuid,
-              :name,
-              :description,
-              :position
-            ]
-          )
-        end
+        # Strong params removed - validation is handled by dry-validation contracts in services
       end
     end
   end
