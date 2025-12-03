@@ -52,7 +52,8 @@ module Accounting
           project_total_amount: find_project_version_total(project_version_items),
           project_total_previously_billed_amount: project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) },
           project_version_items: project_version_items,
-          project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups))
+          project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups)),
+          project_version_discounts: build_project_version_discounts_data(project_version.fetch(:discounts, []))
         }
       end
 
@@ -67,7 +68,8 @@ module Accounting
           project_total_amount: find_project_version_total(project_version_items),
           project_total_previously_billed_amount: project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) },
           project_version_items: project_version_items,
-          project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups))
+          project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups)),
+          project_version_discounts: build_project_version_discounts_data(project_version.fetch(:discounts, []))
         }
       end
 
@@ -111,6 +113,19 @@ module Accounting
         end
       end
 
+      def build_project_version_discounts_data(project_version_discounts)
+        project_version_discounts.map do |discount|
+          {
+            original_discount_uuid: discount.fetch(:original_discount_uuid),
+            kind: discount.fetch(:kind),
+            value: discount.fetch(:value),
+            amount: discount.fetch(:amount),
+            position: discount.fetch(:position),
+            name: discount.fetch(:name)
+          }
+        end
+      end
+
       def find_previously_invoiced_amount_for_item(original_item_uuids, issue_date)
         Accounting::FinancialTransactionLine.joins(:financial_transaction)
           .where(
@@ -126,27 +141,53 @@ module Accounting
         return @totals if @totals
 
         project_version = @validated_params[:project_version]
-        new_invoice_items = @validated_params[:new_invoice_items]
+        invoice_items = @validated_params[:new_invoice_items]
+        discounts = project_version.fetch(:discounts, [])
         retention_guarantee_rate = project_version[:retention_guarantee_rate].to_d
+        project_version_items_total = project_version.fetch(:items).sum { |item| item.fetch(:quantity).to_d * item.fetch(:unit_price_amount).to_d }
+        invoice_total_excluding_taxes_before_discounts = invoice_items.sum { |item| item.with_indifferent_access.fetch(:invoice_amount).to_d }
 
-        @totals = new_invoice_items.each_with_object({
+        # Calculate the invoice proportion
+        invoice_proportion = if project_version_items_total > 0
+          invoice_total_excluding_taxes_before_discounts / project_version_items_total
+        else
+          0.to_d
+        end
+
+        # Calculate prorated discount by processing each discount individually and rounding
+        # This matches the logic in BuildLinesAttributes
+        prorated_discount_to_spread_on_invoice = discounts.sum do |discount|
+          discount_amount = discount.fetch(:amount).to_d
+          (discount_amount * invoice_proportion).round(2)
+        end
+
+        # Calculate totals, distributing the discount proportionally across items
+        @totals = invoice_items.each_with_object({
           total_excl_tax_amount: 0,
           total_including_tax_amount: 0,
-          total_excl_retention_guarantee_amount: 0
-        }) do |new_invoice_item, totals|
+          total_excl_retention_guarantee_amount: 0,
+          total_excl_tax_amount_before_discount: 0
+        }) do |invoice_item, totals|
           project_version_item = project_version.fetch(:items).find { |item|
-            item.fetch(:original_item_uuid) == new_invoice_item.with_indifferent_access.fetch(:original_item_uuid)
+            item.fetch(:original_item_uuid) == invoice_item.with_indifferent_access.fetch(:original_item_uuid)
           }
           project_version_item_tax_rate = project_version_item.fetch(:tax_rate).to_d
 
-          new_invoice_item_excl_tax_amount = new_invoice_item.with_indifferent_access.fetch(:invoice_amount).to_d
-          new_invoice_item_including_tax_amount = new_invoice_item_excl_tax_amount * (1 + project_version_item_tax_rate)
-          new_invoice_item_excl_retention_guarantee_amount = new_invoice_item_including_tax_amount * (1 - retention_guarantee_rate)
+          invoice_amount = invoice_item[:invoice_amount].to_d
+          prorated_discount = if invoice_total_excluding_taxes_before_discounts > 0
+            (invoice_amount / invoice_total_excluding_taxes_before_discounts) * prorated_discount_to_spread_on_invoice
+          else
+            0.to_d
+          end
+          invoice_amount_including_discount = invoice_amount - prorated_discount
+          invoice_amount_including_tax = invoice_amount_including_discount * (1 + project_version_item_tax_rate)
+          totals[:total_excl_tax_amount_before_discount] += invoice_amount
+          totals[:total_excl_tax_amount] += invoice_amount_including_discount
+          totals[:total_including_tax_amount] += invoice_amount_including_tax
+          totals[:total_excl_retention_guarantee_amount] += invoice_amount_including_tax * (1 - retention_guarantee_rate)
+        end
 
-          totals[:total_excl_tax_amount] += new_invoice_item_excl_tax_amount
-          totals[:total_including_tax_amount] += new_invoice_item_including_tax_amount
-          totals[:total_excl_retention_guarantee_amount] += new_invoice_item_excl_retention_guarantee_amount
-        end.transform_values { |total| total.round(2) }
+        @totals = @totals.transform_values { |total| total.round(2) }
       end
     end
   end

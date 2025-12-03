@@ -17,7 +17,12 @@ module Accounting
         let(:project_version_id) { 2 }
         let(:first_item_uuid) { "item-1" }
         let(:project) { FactoryBot.build(:accounting_project_hash, name: "Super Project", address_city: "Biarritz", address_zipcode: "64200", address_street: "24 rue des mouettes")  }
-        let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: project_version_id, item_count: 2, item_group_ids: [ 1, 2 ]) }
+        let(:project_version) { FactoryBot.build(:accounting_project_version_hash, id: project_version_id, items: items, discounts: discounts, item_group_ids: [ 1, 2 ]) }
+        let(:discounts) { [] }
+        let(:items) { [
+          FactoryBot.create(:accounting_project_version_item_hash, group_id: 1),
+          FactoryBot.create(:accounting_project_version_item_hash, group_id: 2)
+        ]}
         let(:company) { {
           id: company_id,
           name: "ACME Corp",
@@ -60,7 +65,7 @@ module Accounting
           # Create a previous proforma
           previous_posted_proforma_items = [ {
             original_item_uuid: project_version.dig(:items, 0, :original_item_uuid),
-            invoice_amount: 50
+            invoice_amount: "50"
             } ]
 
           result = described_class.call({ company:, client:, project:, project_version:, new_invoice_items: previous_posted_proforma_items, issue_date:, snapshot_number: })
@@ -149,6 +154,70 @@ module Accounting
             expect(Accounting::FinancialTransactions::GenerateAndAttachPdfJob)
               .to have_received(:perform_async)
               .with({ "financial_transaction_id" => proforma.id })
+          end
+
+          context "when there is discounts" do
+            let(:items) { [
+              FactoryBot.build(:accounting_project_version_item_hash, group_id: 1, quantity: 1, unit_price_amount: 5000),
+              FactoryBot.build(:accounting_project_version_item_hash, group_id: 2, quantity: 1, unit_price_amount: 5000)
+            ]} # total of the project => 5000 + 5000 => 10000
+            let(:proforma_items) { [ {
+              original_item_uuid: project_version.dig(:items, 0, :original_item_uuid),
+              invoice_amount: "3000"
+            } ] } # total of the invoice => 3000 (30% of project)
+            let(:discounts) { [
+              FactoryBot.build(:accounting_project_version_discount_hash, amount: 300.to_d),
+              FactoryBot.build(:accounting_project_version_discount_hash, amount: 200.to_d)
+            ] } # total of the discounts => 500
+
+            it { is_expected.to be_success }
+
+            it 'includes discounts in context', :aggregate_failures do
+              proforma = result.data
+
+              expect(proforma.context["project_version_discounts"]).to be_present
+              expect(proforma.context["project_version_discounts"].length).to eq(2)
+
+              first_discount_context = proforma.context["project_version_discounts"].first
+              expect(first_discount_context).to include(
+                "kind" => "percentage",
+                "amount" => "300.0"
+              )
+            end
+
+            # rubocop:disable RSpec/ExampleLength
+            it 'creates the relevant invoice lines with prorated discounts', :aggregate_failures do
+              # Project total: 5000 + 5000 = 10000€
+              # Invoice amount: 3000€
+              # Invoice proportion: 3000/10000 = 0.3 (30%)
+              # Discount 1 prorated: 300 × 0.3 = 90€
+              # Discount 2 prorated: 200 × 0.3 = 60€
+              # Total prorated discount: 150€
+
+              proforma = result.data
+              expect(proforma.lines.count).to eq(3) # 1 charge + 2 discounts
+
+              charge_line = proforma.lines.charge.first
+              expect(charge_line.excl_tax_amount).to eq(3000.to_d)
+              expect(charge_line.quantity).to eq(0.6.to_d) # 3000€ (invoice amount) / 5000€ (unit price)
+              expect(charge_line.kind).to eq("charge")
+
+              discount_lines = proforma.lines.discount.order(:id)
+              expect(discount_lines.count).to eq(2)
+
+              first_discount = discount_lines.first
+              expect(first_discount.excl_tax_amount).to be < 0
+              expect(first_discount.excl_tax_amount.abs).to eq(90.to_d) # 300 × 0.3
+              expect(first_discount.kind).to eq("discount")
+              expect(first_discount.tax_rate).to eq(0)
+
+              second_discount = discount_lines.second
+              expect(second_discount.excl_tax_amount).to be < 0
+              expect(second_discount.excl_tax_amount.abs).to eq(60.to_d) # 200 × 0.3
+              expect(second_discount.kind).to eq("discount")
+              expect(second_discount.tax_rate).to eq(0)
+            end
+            # rubocop:enable RSpec/ExampleLength
           end
         end
 

@@ -52,6 +52,8 @@ module Accounting
             issue_date: 2.days.ago
           )
 
+          raise creation_service_result.error if creation_service_result.failure?
+
           Accounting::Proformas::Post.call(creation_service_result.data.id)
         end
 
@@ -91,8 +93,50 @@ module Accounting
             name: "Item Group 1",
             description: "Item Group Description 1"
           )
+
+          expect(context[:project_version_discounts]).to eq([])
         end
 
+        context 'when project version has discounts' do
+          let(:project_version) {
+            FactoryBot.build(
+              :accounting_project_version_hash,
+              id: 123,
+              item_group_ids: [ 1 ],
+              discount_count: 2
+            )
+          }
+
+          it 'returns success with discounts in context and discounted totals', :aggregate_failures do
+            # Project total: 200€ (2 items × 100€)
+            # Discounts total: 40€ (2 × 20€)
+            # Invoice amount before discount: 150€
+            # Invoice proportion: 150/200 = 0.75
+            # Prorated discount: 40 × 0.75 = 30€
+            # Invoice amount after discount: 150 - 30 = 120€
+            # Tax (20%): 120 × 0.2 = 24€
+            # Total including tax: 144€
+            # Retention guarantee (10%): 144 × 0.1 = 14.4€
+            # Total excl retention: 144 - 14.4 = 129.6€
+
+            expect(result.data).to include(
+              total_excl_tax_amount: 120.0,
+              total_including_tax_amount: 144.0,
+              total_excl_retention_guarantee_amount: 129.6
+            )
+
+            context = result.data[:context]
+            expect(context[:project_version_discounts].length).to eq(2)
+            expect(context[:project_version_discounts].first).to include(
+              original_discount_uuid: 'discount-uuid-1',
+              kind: 'percentage',
+              value: 0.1,
+              amount: 20.0,
+              position: 1,
+              name: 'Test Discount'
+            )
+          end
+        end
 
           context 'when required data is missing' do
             let(:invalid_project_version) { { number: 'PV-001' } }

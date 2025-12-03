@@ -144,6 +144,16 @@ module Organization
               name: item_group.name,
               description: item_group.description
             }
+          },
+          discounts: @project_version.discounts.ordered.map { |discount|
+            {
+              original_discount_uuid: discount.original_discount_uuid,
+              kind: discount.kind,
+              value: discount.value,
+              amount: discount.amount,
+              position: discount.position,
+              name: discount.name
+            }
           }
         }
 

@@ -32,6 +32,8 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
             "group_id" => "group-2"
           }
         ],
+        "project_version_discounts" => [],
+        "project_total_amount" => "400", # 200 + 100 + 100
         "project_version_retention_guarantee_rate" => "0.05"
       }
     end
@@ -59,7 +61,8 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
           unit_price_amount: BigDecimal("100"),
           excl_tax_amount: BigDecimal("150"),
           tax_rate: BigDecimal("0.20"),
-          group_id: "group-1"
+          group_id: "group-1",
+          kind: "charge"
         )
 
         second_line = result.data.last
@@ -70,7 +73,8 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
           unit_price_amount: BigDecimal("50"),
           excl_tax_amount: BigDecimal("75"),
           tax_rate: BigDecimal("0.20"),
-          group_id: "group-2"
+          group_id: "group-2",
+          kind: "charge"
         )
       end
       # rubocop:enable RSpec/ExampleLength
@@ -97,6 +101,57 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
           expect(result.data.all? { |line| line[:excl_tax_amount] == BigDecimal("0") }).to be true
         end
       end
+
+      context "when project has discounts" do
+        let(:invoice_context) do
+          super().merge({
+            "project_version_discounts" => [
+              {
+                "original_discount_uuid" => "discount-uuid-1",
+                "kind" => "fixed_amount",
+                "value" => "50",
+                "amount" => "50",
+                "position" => 1,
+                "name" => "Early payment discount"
+              }
+            ]
+          })
+        end
+
+        # rubocop:disable RSpec/ExampleLength
+        it 'returns charge lines and discount lines', :aggregate_failures do
+          # Project total: 400€
+          # Invoice total: 150 + 75 = 225€
+          # Invoice proportion: 225/400 = 0.5625
+          # Prorated discount: 50 * 0.5625 = 28.13€ (rounded to 28.12€)
+
+          expect(result.data.length).to eq(3) # 2 charges + 1 discount
+
+          # Check charge lines
+          charge_lines = result.data.select { |line| line[:kind] == "charge" }
+          expect(charge_lines.length).to eq(2)
+
+          # Check discount line
+          discount_lines = result.data.select { |line| line[:kind] == "discount" }
+          expect(discount_lines.length).to eq(1)
+
+          discount_line = discount_lines.first
+          expect(discount_line).to include(
+            holder_id: "discount-uuid-1",
+            quantity: 1,
+            unit: "€",
+            tax_rate: 0,
+            group_id: nil,
+            kind: "discount"
+          )
+
+          # Discount should be negative
+          expect(discount_line[:unit_price_amount]).to be < 0
+          expect(discount_line[:excl_tax_amount]).to be < 0
+          expect(discount_line[:unit_price_amount].abs).to be_within(0.01).of(28.12)
+        end
+        # rubocop:enable RSpec/ExampleLength
+      end
     end
 
     context 'when failing' do
@@ -110,8 +165,9 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
         it { is_expected.to be_failure }
 
         it 'returns a failure result when required keys are missing', :aggregate_failures do
-          expect(result.error).to include("Failed to build invoice line attributes")
-          expect(result.error).to include("key not found: \"project_version_items\"")
+          expect(result.error).to be_a(KeyError)
+          expect(result.error.message).to include("key not found")
+          expect(result.error.message).to include("project_version_items")
         end
       end
 
@@ -124,9 +180,9 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
 
         it { is_expected.to be_failure }
 
-        it 'returns a failure result when required keys are missing', :aggregate_failures do
-          expect(result.error).to include("Failed to build invoice line attributes")
-          expect(result.error).to include("Total invoiced amount (10000.0) would exceed the maximum allowed amount (200.0) for item item-123")
+        it 'returns a failure result with over-invoicing error', :aggregate_failures do
+          expect(result.error).to be_a(StandardError)
+          expect(result.error.message).to include("Total invoiced amount (10000.0) would exceed the maximum allowed amount (200.0) for item item-123")
         end
       end
     end

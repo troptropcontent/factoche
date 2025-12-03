@@ -105,17 +105,54 @@ module Accounting
       end
 
       def ensure_totals_are_correct!(draft_invoice)
-        expected_total_excl_tax_amount = draft_invoice.lines.sum("quantity * unit_price_amount")
+        context = draft_invoice.context
+        retention_guarantee_rate = context.fetch("project_version_retention_guarantee_rate").to_d
+
+        # Get charge and discount lines
+        charge_lines = draft_invoice.lines.charge
+        discount_lines = draft_invoice.lines.discount
+
+        # Calculate total prorated discount
+        total_prorated_discount = discount_lines.sum { |line| (line.quantity * line.unit_price_amount).abs }
+
+        # Calculate total of all charges before discount
+        total_charges_before_discount = charge_lines.sum { |line| line.quantity * line.unit_price_amount }
+
+        # For each charge line, distribute discount proportionally, then apply tax
+        expected_total_excl_tax_amount = 0.to_d
+        expected_total_including_tax_amount = 0.to_d
+
+        charge_lines.each do |line|
+          line_amount = line.quantity * line.unit_price_amount
+
+          # Distribute discount proportionally to this line
+          line_prorated_discount = if total_charges_before_discount > 0
+            (line_amount / total_charges_before_discount) * total_prorated_discount
+          else
+            0.to_d
+          end
+
+          # Apply discount to line amount
+          line_amount_after_discount = line_amount - line_prorated_discount
+
+          # Apply tax to discounted amount
+          line_amount_including_tax = line_amount_after_discount * (1 + line.tax_rate)
+
+          expected_total_excl_tax_amount += line_amount_after_discount
+          expected_total_including_tax_amount += line_amount_including_tax
+        end
+
+        expected_total_excl_retention_guarantee_amount = expected_total_including_tax_amount * (1 - retention_guarantee_rate)
+
+        # Verify totals
         unless (expected_total_excl_tax_amount - draft_invoice.total_excl_tax_amount).abs < AMOUNT_TOLERANCE
           raise Error::UnprocessableEntityError, "Total excluding tax amount mismatch: expected #{expected_total_excl_tax_amount}, got #{draft_invoice.total_excl_tax_amount}"
         end
 
-        expected_total_including_tax_amount = draft_invoice.lines.sum("quantity * unit_price_amount * (1 + tax_rate)")
         unless (draft_invoice.total_including_tax_amount - expected_total_including_tax_amount).abs < AMOUNT_TOLERANCE
           raise Error::UnprocessableEntityError, "Total including tax amount mismatch: expected #{expected_total_including_tax_amount}, got #{draft_invoice.total_including_tax_amount}"
         end
 
-        expected_total_excl_retention_guarantee_amount = expected_total_including_tax_amount * (1 - draft_invoice.context.fetch("project_version_retention_guarantee_rate").to_d)
         unless (draft_invoice.total_excl_retention_guarantee_amount - expected_total_excl_retention_guarantee_amount).abs < AMOUNT_TOLERANCE
           raise StandardError, "Total excluding retention guarantee amount mismatch: expected #{expected_total_excl_retention_guarantee_amount}, got #{draft_invoice.total_excl_retention_guarantee_amount}"
         end

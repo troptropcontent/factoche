@@ -25,6 +25,14 @@ module Accounting
           required(:name).filled(:string)
           optional(:description).maybe(:string)
         end
+        optional(:project_version_discounts).array(:hash) do
+          required(:original_discount_uuid).filled(:string)
+          required(:kind).filled(:string)
+          required(:value).filled(:decimal)
+          required(:amount).filled(:decimal, gteq?: 0)
+          required(:position).filled(:integer, gteq?: 0)
+          optional(:name).maybe(:string)
+        end
       end
 
       rule(:project_version_date) do

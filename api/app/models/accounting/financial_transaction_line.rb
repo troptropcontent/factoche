@@ -2,7 +2,7 @@ class Accounting::FinancialTransactionLine < ApplicationRecord
   belongs_to :financial_transaction, class_name: "Accounting::FinancialTransaction"
 
   # Enum for line kinds
-  enum kind: {
+  enum :kind, {
     charge: "charge",
     discount: "discount"
   }
