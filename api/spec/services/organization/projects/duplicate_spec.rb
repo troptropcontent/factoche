@@ -95,12 +95,11 @@ module Organization
                  .and change(Organization::Discount, :count).by(1)
               end
 
-              it "copies the attributes of the original discount into the new discount" do
+              it "copies only relevant attributes of the original discount into the new discount" do
                 new_discount = result.data[:new_project_version].discounts.first
                 expect(new_discount).to have_attributes(original_discount.attributes.except(
-                  "id", "project_version_id", "created_at", "updated_at"
+                  "id", "project_version_id", "created_at", "updated_at", "original_discount_uuid"
                 ))
-                expect(new_discount.original_discount_uuid).to eq(original_discount.original_discount_uuid)
               end
             end
 

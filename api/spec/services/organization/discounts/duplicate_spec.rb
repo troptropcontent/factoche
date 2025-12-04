@@ -36,7 +36,7 @@ RSpec.describe Organization::Discounts::Duplicate do
         )
       end
 
-      it "duplicates the discount with same attributes" do
+      it "duplicates the discount and carry forward only relevant attributes" do
         result = described_class.call(
           original_project_version: original_version,
           new_project_version: new_version
@@ -52,7 +52,7 @@ RSpec.describe Organization::Discounts::Duplicate do
         expect(new_discount.amount).to eq(100)
         expect(new_discount.position).to eq(1)
         expect(new_discount.name).to eq("Early bird discount")
-        expect(new_discount.original_discount_uuid).to eq(original_discount.original_discount_uuid)
+        expect(new_discount.original_discount_uuid).not_to eq(original_discount.original_discount_uuid)
       end
 
       it "creates a new discount record with different id" do
@@ -131,17 +131,17 @@ RSpec.describe Organization::Discounts::Duplicate do
         expect(new_discounts[2].name).to be_nil
       end
 
-      it "preserves original_discount_uuid for tracking" do
-        result = described_class.call(
+      it "does not preserves original_discount_uuid" do
+        described_class.call(
           original_project_version: original_version,
           new_project_version: new_version
         )
 
         new_discounts = new_version.discounts.order(:position)
 
-        expect(new_discounts[0].original_discount_uuid).to eq(discount1.original_discount_uuid)
-        expect(new_discounts[1].original_discount_uuid).to eq(discount2.original_discount_uuid)
-        expect(new_discounts[2].original_discount_uuid).to eq(discount3.original_discount_uuid)
+        expect(new_discounts[0].original_discount_uuid).not_to eq(discount1.original_discount_uuid)
+        expect(new_discounts[1].original_discount_uuid).not_to eq(discount2.original_discount_uuid)
+        expect(new_discounts[2].original_discount_uuid).not_to eq(discount3.original_discount_uuid)
       end
     end
   end

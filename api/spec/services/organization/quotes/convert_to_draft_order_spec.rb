@@ -129,7 +129,7 @@ module Organization
             )
           end
 
-          it 'carries forward all discounts to the draft order' do
+          it 'carries forward all discounts with the relevant attributes to the draft order' do
             result = described_class.call(quote.id)
 
             expect(result).to be_success
@@ -142,7 +142,7 @@ module Organization
             # Check each discount is preserved
             quote_version.discounts.ordered.each do |quote_discount|
               draft_order_discount = draft_order_version.discounts.find_by(
-                original_discount_uuid: quote_discount.original_discount_uuid
+                position: quote_discount.position
               )
 
               expect(draft_order_discount).to be_present
@@ -151,18 +151,18 @@ module Organization
               expect(draft_order_discount.amount).to eq(quote_discount.amount)
               expect(draft_order_discount.position).to eq(quote_discount.position)
               expect(draft_order_discount.name).to eq(quote_discount.name)
-              expect(draft_order_discount.original_discount_uuid).to eq(quote_discount.original_discount_uuid)
+              expect(draft_order_discount.original_discount_uuid).not_to eq(quote_discount.original_discount_uuid)
             end
           end
 
-          it 'preserves discount original_discount_uuid for tracking' do
+          it 'does not preserves discount original_discount_uuid for tracking' do
             result = described_class.call(quote.id)
             draft_order_version = result.data.versions.first
 
             original_uuids = quote_version.discounts.pluck(:original_discount_uuid)
             draft_order_uuids = draft_order_version.discounts.pluck(:original_discount_uuid)
 
-            expect(draft_order_uuids).to match_array(original_uuids)
+            expect(draft_order_uuids).not_to match_array(original_uuids)
           end
         end
 

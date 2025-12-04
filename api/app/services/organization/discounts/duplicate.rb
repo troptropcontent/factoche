@@ -20,7 +20,9 @@ module Organization
           new_project_version.discounts.create!(
             original_discount.attributes.except(
               "id", "project_version_id", "created_at", "updated_at"
-            )
+            ).merge({
+              original_discount_uuid: SecureRandom.uuid
+            })
           )
         end
 
