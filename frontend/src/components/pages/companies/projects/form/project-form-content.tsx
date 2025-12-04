@@ -42,6 +42,7 @@ const ProjectFormContent = ({
           address_street,
           address_zipcode,
           po_number,
+          discounts,
         },
       },
     },
@@ -91,7 +92,9 @@ const ProjectFormContent = ({
               />
             );
           case "step2":
-            return <Step2 send={send} initialValues={{ items, groups }} />;
+            return (
+              <Step2 send={send} initialValues={{ items, groups, discounts }} />
+            );
           case "completed":
             return (
               <Step3
@@ -109,6 +112,7 @@ const ProjectFormContent = ({
                   address_street,
                   address_zipcode,
                   po_number,
+                  discounts,
                 }}
                 submitFunction={submitFunction}
               />

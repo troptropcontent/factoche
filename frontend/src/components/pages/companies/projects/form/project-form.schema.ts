@@ -36,6 +36,16 @@ const step2FormSchema = z.object({
       description: z.string().optional(),
     })
     .array(),
+  discounts: z
+    .object({
+      position: z.number().min(0),
+      name: z.string().min(1),
+      description: z.string().optional(),
+      kind: z.enum(["fixed_amount", "percentage"]),
+      value: z.number().min(0.01),
+      original_discount_uuid: z.string().optional(),
+    })
+    .array(),
 });
 
 const formSchema = step1FormSchema.and(step2FormSchema);

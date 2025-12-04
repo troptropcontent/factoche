@@ -4,10 +4,112 @@ import { Api } from "@/lib/openapi-fetch-query-client";
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ItemGroupSummary } from "../form/private/item-group-summary";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ItemSummary } from "../form/private/item-summary";
 import { VersionSelect } from "./version-select";
 import { useQueryClient } from "@tanstack/react-query";
+import { ProjectVersionExtended } from "../../project-versions/shared/types";
+
+const TotalSection = ({
+  projectVersion,
+}: {
+  projectVersion?: ProjectVersionExtended;
+}) => {
+  const { t } = useTranslation();
+  const TotalLine = ({ label, amount }: { label: string; amount?: number }) => (
+    <>
+      <Separator className="my-4" />
+      <div className="flex justify-between items-center text-lg font-semibold">
+        <span>{label}</span>
+        <span>
+          {amount == undefined ? (
+            <Skeleton className="h-6 w-[100px]" />
+          ) : (
+            t("common.number_in_currency", { amount })
+          )}
+        </span>
+      </div>
+    </>
+  );
+
+  if (projectVersion == undefined) {
+    return (
+      <TotalLine
+        label={t(
+          "pages.companies.projects.show.project_composition.project_total"
+        )}
+        amount={undefined}
+      />
+    );
+  }
+
+  if (projectVersion.discounts.length == 0) {
+    return (
+      <TotalLine
+        label={t(
+          "pages.companies.projects.show.project_composition.project_total"
+        )}
+        amount={Number(projectVersion.total_excl_tax_amount)}
+      />
+    );
+  }
+
+  return (
+    <>
+      <TotalLine
+        label={t(
+          "pages.companies.projects.show.project_composition.project_total_before_discounts"
+        )}
+        amount={
+          Number(projectVersion.total_excl_tax_amount) +
+          projectVersion.discounts.reduce(
+            (acc, discount) => acc + Number(discount.amount),
+            0
+          )
+        }
+      />
+      <DiscountsSection discounts={projectVersion.discounts} />
+      <TotalLine
+        label={t(
+          "pages.companies.projects.show.project_composition.project_total_after_discounts"
+        )}
+        amount={Number(projectVersion.total_excl_tax_amount)}
+      />
+    </>
+  );
+};
+
+const DiscountsSection = ({
+  discounts,
+}: {
+  discounts: ProjectVersionExtended["discounts"];
+}) => {
+  const { t } = useTranslation();
+  const sortedDiscounts = discounts.sort((a, b) => a.position - b.position);
+  return (
+    <>
+      <Separator className="my-4" />
+      <div className="flex flex-col">
+        {sortedDiscounts.map((discount) => {
+          return (
+            <div className="flex justify-between">
+              <p>
+                {discount.name}
+                {" :"}
+              </p>
+              <p>
+                {"- "}
+                {t("common.number_in_currency", {
+                  amount: discount.amount,
+                })}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
 
 const ProjectVersionComposition = ({
   routeParams: { companyId, projectId },
@@ -28,6 +130,7 @@ const ProjectVersionComposition = ({
       },
     }
   );
+
   const queryClient = useQueryClient();
   const handleVersionChange = async (value: string) => {
     // Preload the query needed in the component to avoid blink loading
@@ -43,35 +146,6 @@ const ProjectVersionComposition = ({
     setCurrentVersionId(Number.parseInt(value, 10));
   };
   const { t } = useTranslation();
-
-  const totalAmount = useMemo(() => {
-    if (data == undefined) {
-      return 0;
-    }
-
-    const computeItemSum = (
-      items: { unit_price_amount: string; quantity: number }[]
-    ) => {
-      return items.reduce(
-        (prev, current) =>
-          prev + Number(current.unit_price_amount) * current.quantity,
-        0
-      );
-    };
-
-    const itemGroupTotalCents = data.result.item_groups.reduce(
-      (prev, current) => {
-        return prev + computeItemSum(current.grouped_items);
-      },
-      0
-    );
-
-    const ungroupedItemsTotalCents = computeItemSum(
-      data.result.ungrouped_items
-    );
-
-    return itemGroupTotalCents + ungroupedItemsTotalCents;
-  }, [data]);
 
   return (
     <Card>
@@ -118,23 +192,7 @@ const ProjectVersionComposition = ({
                 />
               )),
             ]}
-        <Separator className="my-4" />
-        <div className="flex justify-between items-center text-lg font-semibold">
-          <span>
-            {t(
-              "pages.companies.projects.show.project_composition.project_total"
-            )}
-          </span>
-          <span>
-            {data == undefined ? (
-              <Skeleton className="h-6 w-[100px]" />
-            ) : (
-              t("common.number_in_currency", {
-                amount: totalAmount,
-              })
-            )}
-          </span>
-        </div>
+        <TotalSection projectVersion={data?.result} />
       </CardContent>
     </Card>
   );

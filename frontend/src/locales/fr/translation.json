@@ -309,7 +309,7 @@
                         "item_group_add_item_button_label": "Ajouter un élément au groupe",
                         "no_items_error": "Vous devez ajouter au moins un élément au projet",
                         "no_items_in_group_error": "Vous devez ajouter au moins un élément au groupe",
-                        "items_total_label": "Total des différents éléments: {{total}}",
+                        "items_total_label": "Sous-total (avant TVA et remises)",
                         "tax_rate_input_label": "Taux de TVA",
                         "tax_rate_input_description": "Taux de TVA appliqué à l'élément",
                         "empty_state": {
@@ -320,6 +320,8 @@
                     },
                     "confirmation_step": {
                         "progress_bar_label": "Confirmation",
+                        "total_project_amount_before_discounts_label": "Total du chantier avant remises : {{total}}",
+                        "total_project_amount_after_discounts_label": "Total du chantier après remises : {{total}}",
                         "total_project_amount_label": "Total du chantier: {{total}}",
                         "group_total_label": "Total du groupe: {{total}}",
                         "toast": {
@@ -334,6 +336,7 @@
                     "project_confirmation": "Confirmation",
                     "add_item": "Ajouter un élément",
                     "add_item_group": "Ajouter un groupe d'éléments",
+                    "add_discount": "Ajouter une remise",
                     "item_group_name_input_label": "Nom du groupe d'éléments",
                     "item_group_name_input_placeholder": "Nom du groupe d'éléments",
                     "item_group_add_item_button_label": "Ajouter un élément au groupe",
@@ -367,7 +370,9 @@
                     },
                     "project_composition": {
                         "title": "Composition du chantier",
-                        "project_total": "Total:"
+                        "project_total": "Total HT :",
+                        "project_total_after_discounts": "Total HT après remises :",
+                        "project_total_before_discounts": "Total HT avant remises :"
                     },
                     "new_completion_snapshot": "Nouvelle situation de travaux",
                     "completion_snapshot_invoices_summary": {

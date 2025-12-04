@@ -16,6 +16,18 @@ const newGroupInput = (
   };
 };
 
+const newDiscountInput = (
+  position: number
+): z.infer<typeof step2FormSchema>["discounts"][number] => {
+  return {
+    name: "",
+    description: "",
+    position: position,
+    kind: "fixed_amount",
+    value: 0,
+  };
+};
+
 const newItemInput = (
   position: number,
   groupUuid: string | null = null
@@ -49,6 +61,55 @@ const computeTotal = (
   return items.reduce((total, current) => {
     return total + current.quantity * current.unit_price_amount;
   }, 0);
+};
+
+const computeGrossTotal = (
+  items: Array<{ quantity: number; unit_price_amount: number }>
+) => {
+  return items.reduce((total, current) => {
+    return total + current.quantity * current.unit_price_amount;
+  }, 0);
+};
+
+const computeNetTotal = (
+  items: Array<{ quantity: number; unit_price_amount: number }>,
+  discounts: Array<{
+    position: number;
+    kind: "fixed_amount" | "percentage";
+    value: number;
+  }>
+) => {
+  const grossTotal = computeGrossTotal(items);
+  return discounts.reduce((netTotal, discount) => {
+    const discountAmount =
+      discount.kind === "fixed_amount"
+        ? discount.value
+        : netTotal * (discount.value / 100);
+    return netTotal - discountAmount;
+  }, grossTotal);
+};
+
+const computeDiscountAmounts = (
+  grossTotal: number,
+  discounts: Array<{
+    position: number;
+    kind: "fixed_amount" | "percentage";
+    value: number;
+  }>
+) => {
+  let remainingTotal = grossTotal;
+  return discounts.reduce<Record<string, number>>(
+    (discountAmounts, discount) => {
+      const discountAmount =
+        discount.kind === "fixed_amount"
+          ? discount.value
+          : remainingTotal * (discount.value / 100);
+      remainingTotal = Math.min(remainingTotal - discountAmount, 0);
+      discountAmounts[discount.position] = discountAmount;
+      return discountAmounts;
+    },
+    {}
+  );
 };
 
 const buildCsvTemplateData = (
@@ -113,6 +174,16 @@ const buildProjectFormInitialValue = (
       )?.uuid,
     })),
     groups: groupsWithUuid,
+    discounts: project.last_version.discounts.map((discount) => {
+      return {
+        ...discount,
+        value:
+          discount.kind === "percentage"
+            ? Number(discount.value) * 100
+            : Number(discount.value),
+        description: "",
+      };
+    }),
   };
 };
 
@@ -128,7 +199,7 @@ const buildUpdateProjectBody = (
         tax_rate: updated_item.tax_rate / 100,
         unit_price_amount: updated_item.unit_price_amount,
         group_uuid: updated_item.group_uuid,
-        original_item_uuid: updated_item.original_item_uuid,
+        original_item_uuid: updated_item.original_item_uuid!,
       }));
   };
 
@@ -146,6 +217,36 @@ const buildUpdateProjectBody = (
         ...(new_item.description != "" && new_item.description != undefined
           ? { description: new_item.description }
           : {}),
+      }));
+  };
+
+  const buildUpdatedDiscountInput = (
+    discounts: (typeof inputs)["discounts"]
+  ) => {
+    return discounts
+      .filter((discount) => discount.original_discount_uuid != undefined)
+      .map((updated_discount) => ({
+        original_discount_uuid: updated_discount.original_discount_uuid!,
+        position: updated_discount.position + 1,
+        kind: updated_discount.kind,
+        value:
+          updated_discount.kind === "percentage"
+            ? updated_discount.value / 100
+            : updated_discount.value,
+      }));
+  };
+
+  const buildNewDiscountInput = (discounts: (typeof inputs)["discounts"]) => {
+    return discounts
+      .filter((discount) => discount.original_discount_uuid == undefined)
+      .map((new_discount) => ({
+        position: new_discount.position + 1,
+        name: new_discount.name,
+        value:
+          new_discount.kind === "percentage"
+            ? new_discount.value / 100
+            : new_discount.value,
+        kind: new_discount.kind,
       }));
   };
 
@@ -170,11 +271,91 @@ const buildUpdateProjectBody = (
     bank_detail_id: inputs.bank_detail_id,
     updated_items: buildUpdatedItemInput(inputs.items),
     new_items: buildNewItemInput(inputs.items),
+    new_discounts: buildNewDiscountInput(inputs.discounts),
+    updated_discounts: buildUpdatedDiscountInput(inputs.discounts),
     groups: buildGroupsInput(inputs.groups),
   };
 };
 
+const computeTotalDiscountsAndTaxes = (
+  inputs: z.infer<typeof step2FormSchema>
+): {
+  totalWithoutTax: number;
+  discount: number;
+  taxes: { rate: number; value: number }[];
+} => {
+  // 1. Calculate total without tax (subtotal of all items)
+  const totalWithoutTax = inputs.items.reduce((total, item) => {
+    return total + item.quantity * item.unit_price_amount;
+  }, 0);
+
+  // 2. Calculate total discount amount
+  const totalAfterDiscount = inputs.discounts.reduce(
+    (subtotalSubjectToDiscount, discount) => {
+      if (discount.kind === "fixed_amount") {
+        subtotalSubjectToDiscount = subtotalSubjectToDiscount - discount.value;
+      } else {
+        subtotalSubjectToDiscount =
+          subtotalSubjectToDiscount -
+          (subtotalSubjectToDiscount * discount.value) / 100;
+      }
+      return subtotalSubjectToDiscount;
+    },
+    totalWithoutTax
+  );
+
+  // 3. Group items by tax rate and calculate tax for each rate
+  const taxesByRate = new Map<number, number>();
+
+  inputs.items.forEach((item) => {
+    const itemTotal = item.quantity * item.unit_price_amount;
+    // Apply proportional discount to this item
+    const itemAfterDiscount =
+      itemTotal * (totalAfterDiscount / totalWithoutTax);
+    const taxAmount = (itemAfterDiscount * item.tax_rate) / 100;
+
+    const currentTax = taxesByRate.get(item.tax_rate) || 0;
+    taxesByRate.set(item.tax_rate, currentTax + taxAmount);
+  });
+
+  // Convert to array format
+  const taxes = Array.from(taxesByRate.entries())
+    .map(([rate, value]) => ({ rate, value }))
+    .sort((a, b) => a.rate - b.rate);
+
+  return {
+    totalWithoutTax: totalWithoutTax,
+    discount: totalWithoutTax - totalAfterDiscount,
+    taxes,
+  };
+};
+
+const computeDiscountValue = (
+  inputs: z.infer<typeof step2FormSchema>,
+  discountInputIndex: number
+): number => {
+  const totalWithoutTaxes = computeTotal(inputs.items);
+  let totalSubjectedToDiscount = totalWithoutTaxes;
+  let discountValue = 0;
+  for (let index = 0; index <= discountInputIndex; index++) {
+    const discount = inputs.discounts[discountInputIndex];
+    discountValue =
+      discount!.kind === "fixed_amount"
+        ? discount!.value
+        : totalSubjectedToDiscount * (discount!.value / 100);
+    totalSubjectedToDiscount = totalSubjectedToDiscount - discountValue;
+  }
+
+  return discountValue;
+};
+
 export {
+  computeDiscountAmounts,
+  computeNetTotal,
+  computeGrossTotal,
+  computeDiscountValue,
+  computeTotalDiscountsAndTaxes,
+  newDiscountInput,
   newGroupInput,
   newItemInput,
   findNextPosition,

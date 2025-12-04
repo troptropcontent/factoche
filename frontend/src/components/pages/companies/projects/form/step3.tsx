@@ -17,7 +17,82 @@ import {
 } from "@/components/ui/card";
 import { ItemGroupSummary } from "./private/item-group-summary";
 import { Api } from "@/lib/openapi-fetch-query-client";
-import { computeTotal } from "./private/utils";
+import {
+  computeDiscountAmounts,
+  computeGrossTotal,
+  computeNetTotal,
+} from "./private/utils";
+import { ReactNode } from "@tanstack/react-router";
+
+const TotalFooter = ({
+  inputs,
+}: {
+  inputs: z.infer<typeof step2FormSchema>;
+}) => {
+  const TotalLine = ({ children }: { children: ReactNode }) => (
+    <p className="text-right font-semibold text-lg">{children}</p>
+  );
+  const { t } = useTranslation();
+  const totalBeforeDiscounts = computeGrossTotal(inputs.items);
+  const discountAmounts = computeDiscountAmounts(
+    totalBeforeDiscounts,
+    inputs.discounts
+  );
+  const totalAfterDiscounts = computeNetTotal(inputs.items, inputs.discounts);
+
+  if (inputs.discounts.length === 0) {
+    return (
+      <TotalLine>
+        {t(
+          "pages.companies.projects.form.confirmation_step.total_project_amount_label",
+          {
+            total: t("common.number_in_currency", {
+              amount: totalBeforeDiscounts,
+            }),
+          }
+        )}
+      </TotalLine>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-end">
+      <TotalLine>
+        {t(
+          "pages.companies.projects.form.confirmation_step.total_project_amount_before_discounts_label",
+          {
+            total: t("common.number_in_currency", {
+              amount: totalBeforeDiscounts,
+            }),
+          }
+        )}
+      </TotalLine>
+      {inputs.discounts.map((discount) => (
+        <div className="flex italic">
+          <p>
+            {discount.name}
+            {" : -"}
+          </p>
+          <p>
+            {t("common.number_in_currency", {
+              amount: discountAmounts[discount.position],
+            })}
+          </p>
+        </div>
+      ))}
+      <TotalLine>
+        {t(
+          "pages.companies.projects.form.confirmation_step.total_project_amount_after_discounts_label",
+          {
+            total: t("common.number_in_currency", {
+              amount: totalAfterDiscounts,
+            }),
+          }
+        )}
+      </TotalLine>
+    </div>
+  );
+};
 
 const Step3 = ({
   send,
@@ -112,16 +187,7 @@ const Step3 = ({
           ))}
         </CardContent>
         <CardFooter className="justify-end">
-          <div className="text-right font-semibold text-lg">
-            {t(
-              "pages.companies.projects.form.confirmation_step.total_project_amount_label",
-              {
-                total: t("common.number_in_currency", {
-                  amount: computeTotal(inputs.items),
-                }),
-              }
-            )}
-          </div>
+          <TotalFooter inputs={inputs} />
         </CardFooter>
       </Card>
       <div className="flex justify-between mt-auto items-center">
