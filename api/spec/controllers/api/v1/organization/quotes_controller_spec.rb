@@ -171,12 +171,11 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
               type: :object,
               properties: {
                 original_discount_uuid: { type: :string },
-                name: { type: :string },
                 kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
                 value: { type: :number, format: :decimal },
                 position: { type: :integer }
               },
-              required: [ "name", "kind", "value", "position" ]
+              required: [ "kind", "original_discount_uuid", "value", "position" ]
             }
           }
         },
@@ -408,8 +407,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
                   original_discount_uuid: quote_with_discount.last_version.discounts.first.original_discount_uuid,
                   kind: "fixed_amount",
                   value: 100,
-                  position: 1,
-                  name: "Updated discount"
+                  position: 1
                 }
               ],
               new_discounts: [
@@ -438,7 +436,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
             # First discount
             expect(discounts.first.kind).to eq("fixed_amount")
             expect(discounts.first.amount).to eq(100)
-            expect(discounts.first.name).to eq("Updated discount")
+            expect(discounts.first.name).to eq("Original discount 10%")
 
             # Second discount: (250*4 - 100) * 0.05 = 45
             expect(discounts.second.kind).to eq("percentage")
@@ -592,9 +590,22 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
               },
               required: [ "uuid", "name", "position" ]
             }
+          },
+          discounts: {
+            type: :array,
+            items: {
+              type: :object,
+              properties: {
+                name: { type: :string },
+                kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
+                value: { type: :number, format: :decimal },
+                position: { type: :integer }
+              },
+              required: [ "name", "kind", "value", "position" ]
+            }
           }
         },
-        required: [ "name", "retention_guarantee_rate", "items", "address_street", "address_zipcode", "address_city" ]
+        required: [ "name", "retention_guarantee_rate", "items", "discounts", "address_street", "address_zipcode", "address_city" ]
       }
 
       let(:user) { FactoryBot.create(:user) }

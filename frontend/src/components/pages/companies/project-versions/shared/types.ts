@@ -26,5 +26,13 @@ type ProjectVersion = {
 
 type ProjectVersionCompact =
   paths["/api/v1/organization/companies/{company_id}/invoices"]["get"]["responses"]["200"]["content"]["application/json"]["meta"]["order_versions"][number];
+type ProjectVersionExtended =
+  paths["/api/v1/organization/project_versions/{id}"]["get"]["responses"]["200"]["content"]["application/json"]["result"];
 
-export type { Item, ItemGroup, ProjectVersion, ProjectVersionCompact };
+export type {
+  Item,
+  ItemGroup,
+  ProjectVersion,
+  ProjectVersionCompact,
+  ProjectVersionExtended,
+};

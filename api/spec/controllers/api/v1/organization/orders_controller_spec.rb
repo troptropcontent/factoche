@@ -165,12 +165,12 @@ module Api
                   items: {
                     type: :object,
                     properties: {
-                      kind: { type: :string },
+                      kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
                       value: { type: :number },
                       position: { type: :integer },
                       name: { type: :string }
                     },
-                    required: [ "kind", "value", "position" ]
+                    required: [ "name", "kind", "value", "position" ]
                   }
                 },
                 updated_discounts: {
@@ -179,16 +179,15 @@ module Api
                     type: :object,
                     properties: {
                       original_discount_uuid: { type: :string },
-                      kind: { type: :string },
+                      kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
                       value: { type: :number },
-                      position: { type: :integer },
-                      name: { type: :string }
+                      position: { type: :integer }
                     },
                     required: [ "original_discount_uuid", "kind", "value", "position" ]
                   }
                 }
               },
-              required: [ "name", "retention_guarantee_rate", "items" ]
+              required: [ "name", "retention_guarantee_rate", "new_items", "updated_items", "new_discounts", "updated_discounts" ]
             }
 
             include_context 'a company with a client and a member'
@@ -418,8 +417,7 @@ module Api
                         original_discount_uuid: first_version_discount.original_discount_uuid,
                         kind: "percentage",
                         value: 0.15,
-                        position: 1,
-                        name: "Updated discount"
+                        position: 1
                       }
                     ]
                   }
@@ -442,7 +440,7 @@ module Api
                   expect(updated_discount.original_discount_uuid).to eq(first_version_discount.original_discount_uuid)
                   expect(updated_discount.kind).to eq("percentage")
                   expect(updated_discount.value).to eq(0.15)
-                  expect(updated_discount.name).to eq("Updated discount")
+                  expect(updated_discount.name).to eq(first_version_discount.name)
 
                   # Check new discount has fresh UUID
                   new_discount = new_version.discounts.find_by(name: "Additional discount")
