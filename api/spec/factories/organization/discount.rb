@@ -9,7 +9,7 @@ FactoryBot.define do
     amount { 100 }
     position { 1 }
     original_discount_uuid { SecureRandom.uuid }
-    name { nil }
+    name { "Earlybird discount" }
 
     trait :fixed_amount do
       kind { "fixed_amount" }

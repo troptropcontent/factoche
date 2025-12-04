@@ -249,8 +249,7 @@ RSpec.describe Organization::Projects::Update do
                 original_discount_uuid: existing_discount.original_discount_uuid,
                 kind: "percentage",
                 value: 0.15,
-                position: 1,
-                name: "Updated Discount"
+                position: 1
               }
             ]
           }
@@ -275,10 +274,10 @@ RSpec.describe Organization::Projects::Update do
 
           expect(updated_discount).to have_attributes(
             original_discount_uuid: existing_discount.original_discount_uuid, # Should keep original UUID
+            name: existing_discount.name, # Should keep original name
             kind: "percentage",
             value: 0.15,
             position: 1,
-            name: "Updated Discount"
           )
         end
       end

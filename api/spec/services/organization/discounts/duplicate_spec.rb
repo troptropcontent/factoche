@@ -128,7 +128,7 @@ RSpec.describe Organization::Discounts::Duplicate do
         expect(new_discounts[2].kind).to eq("fixed_amount")
         expect(new_discounts[2].value).to eq(25)
         expect(new_discounts[2].position).to eq(3)
-        expect(new_discounts[2].name).to be_nil
+        expect(new_discounts[2].name).to eq("Earlybird discount")
       end
 
       it "does not preserves original_discount_uuid" do

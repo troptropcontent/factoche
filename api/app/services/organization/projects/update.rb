@@ -128,7 +128,8 @@ module Organization
           original_discount = fetch_original_discount(updated_discount_param[:original_discount_uuid])
 
           updated_discount_param.merge(
-            original_discount_uuid: original_discount.original_discount_uuid
+            original_discount_uuid: original_discount.original_discount_uuid,
+            name: original_discount.name
           )
         end
       end

@@ -45,7 +45,6 @@ module Organization
           required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
           required(:value).filled(:decimal)
           required(:position).filled(:integer)
-          required(:name).maybe(:string)
         end
       end
 

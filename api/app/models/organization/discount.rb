@@ -7,6 +7,7 @@ class Organization::Discount < ApplicationRecord
     fixed_amount: "fixed_amount"
   }
 
+  validates :name, presence: true
   validates :kind, presence: true
   validates :value, presence: true, numericality: { greater_than: 0 }
   validates :value, numericality: { less_than_or_equal_to: 1 }, if: -> { percentage? }
