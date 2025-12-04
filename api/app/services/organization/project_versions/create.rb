@@ -7,9 +7,13 @@ module Organization
         @project = project
         @validated_params = validate!(params, CreateContract)
         @items = []
+        @discounts = []
         @groups = []
 
         ensure_original_item_uuids_belongs_to_project!
+        ensure_original_discount_uuids_belongs_to_project!
+
+        compute_total!
 
         transaction do
           create_version!
@@ -22,6 +26,20 @@ module Organization
 
       private
 
+      def compute_total!
+        items_total = @validated_params[:items].sum { |item| item[:quantity] * item[:unit_price_amount] }
+
+        # Return items total if no discounts provided
+        return @total_excl_tax_amount = items_total if @validated_params[:discounts].blank?
+
+        # Apply discounts sequentially
+        # Note: Contract validates that total doesn't go negative
+        @total_excl_tax_amount = @validated_params[:discounts].reduce(items_total) do |acc, discount|
+          discount_amount = discount[:kind] == "percentage" ? discount[:value] * acc : discount[:value]
+          acc - discount_amount
+        end
+      end
+
       def ensure_original_item_uuids_belongs_to_project!
         valid_original_item_uuids =  Organization::Item.joins(:project_version).where(project_version: { project_id: @project.id }).pluck(:original_item_uuid).uniq
         params_original_item_uuids = @validated_params[:items].filter_map { |i| i[:original_item_uuid] }
@@ -31,11 +49,23 @@ module Organization
         end
       end
 
+      def ensure_original_discount_uuids_belongs_to_project!
+        # Return early if no discounts provided
+        return if @validated_params[:discounts].blank?
+
+        valid_original_discount_uuids =  Organization::Discount.joins(:project_version).where(project_version: { project_id: @project.id }).pluck(:original_discount_uuid).uniq
+        params_original_discount_uuids = @validated_params[:discounts].filter_map { |i| i[:original_discount_uuid] }
+        invalid_uuids = params_original_discount_uuids - valid_original_discount_uuids
+        unless invalid_uuids.empty?
+          raise Error::UnprocessableEntityError, "The following original_discount_uuids are invalid: #{invalid_uuids.join(', ')}"
+        end
+      end
+
       def create_version!
         @version = Organization::ProjectVersion.create!(
           project: @project,
           retention_guarantee_rate: @validated_params[:retention_guarantee_rate],
-          total_excl_tax_amount: @validated_params[:items].sum { |item| item[:quantity] * item[:unit_price_amount] },
+          total_excl_tax_amount: @total_excl_tax_amount,
           general_terms_and_conditions: @validated_params[:general_terms_and_conditions]
         )
       end

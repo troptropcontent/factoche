@@ -160,6 +160,9 @@ module Organization
             result = described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)
             quote = result.data
             version = quote.versions.first
+            total_excl_tax_amount = quote.versions.first.total_excl_tax_amount
+            expect(total_excl_tax_amount).to eq(522.5) # 600 - 50€ - 5%
+
             discounts = version.discounts.order(:position)
 
             expect(discounts.count).to eq(2)
@@ -190,6 +193,29 @@ module Organization
 
               expect(result).to be_failure
               expect(result.error).to be_a(Error::UnprocessableEntityError)
+            end
+          end
+
+          context 'with discounts that result in negative total' do
+            let(:params_with_negative_total) do
+              valid_params.merge(
+                discounts: [
+                  {
+                    kind: 'fixed_amount',
+                    value: 700,  # More than the total of 600€
+                    position: 1,
+                    name: 'Excessive discount'
+                  }
+                ]
+              )
+            end
+
+            it 'returns failure with validation error', :aggregate_failures do
+              result = described_class.call(company.id, client.id, bank_detail_id, params_with_negative_total)
+
+              expect(result).to be_failure
+              expect(result.error).to be_a(Error::UnprocessableEntityError)
+              expect(result.error.message).to include('negative total')
             end
           end
 
