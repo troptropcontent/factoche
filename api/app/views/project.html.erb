@@ -56,8 +56,13 @@
         <%= render "project_group", group: group, items: group.grouped_items %>
       <% end %>
     </section>
+    <% if @project_version.discounts.length.positive? %>
+      <section class="mb-8">
+        <%= render "project_discounts", discounts: @project_version.discounts %>
+      </section>
+    <% end %>
     <section class="mb-8">
-      <%= render "project_total", project_version_total_excl_tax_amount: @project_version_total_excl_tax_amount, project_version_vat_amount: @project_version_vat_amount %>
+      <%= render "project_total", project_version_total_excl_tax_amount: @project_version.total_excl_tax_amount, project_version_vat_amount: @project_version_totals[:total_tax] %>
     </section>
 
     <section class="break-before-page prose prose-sm mx-auto">
