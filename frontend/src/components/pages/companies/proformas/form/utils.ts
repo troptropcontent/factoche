@@ -37,9 +37,14 @@ const computeOrderTotalAmount = (order: OrderExtended) =>
     return prev + current.quantity * Number(current.unit_price_amount);
   }, 0);
 
+const computeOrderDiscountsTotalAmount = (order: OrderExtended) =>
+  order.last_version.discounts.reduce((prev, current) => {
+    return prev + Number(current.amount);
+  }, 0);
+
 const computePreviouslyInvoicedAmount = (
   amounts: {
-    original_item_uuid: string;
+    uuid: string;
     invoiced_amount: string;
   }[]
 ) =>
@@ -54,7 +59,21 @@ const computeProformaAmount = (
     return prev + Number(invoiceAmount?.invoice_amount || 0);
   }, 0) || 0;
 
+const computeProformaAmounts = (
+  formValues: DeepPartial<z.infer<typeof proformaFormSchema>>,
+  order: OrderExtended
+) => {
+  const itemsAmount = computeProformaAmount(formValues);
+  const orderTotal = computeOrderTotalAmount(order);
+  const orderDiscountTotal = computeOrderDiscountsTotalAmount(order);
+  const proformaRatio = itemsAmount / orderTotal;
+  const discountsAmount = orderDiscountTotal * proformaRatio;
+  const invoiceAmount = itemsAmount - discountsAmount;
+  return { itemsAmount, discountsAmount, invoiceAmount };
+};
+
 export {
+  computeProformaAmounts,
   buildInitialValuesFromProforma,
   buildInitialValuesFromOrder,
   computeOrderTotalAmount,

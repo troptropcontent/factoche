@@ -1380,7 +1380,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
+                            results: components["schemas"]["Organization::Projects::Orders::InvoicedItemDto"][];
                         };
                     };
                 };
@@ -2762,7 +2762,7 @@ export interface components {
             /** Format: decimal */
             retention_guarantee_rate: string;
             /** Format: decimal */
-            total_amount: string;
+            total_excl_tax_amount: string;
         };
         "Organization::Invoices::Meta": {
             order_versions: components["schemas"]["Organization::ProjectVersions::CompactDto"][];
@@ -3041,7 +3041,7 @@ export interface components {
             results: components["schemas"]["Organization::Projects::CompactDto"][];
         };
         "Organization::Projects::InvoicedItemDto": {
-            original_item_uuid: string;
+            uuid: string;
             /** Format: decimal */
             invoiced_amount: string;
         };
@@ -3052,7 +3052,7 @@ export interface components {
             results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
         };
         "Organization::Projects::Orders::InvoicedItemDto": {
-            original_item_uuid: string;
+            uuid: string;
             /** Format: decimal */
             invoiced_amount: string;
         };

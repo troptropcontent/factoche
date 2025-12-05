@@ -558,7 +558,7 @@ module Api
             let(:id) { order.id }
 
             response "200", "ok" do
-              schema ::Organization::Projects::InvoicedItemsDto.to_schema
+              schema ::Organization::Projects::Orders::InvoicedItemsDto.to_schema
               before {
                 FactoryBot.create(:member, company:, user:)
               }

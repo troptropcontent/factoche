@@ -130,25 +130,6 @@ module Organization
         end
 
         context 'when creating with discounts' do
-          let(:params_with_discounts) do
-            valid_params.merge(
-              discounts: [
-                {
-                  kind: 'fixed_amount',
-                  value: 50,
-                  position: 1,
-                  name: 'Early payment discount'
-                },
-                {
-                  kind: 'percentage',
-                  value: 0.05,
-                  position: 2,
-                  name: 'Volume discount'
-                }
-              ]
-            )
-          end
-
           it 'creates a quote with discounts' do
             expect {
               described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)

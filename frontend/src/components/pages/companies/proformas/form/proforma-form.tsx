@@ -19,6 +19,7 @@ import { ProformaFormInvoiceTotalInfo } from "./proforma-form-invoice-total-info
 import { ProformaFormSubmitButton } from "./proforma-form-submit-button";
 import { ProformaFormItemGroup } from "./proforma-form-item-group";
 import { ProformaFormDateInput } from "./proforma-form-date-input";
+import { ProformaFormDiscountCard } from "./proforma-form-discount-card";
 
 interface ProformaFormProps {
   companyId: number;
@@ -168,9 +169,11 @@ const ProformaForm = ({ companyId, order, proformaId }: ProformaFormProps) => {
             key={itemGroup.id}
           />
         ))}
+
+        <ProformaFormDiscountCard order={order} />
         <ProformaFormDateInput />
         <div className="flex justify-between">
-          <ProformaFormInvoiceTotalInfo />
+          <ProformaFormInvoiceTotalInfo order={order} />
           <ProformaFormSubmitButton />
         </div>
       </form>

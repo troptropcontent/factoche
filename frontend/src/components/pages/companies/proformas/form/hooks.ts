@@ -29,10 +29,8 @@ const useProformaFormItemGroupItemRow = ({
     {
       select: ({ results }) => {
         return Number(
-          results.find(
-            ({ original_item_uuid }) =>
-              original_item_uuid === item.original_item_uuid
-          )?.invoiced_amount || "0.0"
+          results.find(({ uuid }) => uuid === item.original_item_uuid)
+            ?.invoiced_amount || "0.0"
         );
       },
     }

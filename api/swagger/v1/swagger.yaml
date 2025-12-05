@@ -1303,7 +1303,7 @@ paths:
                   results:
                     type: array
                     items:
-                      "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
+                      "$ref": "#/components/schemas/Organization::Projects::Orders::InvoicedItemDto"
         '404':
           description: not_found
         '403':
@@ -3269,7 +3269,7 @@ components:
       - number
       - created_at
       - retention_guarantee_rate
-      - total_amount
+      - total_excl_tax_amount
       properties:
         id:
           type: integer
@@ -3283,7 +3283,7 @@ components:
         retention_guarantee_rate:
           type: string
           format: decimal
-        total_amount:
+        total_excl_tax_amount:
           type: string
           format: decimal
     Organization::Invoices::Meta:
@@ -4049,10 +4049,10 @@ components:
     Organization::Projects::InvoicedItemDto:
       type: object
       required:
-      - original_item_uuid
+      - uuid
       - invoiced_amount
       properties:
-        original_item_uuid:
+        uuid:
           type: string
         invoiced_amount:
           type: string
@@ -4078,10 +4078,10 @@ components:
     Organization::Projects::Orders::InvoicedItemDto:
       type: object
       required:
-      - original_item_uuid
+      - uuid
       - invoiced_amount
       properties:
-        original_item_uuid:
+        uuid:
           type: string
         invoiced_amount:
           type: string

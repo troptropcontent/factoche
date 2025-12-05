@@ -816,6 +816,17 @@
                 },
                 "new": {
                     "title": "Nouvelle facture proforma de situation"
+                },
+                "form": {
+                    "discounts": {
+                        "hint": {
+                            "percentage": "Pourcentage ({{value}}) • {{amount}}",
+                            "fixed_amount": "Montant fixe • {{amount}}"
+                        },
+                        "card_footer": "* Les remises sont calculées proportionnellement au montant facturé",
+                        "card_header": "Remises (appliquées proportionnellement)"
+                    } ,
+                    "total_info": "Total de la facture: <strong>{{invoice_amount}}</strong> ( Sous-total: {{items_amount}} • Remises: {{discounts_amount}})"
                 }
             }
         }
