@@ -1,0 +1,49 @@
+<div class="break-inside-avoid last:mb-0 w-full border-1 rounded mb-8">
+  <span class="bg-gray-200 p-2 rounded-t font-bold text-center border-b-1 flex flex-col">
+    <p><%= t("views.accounting.invoice.shared.discounts.table_name") %></p>
+    <p class="text-xs italic font-light">*<%= t("views.accounting.invoice.shared.discounts.hint") %></p>
+  </span>
+
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th scope="col" class="p-2 border-b-1 align-top text-left w-[30%]">
+          <%= t("views.accounting.invoice.shared.discounts.name") %>
+        </th>
+        <th scope="col" class="p-2 border-b-1 align-top text-center w-[17.5%]">
+          <%= t("views.accounting.invoice.shared.discounts.type.label") %>
+        </th>
+        <th scope="col" class="p-2 border-b-1 align-top text-center w-[17.5%]">
+          <%= t("views.accounting.invoice.shared.discounts.amount") %>
+        </th>
+        <th scope="col" class="p-2 border-b-1 text-right w-[17.5%]">
+          <%= t("views.accounting.invoice.shared.discounts.amount_applied") %>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% invoice.lines.discount.each do |discount| %>
+        <% project_discount =  invoice.context.fetch("project_version_discounts").find{|project_discount| project_discount["original_discount_uuid"] == discount["holder_id"]}%>
+        <tr>
+            <th scope="row" class="text-left p-2">
+              <%= project_discount["name"] %>
+            </th>
+            <td class="text-center p-2">
+               <% if project_discount["kind"] == "percentage" %>
+                    <%= t("views.accounting.invoice.shared.discounts.type.percentage", percentage: number_to_percentage(project_discount["value"].to_d * 100, precision: 0)) %>
+               <% else %>
+                        <%= t("views.accounting.invoice.shared.discounts.type.fixed_amount") %>
+               <% end %>
+            </td>
+            <td class="text-center p-2">
+              <%= number_to_currency(-project_discount["amount"].to_d) %>
+            </td>
+            <td class="text-right p-2">
+              <%= number_to_currency(discount["excl_tax_amount"]) %>
+            </td>
+          </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
