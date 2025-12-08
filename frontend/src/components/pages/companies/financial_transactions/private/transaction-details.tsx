@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FinancialTransactionExtended } from "../shared/types";
 import { TransactionDetailsUngrouped } from "./transaction-details-ungrouped";
 import { TransactionDetailsGrouped } from "./transaction-details-grouped";
+import { TransactionDetailsDiscounts } from "./transaction-details-discounts";
 
 const TransactionDetails = ({
   financialTransaction,
@@ -30,6 +31,9 @@ const TransactionDetails = ({
         ) : (
           <TransactionDetailsUngrouped />
         )}
+        <TransactionDetailsDiscounts
+          financialTransaction={financialTransaction}
+        />
       </CardContent>
     </Card>
   );

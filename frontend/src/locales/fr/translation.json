@@ -127,6 +127,7 @@
                         "previously_invoiced": "Précédement facturé (A)",
                         "new_completion_snapshot": "Nouvel avancement (B)",
                         "new_invoiced": "Nouvelle facture (B - A)",
+
                         "new": {
                             "title": "Synthese",
                             "total": "Total (A)",
@@ -159,6 +160,12 @@
                     "previous_invoiced_label": "Précédement facturé (A)",
                     "new_completion_snapshot_label": "Nouvel avancement (B)",
                     "new_invoiced_label": "Nouvelle facture (B - A)"
+                },
+                "discounts": {
+                    "card_header": "Remises ( appliquées proportionnellement )",
+                    "name": "Désignation",
+                    "amount": "Montant déduit",
+                    "card_footer": "* Les remises sont calculées proportionnellement au montant facturé"
                 }
             },
             "projects": {
