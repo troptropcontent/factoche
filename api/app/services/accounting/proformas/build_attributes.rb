@@ -42,6 +42,9 @@ module Accounting
         project = @validated_params[:project]
         project_version = @validated_params[:project_version]
         project_version_items = build_project_version_items_data(project_version[:items], @validated_params[:issue_date])
+        previously_billed_amount_for_items = project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) }
+        project_version_discounts = build_project_version_discounts_data(project_version[:discounts], @validated_params[:issue_date])
+        previously_billed_amount_for_discounts = project_version_discounts.sum { |project_version_discount| project_version_discount.fetch(:previously_billed_amount) }
 
         @context = {
           snapshot_number: @validated_params[:snapshot_number],
@@ -50,26 +53,10 @@ module Accounting
           project_version_date: project_version.fetch(:created_at).iso8601,
           project_version_retention_guarantee_rate: project_version.fetch(:retention_guarantee_rate),
           project_total_amount: find_project_version_total(project_version_items),
-          project_total_previously_billed_amount: project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) },
+          project_total_previously_billed_amount: previously_billed_amount_for_items + previously_billed_amount_for_discounts,
           project_version_items: project_version_items,
           project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups)),
-          project_version_discounts: build_project_version_discounts_data(project_version.fetch(:discounts, []))
-        }
-      end
-
-      def build_draft_invoice_context(project, project_version, issue_date)
-        project_version_items = build_project_version_items_data(project_version.fetch(:items), issue_date)
-
-        {
-          project_name: project.fetch(:name),
-          project_version_number: project_version.fetch(:number),
-          project_version_date: project_version.fetch(:created_at).iso8601,
-          project_version_retention_guarantee_rate: project_version.fetch(:retention_guarantee_rate),
-          project_total_amount: find_project_version_total(project_version_items),
-          project_total_previously_billed_amount: project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) },
-          project_version_items: project_version_items,
-          project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups)),
-          project_version_discounts: build_project_version_discounts_data(project_version.fetch(:discounts, []))
+          project_version_discounts: project_version_discounts
         }
       end
 
@@ -90,8 +77,23 @@ module Accounting
         end
       end
 
-      def fetch_previous_invoices_data!(original_item_uuids, issue_date)
-        result = FinancialTransactions::FindInvoicedAmountForHolderIds.call(original_item_uuids, issue_date)
+      def build_project_version_discounts_data(project_version_discounts, issue_date)
+          previous_invoices_data = fetch_previous_invoices_data!(project_version_discounts.pluck(:original_discount_uuid), issue_date)
+          project_version_discounts.map do |discount|
+            {
+              original_discount_uuid: discount.fetch(:original_discount_uuid),
+              kind: discount.fetch(:kind),
+              value: discount.fetch(:value),
+              amount: discount.fetch(:amount),
+              position: discount.fetch(:position),
+              name: discount.fetch(:name),
+              previously_billed_amount: previous_invoices_data.dig(discount.fetch(:original_discount_uuid), :invoices_amount).to_d - previous_invoices_data.dig(discount.fetch(:original_discount_uuid), :credit_notes_amount).to_d
+            }
+          end
+      end
+
+      def fetch_previous_invoices_data!(uuids, issue_date)
+        result = FinancialTransactions::FindInvoicedAmountForHolderIds.call(uuids, issue_date)
         raise result.error if result.failure?
 
         result.data
@@ -109,19 +111,6 @@ module Accounting
             id: group.fetch(:id),
             name: group.fetch(:name),
             description: group.fetch(:description)
-          }
-        end
-      end
-
-      def build_project_version_discounts_data(project_version_discounts)
-        project_version_discounts.map do |discount|
-          {
-            original_discount_uuid: discount.fetch(:original_discount_uuid),
-            kind: discount.fetch(:kind),
-            value: discount.fetch(:value),
-            amount: discount.fetch(:amount),
-            position: discount.fetch(:position),
-            name: discount.fetch(:name)
           }
         end
       end
