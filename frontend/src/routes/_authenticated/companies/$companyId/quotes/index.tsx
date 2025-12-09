@@ -98,7 +98,9 @@ function RouteComponent() {
                   <TableCell>{quote.client.name}</TableCell>
                   <TableCell>
                     {t("common.number_in_currency", {
-                      amount: parseFloat(quote.last_version.total_amount),
+                      amount: parseFloat(
+                        quote.last_version.total_excl_tax_amount
+                      ),
                     })}
                   </TableCell>
                   <TableCell>

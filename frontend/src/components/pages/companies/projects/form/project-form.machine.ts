@@ -18,6 +18,7 @@ const formInitialValues: z.infer<typeof formSchema> = {
   po_number: "",
   items: [],
   groups: [],
+  discounts: [],
 };
 
 const projectFormMachine = setup({
