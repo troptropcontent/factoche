@@ -16,6 +16,8 @@ module Organization
 
         ensure_invoiced_item_remains_within_limits!
 
+        ensure_discount_amounts_remain_within_limits! if @validated_params["discount_amounts"].present?
+
         find_snapshot_number!
 
         create_proforma!(@validated_params[:issue_date] || Time.current)
@@ -72,6 +74,53 @@ module Organization
 
         if wrong_invoice_amount
           raise Error::UnprocessableEntityError, "Invoice amount would exceed item total amount for item #{wrong_invoice_amount[:original_item_uuid]}"
+        end
+      end
+
+      def ensure_discount_amounts_remain_within_limits!
+        # Fetch previously invoiced discount amounts
+        result = Orders::FetchInvoicedAmountPerItems.call(@project.id, @validated_params[:issue_date] || Time.current)
+        raise result.error if result.failure?
+
+        discount_amounts = @validated_params["discount_amounts"]
+        discounts_by_uuid = @project_version.discounts.index_by(&:original_discount_uuid)
+
+        # Validate each discount amount
+        discount_amounts.each do |discount_amount|
+          uuid = discount_amount["original_discount_uuid"]
+          amount = discount_amount["discount_amount"].to_d
+
+          # Find the discount in project version
+          discount = discounts_by_uuid[uuid]
+          unless discount
+            raise Error::UnprocessableEntityError, "Discount with UUID #{uuid} not found in project version"
+          end
+
+          # Calculate previously applied discount (as negative amount)
+          previously_applied = result.data.dig(uuid, :invoices_amount).to_d - result.data.dig(uuid, :credit_notes_amount).to_d
+
+          # Total discount available (as positive amount)
+          total_discount = discount.amount.abs
+
+          # Remaining discount (subtract absolute value of previously applied)
+          remaining_discount = total_discount - previously_applied.abs
+
+          # Check if proposed amount exceeds remaining (with small tolerance for rounding)
+          tolerance = 0.01
+          if amount > (remaining_discount + tolerance)
+            raise Error::UnprocessableEntityError,
+              "Discount amount #{amount} exceeds remaining discount of #{remaining_discount.round(2)} " \
+              "for '#{discount.name}' (total: #{total_discount}, previously applied: #{previously_applied.abs.round(2)})"
+          end
+
+          # Warn if significantly under-applying (less than 80% of remaining)
+          under_application_threshold = 0.8
+          if remaining_discount > 0 && amount < (remaining_discount * under_application_threshold)
+            Rails.logger.warn(
+              "Discount '#{discount.name}' (#{uuid}) is being significantly under-applied: " \
+              "#{amount} out of remaining #{remaining_discount.round(2)}"
+            )
+          end
         end
       end
 
@@ -157,7 +206,7 @@ module Organization
           }
         }
 
-        {
+        args = {
           company: company_hash,
           client: client_hash,
           project: project_hash,
@@ -166,6 +215,13 @@ module Organization
           snapshot_number: @snapshot_number,
           issue_date: issue_date
         }
+
+        # Add discount amounts if provided
+        if @validated_params["discount_amounts"].present?
+          args[:new_invoice_discounts] = @validated_params["discount_amounts"]
+        end
+
+        args
       end
 
       def create_proforma!(issue_date)

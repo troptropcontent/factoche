@@ -156,7 +156,7 @@ module Accounting
               .with({ "financial_transaction_id" => proforma.id })
           end
 
-          context "when there is discounts" do
+          context "when project has discounts" do
             let(:items) { [
               FactoryBot.build(:accounting_project_version_item_hash, group_id: 1, quantity: 1, unit_price_amount: 5000),
               FactoryBot.build(:accounting_project_version_item_hash, group_id: 2, quantity: 1, unit_price_amount: 5000)
@@ -169,8 +169,6 @@ module Accounting
               FactoryBot.build(:accounting_project_version_discount_hash, amount: 300.to_d),
               FactoryBot.build(:accounting_project_version_discount_hash, amount: 200.to_d)
             ] } # total of the discounts => 500
-
-            it { is_expected.to be_success }
 
             it 'includes discounts in context', :aggregate_failures do
               proforma = result.data
@@ -185,39 +183,106 @@ module Accounting
               )
             end
 
-            # rubocop:disable RSpec/ExampleLength
-            it 'creates the relevant invoice lines with prorated discounts', :aggregate_failures do
-              # Project total: 5000 + 5000 = 10000€
-              # Invoice amount: 3000€
-              # Invoice proportion: 3000/10000 = 0.3 (30%)
-              # Discount 1 prorated: 300 × 0.3 = 90€
-              # Discount 2 prorated: 200 × 0.3 = 60€
-              # Total prorated discount: 150€
+            context "when no new_invoice_discounts are provided" do
+              it { is_expected.to be_success }
 
-              proforma = result.data
-              expect(proforma.lines.count).to eq(3) # 1 charge + 2 discounts
+              # rubocop:disable RSpec/ExampleLength
+              it 'creates only charge lines (no discount lines)', :aggregate_failures do
+                # Discount lines are only created when discount amounts are explicitly provided for this invoice
+                # Project total: 5000 + 5000 = 10000€
+                # Discounts total: 500€ (300 + 200)
+                # Net project total: 9500€
+                # Invoice amount: 3000€
 
-              charge_line = proforma.lines.charge.first
-              expect(charge_line.excl_tax_amount).to eq(3000.to_d)
-              expect(charge_line.quantity).to eq(0.6.to_d) # 3000€ (invoice amount) / 5000€ (unit price)
-              expect(charge_line.kind).to eq("charge")
+                proforma = result.data
+                expect(proforma.lines.count).to eq(1) # 1 charge only, no discount lines
 
-              discount_lines = proforma.lines.discount.order(:id)
-              expect(discount_lines.count).to eq(2)
+                charge_line = proforma.lines.charge.first
+                expect(charge_line.excl_tax_amount).to eq(3000.to_d)
+                expect(charge_line.quantity).to eq(0.6.to_d) # 3000€ (invoice amount) / 5000€ (unit price)
+                expect(charge_line.kind).to eq("charge")
 
-              first_discount = discount_lines.first
-              expect(first_discount.excl_tax_amount).to be < 0
-              expect(first_discount.excl_tax_amount.abs).to eq(90.to_d) # 300 × 0.3
-              expect(first_discount.kind).to eq("discount")
-              expect(first_discount.tax_rate).to eq(0)
-
-              second_discount = discount_lines.second
-              expect(second_discount.excl_tax_amount).to be < 0
-              expect(second_discount.excl_tax_amount.abs).to eq(60.to_d) # 200 × 0.3
-              expect(second_discount.kind).to eq("discount")
-              expect(second_discount.tax_rate).to eq(0)
+                # No discount lines since none provided for this invoice
+                discount_lines = proforma.lines.discount
+                expect(discount_lines.count).to eq(0)
+              end
+              # rubocop:enable RSpec/ExampleLength
             end
-            # rubocop:enable RSpec/ExampleLength
+
+            context "when new_invoice_discounts are provided" do
+              subject(:result) {
+                described_class.call({
+                  company:,
+                  client:,
+                  project:,
+                  project_version:,
+                  new_invoice_items: proforma_items,
+                  new_invoice_discounts: [
+                    { original_discount_uuid: discounts[0][:original_discount_uuid], discount_amount: 90.0 },
+                    { original_discount_uuid: discounts[1][:original_discount_uuid], discount_amount: 60.0 }
+                  ],
+                  issue_date:,
+                  snapshot_number:
+                })
+              }
+
+              it { is_expected.to be_success }
+
+              # rubocop:disable RSpec/ExampleLength
+              it 'creates charge and discount lines', :aggregate_failures do
+                # Project total: 5000 + 5000 = 10000€
+                # Discounts total: 500€ (300 + 200)
+                # Net project total: 9500€
+                # Invoice amount before discount: 3000€
+                # Discount amounts applied to this invoice: 90€ + 60€ = 150€
+                # Invoice amount after discount: 3000 - 150 = 2850€
+
+                proforma = result.data
+                expect(proforma.lines.count).to eq(3) # 1 charge + 2 discounts
+
+                charge_line = proforma.lines.charge.first
+                expect(charge_line.excl_tax_amount).to eq(3000.to_d)
+                expect(charge_line.kind).to eq("charge")
+
+                discount_lines = proforma.lines.discount.order(:id)
+                expect(discount_lines.count).to eq(2)
+
+                first_discount = discount_lines.first
+                expect(first_discount.excl_tax_amount).to eq(-90.to_d)
+                expect(first_discount.kind).to eq("discount")
+
+                second_discount = discount_lines.second
+                expect(second_discount.excl_tax_amount).to eq(-60.to_d)
+                expect(second_discount.kind).to eq("discount")
+              end
+              # rubocop:enable RSpec/ExampleLength
+            end
+
+            context "when new_invoice_discounts exceed available discount" do
+              subject(:result) {
+                described_class.call({
+                  company:,
+                  client:,
+                  project:,
+                  project_version:,
+                  new_invoice_items: proforma_items,
+                  new_invoice_discounts: [
+                    { original_discount_uuid: discounts[0][:original_discount_uuid], discount_amount: 400.0 } # Exceeds 300€ total
+                  ],
+                  issue_date:,
+                  snapshot_number:
+                })
+              }
+
+              it { is_expected.to be_failure }
+
+              it 'returns validation error', :aggregate_failures do
+                expect(result.error).to be_a(StandardError)
+                expect(result.error.message).to include("Total discount amount")
+                expect(result.error.message).to include("would exceed the maximum allowed discount")
+                expect(result.error.message).to include("300") # Total discount available
+              end
+            end
           end
         end
 

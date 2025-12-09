@@ -18,6 +18,10 @@ module Accounting
               required(:original_item_uuid).filled(:string)
               required(:invoice_amount).filled(:decimal)
             end
+            optional(:new_invoice_discounts).array(:hash) do
+              required(:original_discount_uuid).filled(:string)
+              required(:discount_amount).filled(:decimal, gteq?: 0)
+            end
             optional(:issue_date).filled(:time)
           end
        end
@@ -30,18 +34,19 @@ module Accounting
         project_version = validated_args[:project_version]
         snapshot_number = validated_args[:snapshot_number]
         new_invoice_items = validated_args[:new_invoice_items]
+        new_invoice_discounts = validated_args[:new_invoice_discounts] || []
         issue_date = validated_args[:issue_date] || Time.current
 
         proforma = ActiveRecord::Base.transaction do
           # Create a proforma record
-          base_proforma_attributes = build_proforma_attributes!(company.fetch(:id), client.fetch(:id), project, project_version, new_invoice_items, snapshot_number, issue_date)
+          base_proforma_attributes = build_proforma_attributes!(company.fetch(:id), client.fetch(:id), project, project_version, new_invoice_items, new_invoice_discounts, snapshot_number, issue_date)
 
           financial_year = find_financial_year!(issue_date, company.fetch(:id))
           proforma_number = find_next_available_proforma_number!(company.fetch(:id), financial_year.id, issue_date)
           proforma = Proforma.create!(base_proforma_attributes.merge({ number: proforma_number, financial_year:  financial_year }))
 
           # Create proforma line records
-          proforma_lines_attributes = build_proforma_lines_attributes!(proforma.context, new_invoice_items)
+          proforma_lines_attributes = build_proforma_lines_attributes!(proforma.context, new_invoice_items, new_invoice_discounts)
           proforma.lines.create!(proforma_lines_attributes)
 
           # Create proforma details records
@@ -68,13 +73,14 @@ module Accounting
         result.data
       end
 
-      def build_proforma_attributes!(company_id, client_id, project, project_version, new_invoice_items, snapshot_number, issue_date)
+      def build_proforma_attributes!(company_id, client_id, project, project_version, new_invoice_items, new_invoice_discounts, snapshot_number, issue_date)
         result = BuildAttributes.call({
           company_id:,
           client_id:,
           project:,
           project_version:,
           new_invoice_items:,
+          new_invoice_discounts:,
           issue_date:,
           snapshot_number:
         })
@@ -83,8 +89,8 @@ module Accounting
         result.data
       end
 
-      def build_proforma_lines_attributes!(proforma_context, proforma_items)
-        result = BuildLinesAttributes.call(proforma_context, proforma_items)
+      def build_proforma_lines_attributes!(proforma_context, proforma_items, proforma_discounts)
+        result = BuildLinesAttributes.call(proforma_context, proforma_items, proforma_discounts)
 
         raise result.error if result.failure?
         result.data

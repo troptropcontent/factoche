@@ -99,7 +99,7 @@ module Accounting
           expect(context[:project_version_discounts]).to eq([])
         end
 
-        context 'when project version has discounts' do
+        context 'when discounts are provided' do
           let(:project_version) {
             FactoryBot.build(
               :accounting_project_version_hash,
@@ -109,13 +109,21 @@ module Accounting
             )
           }
 
+          let(:args) {
+            super().merge({
+              new_invoice_discounts: [
+                { original_discount_uuid: 'discount-uuid-1', discount_amount: 15.0 },
+                { original_discount_uuid: 'discount-uuid-2', discount_amount: 15.0 }
+              ]
+            })
+          }
+
           it 'returns success with discounts in context and discounted totals', :aggregate_failures do
             # Project items total: 200€ (2 items × 100€)
             # Discounts total: 40€ (2 × 20€)
             # Project total after discounts (net): 160€ (200 - 40)
             # Invoice amount before discount: 150€
-            # Invoice proportion: 150/200 = 0.75 (calculated on gross amount)
-            # Prorated discount: 40 × 0.75 = 30€
+            # Discount amounts applied to this invoice: 15€ + 15€ = 30€
             # Invoice amount after discount: 150 - 30 = 120€
             # Tax (20%): 120 × 0.2 = 24€
             # Total including tax: 144€
@@ -307,6 +315,35 @@ module Accounting
               ]
             )
           }
+
+          before do
+            # Override the default before block to include discount amounts for this invoice
+            # The outer before block already created a proforma and posted it (creating an invoice)
+            # We need to delete BOTH the proforma and the invoice it created
+            Accounting::FinancialTransaction.destroy_all
+
+            # Create new proforma with discount amounts applied
+            creation_service_result = Create.call(
+              company:,
+              client:,
+              project:,
+              project_version:,
+              new_invoice_items: [ {
+                original_item_uuid: 'item-uuid-1',
+                invoice_amount: previous_invoice_first_item_amount
+              } ],
+              new_invoice_discounts: [
+                { original_discount_uuid: 'discount-uuid-1', discount_amount: 625 },
+                { original_discount_uuid: 'discount-uuid-2', discount_amount: 480.77 }
+              ],
+              snapshot_number: 1,
+              issue_date: 2.days.ago
+            )
+
+            raise creation_service_result.error if creation_service_result.failure?
+
+            Accounting::Proformas::Post.call(creation_service_result.data.id)
+          end
 
           it 'tracks previously billed amounts for discounts', :aggregate_failures do
             context = result.data[:context]

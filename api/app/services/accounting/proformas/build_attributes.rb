@@ -15,6 +15,10 @@ module Accounting
             required(:original_item_uuid).filled(:string)
             required(:invoice_amount).filled(:decimal)
           end
+          optional(:new_invoice_discounts).array(:hash) do
+            required(:original_discount_uuid).filled(:string)
+            required(:discount_amount).filled(:decimal, gteq?: 0)
+          end
         end
       end
 
@@ -118,40 +122,31 @@ module Accounting
         end
       end
 
-      def find_previously_invoiced_amount_for_item(original_item_uuids, issue_date)
-        Accounting::FinancialTransactionLine.joins(:financial_transaction)
-          .where(
-            holder_id: original_item_uuids,
-            financial_transaction: { issue_date: ...issue_date, status: :posted }
-          )
-          .select("original_item_uuid")
-          .sum("excl_tax_amount")
-          .group("9aa7263b-be27-4642-8c1f-aca123ed4aaa")
+      def build_manual_discounts_map
+        return {} unless @validated_params[:new_invoice_discounts].present?
+
+        @validated_params[:new_invoice_discounts].each_with_object({}) do |discount, hash|
+          uuid = discount[:original_discount_uuid]
+          amount = discount[:discount_amount]
+          hash[uuid] = amount
+        end
       end
 
       def totals
         return @totals if @totals
 
         project_version = @validated_params[:project_version]
+
+        # Items data
+        project_version_items = project_version[:items]
         invoice_items = @validated_params[:new_invoice_items]
-        discounts = project_version.fetch(:discounts, [])
+        invoice_items_amount = invoice_items.sum { |item| item.with_indifferent_access.fetch(:invoice_amount).to_d }
+
+        # Discounts data
+        invoice_discounts = @validated_params.fetch(:new_invoice_discounts, [])
+        invoice_discounts_amount = invoice_discounts.sum { |discount|discount.fetch(:discount_amount).to_d }
+        # Other data
         retention_guarantee_rate = project_version[:retention_guarantee_rate].to_d
-        project_version_items_total = project_version.fetch(:items).sum { |item| item.fetch(:quantity).to_d * item.fetch(:unit_price_amount).to_d }
-        invoice_total_excluding_taxes_before_discounts = invoice_items.sum { |item| item.with_indifferent_access.fetch(:invoice_amount).to_d }
-
-        # Calculate the invoice proportion
-        invoice_proportion = if project_version_items_total > 0
-          invoice_total_excluding_taxes_before_discounts / project_version_items_total
-        else
-          0.to_d
-        end
-
-        # Calculate prorated discount by processing each discount individually and rounding
-        # This matches the logic in BuildLinesAttributes
-        prorated_discount_to_spread_on_invoice = discounts.sum do |discount|
-          discount_amount = discount.fetch(:amount).to_d
-          (discount_amount * invoice_proportion).round(2)
-        end
 
         # Calculate totals, distributing the discount proportionally across items
         @totals = invoice_items.each_with_object({
@@ -160,17 +155,14 @@ module Accounting
           total_excl_retention_guarantee_amount: 0,
           total_excl_tax_amount_before_discount: 0
         }) do |invoice_item, totals|
-          project_version_item = project_version.fetch(:items).find { |item|
+          project_version_item = project_version_items.find { |item|
             item.fetch(:original_item_uuid) == invoice_item.with_indifferent_access.fetch(:original_item_uuid)
           }
           project_version_item_tax_rate = project_version_item.fetch(:tax_rate).to_d
 
           invoice_amount = invoice_item[:invoice_amount].to_d
-          prorated_discount = if invoice_total_excluding_taxes_before_discounts > 0
-            (invoice_amount / invoice_total_excluding_taxes_before_discounts) * prorated_discount_to_spread_on_invoice
-          else
-            0.to_d
-          end
+          prorated_discount = invoice_items_amount > 0 ? (invoice_amount / invoice_items_amount) * invoice_discounts_amount : 0.to_d
+
           invoice_amount_including_discount = invoice_amount - prorated_discount
           invoice_amount_including_tax = invoice_amount_including_discount * (1 + project_version_item_tax_rate)
           totals[:total_excl_tax_amount_before_discount] += invoice_amount
