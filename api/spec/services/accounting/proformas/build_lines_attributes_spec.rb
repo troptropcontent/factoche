@@ -33,7 +33,8 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
           }
         ],
         "project_version_discounts" => [],
-        "project_total_amount" => "400", # 200 + 100 + 100
+        "project_total_amount" => "400", # 200 + 100 + 100 (net amount for display)
+        "project_total_amount_before_discounts" => "400", # Same as total when no discounts
         "project_version_retention_guarantee_rate" => "0.05"
       }
     end
@@ -105,6 +106,7 @@ RSpec.describe Accounting::Proformas::BuildLinesAttributes do
       context "when project has discounts" do
         let(:invoice_context) do
           super().merge({
+            "project_total_amount" => "350", # 400 - 50 (net amount after discount)
             "project_version_discounts" => [
               {
                 "original_discount_uuid" => "discount-uuid-1",

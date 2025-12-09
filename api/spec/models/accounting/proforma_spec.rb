@@ -32,6 +32,7 @@ RSpec.describe Accounting::Proforma, type: :model do
             project_version_number: 1,
             project_version_date: Time.current.iso8601,
             project_total_amount: 1000.0,
+            project_total_amount_before_discounts: 1000.0,
             project_total_previously_billed_amount: 500.0,
             project_version_items: [ {
               original_item_uuid: "123e4567-e89b-12d3-a456-426614174000",

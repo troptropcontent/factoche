@@ -49,8 +49,9 @@ module Accounting
         # Calculate the total invoice amount for this proforma
         total_invoice_amount = @invoice_amounts.sum { |invoice_amount| invoice_amount.fetch(:invoice_amount).to_d }
 
-        # Calculate the total project amount
-        total_project_amount = @invoice_context.fetch("project_total_amount").to_d
+        # Calculate the total project amount before discounts (gross amount)
+        # This is used to calculate the proportion of the project being invoiced
+        total_project_amount = @invoice_context.fetch("project_total_amount_before_discounts").to_d
 
         # Calculate the proportion of the project being invoiced
         invoice_proportion = total_invoice_amount / total_project_amount

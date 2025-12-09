@@ -110,10 +110,11 @@ module Accounting
           }
 
           it 'returns success with discounts in context and discounted totals', :aggregate_failures do
-            # Project total: 200€ (2 items × 100€)
+            # Project items total: 200€ (2 items × 100€)
             # Discounts total: 40€ (2 × 20€)
+            # Project total after discounts (net): 160€ (200 - 40)
             # Invoice amount before discount: 150€
-            # Invoice proportion: 150/200 = 0.75
+            # Invoice proportion: 150/200 = 0.75 (calculated on gross amount)
             # Prorated discount: 40 × 0.75 = 30€
             # Invoice amount after discount: 150 - 30 = 120€
             # Tax (20%): 120 × 0.2 = 24€
@@ -128,6 +129,11 @@ module Accounting
             )
 
             context = result.data[:context]
+            # Verify project_total_amount is the NET amount (after discounts) for display
+            expect(context[:project_total_amount]).to eq(160.0) # 200 - 40
+            # Verify project_total_amount_before_discounts is the GROSS amount for calculations
+            expect(context[:project_total_amount_before_discounts]).to eq(200.0)
+
             expect(context[:project_version_discounts].length).to eq(2)
             expect(context[:project_version_discounts].first).to include(
               original_discount_uuid: 'discount-uuid-1',
@@ -304,6 +310,12 @@ module Accounting
 
           it 'tracks previously billed amounts for discounts', :aggregate_failures do
             context = result.data[:context]
+
+            # Project items total: 5200€ (50×100 + 2×100)
+            # Discounts total: 2300€ (1300 + 1000)
+            # Project total after discounts (net): 2900€ (5200 - 2300)
+            expect(context[:project_total_amount]).to eq(2900.0) # 5200 - 2300
+            expect(context[:project_total_amount_before_discounts]).to eq(5200.0)
 
             expect(context[:project_version_discounts].length).to eq(2)
 

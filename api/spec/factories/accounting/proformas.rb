@@ -15,6 +15,7 @@ FactoryBot.define do
         project_version_number: 1,
         project_version_date: Time.current.to_s,
         project_total_amount: BigDecimal("1000.00"),
+        project_total_amount_before_discounts: BigDecimal("1000.00"),
         project_total_previously_billed_amount: BigDecimal("0.00"),
         project_version_items: [
           {

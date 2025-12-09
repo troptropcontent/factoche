@@ -42,9 +42,10 @@ module Accounting
         project = @validated_params[:project]
         project_version = @validated_params[:project_version]
         project_version_items = build_project_version_items_data(project_version[:items], @validated_params[:issue_date])
+        project_version_items_amount = project_version_items.sum { |item| item.fetch(:quantity) * item.fetch(:unit_price_amount) }
         previously_billed_amount_for_items = project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) }
         project_version_discounts = build_project_version_discounts_data(project_version[:discounts] || [], @validated_params[:issue_date])
-
+        project_version_discounts_amount = project_version_discounts.sum { |item| item.fetch(:amount) }
         previously_billed_amount_for_discounts = project_version_discounts.sum { |project_version_discount| project_version_discount.fetch(:previously_billed_amount) }
 
         @context = {
@@ -53,7 +54,8 @@ module Accounting
           project_version_number: project_version.fetch(:number),
           project_version_date: project_version.fetch(:created_at).iso8601,
           project_version_retention_guarantee_rate: project_version.fetch(:retention_guarantee_rate),
-          project_total_amount: find_project_version_total(project_version_items),
+          project_total_amount: project_version_items_amount - project_version_discounts_amount,
+          project_total_amount_before_discounts: project_version_items_amount,
           project_total_previously_billed_amount: previously_billed_amount_for_items + previously_billed_amount_for_discounts,
           project_version_items: project_version_items,
           project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups)),
@@ -100,7 +102,7 @@ module Accounting
         result.data
       end
 
-      def find_project_version_total(project_version_items)
+      def find_project_version_total(project_version_items, project_version_discounts)
         project_version_items.sum do |project_version_item|
           project_version_item.fetch(:quantity) * project_version_item.fetch(:unit_price_amount)
         end

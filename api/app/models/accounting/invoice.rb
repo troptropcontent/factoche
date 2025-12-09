@@ -8,6 +8,7 @@ module Accounting
         required(:project_version_number).filled(:integer, gteq?: 0)
         required(:project_version_date).filled(:string)
         required(:project_total_amount).filled(:decimal, gteq?: 0)
+        required(:project_total_amount_before_discounts).filled(:decimal, gteq?: 0)
         required(:project_total_previously_billed_amount).filled(:decimal, gteq?: 0)
         required(:project_version_items).array(:hash) do
           required(:original_item_uuid).filled(:string)
