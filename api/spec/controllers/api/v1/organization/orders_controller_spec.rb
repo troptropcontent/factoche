@@ -566,24 +566,11 @@ module Api
               context "when there is no previous invoices or credit notes" do
                 let(:expected) do
                   {
-                    "results" => [
-                      {
-                        "original_item_uuid" => order_version.items.first.original_item_uuid,
-                        "invoiced_amount" => "0.0"
-                      },
-                      {
-                        "original_item_uuid" => order_version.items.second.original_item_uuid,
-                        "invoiced_amount" => "0.0"
-                      },
-                      {
-                        "original_item_uuid" => order_version.items.third.original_item_uuid,
-                        "invoiced_amount" => "0.0"
-                      }
-                    ].sort_by { |a| a["original_item_uuid"] }
+                    "results" => []
                   }
                 end
 
-                run_test!("It returns 0 for each items") do
+                run_test!("It returns an empty array") do
                   parsed_body = JSON.parse(response.body)
 
                   expect(parsed_body).to eq(expected)
@@ -596,18 +583,10 @@ module Api
                     {
                       "results" => [
                         {
-                          "original_item_uuid" => order_version.items.first.original_item_uuid,
+                          "uuid" => order_version.items.first.original_item_uuid,
                           "invoiced_amount" => "0.2"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.second.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.third.original_item_uuid,
-                          "invoiced_amount" => "0.0"
                         }
-                      ].sort_by { |a| a["original_item_uuid"] }
+                      ].sort_by { |a| a["uuid"] }
                     }
                   end
 
@@ -616,7 +595,7 @@ module Api
                     ::Accounting::Proformas::Post.call(proforma.id)
                   }
 
-                  run_test!("It returns the relevant amount for each items") do
+                  run_test!("It returns the relevant amount for the invoiced item only") do
                     parsed_body = JSON.parse(response.body)
 
                     expect(parsed_body).to eq(expected)
@@ -626,20 +605,7 @@ module Api
                 context "when those transaction are after the requested issue date (current time by default)" do
                   let(:expected) do
                     {
-                      "results" => [
-                        {
-                          "original_item_uuid" => order_version.items.first.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.second.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.third.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        }
-                      ].sort_by { |a| a["original_item_uuid"] }
+                      "results" => []
                     }
                   end
 

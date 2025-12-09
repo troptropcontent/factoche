@@ -43,7 +43,8 @@ module Accounting
         project_version = @validated_params[:project_version]
         project_version_items = build_project_version_items_data(project_version[:items], @validated_params[:issue_date])
         previously_billed_amount_for_items = project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) }
-        project_version_discounts = build_project_version_discounts_data(project_version[:discounts], @validated_params[:issue_date])
+        project_version_discounts = build_project_version_discounts_data(project_version[:discounts] || [], @validated_params[:issue_date])
+
         previously_billed_amount_for_discounts = project_version_discounts.sum { |project_version_discount| project_version_discount.fetch(:previously_billed_amount) }
 
         @context = {

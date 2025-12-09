@@ -40,7 +40,8 @@ module Organization
 
         context "when all validations pass" do
           it {
-          expect(result).to be_success }
+            expect(result).to be_success
+          }
 
           it "calls the accounting service with correct arguments", :aggregate_failures do
             allow(Accounting::Proformas::Update).to receive(:call).and_return(ServiceResult.success(proforma))

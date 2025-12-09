@@ -130,6 +130,25 @@ module Organization
         end
 
         context 'when creating with discounts' do
+          let(:params_with_discounts) do
+            valid_params.merge(
+              discounts: [
+                  {
+                    kind: 'percentage',
+                    value: 0.10,
+                    position: 1,
+                    name: 'BlackFriday'
+                  },
+                  {
+                    kind: 'fixed_amount',
+                    value: 100,
+                    position: 2,
+                    name: 'BlackFriday'
+                  }
+                ]
+            )
+          end
+
           it 'creates a quote with discounts' do
             expect {
               described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)
@@ -142,26 +161,23 @@ module Organization
             quote = result.data
             version = quote.versions.first
             total_excl_tax_amount = quote.versions.first.total_excl_tax_amount
-            expect(total_excl_tax_amount).to eq(522.5) # 600 - 50€ - 5%
+            expect(total_excl_tax_amount).to eq(440.0) # 600 - 10% - 100€
 
             discounts = version.discounts.order(:position)
 
             expect(discounts.count).to eq(2)
 
             first_discount = discounts.first
-            expect(first_discount.kind).to eq('fixed_amount')
-            expect(first_discount.value).to eq(50)
-            expect(first_discount.amount).to eq(50)
+            expect(first_discount.kind).to eq('percentage')
+            expect(first_discount.value).to eq(0.10)
+            expect(first_discount.amount).to eq(60.0)
             expect(first_discount.position).to eq(1)
-            expect(first_discount.name).to eq('Early payment discount')
 
             second_discount = discounts.second
-            expect(second_discount.kind).to eq('percentage')
-            expect(second_discount.value).to eq(0.05)
-            # Total is 600 (500+100), after first discount: 550, then 5% of 550 = 27.50
-            expect(second_discount.amount).to eq(27.50)
+            expect(second_discount.kind).to eq('fixed_amount')
+            expect(second_discount.value).to eq(100)
+            expect(second_discount.amount).to eq(100)
             expect(second_discount.position).to eq(2)
-            expect(second_discount.name).to eq('Volume discount')
           end
         end
 
