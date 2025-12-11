@@ -110,3 +110,5 @@ gem "aws-sdk-s3", require: false
 gem "sentry-ruby"
 gem "sentry-rails"
 gem "sentry-sidekiq"
+
+gem "dry_validation_openapi", "~> 0.1.0"
