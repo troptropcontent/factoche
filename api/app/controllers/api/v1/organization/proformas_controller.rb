@@ -23,7 +23,7 @@ module Api
 
           order_version = @order.last_version
 
-          result = ::Organization::Proformas::Create.call(order_version.id, proforma_params.to_h)
+          result = ::Organization::Proformas::Create.call(order_version.id, params.to_unsafe_hash)
 
           if result.failure?
             raise Error::UnprocessableEntityError, "Failed to create a proforma invoice: #{result.error}"
