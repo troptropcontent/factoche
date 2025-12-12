@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -65,7 +65,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
   end
 
   create_table "accounting_financial_transaction_lines", force: :cascade do |t|
-    t.string "holder_id"
+    t.string "holder_id", null: false
     t.bigint "financial_transaction_id", null: false
     t.string "unit", null: false
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
@@ -217,58 +217,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
     t.index ["settings"], name: "index_organization_company_configs_on_settings", using: :gin
   end
 
-  create_table "organization_completion_snapshot_items", force: :cascade do |t|
-    t.bigint "item_id", null: false
-    t.bigint "completion_snapshot_id", null: false
-    t.decimal "completion_percentage", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["completion_snapshot_id"], name: "idx_on_completion_snapshot_id_f747b636af"
-    t.index ["item_id"], name: "index_organization_completion_snapshot_items_on_item_id"
-  end
-
-  create_table "organization_completion_snapshots", force: :cascade do |t|
-    t.bigint "project_version_id", null: false
-    t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["project_version_id"], name: "index_organization_completion_snapshots_on_project_version_id"
-  end
-
-  create_table "organization_credit_notes", force: :cascade do |t|
-    t.string "number", null: false
-    t.datetime "issue_date", null: false
-    t.decimal "tax_amount", precision: 15, scale: 2, null: false
-    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
-    t.jsonb "payload", default: {}, null: false
-    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
-    t.decimal "total_amount", null: false
-    t.enum "status", default: "draft", null: false, enum_type: "credit_note_status"
-    t.bigint "original_invoice_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["original_invoice_id"], name: "index_organization_credit_notes_on_original_invoice_id"
-    t.index ["payload"], name: "index_organization_credit_notes_on_payload", using: :gin
-  end
-
-  create_table "organization_invoices", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "number", null: false
-    t.datetime "issue_date", null: false
-    t.datetime "delivery_date", null: false
-    t.decimal "tax_amount", precision: 15, scale: 2, null: false
-    t.decimal "retention_guarantee_amount", precision: 15, scale: 2, default: "0.0", null: false
-    t.jsonb "payload", default: {}, null: false
-    t.decimal "total_excl_tax_amount", precision: 15, scale: 2, null: false
-    t.datetime "due_date"
-    t.decimal "total_amount", null: false
-    t.enum "status", default: "draft", null: false, enum_type: "invoice_status"
-    t.bigint "completion_snapshot_id"
-    t.index ["completion_snapshot_id"], name: "index_organization_invoices_on_completion_snapshot_id"
-    t.index ["payload"], name: "index_organization_invoices_on_payload", using: :gin
-  end
-
   create_table "organization_item_groups", force: :cascade do |t|
     t.bigint "project_version_id", null: false
     t.string "name", null: false
@@ -326,9 +274,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
     t.datetime "updated_at", null: false
     t.string "description"
     t.string "type", null: false
+    t.bigint "original_project_version_id"
     t.bigint "company_id", null: false
     t.integer "number", null: false
-    t.bigint "original_project_version_id"
     t.boolean "posted", default: false, null: false
     t.datetime "posted_at"
     t.string "address_street", null: false
@@ -362,11 +310,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
   add_foreign_key "organization_bank_details", "organization_companies", column: "company_id"
   add_foreign_key "organization_clients", "organization_companies", column: "company_id"
   add_foreign_key "organization_company_configs", "organization_companies", column: "company_id"
-  add_foreign_key "organization_completion_snapshot_items", "organization_completion_snapshots", column: "completion_snapshot_id"
-  add_foreign_key "organization_completion_snapshot_items", "organization_items", column: "item_id"
-  add_foreign_key "organization_completion_snapshots", "organization_project_versions", column: "project_version_id"
-  add_foreign_key "organization_credit_notes", "organization_invoices", column: "original_invoice_id"
-  add_foreign_key "organization_invoices", "organization_completion_snapshots", column: "completion_snapshot_id"
   add_foreign_key "organization_item_groups", "organization_project_versions", column: "project_version_id"
   add_foreign_key "organization_items", "organization_item_groups", column: "item_group_id"
   add_foreign_key "organization_items", "organization_project_versions", column: "project_version_id"
@@ -378,66 +321,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
   add_foreign_key "organization_projects", "organization_companies", column: "company_id"
   add_foreign_key "organization_projects", "organization_project_versions", column: "original_project_version_id"
 
-  create_view "orders_invoicing_data", sql_definition: <<-SQL
-      WITH latest_versions AS (
-           SELECT DISTINCT ON (organization_project_versions.project_id) organization_project_versions.id,
-              organization_project_versions.project_id
-             FROM organization_project_versions
-            ORDER BY organization_project_versions.project_id, organization_project_versions.number DESC
-          ), version_items AS (
-           SELECT lv.project_id,
-              oi.unit_price_amount,
-              oi.quantity,
-              (oi.unit_price_amount * (oi.quantity)::numeric) AS item_total
-             FROM (latest_versions lv
-               JOIN organization_items oi ON ((oi.project_version_id = lv.id)))
-          ), invoices AS (
-           SELECT opv.project_id,
-              ft.id,
-              ft.type,
-              ft.total_excl_tax_amount
-             FROM (accounting_financial_transactions ft
-               JOIN organization_project_versions opv ON ((ft.holder_id = opv.id)))
-            WHERE (((ft.type)::text = 'Accounting::Invoice'::text) AND (ft.status = ANY (ARRAY['posted'::accounting_financial_transaction_status, 'cancelled'::accounting_financial_transaction_status])))
-          ), credit_notes AS (
-           SELECT invoices.project_id,
-              ft.type,
-              ft.total_excl_tax_amount
-             FROM (accounting_financial_transactions ft
-               JOIN invoices ON ((ft.holder_id = invoices.id)))
-            WHERE (((ft.type)::text = 'Accounting::CreditNote'::text) AND (ft.status = ANY (ARRAY['posted'::accounting_financial_transaction_status, 'cancelled'::accounting_financial_transaction_status])))
-          ), invoice_totals AS (
-           SELECT invoices.project_id,
-              sum(invoices.total_excl_tax_amount) AS total_invoiced
-             FROM invoices
-            GROUP BY invoices.project_id
-          ), credit_note_totals AS (
-           SELECT credit_notes.project_id,
-              sum(credit_notes.total_excl_tax_amount) AS total_credited
-             FROM credit_notes
-            GROUP BY credit_notes.project_id
-          ), final AS (
-           SELECT vi.project_id,
-              sum(vi.item_total) AS order_total,
-              COALESCE(it.total_invoiced, (0)::numeric) AS total_invoiced,
-              COALESCE(ct.total_credited, (0)::numeric) AS total_credited,
-              round((LEAST((COALESCE((it.total_invoiced - ct.total_credited), (0)::numeric) / NULLIF(sum(vi.item_total), (0)::numeric)), (1)::numeric) * (100)::numeric), 2) AS progress_percentage
-             FROM ((version_items vi
-               LEFT JOIN invoice_totals it ON ((vi.project_id = it.project_id)))
-               LEFT JOIN credit_note_totals ct ON ((vi.project_id = ct.project_id)))
-            GROUP BY vi.project_id, it.total_invoiced, ct.total_credited
-          )
-   SELECT p.id AS order_id,
-      p.company_id,
-      p.name AS order_name,
-      f.order_total,
-      f.total_invoiced,
-      f.total_credited,
-      f.progress_percentage
-     FROM (final f
-       JOIN organization_projects p ON ((p.id = f.project_id)))
-    WHERE ((p.type)::text = 'Organization::Order'::text);
-  SQL
   create_view "monthly_revenues", sql_definition: <<-SQL
       SELECT invoices.company_id,
       (date_part('year'::text, invoices.issue_date))::integer AS year,
@@ -457,9 +340,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_14_081618) do
               organization_projects.updated_at,
               organization_projects.description,
               organization_projects.type,
+              organization_projects.original_project_version_id,
               organization_projects.company_id,
               organization_projects.number,
-              organization_projects.original_project_version_id,
               organization_projects.posted,
               organization_projects.posted_at
              FROM organization_projects

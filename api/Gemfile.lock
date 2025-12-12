@@ -159,6 +159,7 @@ GEM
       dry-initializer (~> 3.2)
       dry-schema (~> 1.14)
       zeitwerk (~> 2.6)
+    dry_validation_openapi (0.1.0)
     ed25519 (1.3.0)
     erubi (1.13.0)
     et-orbi (1.2.11)
@@ -510,6 +511,7 @@ DEPENDENCIES
   debug
   dotenv
   dry-validation (~> 1.11)
+  dry_validation_openapi (~> 0.1.0)
   factory_bot_rails
   faraday
   faraday-multipart

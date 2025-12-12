@@ -13,23 +13,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       consumes 'application/json'
 
       parameter name: :order_id, in: :path, type: :integer, required: true
-      parameter name: :body, in: :body, required: true, schema: {
-        type: :object,
-        required: [ :invoice_amounts ],
-        properties: {
-          invoice_amounts: {
-            type: :array,
-            items: {
-              type: :object,
-              required: [ :original_item_uuid, :invoice_amount ],
-              properties: {
-                original_item_uuid: { type: :string },
-                invoice_amount: { type: :string, format: "decimal" }
-              }
-            }
-          }
-        }
-      }
+      parameter name: :body, in: :body, required: true, schema: ::Organization::Proformas::CreateContract.open_api_schema
 
       let(:order_id) { 1 }
       let(:body) { }
