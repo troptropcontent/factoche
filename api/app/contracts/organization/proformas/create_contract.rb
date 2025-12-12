@@ -10,6 +10,10 @@ module Organization
           required(:invoice_amount).filled(:decimal)
         end
       end
+
+      rule(:invoice_amounts) do
+        key.failure("must contain at least one element") unless value.length > 0
+      end
     end
   end
 end
