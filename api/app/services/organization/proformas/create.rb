@@ -118,7 +118,8 @@ module Organization
           address_zipcode: @project.address_zipcode,
           address_street: @project.address_street,
           address_city: @project.address_city,
-          po_number: @project.po_number
+          po_number: @project.po_number,
+          previously_billed_amount: compute_project_total_previously_billed_amount
         }
 
         project_version_hash = {
@@ -172,6 +173,15 @@ module Organization
 
       def ensure_no_other_draft!
         raise "Cannot create a new proforma invoice while another draft proforma invoice exists for this project" if Accounting::Proforma.where(holder_id: @project.versions.pluck(:id)).draft.any?
+      end
+
+      def compute_project_total_previously_billed_amount
+        invoices_data_service_result = Organization::Orders::FetchInvoicedAmountPerItems.call(@project.id)
+        if invoices_data_service_result.failure?
+          raise invoices_data_service_result.error
+        end
+
+        invoices_data_service_result.data.values.reduce(0) { |acc, invoice_data| acc + invoice_data[:invoices_amount] - invoice_data[:credit_notes_amount] }
       end
     end
   end
