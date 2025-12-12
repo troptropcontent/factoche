@@ -114,7 +114,8 @@ module Organization
           address_zipcode: @order.address_zipcode,
           address_street: @order.address_street,
           address_city: @order.address_city,
-          po_number: @order.po_number
+          po_number: @order.po_number,
+          previously_billed_amount: compute_project_total_previously_billed_amount
         }
 
         project_version_hash = {
@@ -156,6 +157,15 @@ module Organization
         raise result.error if result.failure?
 
         result.data
+      end
+
+      def compute_project_total_previously_billed_amount
+        invoices_data_service_result = Organization::Orders::FetchInvoicedAmountPerItems.call(@order.id)
+        if invoices_data_service_result.failure?
+          raise invoices_data_service_result.error
+        end
+
+        invoices_data_service_result.data.values.reduce(0) { |acc, invoice_data| acc + invoice_data[:invoices_amount] - invoice_data[:credit_notes_amount] }
       end
     end
   end

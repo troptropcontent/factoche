@@ -78,7 +78,6 @@ module Accounting
             project_version_date: project_version[:created_at].iso8601,
             project_version_retention_guarantee_rate: 0.1,
             project_total_amount: 200.0.to_d, # 2 * 100.0
-            project_total_previously_billed_amount: 50.0.to_d # From the previous transaction
           )
 
           expect(context[:project_version_items].first).to include(

@@ -50,7 +50,7 @@ module Accounting
           project_version_date: project_version.fetch(:created_at).iso8601,
           project_version_retention_guarantee_rate: project_version.fetch(:retention_guarantee_rate),
           project_total_amount: find_project_version_total(project_version_items),
-          project_total_previously_billed_amount: project_version_items.sum { |project_version_item| project_version_item.fetch(:previously_billed_amount) },
+          project_total_previously_billed_amount: project.fetch(:previously_billed_amount),
           project_version_items: project_version_items,
           project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups))
         }
@@ -69,6 +69,9 @@ module Accounting
           project_version_items: project_version_items,
           project_version_item_groups: build_project_version_item_groups_data(project_version.fetch(:item_groups))
         }
+      end
+
+      def compute_project_total_previously_billed_amount
       end
 
       def build_project_version_items_data(project_version_items, issue_date)

@@ -92,6 +92,37 @@ module Organization
               end
             end
           end
+
+          context "when some invoices have been posted" do
+            before do
+              create_proforma_result = described_class.call(order_version_id, invoice_amounts: [
+                { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 10 },
+                { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 10 }
+              ])
+              raise create_proforma_result.error if create_proforma_result.error
+              post_proforma_result = ::Accounting::Proformas::Post.call(create_proforma_result.data.id)
+              raise post_proforma_result.error if post_proforma_result.error
+              cancel_invoice_result = ::Accounting::Invoices::Cancel.call(post_proforma_result.data.id)
+              raise cancel_invoice_result.error if cancel_invoice_result.error
+              create_proforma_result = described_class.call(order_version_id, invoice_amounts: [
+                { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 20 },
+                { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 30 }
+              ])
+              raise create_proforma_result.error if create_proforma_result.error
+              post_proforma_result = ::Accounting::Proformas::Post.call(create_proforma_result.data.id)
+              raise post_proforma_result.error if post_proforma_result.error
+            end
+
+            it "Correctly compute the total_previously_invoiced context attributes", :aggregate_failures do
+              allow(Accounting::Proformas::Create).to receive(:call)
+
+              result
+
+              expect(Accounting::Proformas::Create).to have_received(:call) do |args|
+                expect(args[:project][:previously_billed_amount]).to eq(50.0)
+              end
+            end
+          end
         end
 
         context "when invoice amounts exceed item limits" do
