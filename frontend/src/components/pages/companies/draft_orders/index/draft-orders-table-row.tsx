@@ -42,7 +42,7 @@ const DraftOrdersTableRow = ({
       <TableCell>{draftOrder.client.name}</TableCell>
       <TableCell>
         {t("common.number_in_currency", {
-          amount: parseFloat(draftOrder.last_version.total_amount),
+          amount: parseFloat(draftOrder.last_version.total_excl_tax_amount),
         })}
       </TableCell>
       <TableCell>

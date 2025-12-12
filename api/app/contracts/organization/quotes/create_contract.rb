@@ -25,6 +25,12 @@ module Organization
           optional(:description).maybe(:string)
           required(:position).filled(:integer)
         end
+        optional(:discounts).array(:hash) do
+          required(:kind).filled(:string, included_in?: %w[percentage fixed_amount])
+          required(:value).filled(:decimal)
+          required(:position).filled(:integer)
+          optional(:name).maybe(:string)
+        end
       end
     end
   end

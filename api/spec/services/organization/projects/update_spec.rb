@@ -19,6 +19,16 @@ RSpec.describe Organization::Projects::Update do
       unit: "days"
     )
   end
+  let!(:existing_discount) do
+    FactoryBot.create(:discount,
+      project_version: project_version,
+      original_discount_uuid: SecureRandom.uuid,
+      kind: "percentage",
+      value: 0.1,
+      amount: 100,
+      position: 1
+    )
+  end
 
   describe '#call', :aggregate_failures do
   [ Organization::Quote, Organization::Order, Organization::DraftOrder ].each do |project_class|
@@ -196,6 +206,115 @@ RSpec.describe Organization::Projects::Update do
 
           expect(group.grouped_items.count).to eq 2
           expect(group.grouped_items.pluck(:name)).to include("New Item", existing_item.name)
+        end
+      end
+
+      context 'with discounts' do
+        let(:params) do
+          {
+            name: "Updated Project",
+            retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
+            new_items: [
+              {
+                name: "New Item",
+                description: "New Item Description",
+                position: 1,
+                quantity: 2,
+                unit: "hours",
+                unit_price_amount: 100.0,
+                tax_rate: 0.2
+              }
+            ],
+            updated_items: [
+              {
+                original_item_uuid: existing_item.original_item_uuid,
+                position: 2,
+                quantity: 3,
+                unit_price_amount: 150.0,
+                tax_rate: 0.2
+              }
+            ],
+            groups: [],
+            new_discounts: [
+              {
+                kind: "fixed_amount",
+                value: 50.0,
+                position: 2,
+                name: "New Discount"
+              }
+            ],
+            updated_discounts: [
+              {
+                original_discount_uuid: existing_discount.original_discount_uuid,
+                kind: "percentage",
+                value: 0.15,
+                position: 1
+              }
+            ]
+          }
+        end
+
+        it 'creates new discounts and updates existing ones' do
+          expect(result).to be_success
+          new_version = result.data[:version]
+
+          # Check new discount
+          new_discount = new_version.discounts.find_by(position: 2)
+          expect(new_discount).to have_attributes(
+            kind: "fixed_amount",
+            value: 50.0,
+            position: 2,
+            name: "New Discount"
+          )
+          expect(new_discount.original_discount_uuid).to be_present
+
+          # Check updated discount
+          updated_discount = new_version.discounts.find_by(original_discount_uuid: existing_discount.original_discount_uuid)
+
+          expect(updated_discount).to have_attributes(
+            original_discount_uuid: existing_discount.original_discount_uuid, # Should keep original UUID
+            name: existing_discount.name, # Should keep original name
+            kind: "percentage",
+            value: 0.15,
+            position: 1,
+          )
+        end
+      end
+
+      context 'with invalid original_discount_uuid' do
+        let(:params) do
+          {
+            name: "Updated Project",
+            retention_guarantee_rate: 0.05,
+            bank_detail_id: company.bank_details.last.id,
+            new_items: [],
+            updated_items: [
+              {
+                original_item_uuid: existing_item.original_item_uuid,
+                position: 1,
+                quantity: 2,
+                unit_price_amount: 100.0,
+                tax_rate: 0.2
+              }
+            ],
+            groups: [],
+            updated_discounts: [
+              {
+                original_discount_uuid: "invalid-discount-uuid-123",
+                kind: "percentage",
+                value: 0.1,
+                position: 1,
+                name: "Test Discount"
+              }
+            ]
+          }
+        end
+
+        it 'returns failure result' do
+          expect(result).to be_failure
+          expect(result.error).to be_a(Error::UnprocessableEntityError)
+          expect(result.error.message).to include("The following original_discount_uuids are invalid: invalid-discount-uuid-123")
         end
       end
     end

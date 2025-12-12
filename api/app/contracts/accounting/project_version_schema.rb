@@ -19,5 +19,13 @@ module Accounting
       required(:name).filled(:string)
       required(:description).maybe(:string)
     end
+    optional(:discounts).array(:hash) do
+      required(:original_discount_uuid).filled(:string)
+      required(:kind).filled(:string)
+      required(:value).filled(:decimal)
+      required(:amount).filled(:decimal)
+      required(:position).filled(:integer)
+      optional(:name).maybe(:string)
+    end
   end
 end

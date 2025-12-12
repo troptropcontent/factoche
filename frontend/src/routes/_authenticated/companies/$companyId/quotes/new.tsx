@@ -33,6 +33,14 @@ function RouteComponent() {
             ...input,
             tax_rate: input.tax_rate / 100,
           })),
+          discounts: data.discounts.map((discount) => ({
+            ...discount,
+            position: discount.position + 1,
+            value:
+              discount.kind === "percentage"
+                ? discount.value / 100
+                : discount.value,
+          })),
         },
         params: {
           path: { company_id: Number(companyId), client_id: data.client_id },

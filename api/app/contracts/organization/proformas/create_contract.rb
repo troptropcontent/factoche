@@ -9,6 +9,10 @@ module Organization
           required(:original_item_uuid).filled(:string)
           required(:invoice_amount).filled(:decimal)
         end
+        optional(:discount_amounts).array(:hash) do
+          required(:original_discount_uuid).filled(:string)
+          required(:discount_amount).filled(:decimal, gteq?: 0)
+        end
       end
 
       rule(:invoice_amounts) do

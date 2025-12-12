@@ -20,7 +20,7 @@ module Organization
 
       def update_quote_and_enqueue_pdf_generation_job!
         result = Projects::Update.call(@quote, @params)
-        raise Error::UnprocessableEntityError, result.error if result.failure?
+        raise result.error if result.failure?
 
         ProjectVersions::GeneratePdfJob.perform_async({ "project_version_id"=>result.data[:version].id })
 

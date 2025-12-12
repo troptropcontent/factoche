@@ -159,9 +159,35 @@ module Api
                     },
                     required: [ "uuid", "name", "position" ]
                   }
+                },
+                new_discounts: {
+                  type: :array,
+                  items: {
+                    type: :object,
+                    properties: {
+                      kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
+                      value: { type: :number },
+                      position: { type: :integer },
+                      name: { type: :string }
+                    },
+                    required: [ "name", "kind", "value", "position" ]
+                  }
+                },
+                updated_discounts: {
+                  type: :array,
+                  items: {
+                    type: :object,
+                    properties: {
+                      original_discount_uuid: { type: :string },
+                      kind: { type: :string, enum: [ "percentage", "fixed_amount" ] },
+                      value: { type: :number },
+                      position: { type: :integer }
+                    },
+                    required: [ "original_discount_uuid", "kind", "value", "position" ]
+                  }
                 }
               },
-              required: [ "name", "retention_guarantee_rate", "items" ]
+              required: [ "name", "retention_guarantee_rate", "new_items", "updated_items", "new_discounts", "updated_discounts" ]
             }
 
             include_context 'a company with a client and a member'
@@ -270,6 +296,161 @@ module Api
                   expect(new_version_first_item.unit).to eq("unit")
                 }
               end
+
+              context "when discounts are added" do
+                let(:body) do
+                  valid_body.merge({
+                    new_discounts: [
+                      {
+                        kind: "fixed_amount",
+                        value: 30,
+                        position: 1,
+                        name: "New discount"
+                      }
+                    ]
+                  })
+                end
+
+                it "creates a new version with discounts", :aggregate_failures do |example|
+                  expect { submit_request(example.metadata) }
+                    .to not_change(::Organization::Order, :count)
+                    .and change(::Organization::ProjectVersion, :count).by(1)
+                    .and change(::Organization::Discount, :count).by(1)
+
+                  assert_response_matches_metadata(example.metadata)
+
+                  order.reload
+                  discount = order.last_version.discounts.first
+                  expect(discount.kind).to eq("fixed_amount")
+                  expect(discount.value).to eq(30)
+                  expect(discount.amount).to eq(30)
+                  expect(discount.name).to eq("New discount")
+                  expect(discount.original_discount_uuid).to be_present
+                end
+              end
+
+              context "when updating an order that had discounts" do
+                let!(:quote_with_discount) do
+                  result = ::Organization::Quotes::Create.call(
+                    company.id,
+                    client.id,
+                    company.bank_details.last.id,
+                    {
+                      name: "Quote with discount",
+                      description: "Quote description",
+                      po_number: "PO_DISCOUNT_TEST",
+                      retention_guarantee_rate: 0.05,
+                      address_street: "10 Rue Test",
+                      address_zipcode: "75002",
+                      address_city: "Paris",
+                      groups: [
+                        { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
+                      ],
+                      items: [
+                        {
+                          group_uuid: "group-1",
+                          name: "Item 1",
+                          description: "First item",
+                          position: 1,
+                          unit: "unit",
+                          unit_price_amount: 100.0,
+                          quantity: 1,
+                          tax_rate: 0.2
+                        }
+                      ],
+                      discounts: [
+                        {
+                          kind: "percentage",
+                          value: 0.1,
+                          position: 1,
+                          name: "Original discount"
+                        }
+                      ]
+                    }
+                  )
+                  raise result.error if result.failure?
+                  result.data
+                end
+
+                let!(:draft_order_with_discount) {
+                  ::Organization::Quotes::ConvertToDraftOrder.call(quote_with_discount.id).data
+                }
+
+                let!(:order_with_discount) {
+                  ::Organization::DraftOrders::ConvertToOrder.call(draft_order_with_discount.id).data
+                }
+
+                let(:id) { order_with_discount.id }
+                let(:first_version_first_item) { order_with_discount.versions.first.items.find_by(name: "Item 1") }
+                let(:first_version_discount) { order_with_discount.versions.first.discounts.first }
+
+                let(:body) do
+                  {
+                    name: "Updated Order",
+                    description: "Updated Description",
+                    retention_guarantee_rate: 0.05,
+                    bank_detail_id: company.bank_details.last.id,
+                    groups: [
+                      { uuid: "group-1", name: "Group 1", description: "First group", position: 0 }
+                    ],
+                    new_items: [],
+                    updated_items: [
+                      {
+                        original_item_uuid: first_version_first_item.original_item_uuid,
+                        group_uuid: "group-1",
+                        position: 1,
+                        unit_price_amount: 100.0,
+                        quantity: 1,
+                        tax_rate: 0.2
+                      }
+                    ],
+                    new_discounts: [
+                      {
+                        kind: "fixed_amount",
+                        value: 20,
+                        position: 2,
+                        name: "Additional discount"
+                      }
+                    ],
+                    updated_discounts: [
+                      {
+                        original_discount_uuid: first_version_discount.original_discount_uuid,
+                        kind: "percentage",
+                        value: 0.15,
+                        position: 1
+                      }
+                    ]
+                  }
+                end
+
+                it "preserves original_discount_uuid for updated discounts and generates new UUID for new discounts", :aggregate_failures do |example|
+                  expect { submit_request(example.metadata) }
+                    .to not_change(::Organization::Order, :count)
+                    .and change(::Organization::ProjectVersion, :count).by(1)
+                    .and change(::Organization::Discount, :count).by(2)
+
+                  assert_response_matches_metadata(example.metadata)
+
+                  order_with_discount.reload
+                  new_version = order_with_discount.last_version
+
+                  # Check updated discount preserves UUID
+                  updated_discount = new_version.discounts.find_by(original_discount_uuid: first_version_discount.original_discount_uuid)
+                  expect(updated_discount).to be_present
+                  expect(updated_discount.original_discount_uuid).to eq(first_version_discount.original_discount_uuid)
+                  expect(updated_discount.kind).to eq("percentage")
+                  expect(updated_discount.value).to eq(0.15)
+                  expect(updated_discount.name).to eq(first_version_discount.name)
+
+                  # Check new discount has fresh UUID
+                  new_discount = new_version.discounts.find_by(name: "Additional discount")
+                  expect(new_discount).to be_present
+                  expect(new_discount.original_discount_uuid).to be_present
+                  expect(new_discount.original_discount_uuid).not_to eq(first_version_discount.original_discount_uuid)
+                  expect(new_discount.kind).to eq("fixed_amount")
+                  expect(new_discount.value).to eq(20)
+                end
+              end
             end
 
             response "404", "order not found" do
@@ -296,6 +477,7 @@ module Api
                   let(:body) { body_without_name }
                   let(:body_without_name) do
                     {
+                      bank_detail_id: company.bank_details.last.id,
                       description: "Updated Description of the new order",
                       retention_guarantee_rate: 0.05,
                       groups: [
@@ -376,7 +558,7 @@ module Api
             let(:id) { order.id }
 
             response "200", "ok" do
-              schema ::Organization::Projects::InvoicedItemsDto.to_schema
+              schema ::Organization::Projects::Orders::InvoicedItemsDto.to_schema
               before {
                 FactoryBot.create(:member, company:, user:)
               }
@@ -384,24 +566,11 @@ module Api
               context "when there is no previous invoices or credit notes" do
                 let(:expected) do
                   {
-                    "results" => [
-                      {
-                        "original_item_uuid" => order_version.items.first.original_item_uuid,
-                        "invoiced_amount" => "0.0"
-                      },
-                      {
-                        "original_item_uuid" => order_version.items.second.original_item_uuid,
-                        "invoiced_amount" => "0.0"
-                      },
-                      {
-                        "original_item_uuid" => order_version.items.third.original_item_uuid,
-                        "invoiced_amount" => "0.0"
-                      }
-                    ].sort_by { |a| a["original_item_uuid"] }
+                    "results" => []
                   }
                 end
 
-                run_test!("It returns 0 for each items") do
+                run_test!("It returns an empty array") do
                   parsed_body = JSON.parse(response.body)
 
                   expect(parsed_body).to eq(expected)
@@ -414,18 +583,10 @@ module Api
                     {
                       "results" => [
                         {
-                          "original_item_uuid" => order_version.items.first.original_item_uuid,
+                          "uuid" => order_version.items.first.original_item_uuid,
                           "invoiced_amount" => "0.2"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.second.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.third.original_item_uuid,
-                          "invoiced_amount" => "0.0"
                         }
-                      ].sort_by { |a| a["original_item_uuid"] }
+                      ].sort_by { |a| a["uuid"] }
                     }
                   end
 
@@ -434,7 +595,7 @@ module Api
                     ::Accounting::Proformas::Post.call(proforma.id)
                   }
 
-                  run_test!("It returns the relevant amount for each items") do
+                  run_test!("It returns the relevant amount for the invoiced item only") do
                     parsed_body = JSON.parse(response.body)
 
                     expect(parsed_body).to eq(expected)
@@ -444,20 +605,7 @@ module Api
                 context "when those transaction are after the requested issue date (current time by default)" do
                   let(:expected) do
                     {
-                      "results" => [
-                        {
-                          "original_item_uuid" => order_version.items.first.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.second.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        },
-                        {
-                          "original_item_uuid" => order_version.items.third.original_item_uuid,
-                          "invoiced_amount" => "0.0"
-                        }
-                      ].sort_by { |a| a["original_item_uuid"] }
+                      "results" => []
                     }
                   end
 

@@ -129,6 +129,7 @@ end
 The codebase implements a clear separation of concerns between business logic and accounting logic, particularly visible in proforma/invoice services:
 
 **Organization Module** (`Organization::Proformas`, `Organization::Invoices`):
+
 - **Responsibility**: Business domain validation and orchestration
 - **Concerns**:
   - Progressive invoicing business rules
@@ -140,6 +141,7 @@ The codebase implements a clear separation of concerns between business logic an
 - **Example**: `Organization::Proformas::Create` validates that invoice amounts don't exceed order totals before delegating to accounting
 
 **Accounting Module** (`Accounting::Proformas`, `Accounting::Invoices`):
+
 - **Responsibility**: Pure accounting record-keeping and financial calculations
 - **Concerns**:
   - Financial transaction record creation
@@ -152,6 +154,7 @@ The codebase implements a clear separation of concerns between business logic an
 - **Example**: `Accounting::Proformas::Create` receives validated business data and creates accounting records with proper financial calculations
 
 **Delegation Pattern**:
+
 ```ruby
 # Organization layer validates business rules
 Organization::Proformas::Create
@@ -167,6 +170,7 @@ Accounting::Proformas::Create
 ```
 
 **Key Design Benefits**:
+
 - Clear separation between "what can be invoiced" (Organization) and "how to record it" (Accounting)
 - Accounting module receives complete snapshots (hashes) rather than ActiveRecord objects, enforcing immutability
 - Builder services in Accounting module are reusable and highly testable
@@ -174,6 +178,7 @@ Accounting::Proformas::Create
 - Complies with French accounting requirements for audit trails
 
 **Example Flow** (`Organization::Proformas::Create:161-171`):
+
 ```ruby
 def create_proforma!(issue_date)
   # Build accounting arguments as hash snapshot
@@ -1091,3 +1096,6 @@ Sidekiq::Stats.new
 **Last Updated**: 2025-12-02
 **Rails Version**: 8.0.0+
 **Ruby Version**: See `.ruby-version`
+
+- you should use RAILS_ENV=test bundle exec dotenv -f config/.env.development rspec to run tests
+- For services, try to code with TDD as much as possible

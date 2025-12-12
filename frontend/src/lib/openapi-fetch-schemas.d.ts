@@ -833,7 +833,7 @@ export interface paths {
                         retention_guarantee_rate: number;
                         bank_detail_id?: number;
                         po_number?: string;
-                        new_items?: {
+                        new_items: {
                             group_uuid?: string;
                             name: string;
                             description?: string;
@@ -843,7 +843,7 @@ export interface paths {
                             position: number;
                             tax_rate: number;
                         }[];
-                        updated_items?: {
+                        updated_items: {
                             group_uuid?: string;
                             quantity: number;
                             unit_price_amount: number;
@@ -854,6 +854,20 @@ export interface paths {
                             uuid: string;
                             name: string;
                             description?: string;
+                            position: number;
+                        }[];
+                        new_discounts: {
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            value: number;
+                            position: number;
+                            name: string;
+                        }[];
+                        updated_discounts: {
+                            original_discount_uuid: string;
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            value: number;
                             position: number;
                         }[];
                     };
@@ -1258,7 +1272,7 @@ export interface paths {
                         address_zipcode?: string;
                         retention_guarantee_rate: number;
                         bank_detail_id?: number;
-                        new_items?: {
+                        new_items: {
                             group_uuid?: string;
                             name: string;
                             description?: string;
@@ -1268,7 +1282,7 @@ export interface paths {
                             position: number;
                             tax_rate: number;
                         }[];
-                        updated_items?: {
+                        updated_items: {
                             group_uuid?: string;
                             quantity: number;
                             unit_price_amount: number;
@@ -1279,6 +1293,20 @@ export interface paths {
                             uuid: string;
                             name: string;
                             description?: string;
+                            position: number;
+                        }[];
+                        new_discounts: {
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            value: number;
+                            position: number;
+                            name: string;
+                        }[];
+                        updated_discounts: {
+                            original_discount_uuid: string;
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            value: number;
                             position: number;
                         }[];
                     };
@@ -1352,7 +1380,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            results: components["schemas"]["Organization::Projects::InvoicedItemDto"][];
+                            results: components["schemas"]["Organization::Projects::Orders::InvoicedItemDto"][];
                         };
                     };
                 };
@@ -2031,7 +2059,7 @@ export interface paths {
                         description?: string;
                         retention_guarantee_rate: number;
                         bank_detail_id?: number;
-                        new_items?: {
+                        new_items: {
                             group_uuid?: string;
                             name: string;
                             description?: string;
@@ -2041,7 +2069,7 @@ export interface paths {
                             position: number;
                             tax_rate: number;
                         }[];
-                        updated_items?: {
+                        updated_items: {
                             group_uuid?: string;
                             quantity: number;
                             unit_price_amount: number;
@@ -2052,6 +2080,22 @@ export interface paths {
                             uuid: string;
                             name: string;
                             description?: string;
+                            position: number;
+                        }[];
+                        new_discounts: {
+                            name: string;
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            /** Format: decimal */
+                            value: number;
+                            position: number;
+                        }[];
+                        updated_discounts: {
+                            original_discount_uuid: string;
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            /** Format: decimal */
+                            value: number;
                             position: number;
                         }[];
                     };
@@ -2144,6 +2188,14 @@ export interface paths {
                             uuid: string;
                             name: string;
                             description?: string;
+                            position: number;
+                        }[];
+                        discounts: {
+                            name: string;
+                            /** @enum {string} */
+                            kind: "percentage" | "fixed_amount";
+                            /** Format: decimal */
+                            value: number;
                             position: number;
                         }[];
                     };
@@ -2332,7 +2384,8 @@ export interface components {
         "Organization::Clients::ExtendedDto": {
             id: number;
             name: string;
-            registration_number: string;
+            registration_number?: string | null;
+            vat_number?: string | null;
             email: string;
             phone: string;
             address_street: string;
@@ -2459,6 +2512,8 @@ export interface components {
             holder_id: string;
             /** Format: decimal */
             excl_tax_amount: string;
+            /** @enum {string} */
+            kind: "charge" | "discount";
         };
         "Organization::Invoices::BaseExtendedDto::Detail": {
             /** Format: date-time */
@@ -2472,15 +2527,15 @@ export interface components {
             seller_phone: string;
             seller_email: string;
             client_name: string;
-            client_registration_number: string;
+            client_registration_number?: string | null;
             client_address_zipcode: string;
             client_address_street: string;
             client_address_city: string;
-            client_vat_number: string;
+            client_vat_number?: string | null;
             client_phone: string;
             client_email: string;
             delivery_name: string;
-            delivery_registration_number: string;
+            delivery_registration_number?: string | null;
             delivery_address_zipcode: string;
             delivery_address_street: string;
             delivery_address_city: string;
@@ -2509,8 +2564,19 @@ export interface components {
             name: string;
             description?: string | null;
         };
+        "Organization::Invoices::BaseExtendedDto::Context::ProjectVersionDiscount": {
+            original_discount_uuid: string;
+            /** @enum {string} */
+            kind: "percentage" | "fixed_amount";
+            /** Format: decimal */
+            value: string;
+            /** Format: decimal */
+            amount: string;
+            position: number;
+            name?: string | null;
+        };
         "Organization::Invoices::BaseExtendedDto::Context": {
-            snapshot_number: number;
+            snapshot_number?: number | null;
             project_name: string;
             /** Format: decimal */
             project_version_retention_guarantee_rate: string;
@@ -2522,6 +2588,7 @@ export interface components {
             project_total_previously_billed_amount: string;
             project_version_items: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItem"][];
             project_version_item_groups: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"][];
+            project_version_discounts: components["schemas"]["Organization::Invoices::BaseExtendedDto::Context::ProjectVersionDiscount"][];
         };
         "Organization::Invoices::BaseExtendedDto": {
             id: number;
@@ -2650,6 +2717,18 @@ export interface components {
         "Organization::Dashboards::ShowDto": {
             result: components["schemas"]["Organization::Dashboards::DashboardData"];
         };
+        "Organization::Discounts::ExtendedDto": {
+            id: number;
+            original_discount_uuid: string;
+            position: number;
+            /** @enum {string} */
+            kind: "percentage" | "fixed_amount";
+            /** Format: decimal */
+            value: string;
+            /** Format: decimal */
+            amount: string;
+            name: string;
+        };
         "Organization::Invoices::ExtendedDto": {
             id: number;
             /** @enum {string} */
@@ -2683,7 +2762,7 @@ export interface components {
             /** Format: decimal */
             retention_guarantee_rate: string;
             /** Format: decimal */
-            total_amount: string;
+            total_excl_tax_amount: string;
         };
         "Organization::Invoices::Meta": {
             order_versions: components["schemas"]["Organization::ProjectVersions::CompactDto"][];
@@ -2860,8 +2939,11 @@ export interface components {
             created_at: string;
             /** Format: decimal */
             retention_guarantee_rate: string;
+            /** Format: decimal */
+            total_excl_tax_amount: string;
             ungrouped_items: components["schemas"]["Organization::Items::ExtendedDto"][];
             item_groups: components["schemas"]["Organization::ItemGroups::ExtendedDto"][];
+            discounts: components["schemas"]["Organization::Discounts::ExtendedDto"][];
             project_id: number;
             items: components["schemas"]["Organization::Items::ExtendedDto"][];
             pdf_url?: string | null;
@@ -2959,7 +3041,7 @@ export interface components {
             results: components["schemas"]["Organization::Projects::CompactDto"][];
         };
         "Organization::Projects::InvoicedItemDto": {
-            original_item_uuid: string;
+            uuid: string;
             /** Format: decimal */
             invoiced_amount: string;
         };
@@ -2970,7 +3052,7 @@ export interface components {
             results: components["schemas"]["Organization::Projects::Orders::CompactDto"][];
         };
         "Organization::Projects::Orders::InvoicedItemDto": {
-            original_item_uuid: string;
+            uuid: string;
             /** Format: decimal */
             invoiced_amount: string;
         };

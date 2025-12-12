@@ -12,12 +12,25 @@ import { Form } from "@/components/ui/form";
 import { useTranslation } from "react-i18next";
 import { ProjectFormItemsTotal } from "./private/project-form-items-total";
 import { ItemGroup } from "./private/item-group";
-import { CornerLeftUp, CornerRightUp, FileDiff, Pointer } from "lucide-react";
+import {
+  CornerLeftUp,
+  CornerRightUp,
+  FileDiff,
+  Plus,
+  Pointer,
+  TicketPercent,
+} from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
-import { groupAccordionItemValue, newGroupInput } from "./private/utils";
+import {
+  groupAccordionItemValue,
+  newGroupInput,
+  newDiscountInput,
+} from "./private/utils";
 import { ImportItemsFromCsvModal } from "./private/import-items-from-csv-modal";
 import { useEffect, useState } from "react";
 import { Accordion } from "@/components/ui/accordion";
+import { ProjectFormTotalWithDiscountsAndTaxes } from "./private/project-form-total-with-discounts-and-taxes";
+import { DiscountInput } from "./private/discount-input";
 
 const EmptyStateActions = ({
   addNewGroupInput,
@@ -70,8 +83,21 @@ const Step2 = ({
     name: "groups",
   });
 
+  const {
+    fields: discounts,
+    append: appendDiscounts,
+    remove: removeDiscountWithIndex,
+  } = useFieldArray({
+    control: form.control,
+    name: "discounts",
+  });
+
   const addNewGroupInput = () => {
     appendGroups(newGroupInput(findNextPosition(groups)));
+  };
+
+  const addNewDiscount = () => {
+    appendDiscounts(newDiscountInput(findNextPosition(discounts)));
   };
 
   const onSubmit: SubmitHandler<z.infer<typeof step2FormSchema>> = (data) => {
@@ -103,7 +129,7 @@ const Step2 = ({
                 />
               ))}
             </Accordion>
-            <div className="flex flex-row-reverse justify-between pb-4">
+            <div className="flex flex-row-reverse justify-between">
               <Button
                 variant="outline"
                 type="button"
@@ -135,7 +161,49 @@ const Step2 = ({
             className="flex-grow mb-4"
           />
         )}
-        <div className="flex justify-between mt-auto">
+        <ProjectFormItemsTotal className="mt-6" />
+        {discounts.length > 0 ? (
+          <>
+            {discounts.map((discount, index) => (
+              <DiscountInput
+                className="mt-6"
+                discountInputIndex={index}
+                key={index}
+                remove={() => removeDiscountWithIndex(index)}
+                update={discount.original_discount_uuid !== undefined}
+              />
+            ))}
+            <div className="flex flex-row-reverse justify-between pb-4">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={addNewDiscount}
+                className="mt-6 w-full py-6 border-dashed"
+              >
+                <CornerLeftUp />
+                {t("pages.companies.projects.form.add_discount")}
+                <CornerRightUp />
+              </Button>
+            </div>
+          </>
+        ) : (
+          <EmptyState
+            className="mt-6"
+            icon={TicketPercent}
+            title={"Pas de remises enregistrées"}
+            description={
+              "Vous pouvez ajouter une remise via le bouton ci dessous"
+            }
+            action={
+              <Button variant="outline" onClick={addNewDiscount}>
+                <Plus />
+                {"Ajouter une remise"}
+              </Button>
+            }
+          />
+        )}
+        <ProjectFormTotalWithDiscountsAndTaxes className="mt-6" />
+        <div className="flex justify-between mt-6">
           <Button
             onClick={() => {
               send({
@@ -146,7 +214,6 @@ const Step2 = ({
           >
             {t("pages.companies.projects.form.previous_button_label")}
           </Button>
-          <ProjectFormItemsTotal />
           <Button type="submit" disabled={groups.length == 0}>
             {t("pages.companies.projects.form.next_button_label")}
           </Button>

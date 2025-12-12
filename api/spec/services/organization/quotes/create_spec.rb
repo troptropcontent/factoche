@@ -129,6 +129,58 @@ module Organization
           end
         end
 
+        context 'when creating with discounts' do
+          let(:params_with_discounts) do
+            valid_params.merge(
+              discounts: [
+                  {
+                    kind: 'percentage',
+                    value: 0.10,
+                    position: 1,
+                    name: 'BlackFriday'
+                  },
+                  {
+                    kind: 'fixed_amount',
+                    value: 100,
+                    position: 2,
+                    name: 'BlackFriday'
+                  }
+                ]
+            )
+          end
+
+          it 'creates a quote with discounts' do
+            expect {
+              described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)
+            }.to change(Quote, :count).by(1)
+              .and change(Organization::Discount, :count).by(2)
+          end
+
+          it 'sets the correct discount attributes', :aggregate_failures do
+            result = described_class.call(company.id, client.id, bank_detail_id, params_with_discounts)
+            quote = result.data
+            version = quote.versions.first
+            total_excl_tax_amount = quote.versions.first.total_excl_tax_amount
+            expect(total_excl_tax_amount).to eq(440.0) # 600 - 10% - 100€
+
+            discounts = version.discounts.order(:position)
+
+            expect(discounts.count).to eq(2)
+
+            first_discount = discounts.first
+            expect(first_discount.kind).to eq('percentage')
+            expect(first_discount.value).to eq(0.10)
+            expect(first_discount.amount).to eq(60.0)
+            expect(first_discount.position).to eq(1)
+
+            second_discount = discounts.second
+            expect(second_discount.kind).to eq('fixed_amount')
+            expect(second_discount.value).to eq(100)
+            expect(second_discount.amount).to eq(100)
+            expect(second_discount.position).to eq(2)
+          end
+        end
+
         context 'when params are invalid' do
           context 'with missing required fields' do
             let(:invalid_params) { valid_params.except(:name) }
@@ -138,6 +190,29 @@ module Organization
 
               expect(result).to be_failure
               expect(result.error).to be_a(Error::UnprocessableEntityError)
+            end
+          end
+
+          context 'with discounts that result in negative total' do
+            let(:params_with_negative_total) do
+              valid_params.merge(
+                discounts: [
+                  {
+                    kind: 'fixed_amount',
+                    value: 700,  # More than the total of 600€
+                    position: 1,
+                    name: 'Excessive discount'
+                  }
+                ]
+              )
+            end
+
+            it 'returns failure with validation error', :aggregate_failures do
+              result = described_class.call(company.id, client.id, bank_detail_id, params_with_negative_total)
+
+              expect(result).to be_failure
+              expect(result.error).to be_a(Error::UnprocessableEntityError)
+              expect(result.error.message).to include('negative total')
             end
           end
 

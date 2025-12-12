@@ -55,7 +55,7 @@ const OrdersTableRow = ({
       <TableCell>{order.client.name}</TableCell>
       <TableCell>
         {t("common.number_in_currency", {
-          amount: parseFloat(order.last_version.total_amount),
+          amount: parseFloat(order.last_version.total_excl_tax_amount),
         })}
       </TableCell>
       <TableCell>
@@ -71,7 +71,8 @@ const OrdersTableRow = ({
         {invoicedAmount !== undefined ? (
           t("common.number_in_currency", {
             amount:
-              parseFloat(order.last_version.total_amount) - invoicedAmount,
+              parseFloat(order.last_version.total_excl_tax_amount) -
+              invoicedAmount,
           })
         ) : (
           <Skeleton className="w-full h-4" />

@@ -13,10 +13,8 @@ import { proformaFormSchema } from "./proforma-form-schema";
 
 const ProformaFormDateInput = () => {
   const { t } = useTranslation();
-  const { control, getValues } =
-    useFormContext<z.infer<typeof proformaFormSchema>>();
-  const values = getValues();
-  console.log({ values });
+  const { control } = useFormContext<z.infer<typeof proformaFormSchema>>();
+
   return (
     <Card>
       <CardContent className="flex pt-6 justify-between">

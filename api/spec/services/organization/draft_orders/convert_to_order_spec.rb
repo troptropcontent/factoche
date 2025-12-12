@@ -97,6 +97,72 @@ module Organization
             expect(result.error.message).to eq('Duplication error')
           end
         end
+
+        context 'when draft order has discounts' do
+          let(:draft_order_with_discounts) { FactoryBot.create(:draft_order, :with_version, company: company, client: client, original_project_version: quote.last_version, bank_detail: company.bank_details.last) }
+          let(:draft_order_version) { draft_order_with_discounts.last_version }
+          let(:draft_order_id) { draft_order_with_discounts.id }
+
+          let!(:percentage_discount) do
+            FactoryBot.create(:discount,
+              project_version: draft_order_version,
+              original_discount_uuid: SecureRandom.uuid,
+              kind: "percentage",
+              value: 0.1,
+              amount: 100,
+              position: 1,
+              name: "Volume discount"
+            )
+          end
+
+          let!(:fixed_amount_discount) do
+            FactoryBot.create(:discount,
+              project_version: draft_order_version,
+              original_discount_uuid: SecureRandom.uuid,
+              kind: "fixed_amount",
+              value: 75,
+              amount: 75,
+              position: 2,
+              name: "Loyalty discount"
+            )
+          end
+
+          it 'carries forward all discounts with relevant attributes only to the order' do
+            result = described_class.call(draft_order_id)
+
+            expect(result).to be_success
+            order = result.data
+            order_version = order.versions.first
+
+            # Check discounts count
+            expect(order_version.discounts.count).to eq(draft_order_version.discounts.count)
+
+            # Check each discount is preserved
+            draft_order_version.discounts.ordered.each do |draft_order_discount|
+              order_discount = order_version.discounts.find_by(
+                position: draft_order_discount.position
+              )
+
+              expect(order_discount).to be_present
+              expect(order_discount.kind).to eq(draft_order_discount.kind)
+              expect(order_discount.value).to eq(draft_order_discount.value)
+              expect(order_discount.amount).to eq(draft_order_discount.amount)
+              expect(order_discount.position).to eq(draft_order_discount.position)
+              expect(order_discount.name).to eq(draft_order_discount.name)
+              expect(order_discount.original_discount_uuid).not_to eq(draft_order_discount.original_discount_uuid)
+            end
+          end
+
+          it 'does not preserves discount original_discount_uuid for tracking' do
+            result = described_class.call(draft_order_id)
+            order_version = result.data.versions.first
+
+            original_uuids = draft_order_version.discounts.pluck(:original_discount_uuid)
+            order_uuids = order_version.discounts.pluck(:original_discount_uuid)
+
+            expect(order_uuids).not_to match_array(original_uuids)
+          end
+        end
       end
     end
   end

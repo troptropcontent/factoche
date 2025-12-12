@@ -12,6 +12,7 @@ class PrintsController < ApplicationController
     @project_version = @project.versions.find(params[:id])
     @project_version_total_excl_tax_amount = @project_version.items.sum("quantity * unit_price_amount")
     @project_version_vat_amount = @project_version.items.sum("quantity * unit_price_amount * tax_rate")
+    @project_version_totals = Organization::ProjectVersions::ComputeProjectVersionTotals.call(@project_version).data
     render template: "project", layout: "print"
   end
 
@@ -23,6 +24,7 @@ class PrintsController < ApplicationController
     @project_version = @project.versions.find(params[:id])
     @project_version_total_excl_tax_amount = @project_version.items.sum("quantity * unit_price_amount")
     @project_version_vat_amount = @project_version.items.sum("quantity * unit_price_amount * tax_rate")
+    @project_version_totals = Organization::ProjectVersions::ComputeProjectVersionTotals.call(@project_version).data
     render template: "project", layout: "print"
   end
 
@@ -34,6 +36,7 @@ class PrintsController < ApplicationController
     @project_version = @project.versions.find(params[:id])
     @project_version_total_excl_tax_amount = @project_version.items.sum("quantity * unit_price_amount")
     @project_version_vat_amount = @project_version.items.sum("quantity * unit_price_amount * tax_rate")
+    @project_version_totals = Organization::ProjectVersions::ComputeProjectVersionTotals.call(@project_version).data
     render template: "project", layout: "print"
   end
 

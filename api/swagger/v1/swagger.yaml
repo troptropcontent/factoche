@@ -838,10 +838,55 @@ paths:
                     - uuid
                     - name
                     - position
+                new_discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                      position:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - name
+                    - kind
+                    - value
+                    - position
+                updated_discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      original_discount_uuid:
+                        type: string
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                      position:
+                        type: integer
+                    required:
+                    - original_discount_uuid
+                    - kind
+                    - value
+                    - position
               required:
               - name
               - retention_guarantee_rate
-              - items
+              - new_items
+              - updated_items
+              - new_discounts
+              - updated_discounts
   "/api/v1/organization/draft_orders/{id}/convert_to_order":
     post:
       summary: Convert a draft order to an order
@@ -1183,10 +1228,55 @@ paths:
                     - uuid
                     - name
                     - position
+                new_discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                      position:
+                        type: integer
+                      name:
+                        type: string
+                    required:
+                    - name
+                    - kind
+                    - value
+                    - position
+                updated_discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      original_discount_uuid:
+                        type: string
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                      position:
+                        type: integer
+                    required:
+                    - original_discount_uuid
+                    - kind
+                    - value
+                    - position
               required:
               - name
               - retention_guarantee_rate
-              - items
+              - new_items
+              - updated_items
+              - new_discounts
+              - updated_discounts
   "/api/v1/organization/orders/{id}/invoiced_items":
     get:
       summary: invoiced amount for each item
@@ -1213,7 +1303,7 @@ paths:
                   results:
                     type: array
                     items:
-                      "$ref": "#/components/schemas/Organization::Projects::InvoicedItemDto"
+                      "$ref": "#/components/schemas/Organization::Projects::Orders::InvoicedItemDto"
         '404':
           description: not_found
         '403':
@@ -1807,10 +1897,57 @@ paths:
                     - uuid
                     - name
                     - position
+                new_discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                        format: decimal
+                      position:
+                        type: integer
+                    required:
+                    - name
+                    - kind
+                    - value
+                    - position
+                updated_discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      original_discount_uuid:
+                        type: string
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                        format: decimal
+                      position:
+                        type: integer
+                    required:
+                    - kind
+                    - original_discount_uuid
+                    - value
+                    - position
               required:
               - name
               - retention_guarantee_rate
-              - items
+              - new_items
+              - updated_items
+              - new_discounts
+              - updated_discounts
   "/api/v1/organization/companies/{company_id}/clients/{client_id}/quotes":
     post:
       summary: Create a new quote for a client
@@ -1914,10 +2051,33 @@ paths:
                     - uuid
                     - name
                     - position
+                discounts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      kind:
+                        type: string
+                        enum:
+                        - percentage
+                        - fixed_amount
+                      value:
+                        type: number
+                        format: decimal
+                      position:
+                        type: integer
+                    required:
+                    - name
+                    - kind
+                    - value
+                    - position
               required:
               - name
               - retention_guarantee_rate
               - items
+              - discounts
               - address_street
               - address_zipcode
               - address_city
@@ -2163,7 +2323,6 @@ components:
       required:
       - id
       - name
-      - registration_number
       - email
       - phone
       - address_street
@@ -2176,6 +2335,10 @@ components:
           type: string
         registration_number:
           type: string
+          nullable: true
+        vat_number:
+          type: string
+          nullable: true
         email:
           type: string
         phone:
@@ -2493,12 +2656,18 @@ components:
       required:
       - holder_id
       - excl_tax_amount
+      - kind
       properties:
         holder_id:
           type: string
         excl_tax_amount:
           type: string
           format: decimal
+        kind:
+          type: string
+          enum:
+          - charge
+          - discount
     Organization::Invoices::BaseExtendedDto::Detail:
       type: object
       required:
@@ -2512,15 +2681,12 @@ components:
       - seller_phone
       - seller_email
       - client_name
-      - client_registration_number
       - client_address_zipcode
       - client_address_street
       - client_address_city
-      - client_vat_number
       - client_phone
       - client_email
       - delivery_name
-      - delivery_registration_number
       - delivery_address_zipcode
       - delivery_address_street
       - delivery_address_city
@@ -2551,6 +2717,7 @@ components:
           type: string
         client_registration_number:
           type: string
+          nullable: true
         client_address_zipcode:
           type: string
         client_address_street:
@@ -2559,6 +2726,7 @@ components:
           type: string
         client_vat_number:
           type: string
+          nullable: true
         client_phone:
           type: string
         client_email:
@@ -2567,6 +2735,7 @@ components:
           type: string
         delivery_registration_number:
           type: string
+          nullable: true
         delivery_address_zipcode:
           type: string
         delivery_address_street:
@@ -2630,10 +2799,36 @@ components:
         description:
           type: string
           nullable: true
+    Organization::Invoices::BaseExtendedDto::Context::ProjectVersionDiscount:
+      type: object
+      required:
+      - original_discount_uuid
+      - kind
+      - value
+      - amount
+      - position
+      properties:
+        original_discount_uuid:
+          type: string
+        kind:
+          type: string
+          enum:
+          - percentage
+          - fixed_amount
+        value:
+          type: string
+          format: decimal
+        amount:
+          type: string
+          format: decimal
+        position:
+          type: integer
+        name:
+          type: string
+          nullable: true
     Organization::Invoices::BaseExtendedDto::Context:
       type: object
       required:
-      - snapshot_number
       - project_name
       - project_version_retention_guarantee_rate
       - project_version_number
@@ -2642,9 +2837,11 @@ components:
       - project_total_previously_billed_amount
       - project_version_items
       - project_version_item_groups
+      - project_version_discounts
       properties:
         snapshot_number:
           type: integer
+          nullable: true
         project_name:
           type: string
         project_version_retention_guarantee_rate:
@@ -2668,6 +2865,10 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context::ProjectVersionItemGroup"
+        project_version_discounts:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Invoices::BaseExtendedDto::Context::ProjectVersionDiscount"
     Organization::Invoices::BaseExtendedDto:
       type: object
       required:
@@ -2967,6 +3168,36 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::Dashboards::DashboardData"
+    Organization::Discounts::ExtendedDto:
+      type: object
+      required:
+      - id
+      - original_discount_uuid
+      - position
+      - kind
+      - value
+      - amount
+      - name
+      properties:
+        id:
+          type: integer
+        original_discount_uuid:
+          type: string
+        position:
+          type: integer
+        kind:
+          type: string
+          enum:
+          - percentage
+          - fixed_amount
+        value:
+          type: string
+          format: decimal
+        amount:
+          type: string
+          format: decimal
+        name:
+          type: string
     Organization::Invoices::ExtendedDto:
       type: object
       required:
@@ -3038,7 +3269,7 @@ components:
       - number
       - created_at
       - retention_guarantee_rate
-      - total_amount
+      - total_excl_tax_amount
       properties:
         id:
           type: integer
@@ -3052,7 +3283,7 @@ components:
         retention_guarantee_rate:
           type: string
           format: decimal
-        total_amount:
+        total_excl_tax_amount:
           type: string
           format: decimal
     Organization::Invoices::Meta:
@@ -3518,8 +3749,10 @@ components:
       - number
       - created_at
       - retention_guarantee_rate
+      - total_excl_tax_amount
       - ungrouped_items
       - item_groups
+      - discounts
       - project_id
       - items
       properties:
@@ -3533,6 +3766,9 @@ components:
         retention_guarantee_rate:
           type: string
           format: decimal
+        total_excl_tax_amount:
+          type: string
+          format: decimal
         ungrouped_items:
           type: array
           items:
@@ -3541,6 +3777,10 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/Organization::ItemGroups::ExtendedDto"
+        discounts:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::Discounts::ExtendedDto"
         project_id:
           type: integer
         items:
@@ -3809,10 +4049,10 @@ components:
     Organization::Projects::InvoicedItemDto:
       type: object
       required:
-      - original_item_uuid
+      - uuid
       - invoiced_amount
       properties:
-        original_item_uuid:
+        uuid:
           type: string
         invoiced_amount:
           type: string
@@ -3838,10 +4078,10 @@ components:
     Organization::Projects::Orders::InvoicedItemDto:
       type: object
       required:
-      - original_item_uuid
+      - uuid
       - invoiced_amount
       properties:
-        original_item_uuid:
+        uuid:
           type: string
         invoiced_amount:
           type: string

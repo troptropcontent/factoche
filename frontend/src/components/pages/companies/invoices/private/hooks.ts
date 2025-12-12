@@ -64,7 +64,7 @@ const useInvoiceContentData = ({
   const findPreviopuslyInvoicedAmount = (originalItemUuid: string) => {
     const amount = previouslyInvoicedAmounts.find(
       (previouslyInvoicedAmount) =>
-        previouslyInvoicedAmount.original_item_uuid === originalItemUuid
+        previouslyInvoicedAmount.uuid === originalItemUuid
     );
 
     return amount ? Number(amount.invoiced_amount) : 0;

@@ -1,0 +1,40 @@
+<div class="break-inside-avoid last:mb-0 w-full border-1 rounded mb-8">
+  <p class="bg-gray-200 p-2 rounded-t font-bold text-center border-b-1">
+    Remises
+  </p>
+
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th scope="col" class="p-2 border-b-1 align-top text-left w-[30%]">
+          <%= t("views.organization.projects.discounts.name") %>
+        </th>
+        <th scope="col" class="p-2 border-b-1 align-top text-center w-[17.5%]">
+          <%= t("views.organization.projects.discounts.type.label") %>
+        </th>
+        <th scope="col" class="p-2 border-b-1 text-center w-[17.5%]">
+          <%= t("views.organization.projects.discounts.amount") %>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% discounts.map do |discount| %>
+        <tr>
+            <th scope="row" class="text-left p-2">
+              <%= discount["name"] %><br>
+            </th>
+            <td class="text-center p-2">
+              <% if discount.kind == "percentage" %>
+                    <%= t("views.organization.projects.discounts.type.percentage", percentage: number_to_percentage(discount.value * 100, precision: 0)) %>
+              <% else %>
+                    <%= t("views.organization.projects.discounts.type.fixed_amount") %>
+              <% end %>
+            </td>
+            <td class="text-center p-2">
+              <%= number_to_currency(-discount.amount) %>
+            </td>
+          </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -7,9 +7,11 @@ module Organization
         @project = project
         @last_version = project.last_version
         @project_items = fetch_project_items
+        @project_discounts = fetch_project_discounts
 
         validated_params = validate!(params, UpdateContract)
         ensure_original_item_uuids_exist!(validated_params)
+        ensure_original_discount_uuids_exist!(validated_params)
 
         transaction do
           @project.update!(validated_params.slice(:name, :description, :bank_detail_id, :po_number, :address_street, :address_city, :address_zipcode))
@@ -28,6 +30,13 @@ module Organization
           .to_a
       end
 
+      def fetch_project_discounts
+        Organization::Discount
+          .joins(:project_version)
+          .where(project_version: { project_id: @project.id })
+          .to_a
+      end
+
       def ensure_original_item_uuids_exist!(params)
         valid_uuids = @project_items.map(&:original_item_uuid).uniq
         invalid_uuids = params[:updated_items]
@@ -40,8 +49,26 @@ module Organization
           "The following original_item_uuids are invalid: #{invalid_uuids.join(', ')}"
       end
 
+      def ensure_original_discount_uuids_exist!(params)
+        return if params[:updated_discounts].blank?
+
+        valid_uuids = @project_discounts.map(&:original_discount_uuid).uniq
+        invalid_uuids = params[:updated_discounts]
+          .map { |d| d[:original_discount_uuid] }
+          .reject { |uuid| valid_uuids.include?(uuid) }
+
+        return if invalid_uuids.empty?
+
+        raise Error::UnprocessableEntityError,
+          "The following original_discount_uuids are invalid: #{invalid_uuids.join(', ')}"
+      end
+
       def fetch_original_item(uuid)
         @project_items.find { |item| item.original_item_uuid == uuid }
+      end
+
+      def fetch_original_discount(uuid)
+        @project_discounts.find { |discount| discount.original_discount_uuid == uuid }
       end
 
       def create_new_version!(validated_params)
@@ -63,7 +90,8 @@ module Organization
           general_terms_and_conditions: @last_version.general_terms_and_conditions || @project.company.config.general_terms_and_conditions, # use company's general terms and condition for legacy project that have not been created with general terms and conditions
           bank_detail_id: validated_params[:bank_detail_id],
           items: combine_items(validated_params),
-          groups: validated_params[:groups]
+          groups: validated_params[:groups],
+          discounts: combine_discounts(validated_params)
         }
       end
 
@@ -84,6 +112,24 @@ module Organization
           }.compact
           updated_item_param.merge(
             original_item_attributes
+          )
+        end
+      end
+
+      def combine_discounts(params)
+        new_discounts = params[:new_discounts] || []
+        updated_discounts = map_updated_discounts(params[:updated_discounts] || [])
+
+        new_discounts + updated_discounts
+      end
+
+      def map_updated_discounts(updated_discounts_params)
+        updated_discounts_params.map do |updated_discount_param|
+          original_discount = fetch_original_discount(updated_discount_param[:original_discount_uuid])
+
+          updated_discount_param.merge(
+            original_discount_uuid: original_discount.original_discount_uuid,
+            name: original_discount.name
           )
         end
       end

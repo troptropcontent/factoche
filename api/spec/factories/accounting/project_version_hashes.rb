@@ -19,12 +19,28 @@ FactoryBot.define do
     skip_create
     initialize_with { attributes }
   end
+
+  factory :accounting_project_version_discount_hash, class: 'Hash' do
+    sequence(:original_discount_uuid) { |n| "discount-uuid-#{n}" }
+    kind { 'percentage' }
+    value { 0.1 }
+    amount { 20.0 }
+    sequence(:position)  { |n| n }
+    name { 'Test Discount' }
+
+    skip_create
+    initialize_with { attributes }
+  end
+
   factory :accounting_project_version_hash, class: "Hash" do
     transient do
       item_group_ids { [] }
     end
     transient do
       item_count { 1 }
+    end
+    transient do
+      discount_count { 0 }
     end
 
     number { 1 }
@@ -36,6 +52,7 @@ FactoryBot.define do
     item_groups { build_list(:accounting_project_version_item_group_hash, item_group_ids.uniq.length) { |item_group_hash, index|
       item_group_hash[:id] = item_group_ids[index] if item_group_ids[index]
     } }
+    discounts { build_list(:accounting_project_version_discount_hash, discount_count) }
 
     skip_create
     initialize_with { attributes }

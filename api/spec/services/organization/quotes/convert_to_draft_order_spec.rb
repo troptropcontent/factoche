@@ -104,6 +104,68 @@ module Organization
           end
         end
 
+        context 'when quote has discounts' do
+          let!(:percentage_discount) do
+            FactoryBot.create(:discount,
+              project_version: quote_version,
+              original_discount_uuid: SecureRandom.uuid,
+              kind: "percentage",
+              value: 0.1,
+              amount: 27.5,
+              position: 1,
+              name: "Early payment discount"
+            )
+          end
+
+          let!(:fixed_amount_discount) do
+            FactoryBot.create(:discount,
+              project_version: quote_version,
+              original_discount_uuid: SecureRandom.uuid,
+              kind: "fixed_amount",
+              value: 50,
+              amount: 50,
+              position: 2,
+              name: "Commercial discount"
+            )
+          end
+
+          it 'carries forward all discounts with the relevant attributes to the draft order' do
+            result = described_class.call(quote.id)
+
+            expect(result).to be_success
+            draft_order = result.data
+            draft_order_version = draft_order.versions.first
+
+            # Check discounts count
+            expect(draft_order_version.discounts.count).to eq(quote_version.discounts.count)
+
+            # Check each discount is preserved
+            quote_version.discounts.ordered.each do |quote_discount|
+              draft_order_discount = draft_order_version.discounts.find_by(
+                position: quote_discount.position
+              )
+
+              expect(draft_order_discount).to be_present
+              expect(draft_order_discount.kind).to eq(quote_discount.kind)
+              expect(draft_order_discount.value).to eq(quote_discount.value)
+              expect(draft_order_discount.amount).to eq(quote_discount.amount)
+              expect(draft_order_discount.position).to eq(quote_discount.position)
+              expect(draft_order_discount.name).to eq(quote_discount.name)
+              expect(draft_order_discount.original_discount_uuid).not_to eq(quote_discount.original_discount_uuid)
+            end
+          end
+
+          it 'does not preserves discount original_discount_uuid for tracking' do
+            result = described_class.call(quote.id)
+            draft_order_version = result.data.versions.first
+
+            original_uuids = quote_version.discounts.pluck(:original_discount_uuid)
+            draft_order_uuids = draft_order_version.discounts.pluck(:original_discount_uuid)
+
+            expect(draft_order_uuids).not_to match_array(original_uuids)
+          end
+        end
+
         context 'when quote not found' do
           it 'returns failure' do
             result = described_class.call(-1)

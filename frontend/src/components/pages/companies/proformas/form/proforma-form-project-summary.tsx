@@ -9,9 +9,8 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { proformaFormSchema } from "./proforma-form-schema";
 import {
-  computeOrderTotalAmount,
   computePreviouslyInvoicedAmount,
-  computeProformaAmount,
+  computeProformaAmounts,
 } from "./utils";
 
 const ProformaFormProjectSummary = ({ orderId }: { orderId: number }) => {
@@ -41,12 +40,10 @@ const ProformaFormProjectSummary = ({ orderId }: { orderId: number }) => {
     return null;
   }
 
-  const projectVersionTotalAmount = computeOrderTotalAmount(order);
-
   const projectPreviouslyInvoicedAmount =
     computePreviouslyInvoicedAmount(invoicedItems);
 
-  const newInvoiceAmount = computeProformaAmount(formValues);
+  const { invoiceAmount } = computeProformaAmounts(formValues, order);
 
   return (
     <Card>
@@ -106,7 +103,7 @@ const ProformaFormProjectSummary = ({ orderId }: { orderId: number }) => {
               </TableCell>
               <TableCell className="text-center">
                 {t("common.number_in_currency", {
-                  amount: projectVersionTotalAmount,
+                  amount: order.last_version.total_excl_tax_amount,
                 })}
               </TableCell>
               <TableCell className="text-center">
@@ -116,15 +113,15 @@ const ProformaFormProjectSummary = ({ orderId }: { orderId: number }) => {
               </TableCell>
               <TableCell className="text-center">
                 {t("common.number_in_currency", {
-                  amount: newInvoiceAmount,
+                  amount: invoiceAmount,
                 })}
               </TableCell>
               <TableCell className="text-right">
                 {t("common.number_in_currency", {
                   amount:
-                    projectVersionTotalAmount -
+                    Number(order.last_version.total_excl_tax_amount) -
                     projectPreviouslyInvoicedAmount -
-                    newInvoiceAmount,
+                    invoiceAmount,
                 })}
               </TableCell>
             </TableRow>

@@ -38,6 +38,7 @@ const PROJECT_FORM_INITIAL_VALUES = {
   retention_guarantee_rate: 0,
   items: [],
   groups: [],
+  discounts: [],
 } as const satisfies z.infer<typeof formSchema>;
 
 export {

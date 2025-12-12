@@ -1,11 +1,26 @@
 class Accounting::FinancialTransactionLine < ApplicationRecord
   belongs_to :financial_transaction, class_name: "Accounting::FinancialTransaction"
 
+  # Enum for line kinds
+  enum :kind, {
+    charge: "charge",
+    discount: "discount"
+  }
+
   validates :holder_id, uniqueness: { scope: :financial_transaction_id, message: "has already been taken for this financial transaction" }
 
   validates :unit, :unit_price_amount, :quantity, :tax_rate, :excl_tax_amount, presence: true
+  validates :kind, presence: true
 
-  validates :unit_price_amount, :quantity, :excl_tax_amount,
+  # Charges have positive amounts
+  validates :unit_price_amount, :excl_tax_amount,
+            numericality: { greater_than_or_equal_to: 0 }, if: -> { charge? }
+
+  # Discounts have negative amounts
+  validates :unit_price_amount, :excl_tax_amount,
+            numericality: { less_than_or_equal_to: 0 }, if: -> { discount? }
+
+  validates :quantity,
             numericality: { greater_than_or_equal_to: 0 }
 
   validates :tax_rate,

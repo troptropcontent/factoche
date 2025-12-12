@@ -240,6 +240,10 @@
       <%= render "accounting/group", invoice: @invoice, item_group: item_group %>
     <% end %>
 
+    <% if @invoice.lines.discount.length.positive? %>
+      <%= render "accounting/discounts", invoice: @invoice %>
+    <% end %>
+
     <%= render "accounting/totals", invoice: @invoice %>
 
     <% if @invoice.detail.general_terms_and_conditions %>

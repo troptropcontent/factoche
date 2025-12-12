@@ -52,6 +52,7 @@ export function ImportItemsFromCsvModal({
   const [csvData, setCsvData] = useState<z.infer<typeof step2FormSchema>>({
     items: [],
     groups: [],
+    discounts: [],
   });
   const [activeTab, setActiveTab] = useState<"upload" | "preview">("upload");
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +68,7 @@ export function ImportItemsFromCsvModal({
 
   const resetState = () => {
     setFile(null);
-    setCsvData({ items: [], groups: [] });
+    setCsvData({ items: [], groups: [], discounts: [] });
     setActiveTab("upload");
     setError(null);
     setDebugInfo(null);
@@ -156,7 +157,7 @@ export function ImportItemsFromCsvModal({
         return;
       }
       setIsLoading(false);
-      setCsvData(parsedData);
+      setCsvData({ ...parsedData, discounts: [] });
       setActiveTab("preview");
     };
 

@@ -67,6 +67,17 @@ fr:
             total_incl_tax_label: "Total TTC"
             retention_guarantee_label: "Retenue garantie (%{percentage})"
             total_to_pay_label: "Total à payer"
+          discounts:
+            table_name: "Remises"
+            name: "Désignation"
+            amount: "Montant total"
+            amount_applied: "Montant déduit"
+            hint: "les remises sont appliquées proportionnellement aux montants facturés"
+            type:
+              label: "Type de remise"
+              percentage: "Pourcentage (%{percentage})"
+              fixed_amount: "Montanty fixe"
+
           conditions:
             title: "Conditions générales de ventes"
         unpublished:
@@ -138,11 +149,20 @@ fr:
             new_completion_label_html: "Avancement"
             new_invoice_label_html: "À facturer"
       projects:
-        columns:
+        versions:
+          groups:
+            columns:
+              name: "Désignation"
+              quantity: "Quantité"
+              unit_price: "Prix unitaire"
+              total: "Total"
+        discounts:
           name: "Désignation"
-          quantity: "Quantité"
-          unit_price: "Prix unitaire"
-          total: "Total"
+          amount: "Montant"
+          type:
+            label: "Type de remise"
+            percentage: "Pourcentage (%{percentage})"
+            fixed_amount: "Montanty fixe"
       quote:
         title: "Devis"
         number: "Numéro du devis"

@@ -8,6 +8,7 @@ module Accounting
         required(:project_version_number).filled(:integer, gteq?: 0)
         required(:project_version_date).filled(:string)
         required(:project_total_amount).filled(:decimal, gteq?: 0)
+        required(:project_total_amount_before_discounts).filled(:decimal, gteq?: 0)
         required(:project_total_previously_billed_amount).filled(:decimal, gteq?: 0)
         required(:project_version_items).array(:hash) do
           required(:original_item_uuid).filled(:string)
@@ -24,6 +25,14 @@ module Accounting
           required(:id).filled(:integer, gt?: 0)
           required(:name).filled(:string)
           optional(:description).maybe(:string)
+        end
+        optional(:project_version_discounts).array(:hash) do
+          required(:original_discount_uuid).filled(:string)
+          required(:kind).filled(:string)
+          required(:value).filled(:decimal)
+          required(:amount).filled(:decimal, gteq?: 0)
+          required(:position).filled(:integer, gteq?: 0)
+          optional(:name).maybe(:string)
         end
       end
 

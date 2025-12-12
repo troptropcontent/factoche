@@ -4,6 +4,7 @@ require_relative "shared_examples/an_authenticated_endpoint"
 require "support/shared_contexts/organization/a_company_with_a_project_with_three_items"
 require 'support/shared_contexts/organization/projects/a_company_with_an_order'
 
+# rubocop:disable RSpec/ExampleLength
 RSpec.describe Api::V1::Organization::ProformasController, type: :request do
   path '/api/v1/organization/orders/{order_id}/proformas' do
     post 'Creates an invoice' do
@@ -28,7 +29,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
         let!(:member) { FactoryBot.create(:member, user:, company:) }
 
         let(:order_id) { order.id }
-        let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "0.5" } ] } }
+        let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "1.0" } ] } }
 
         it("creates an invoice, its detail and its line and returns it") do |example|
           expect { submit_request(example.metadata) }.to change(Accounting::Proforma, :count).by(1)
@@ -36,6 +37,160 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
           .and change(Accounting::FinancialTransactionLine, :count).by(1)
 
           assert_response_matches_metadata(example.metadata)
+        end
+
+        context "when the order has a fixed amount discount" do
+          # Total order amount: first_item=1, second_item=4, third_item=9, total=14€
+          # Fixed discount of 2€ on total order
+          let!(:discount) { FactoryBot.create(:discount, :fixed_amount, project_version: order_version, amount: 2, value: 2, position: 1, name: "Commercial discount") }
+          # Invoicing 7€ which is 50% of the total (7/14)
+          let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "1.0" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "4.0" }, { original_item_uuid: third_item.original_item_uuid, invoice_amount: "2.0" } ] } }
+
+          it("creates a proforma with discount and total_excl_tax_amount equals invoice amounts minus prorated discount", :aggregate_failures) do |example|
+            expect { submit_request(example.metadata) }
+              .to change(Accounting::Proforma, :count).by(1)
+              .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+              .and change(Accounting::FinancialTransactionLine, :count).by(4) # 3 charge lines + 1 discount line
+
+            assert_response_matches_metadata(example.metadata)
+
+            parsed_response = JSON.parse(response.body)
+
+            # Verify discount is included in context
+            expect(parsed_response.dig("result", "context", "project_version_discounts")).to be_an(Array)
+            expect(parsed_response.dig("result", "context", "project_version_discounts").length).to eq(1)
+
+            discount_data = parsed_response.dig("result", "context", "project_version_discounts", 0)
+            expect(discount_data["original_discount_uuid"]).to eq(discount.original_discount_uuid)
+            expect(discount_data["kind"]).to eq("fixed_amount")
+            expect(discount_data["amount"]).to eq("2.0")
+            expect(discount_data["name"]).to eq("Commercial discount")
+
+            # Verify lines include both charges and discount
+            lines = parsed_response.dig("result", "lines")
+            expect(lines.length).to eq(4)
+
+            charge_lines = lines.select { |line| line["kind"] == "charge" }
+            discount_line = lines.find { |line| line["kind"] == "discount" }
+
+            expect(charge_lines.length).to eq(3)
+            expect(discount_line).to be_present
+            expect(discount_line["holder_id"]).to eq(discount.original_discount_uuid)
+
+            # Calculate expected values
+            invoice_total = 1.0 + 4.0 + 2.0 # 7€
+            order_total = 14.0 # 1 + 4 + 9
+            invoice_proportion = invoice_total / order_total # 7/14 = 0.5
+            prorated_discount = (2.0 * invoice_proportion).round(2) # 1€
+
+            # Verify prorated discount on discount line
+            expect(discount_line["excl_tax_amount"].to_f).to eq(-prorated_discount)
+
+            # Verify total_excl_tax_amount = invoice_amounts - prorated_discount
+            expected_total_excl_tax = invoice_total - prorated_discount # 7 - 1 = 6€
+            actual_total_excl_tax = parsed_response.dig("result", "total_excl_tax_amount").to_f
+
+            expect(actual_total_excl_tax).to eq(expected_total_excl_tax)
+          end
+        end
+
+        context "when the order has a percentage discount" do
+          # 10% discount on total order amount of 14€ = 1.4€
+          let!(:discount) { FactoryBot.create(:discount, :percentage, project_version: order_version, value: 0.1, amount: 1.4, position: 1, name: "Volume discount") }
+          # Invoicing 10.5€ which is 75% of the total (10.5/14)
+          let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "1.0" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "4.0" }, { original_item_uuid: third_item.original_item_uuid, invoice_amount: "5.5" } ] } }
+
+          it("creates a proforma with discount and total_excl_tax_amount equals invoice amounts minus prorated discount", :aggregate_failures) do |example|
+            expect { submit_request(example.metadata) }
+              .to change(Accounting::Proforma, :count).by(1)
+              .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+              .and change(Accounting::FinancialTransactionLine, :count).by(4) # 3 charge lines + 1 discount line
+
+            assert_response_matches_metadata(example.metadata)
+
+            parsed_response = JSON.parse(response.body)
+
+            # Verify discount is included in context
+            discount_data = parsed_response.dig("result", "context", "project_version_discounts", 0)
+            expect(discount_data["kind"]).to eq("percentage")
+            expect(discount_data["value"]).to eq("0.1")
+            expect(discount_data["amount"]).to eq("1.4")
+
+            # Verify discount line is present
+            lines = parsed_response.dig("result", "lines")
+            discount_line = lines.find { |line| line["kind"] == "discount" }
+            expect(discount_line).to be_present
+
+            # Calculate expected values
+            invoice_total = 1.0 + 4.0 + 5.5 # 10.5€
+            order_total = 14.0
+            invoice_proportion = invoice_total / order_total # 10.5/14 = 0.75
+            prorated_discount = (1.4 * invoice_proportion).round(2) # 1.05€
+
+            # Verify prorated discount on discount line
+            expect(discount_line["excl_tax_amount"].to_f).to eq(-prorated_discount)
+
+            # Verify total_excl_tax_amount = invoice_amounts - prorated_discount
+            expected_total_excl_tax = invoice_total - prorated_discount # 10.5 - 1.05 = 9.45€
+            actual_total_excl_tax = parsed_response.dig("result", "total_excl_tax_amount").to_f
+
+            expect(actual_total_excl_tax).to eq(expected_total_excl_tax)
+          end
+        end
+
+        context "when the order has multiple discounts" do
+          # Fixed discount of 1.5€
+          let!(:first_discount) { FactoryBot.create(:discount, :fixed_amount, project_version: order_version, amount: 1.5, value: 1.5, position: 1, name: "Early payment") }
+          # Percentage discount of 5% on 14€ = 0.7€
+          let!(:second_discount) { FactoryBot.create(:discount, :percentage, project_version: order_version, value: 0.05, amount: 0.7, position: 2, name: "Loyalty") }
+          # Invoicing full amount of all items (14€ = 100% of order)
+          let(:body) { { invoice_amounts: [ { original_item_uuid: first_item.original_item_uuid, invoice_amount: "1.0" }, { original_item_uuid: second_item.original_item_uuid, invoice_amount: "4.0" }, { original_item_uuid: third_item.original_item_uuid, invoice_amount: "9.0" } ] } }
+
+          it("creates a proforma with all discounts and total_excl_tax_amount equals invoice amounts minus all prorated discounts", :aggregate_failures) do |example|
+            expect { submit_request(example.metadata) }
+              .to change(Accounting::Proforma, :count).by(1)
+              .and change(Accounting::FinancialTransactionDetail, :count).by(1)
+              .and change(Accounting::FinancialTransactionLine, :count).by(5) # 3 charge lines + 2 discount lines
+
+            assert_response_matches_metadata(example.metadata)
+
+            parsed_response = JSON.parse(response.body)
+
+            # Verify both discounts are included in context
+            discounts = parsed_response.dig("result", "context", "project_version_discounts")
+            expect(discounts.length).to eq(2)
+            expect(discounts.map { |d| d["position"] }).to contain_exactly(1, 2)
+
+            # Verify all lines are present
+            lines = parsed_response.dig("result", "lines")
+            expect(lines.length).to eq(5)
+
+            charge_lines = lines.select { |line| line["kind"] == "charge" }
+            discount_lines = lines.select { |line| line["kind"] == "discount" }
+
+            expect(charge_lines.length).to eq(3)
+            expect(discount_lines.length).to eq(2)
+
+            # Calculate expected values
+            invoice_total = 1.0 + 4.0 + 9.0 # 14€
+            order_total = 14.0
+            invoice_proportion = invoice_total / order_total # 14/14 = 1.0 (100%)
+
+            # Both discounts fully applied since we're invoicing 100%
+            prorated_discount_1 = (1.5 * invoice_proportion).round(2) # 1.5€
+            prorated_discount_2 = (0.7 * invoice_proportion).round(2) # 0.7€
+            total_prorated_discounts = prorated_discount_1 + prorated_discount_2 # 2.2€
+
+            # Verify total discount amount
+            total_discount_amount = discount_lines.sum { |line| line["excl_tax_amount"].to_f.abs }
+            expect(total_discount_amount).to eq(total_prorated_discounts)
+
+            # Verify total_excl_tax_amount = invoice_amounts - total_prorated_discounts
+            expected_total_excl_tax = invoice_total - total_prorated_discounts # 14 - 2.2 = 11.8€
+            actual_total_excl_tax = parsed_response.dig("result", "total_excl_tax_amount").to_f
+
+            expect(actual_total_excl_tax).to eq(expected_total_excl_tax)
+          end
         end
       end
 
@@ -473,3 +628,4 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength
