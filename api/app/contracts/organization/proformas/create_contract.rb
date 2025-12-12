@@ -1,7 +1,7 @@
 module Organization
   module Proformas
     class CreateContract < Dry::Validation::Contract
-      extend DryValidationOpenapi::Convertable
+      extend ::DryValidationOpenapi::Convertable
 
       params do
         optional(:issue_date).value(:time)
