@@ -32,11 +32,11 @@ module Api
 
           raise Error::UnprocessableEntityError.new(result.error) unless result.success?
 
-          items = ::Organization::Item.where(project_version_id: order.versions.pluck(:id)).order(:original_item_uuid)
-          results = items.map do |item|
+          item_uuids = ::Organization::Item.where(project_version_id: order.versions.pluck(:id)).pluck(:original_item_uuid).uniq.sort
+          results = item_uuids.map do |item_uuid|
             {
-              original_item_uuid: item.original_item_uuid,
-              invoiced_amount: result.data[item.original_item_uuid][:invoices_amount] - result.data[item.original_item_uuid][:credit_notes_amount]
+              original_item_uuid: item_uuid,
+              invoiced_amount: result.data[item_uuid][:invoices_amount] - result.data[item_uuid][:credit_notes_amount]
             }
           end
 
