@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+# Force rebuild to fetch dry_validation_openapi gem (published Dec 11, 2025)
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.0", ">= 8.0.0.1"
 # Use postgresql as the database for Active Record

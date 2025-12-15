@@ -33,6 +33,10 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Cache bust for bundle install - change this to force rebuild
+ARG BUNDLE_CACHE_BUST=2025-12-15
+RUN echo "Bundle cache bust: ${BUNDLE_CACHE_BUST}"
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
