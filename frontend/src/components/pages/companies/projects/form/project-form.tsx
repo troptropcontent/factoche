@@ -14,7 +14,6 @@ const ProjectForm = ({
   initialValues,
   submitFunction,
 }: ProjectFormProps) => {
-  console.log({initialValues})
   return (
     <ProjectFormContent
       update={update}

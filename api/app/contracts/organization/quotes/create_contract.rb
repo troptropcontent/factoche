@@ -13,7 +13,7 @@ module Organization
           optional(:group_uuid).maybe(:string)
           required(:name).filled(:string)
           optional(:description).maybe(:string)
-          required(:quantity).filled(:integer)
+          required(:quantity).filled(:decimal)
           required(:unit).filled(:string)
           required(:unit_price_amount).filled(:decimal)
           required(:position).filled(:integer)

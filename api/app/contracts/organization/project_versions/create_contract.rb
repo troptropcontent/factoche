@@ -18,7 +18,7 @@ module Organization
             optional(:description).type(:string)
             optional(:original_item_uuid).filled(:string)
             required(:position).filled(:integer)
-            required(:quantity).filled(:integer)
+            required(:quantity).filled(:decimal)
             required(:unit).filled(:string)
             required(:unit_price_amount).filled(:decimal)
             required(:tax_rate).filled(:decimal)

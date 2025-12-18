@@ -13,7 +13,7 @@ RSpec.describe Api::V1::Organization::ProformasController, type: :request do
       consumes 'application/json'
 
       parameter name: :order_id, in: :path, type: :integer, required: true
-      parameter name: :body, in: :body, required: true, schema: ::Organization::Proformas::CreateContract.open_api_schema
+      parameter name: :body, in: :body, required: true, schema: ::Organization::Proformas::CreateContract.schema.json_schema
 
       let(:order_id) { 1 }
       let(:body) { }
