@@ -14,7 +14,7 @@ module Accounting
           required(:group_id).maybe(:integer, gteq?: 0)
           required(:name).filled(:string)
           optional(:description).maybe(:string)
-          required(:quantity).filled(:integer, gteq?: 0)
+          required(:quantity).filled(:decimal, gteq?: 0)
           required(:unit).filled(:string)
           required(:unit_price_amount).filled(:decimal, gteq?: 0)
           required(:tax_rate).filled(:decimal, gteq?: 0)

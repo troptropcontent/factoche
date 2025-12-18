@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_18_093859) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -82,7 +82,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
 
   create_table "accounting_financial_transactions", force: :cascade do |t|
     t.bigint "company_id", null: false
-    t.bigint "holder_id", null: false
+    t.bigint "holder_id"
     t.enum "status", default: "draft", null: false, enum_type: "accounting_financial_transaction_status"
     t.string "number"
     t.string "type", null: false
@@ -231,7 +231,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_085700) do
   create_table "organization_items", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
-    t.integer "quantity", null: false
+    t.decimal "quantity", precision: 10, scale: 2, null: false
     t.string "unit", null: false
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
     t.datetime "created_at", null: false
