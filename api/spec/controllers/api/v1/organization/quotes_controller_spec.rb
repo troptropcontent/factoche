@@ -453,7 +453,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
               position: 0,
               unit: "unit",
               unit_price_amount: 100.0,
-              quantity: 1,
+              quantity: 1.5,
               tax_rate: 0.2
             }
           ]
@@ -468,6 +468,7 @@ RSpec.describe Api::V1::Organization::QuotesController, type: :request do
           parsed_response = JSON.parse(response.body)
           expect(parsed_response.dig("result", "name")).to eq("New Quote")
           expect(parsed_response.dig("result", "po_number")).to eq("PO_123456")
+          expect(parsed_response.dig("result", "last_version", "items", 0, "quantity")).to eq("1.5")
         end
       end
 

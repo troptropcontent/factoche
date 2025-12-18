@@ -106,6 +106,7 @@ const buildProjectFormInitialValue = (
       uuid: uuidv4(),
       original_item_uuid: item.original_item_uuid,
       unit_price_amount: Number(item.unit_price_amount),
+      quantity: Number(item.quantity),
       tax_rate: Number(item.tax_rate) * 100,
       description: item.description || "",
       group_uuid: groupsWithUuid.find(

@@ -9,7 +9,7 @@ module Accounting
       required(:group_id).maybe(:integer)
       required(:name).filled(:string)
       required(:description).maybe(:string)
-      required(:quantity).filled(:integer)
+      required(:quantity).filled(:decimal)
       required(:unit).filled(:string)
       required(:unit_price_amount).filled(:decimal)
       required(:tax_rate).filled(:decimal)
