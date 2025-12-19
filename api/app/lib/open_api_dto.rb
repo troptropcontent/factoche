@@ -248,7 +248,11 @@ class OpenApiDto
       end
     end
 
-    raise ArgumentError, "Expected BigDecimal or string parsable as BigDecimal for #{field_name}, got #{value.class}"
+    if value.is_a?(Integer)
+      return BigDecimal(value)
+    end
+
+    raise ArgumentError, "Expected BigDecimal, Interger or string parsable as BigDecimal for #{field_name}, got #{value.class}"
   end
 
   def validate_timestamp_value!(value, field_name)

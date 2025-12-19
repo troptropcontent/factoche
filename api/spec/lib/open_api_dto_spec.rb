@@ -76,7 +76,7 @@ RSpec.describe OpenApiDto do
         let(:tmp_dto_class) { Class.new(OpenApiDto) { field 'amount', :decimal } }
 
         it "raises an error" do
-          expect { tmp_dto_class.new({ amount: 1 }) }.to raise_error(ArgumentError, 'Expected BigDecimal or string parsable as BigDecimal for amount, got Integer')
+          expect { tmp_dto_class.new({ amount: Time.new }) }.to raise_error(ArgumentError, 'Expected BigDecimal, Interger or string parsable as BigDecimal for amount, got Time')
         end
       end
 
