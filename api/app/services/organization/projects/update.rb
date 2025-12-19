@@ -46,6 +46,7 @@ module Organization
 
       def create_new_version!(validated_params)
         mapped_params = map_params(validated_params)
+
         result = ProjectVersions::Create.call(@project, mapped_params)
 
         unless result.success?

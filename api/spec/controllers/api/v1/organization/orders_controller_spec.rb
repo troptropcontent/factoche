@@ -377,9 +377,29 @@ module Api
 
             response "200", "ok" do
               schema ::Organization::Projects::InvoicedItemsDto.to_schema
-              before {
+              before do
+                r = ::Organization::Projects::Update.call(order, {
+                  name: "Updated Project",
+                  description: "New description",
+                  retention_guarantee_rate: 0.05,
+                  bank_detail_id: company.bank_details.first.id,
+                  groups: [],
+                  new_items: [],
+                  updated_items: [
+                    {
+                      original_item_uuid: order_version.items.first.original_item_uuid,
+                      position: 2,
+                      quantity: 3,
+                      unit_price_amount: 150.0,
+                      tax_rate: 0.2
+                    }
+                  ]
+                })
+
+                raise "Failed to create a new version: #{r.error}" if r.failure?
+
                 FactoryBot.create(:member, company:, user:)
-              }
+              end
 
               context "when there is no previous invoices or credit notes" do
                 let(:expected) do
@@ -430,8 +450,10 @@ module Api
                   end
 
                   before {
-                    proforma = ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
-                    ::Accounting::Proformas::Post.call(proforma.id)
+                    r = ::Organization::Proformas::Create.call(order.reload.last_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] })
+
+                    raise r.error if r.failure?
+                    ::Accounting::Proformas::Post.call(r.data.id)
                   }
 
                   run_test!("It returns the relevant amount for each items") do
@@ -462,8 +484,10 @@ module Api
                   end
 
                   before {
-                    proforma = ::Organization::Proformas::Create.call(order_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] }).data
-                    ::Accounting::Proformas::Post.call(proforma.id, Time.current + 2.days)
+                    r = ::Organization::Proformas::Create.call(order.reload.last_version.id, { invoice_amounts: [ { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: "0.2" } ] })
+                    raise r.error if r.failure?
+
+                    ::Accounting::Proformas::Post.call(r.data.id, Time.current + 2.days)
                   }
 
                   run_test!("It does not take those transactions into account") do

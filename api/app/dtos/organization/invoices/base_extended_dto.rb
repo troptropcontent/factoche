@@ -41,7 +41,7 @@ module Organization
           field "group_id", :integer, required: false
           field "name", :string
           field "description", :string, required: false
-          field "quantity", :integer
+          field "quantity", :decimal
           field "unit", :string
           field "unit_price_amount", :decimal
           field "tax_rate", :decimal
