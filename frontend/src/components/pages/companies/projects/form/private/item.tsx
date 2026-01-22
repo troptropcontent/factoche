@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FormField, FormLabel } from "@/components/ui/form";
 import { FormControl } from "@/components/ui/form";
@@ -11,16 +11,15 @@ import { step2FormSchema } from "../project-form.schema";
 import { z } from "zod";
 
 const Item = ({ inputId }: { inputId: string }) => {
-  const { control, watch } = useFormContext<z.infer<typeof step2FormSchema>>();
-
-  const { fields: itemInputs, remove: removeItemInput } = useFieldArray({
-    control: control,
-    name: "items",
-  });
-
-  const inputIndex = itemInputs.findIndex(
+  const { control, watch, setValue } = useFormContext<z.infer<typeof step2FormSchema>>();
+  const inputIndex = watch("items").findIndex(
     (itemInput) => itemInput.uuid == inputId
   );
+  const removeItem = () => {
+    const updatedArray = watch("items")
+    updatedArray.splice(inputIndex, 1)
+    setValue("items", updatedArray)
+  }
 
   const fieldName = `items.${inputIndex}` as const;
   const originalItemUuidFieldName = `${fieldName}.original_item_uuid` as const;
@@ -35,7 +34,7 @@ const Item = ({ inputId }: { inputId: string }) => {
 
   const { t } = useTranslation();
   return (
-    <ItemCardLayout remove={() => removeItemInput(inputIndex)}>
+    <ItemCardLayout remove={removeItem}>
       <div className="grid grid-cols-4 gap-4 ">
         <FormField
           control={control}
