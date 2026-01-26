@@ -150,6 +150,7 @@ fr:
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
+          address_html: "<strong>Addresse :</strong> %{street}, %{zipcode}, %{city}"
         version:
           title: "Version du devis"
           number: "Numéro de version"
@@ -166,6 +167,7 @@ fr:
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
+          address_html: "<strong>Address :</strong> %{street}, %{zipcode}, %{city}"
         version:
           title: "Version du chantier provisoire"
           number: "Numéro de version"
@@ -182,6 +184,7 @@ fr:
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
+          address_html: "<strong>Address :</strong> %{street}, %{zipcode}, %{city}"
         version:
           title: "Version du chantier"
           number: "Numéro de version"
