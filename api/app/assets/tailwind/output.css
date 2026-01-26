@@ -1255,23 +1255,8 @@
   .h-\[25\.23px\] {
     height: 25.23px;
   }
-  .w-5 {
-    width: calc(var(--spacing) * 5);
-  }
-  .w-8 {
-    width: calc(var(--spacing) * 8);
-  }
-  .w-9 {
-    width: calc(var(--spacing) * 9);
-  }
-  .w-11 {
-    width: calc(var(--spacing) * 11);
-  }
   .w-44 {
     width: calc(var(--spacing) * 44);
-  }
-  .h-7 {
-    height: calc(var(--spacing) * 7);
   }
   .w-\[17\.5\%\] {
     width: 17.5%;
@@ -1299,9 +1284,6 @@
   }
   .resize {
     resize: both;
-  }
-  .list-disc {
-    list-style-type: disc;
   }
   .break-before-page {
     break-before: page;
@@ -1377,9 +1359,6 @@
   .bg-gray-200 {
     background-color: var(--color-gray-200);
   }
-  .bg-red-200 {
-    background-color: var(--color-red-200);
-  }
   .p-2 {
     padding: calc(var(--spacing) * 2);
   }
@@ -1417,6 +1396,10 @@
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
   }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
   .text-xl {
     font-size: var(--text-xl);
     line-height: var(--tw-leading, var(--text-xl--line-height));
@@ -1436,8 +1419,15 @@
     --tw-font-weight: var(--font-weight-light);
     font-weight: var(--font-weight-light);
   }
+  .font-normal {
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
+  }
   .break-all {
     word-break: break-all;
+  }
+  .whitespace-pre-wrap {
+    white-space: pre-wrap;
   }
   .text-gray-400 {
     color: var(--color-gray-400);
@@ -1569,11 +1559,6 @@
       border-bottom-left-radius: 0.25rem;
     }
   }
-  .group-last\:bg-amber-100 {
-    &:is(:where(.group):last-child *) {
-      background-color: var(--color-amber-100);
-    }
-  }
   .group-\[\:first-child\]\:rounded-tl {
     &:is(:where(.group):is(:first-child) *) {
       border-top-left-radius: 0.25rem;
@@ -1603,11 +1588,6 @@
   .last\:mb-0 {
     &:last-child {
       margin-bottom: calc(var(--spacing) * 0);
-    }
-  }
-  .last\:bg-red-200 {
-    &:last-child {
-      background-color: var(--color-red-200);
     }
   }
 }

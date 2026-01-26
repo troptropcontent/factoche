@@ -27,7 +27,12 @@
       <% items.map do |item| %>
         <tr>
             <th scope="row" class="text-left p-2">
-              <%= item["name"] %><br>
+              <span class="flex flex-col">
+                <p><%= item["name"] %></p>
+                <% if item["description"].present? %>
+                  <p class="text-normal text-xs font-normal whitespace-pre-wrap"><%= item["description"] %></p>
+                <% end %>
+              </span>
             </th>
             <td class="text-center p-2">
               <%= item.quantity %>
