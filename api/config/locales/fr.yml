@@ -142,7 +142,7 @@ fr:
           name: "Désignation"
           quantity: "Quantité"
           unit_price: "Prix unitaire"
-          total: "Total"
+          total: "Total HT"
           vat_rate: "Taux de TVA : %{vat_rate}"
       quote:
         title: "Devis"
