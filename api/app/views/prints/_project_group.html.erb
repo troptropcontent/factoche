@@ -30,8 +30,9 @@
               <span class="flex flex-col">
                 <p><%= item["name"] %></p>
                 <% if item["description"].present? %>
-                  <p class="text-normal text-xs font-normal whitespace-pre-wrap"><%= item["description"] %></p>
+                  <p class="text-normal text-xs font-normal whitespace-pre-wrap pt-2"><%= item["description"] %></p>
                 <% end %>
+                <p class="text-normal text-xs font-normal italic pt-2"><%= t("views.organization.projects.columns.vat_rate", vat_rate: number_to_percentage( item["tax_rate"] * 100, precision: 2) ) %></p>
               </span>
             </th>
             <td class="text-center p-2">

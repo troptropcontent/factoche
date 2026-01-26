@@ -143,6 +143,7 @@ fr:
           quantity: "Quantité"
           unit_price: "Prix unitaire"
           total: "Total"
+          vat_rate: "Taux de TVA : %{vat_rate}"
       quote:
         title: "Devis"
         number: "Numéro du devis"
