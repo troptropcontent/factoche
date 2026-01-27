@@ -6,6 +6,7 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
     let(:client_id) { 1 }
     let(:another_company_id) { 2 }
     let(:issue_date) { Time.new(2024, 3, 20) }
+    let(:financial_year) { FactoryBot.create(:financial_year, company_id: company_id, start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year) }
     let(:prefix) { "INV" }
 
     context 'when successful' do
