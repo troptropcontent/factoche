@@ -26,6 +26,7 @@ const Item = ({ inputId }: { inputId: string }) => {
   const quantityFieldName = `${fieldName}.quantity` as const;
   const unitPriceFieldName = `${fieldName}.unit_price_amount` as const;
   const nameFieldDame = `${fieldName}.name` as const;
+  const descriptionFieldDame = `${fieldName}.description` as const;
   const unitFieldDame = `${fieldName}.unit` as const;
   const taxRateFieldName = `${fieldName}.tax_rate` as const;
   const quantityInput = watch(quantityFieldName);
@@ -58,6 +59,28 @@ const Item = ({ inputId }: { inputId: string }) => {
               <FormDescription>
                 {t(
                   "pages.companies.projects.form.composition_step.item_name_input_placeholder"
+                )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name={descriptionFieldDame}
+          render={({ field }) => (
+            <FormItem className="col-span-full">
+              <FormLabel>
+                {t(
+                  "pages.companies.projects.form.composition_step.item_description_input_label"
+                )}
+              </FormLabel>
+              <FormControl>
+                <textarea className="flex w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm" placeholder={t("pages.companies.projects.form.composition_step.item_description_input_placeholder")} {...field} />
+              </FormControl>
+              <FormDescription>
+                {t(
+                  "pages.companies.projects.form.composition_step.item_description_input_placeholder"
                 )}
               </FormDescription>
               <FormMessage />

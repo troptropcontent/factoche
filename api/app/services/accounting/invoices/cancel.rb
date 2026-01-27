@@ -62,7 +62,6 @@ module Accounting
           result = FinancialTransactions::FindNextAvailableNumber.call(
             company_id: company_id,
             prefix: CreditNote::NUMBER_PREFIX,
-            financial_year_id: financial_year_id,
             issue_date: issue_date
           )
 
