@@ -10,6 +10,7 @@ module Organization
         subject(:result) { described_class.call(order_version_id, params) }
 
         include_context 'a company with an order'
+
         let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
 
         let(:order_version_id) { order_version.id }
@@ -49,6 +50,8 @@ module Organization
             let(:params) {
                 base_params.merge({ issue_date: "2025-09-24" })
             }
+
+            let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: Time.now.change({ year: 2025 }).beginning_of_year, end_date: Time.now.change({ year: 2025 }).end_of_year) }
 
             it { is_expected.to be_success }
 

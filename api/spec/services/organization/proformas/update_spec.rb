@@ -12,7 +12,7 @@ module Organization
         }
 
         include_context 'a company with an order'
-        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id) }
+        let!(:financial_year) { FactoryBot.create(:financial_year, company_id: company.id, start_date: Time.now.change({ year: 2025 }).beginning_of_year, end_date: Time.now.change({ year: 2025 }).end_of_year) }
         let(:proforma_id) { proforma.id }
         let("first_item_unit_price_amount") { 200 } # 200 €
         let("first_item_quantity") { 3 } # => total possible amount 3 * 200 € = 600 €
@@ -21,6 +21,7 @@ module Organization
 
         let(:proforma) {
           Create.call(order_version.id, {
+            issue_date: "2025-09-02",
             invoice_amounts: [
               { original_item_uuid: order_version.items.first.original_item_uuid, invoice_amount: 99 },
               { original_item_uuid: order_version.items.second.original_item_uuid, invoice_amount: 20 }

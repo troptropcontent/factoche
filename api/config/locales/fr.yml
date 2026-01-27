@@ -142,7 +142,8 @@ fr:
           name: "Désignation"
           quantity: "Quantité"
           unit_price: "Prix unitaire"
-          total: "Total"
+          total: "Total HT"
+          vat_rate: "Taux de TVA : %{vat_rate}"
       quote:
         title: "Devis"
         number: "Numéro du devis"
@@ -150,6 +151,7 @@ fr:
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
+          address_html: "<strong>Addresse :</strong> %{street}, %{zipcode}, %{city}"
         version:
           title: "Version du devis"
           number: "Numéro de version"
@@ -166,6 +168,7 @@ fr:
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
+          address_html: "<strong>Address :</strong> %{street}, %{zipcode}, %{city}"
         version:
           title: "Version du chantier provisoire"
           number: "Numéro de version"
@@ -182,6 +185,7 @@ fr:
         context:
           title: "Contexte"
           name_html: "<strong>Designation :</strong> %{name}"
+          address_html: "<strong>Address :</strong> %{street}, %{zipcode}, %{city}"
         version:
           title: "Version du chantier"
           number: "Numéro de version"

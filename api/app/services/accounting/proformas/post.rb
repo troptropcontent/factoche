@@ -43,7 +43,7 @@ module Accounting
         end
 
         def find_next_available_invoice_number!
-          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: @original_proforma.company_id, financial_year_id: @financial_year.id, prefix: Invoice::NUMBER_PREFIX, issue_date: @issue_date)
+          result = FinancialTransactions::FindNextAvailableNumber.call(company_id: @original_proforma.company_id, prefix: Invoice::NUMBER_PREFIX, issue_date: @issue_date)
 
           raise result.error unless result.success?
 
