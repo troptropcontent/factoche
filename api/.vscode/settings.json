@@ -21,5 +21,10 @@
   ],
   "git.decorations.enabled": false,
   "editor.formatOnSave": true,
-  "tailwindCSS.experimental.configFile": "app/assets/tailwind/input.css"
+  "tailwindCSS.experimental.configFile": "app/assets/tailwind/input.css",
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#0047AB",
+    "activityBar.foreground": "#F0FFFF",
+    "activityBar.inactiveForeground": "#89CFF0",
+  }
 }

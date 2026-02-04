@@ -7,7 +7,10 @@
     }
   ],
   "workbench.colorCustomizations": {
-    "statusBar.background": "#612602"
+    "statusBar.background": "#612602",
+    "activityBar.background": "#a70000",
+    "activityBar.foreground": "#ffbaba",
+    "activityBar.inactiveForeground": "#ff7b7b",
   },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -200,6 +200,7 @@ const Item = ({ inputId }: { inputId: string }) => {
                 <FormControl>
                   <Input
                     type="number"
+                    step={0.01}
                     min={0}
                     max={100}
                     {...field}
