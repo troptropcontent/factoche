@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FormField, FormLabel } from "@/components/ui/form";
 import { FormControl } from "@/components/ui/form";
@@ -11,22 +11,22 @@ import { step2FormSchema } from "../project-form.schema";
 import { z } from "zod";
 
 const Item = ({ inputId }: { inputId: string }) => {
-  const { control, watch } = useFormContext<z.infer<typeof step2FormSchema>>();
-
-  const { fields: itemInputs, remove: removeItemInput } = useFieldArray({
-    control: control,
-    name: "items",
-  });
-
-  const inputIndex = itemInputs.findIndex(
+  const { control, watch, setValue } = useFormContext<z.infer<typeof step2FormSchema>>();
+  const inputIndex = watch("items").findIndex(
     (itemInput) => itemInput.uuid == inputId
   );
+  const removeItem = () => {
+    const updatedArray = watch("items")
+    updatedArray.splice(inputIndex, 1)
+    setValue("items", updatedArray)
+  }
 
   const fieldName = `items.${inputIndex}` as const;
   const originalItemUuidFieldName = `${fieldName}.original_item_uuid` as const;
   const quantityFieldName = `${fieldName}.quantity` as const;
   const unitPriceFieldName = `${fieldName}.unit_price_amount` as const;
   const nameFieldDame = `${fieldName}.name` as const;
+  const descriptionFieldDame = `${fieldName}.description` as const;
   const unitFieldDame = `${fieldName}.unit` as const;
   const taxRateFieldName = `${fieldName}.tax_rate` as const;
   const quantityInput = watch(quantityFieldName);
@@ -35,7 +35,7 @@ const Item = ({ inputId }: { inputId: string }) => {
 
   const { t } = useTranslation();
   return (
-    <ItemCardLayout remove={() => removeItemInput(inputIndex)}>
+    <ItemCardLayout remove={removeItem}>
       <div className="grid grid-cols-4 gap-4 ">
         <FormField
           control={control}
@@ -59,6 +59,28 @@ const Item = ({ inputId }: { inputId: string }) => {
               <FormDescription>
                 {t(
                   "pages.companies.projects.form.composition_step.item_name_input_placeholder"
+                )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name={descriptionFieldDame}
+          render={({ field }) => (
+            <FormItem className="col-span-full">
+              <FormLabel>
+                {t(
+                  "pages.companies.projects.form.composition_step.item_description_input_label"
+                )}
+              </FormLabel>
+              <FormControl>
+                <textarea className="flex w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm" placeholder={t("pages.companies.projects.form.composition_step.item_description_input_placeholder")} {...field} />
+              </FormControl>
+              <FormDescription>
+                {t(
+                  "pages.companies.projects.form.composition_step.item_description_input_placeholder"
                 )}
               </FormDescription>
               <FormMessage />

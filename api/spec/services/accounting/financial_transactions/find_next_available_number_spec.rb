@@ -3,17 +3,16 @@ require 'rails_helper'
 RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
   describe '.call', :aggregate_failures do
     let(:company_id) { 1 }
-    let(:financial_year) { FactoryBot.create(:financial_year, company_id: company_id, start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year) }
     let(:client_id) { 1 }
     let(:another_company_id) { 2 }
     let(:issue_date) { Time.new(2024, 3, 20) }
+    let(:financial_year) { FactoryBot.create(:financial_year, company_id: company_id, start_date: issue_date.beginning_of_year, end_date: issue_date.end_of_year) }
     let(:prefix) { "INV" }
 
     context 'when successful' do
       it 'generates first number when no invoices exist' do
         result = described_class.call(
           company_id: company_id,
-          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
@@ -29,7 +28,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
 
         result = described_class.call(
           company_id: company_id,
-          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
@@ -45,7 +43,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
 
         result = described_class.call(
           company_id: company_id,
-          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
@@ -60,7 +57,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
 
         result = described_class.call(
           company_id: company_id,
-          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
@@ -75,7 +71,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
 
         result = described_class.call(
           company_id: company_id,
-          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )
@@ -90,7 +85,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
         it 'returns failure' do
           result = described_class.call(
             company_id: nil,
-            financial_year_id: financial_year.id,
             prefix: prefix,
             issue_date: issue_date
           )
@@ -104,7 +98,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
         it 'returns failure' do
           result = described_class.call(
             company_id: company_id,
-            financial_year_id: financial_year.id,
             prefix: nil,
             issue_date: issue_date
           )
@@ -123,7 +116,6 @@ RSpec.describe Accounting::FinancialTransactions::FindNextAvailableNumber do
       it 'returns failure' do
         result = described_class.call(
           company_id: company_id,
-          financial_year_id: financial_year.id,
           prefix: prefix,
           issue_date: issue_date
         )

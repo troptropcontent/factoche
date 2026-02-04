@@ -21,7 +21,7 @@ RSpec.describe Accounting::Proformas::Post do
     context 'when successful' do
       before do
         allow(Accounting::FinancialTransactions::FindNextAvailableNumber).to receive(:call)
-          .with(company_id: original_proforma.company_id, prefix: "INV", financial_year_id: financial_year.id,  issue_date: issue_date)
+          .with(company_id: original_proforma.company_id, prefix: "INV",  issue_date: issue_date)
           .and_return(ServiceResult.success("INV-2024-01-00001"))
 
         allow(Accounting::FinancialTransactions::GenerateAndAttachPdfJob).to receive(:perform_async)
