@@ -37,7 +37,7 @@
                 <%= item["quantity"] %> <%= item["unit"] %> @
                 <%= number_to_currency(item["unit_price_amount"]) %>
                 <br>
-                <%= t("views.accounting.invoice.shared.vat_rate", rate: number_to_percentage(item["tax_rate"].to_d * 100, precision: 0)) %>
+                <%= t("views.accounting.invoice.shared.vat_rate", rate: number_to_percentage(item["tax_rate"].to_d * 100, precision: 2)) %>
               </p>
             </th>
             <td class="text-center p-2">
