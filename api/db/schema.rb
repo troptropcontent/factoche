@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_18_093859) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_04_091547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_093859) do
     t.string "unit", null: false
     t.decimal "unit_price_amount", precision: 15, scale: 2, null: false
     t.decimal "quantity", precision: 15, scale: 6, null: false
-    t.decimal "tax_rate", precision: 15, scale: 2, null: false
+    t.decimal "tax_rate", precision: 15, scale: 4, null: false
     t.decimal "excl_tax_amount", precision: 15, scale: 2, null: false
     t.bigint "group_id"
     t.datetime "created_at", null: false
@@ -240,7 +240,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_093859) do
     t.bigint "item_group_id"
     t.integer "position", null: false
     t.uuid "original_item_uuid", null: false
-    t.decimal "tax_rate", precision: 5, scale: 2, null: false
+    t.decimal "tax_rate", precision: 5, scale: 4, null: false
     t.index ["item_group_id"], name: "index_organization_items_on_item_group_id"
     t.index ["original_item_uuid"], name: "index_organization_items_on_original_item_uuid"
     t.index ["project_version_id"], name: "index_organization_items_on_project_version_id"
