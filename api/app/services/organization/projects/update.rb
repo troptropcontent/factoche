@@ -83,8 +83,8 @@ module Organization
             description: original_item.description,
             unit: original_item.unit
           }.compact
-          updated_item_param.merge(
-            original_item_attributes
+          original_item_attributes.merge(
+            updated_item_param
           )
         end
       end

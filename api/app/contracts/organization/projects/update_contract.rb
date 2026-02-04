@@ -21,6 +21,8 @@ module Organization
           required(:tax_rate).filled(:decimal)
         end
         required(:updated_items).array(:hash) do
+          optional(:name).maybe(:string)
+          optional(:description).maybe(:string)
           optional(:group_uuid).maybe(:string)
           required(:original_item_uuid).filled(:string)
           required(:quantity).filled(:decimal)
