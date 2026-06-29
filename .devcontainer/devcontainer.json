@@ -8,7 +8,7 @@
   "workspaceFolder": "/factoche",
   "initializeCommand": "echo 'Factoche Development Container Initialization'",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {},
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
