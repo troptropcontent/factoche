@@ -805,6 +805,36 @@
                             "bic": "Code BIC",
                             "bic_placeholder": "Code BIC"
                         }
+                    },
+                    "financial_years": {
+                        "title": "Exercices comptables",
+                        "description": "Gérez les exercices comptables de votre entreprise",
+                        "empty_title": "Aucun exercice comptable",
+                        "no_financial_years": "Créez votre premier exercice comptable pour commencer à numéroter vos documents.",
+                        "add_financial_year": "Ajouter un exercice",
+                        "new_financial_year": "Nouvel exercice",
+                        "renew": "Renouveler",
+                        "cancel": "Annuler",
+                        "create": "Créer",
+                        "create_success_title": "Exercice créé",
+                        "create_success_description": "L'exercice comptable a été créé avec succès",
+                        "renew_success_title": "Exercice renouvelé",
+                        "renew_success_description": "L'exercice comptable a été renouvelé avec succès",
+                        "renew_dialog": {
+                            "title": "Renouveler l'exercice comptable",
+                            "description": "Un nouvel exercice couvrant les 12 prochains mois sera créé automatiquement. Cette action est irréversible.",
+                            "confirm": "Confirmer le renouvellement"
+                        },
+                        "table": {
+                            "start_date": "Début",
+                            "end_date": "Fin",
+                            "actions": "Actions"
+                        },
+                        "fields": {
+                            "start_month": "Mois de début",
+                            "end_month": "Mois de fin",
+                            "end_before_start": "La date de fin doit être après la date de début"
+                        }
                     }
                 }
             },

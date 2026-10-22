@@ -14,6 +14,7 @@ import { useSettingsFormInitialValues } from "./private/hooks";
 import { settingsFormSchema } from "./private/schemas";
 import { BillingConfigForm } from "./settings-billing-info-form";
 import { BankDetailsForm } from "./settings-bank-details-form";
+import { FinancialYearsTab } from "./settings-financial-years-tab";
 import { t } from "i18next";
 import { z } from "zod";
 import { Api } from "@/lib/openapi-fetch-query-client";
@@ -78,7 +79,7 @@ export function SettingsForm({ companyId }: { companyId: number }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Tabs defaultValue="company-info" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="company-info">
               {t("pages.companies.settings.forms.general.title")}
             </TabsTrigger>
@@ -87,6 +88,9 @@ export function SettingsForm({ companyId }: { companyId: number }) {
             </TabsTrigger>
             <TabsTrigger value="bank-details">
               {t("pages.companies.settings.forms.bank_details.title")}
+            </TabsTrigger>
+            <TabsTrigger value="financial-years">
+              {t("pages.companies.settings.forms.financial_years.title")}
             </TabsTrigger>
           </TabsList>
 
@@ -141,6 +145,21 @@ export function SettingsForm({ companyId }: { companyId: number }) {
                   {t("pages.companies.settings.forms.shared.submit")}
                 </FormSubmit>
               </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="financial-years">
+            <Card>
+              <CardHeader>
+                <CardDescription>
+                  {t(
+                    "pages.companies.settings.forms.financial_years.description"
+                  )}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FinancialYearsTab companyId={companyId} />
+              </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
