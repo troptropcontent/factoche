@@ -51,6 +51,7 @@ Rails.application.routes.draw do
           resources :proformas, only: [ :index ]
           resources :invoices, only: [ :index ]
           resources :credit_notes, only: [ :index ]
+          resources :financial_years, only: [ :index, :create ]
         end
         resources :completion_snapshots, only: [ :show, :index, :update, :destroy ] do
           member do
@@ -101,6 +102,11 @@ Rails.application.routes.draw do
           end
         end
         resources :credit_notes, only: [ :show ]
+        resources :financial_years, only: [] do
+          member do
+            post :renew
+          end
+        end
         resources :payments, only: [ :create ]
       end
     end

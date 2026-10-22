@@ -41,7 +41,7 @@ const FormProjectSummary = ({ orderId }: { orderId: number }) => {
   } = projectData;
 
   const projectVersionTotalAmount = items.reduce((prev, current) => {
-    return prev + current.quantity * Number(current.unit_price_amount);
+    return prev + Number(current.quantity) * Number(current.unit_price_amount);
   }, 0);
 
   const projectPreviouslyInvoicedAmount = invoicedItemsData.results.reduce(

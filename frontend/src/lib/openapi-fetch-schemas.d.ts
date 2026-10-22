@@ -969,6 +969,175 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/organization/companies/{company_id}/financial_years": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lists financial years for a company */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description financial_years found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["Organization::FinancialYears::ExtendedDto"][];
+                        };
+                    };
+                };
+                /** @description unauthorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description company not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Creates a financial year for a company */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    company_id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        financial_year: {
+                            /** Format: date-time */
+                            start_date: string;
+                            /** Format: date-time */
+                            end_date: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description financial_year created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::FinancialYears::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description unauthorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/organization/financial_years/{id}/renew": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Renews a financial year to the next period */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description financial_year renewed */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result: components["schemas"]["Organization::FinancialYears::ExtendedDto"];
+                        };
+                    };
+                };
+                /** @description unauthorised */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+                /** @description unprocessable entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/organization/companies/{company_id}/invoices": {
         parameters: {
             query?: never;
@@ -1467,10 +1636,11 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
+                        /** Format: time */
+                        issue_date?: string;
                         invoice_amounts: {
                             original_item_uuid: string;
-                            /** Format: decimal */
-                            invoice_amount: string;
+                            invoice_amount: number;
                         }[];
                     };
                 };
@@ -2332,7 +2502,8 @@ export interface components {
         "Organization::Clients::ExtendedDto": {
             id: number;
             name: string;
-            registration_number: string;
+            registration_number?: string | null;
+            vat_number?: string | null;
             email: string;
             phone: string;
             address_street: string;
@@ -2472,15 +2643,15 @@ export interface components {
             seller_phone: string;
             seller_email: string;
             client_name: string;
-            client_registration_number: string;
+            client_registration_number?: string | null;
             client_address_zipcode: string;
             client_address_street: string;
             client_address_city: string;
-            client_vat_number: string;
+            client_vat_number?: string | null;
             client_phone: string;
             client_email: string;
             delivery_name: string;
-            delivery_registration_number: string;
+            delivery_registration_number?: string | null;
             delivery_address_zipcode: string;
             delivery_address_street: string;
             delivery_address_city: string;
@@ -2495,7 +2666,8 @@ export interface components {
             group_id?: number | null;
             name: string;
             description?: string | null;
-            quantity: number;
+            /** Format: decimal */
+            quantity: string;
             unit: string;
             /** Format: decimal */
             unit_price_amount: string;
@@ -2510,7 +2682,7 @@ export interface components {
             description?: string | null;
         };
         "Organization::Invoices::BaseExtendedDto::Context": {
-            snapshot_number: number;
+            snapshot_number?: number | null;
             project_name: string;
             /** Format: decimal */
             project_version_retention_guarantee_rate: string;
@@ -2650,6 +2822,20 @@ export interface components {
         "Organization::Dashboards::ShowDto": {
             result: components["schemas"]["Organization::Dashboards::DashboardData"];
         };
+        "Organization::FinancialYears::ExtendedDto": {
+            id: number;
+            company_id: number;
+            /** Format: date-time */
+            start_date: string;
+            /** Format: date-time */
+            end_date: string;
+        };
+        "Organization::FinancialYears::IndexDto": {
+            results: components["schemas"]["Organization::FinancialYears::ExtendedDto"][];
+        };
+        "Organization::FinancialYears::ShowDto": {
+            result: components["schemas"]["Organization::FinancialYears::ExtendedDto"];
+        };
         "Organization::Invoices::ExtendedDto": {
             id: number;
             /** @enum {string} */
@@ -2727,7 +2913,8 @@ export interface components {
             position: number;
             name: string;
             description?: string | null;
-            quantity: number;
+            /** Format: decimal */
+            quantity: string;
             unit: string;
             /** Format: decimal */
             unit_price_amount: string;
@@ -2788,7 +2975,8 @@ export interface components {
             position: number;
             name: string;
             description?: string | null;
-            quantity: number;
+            /** Format: decimal */
+            quantity: string;
             unit: string;
             /** Format: decimal */
             unit_price_amount: string;
@@ -2827,7 +3015,8 @@ export interface components {
             position: number;
             name: string;
             description?: string | null;
-            quantity: number;
+            /** Format: decimal */
+            quantity: string;
             unit: string;
             /** Format: decimal */
             unit_price_amount: string;

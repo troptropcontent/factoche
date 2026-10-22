@@ -875,6 +875,138 @@ paths:
           description: unprocessable entity
         '403':
           description: forbiden
+  "/api/v1/organization/companies/{company_id}/financial_years":
+    get:
+      summary: Lists financial years for a company
+      tags:
+      - Financial Years
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: financial_years found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - results
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/Organization::FinancialYears::ExtendedDto"
+        '404':
+          description: company not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: unauthorised
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+    post:
+      summary: Creates a financial year for a company
+      tags:
+      - Financial Years
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: financial_year created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::FinancialYears::ExtendedDto"
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: unauthorised
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - financial_year
+              properties:
+                financial_year:
+                  type: object
+                  required:
+                  - start_date
+                  - end_date
+                  properties:
+                    start_date:
+                      type: string
+                      format: date-time
+                    end_date:
+                      type: string
+                      format: date-time
+  "/api/v1/organization/financial_years/{id}/renew":
+    post:
+      summary: Renews a financial year to the next period
+      tags:
+      - Financial Years
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: financial_year renewed
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - result
+                properties:
+                  result:
+                    "$ref": "#/components/schemas/Organization::FinancialYears::ExtendedDto"
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
+        '401':
+          description: unauthorised
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error"
   "/api/v1/organization/companies/{company_id}/invoices":
     get:
       summary: Lists invoices for an order
@@ -1290,23 +1422,29 @@ paths:
         content:
           application/json:
             schema:
+              "$schema": http://json-schema.org/draft-06/schema#
               type: object
-              required:
-              - invoice_amounts
               properties:
+                issue_date:
+                  type: string
+                  format: time
                 invoice_amounts:
                   type: array
                   items:
                     type: object
-                    required:
-                    - original_item_uuid
-                    - invoice_amount
                     properties:
                       original_item_uuid:
                         type: string
+                        minLength: 1
                       invoice_amount:
-                        type: string
-                        format: decimal
+                        type: number
+                        not:
+                          type: 'null'
+                    required:
+                    - original_item_uuid
+                    - invoice_amount
+              required:
+              - invoice_amounts
         required: true
   "/api/v1/organization/companies/{company_id}/proformas":
     get:
@@ -2163,7 +2301,6 @@ components:
       required:
       - id
       - name
-      - registration_number
       - email
       - phone
       - address_street
@@ -2176,6 +2313,10 @@ components:
           type: string
         registration_number:
           type: string
+          nullable: true
+        vat_number:
+          type: string
+          nullable: true
         email:
           type: string
         phone:
@@ -2512,15 +2653,12 @@ components:
       - seller_phone
       - seller_email
       - client_name
-      - client_registration_number
       - client_address_zipcode
       - client_address_street
       - client_address_city
-      - client_vat_number
       - client_phone
       - client_email
       - delivery_name
-      - delivery_registration_number
       - delivery_address_zipcode
       - delivery_address_street
       - delivery_address_city
@@ -2551,6 +2689,7 @@ components:
           type: string
         client_registration_number:
           type: string
+          nullable: true
         client_address_zipcode:
           type: string
         client_address_street:
@@ -2559,6 +2698,7 @@ components:
           type: string
         client_vat_number:
           type: string
+          nullable: true
         client_phone:
           type: string
         client_email:
@@ -2567,6 +2707,7 @@ components:
           type: string
         delivery_registration_number:
           type: string
+          nullable: true
         delivery_address_zipcode:
           type: string
         delivery_address_street:
@@ -2605,7 +2746,8 @@ components:
           type: string
           nullable: true
         quantity:
-          type: integer
+          type: string
+          format: decimal
         unit:
           type: string
         unit_price_amount:
@@ -2633,7 +2775,6 @@ components:
     Organization::Invoices::BaseExtendedDto::Context:
       type: object
       required:
-      - snapshot_number
       - project_name
       - project_version_retention_guarantee_rate
       - project_version_number
@@ -2645,6 +2786,7 @@ components:
       properties:
         snapshot_number:
           type: integer
+          nullable: true
         project_name:
           type: string
         project_version_retention_guarantee_rate:
@@ -2967,6 +3109,40 @@ components:
       properties:
         result:
           "$ref": "#/components/schemas/Organization::Dashboards::DashboardData"
+    Organization::FinancialYears::ExtendedDto:
+      type: object
+      required:
+      - id
+      - company_id
+      - start_date
+      - end_date
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+    Organization::FinancialYears::IndexDto:
+      type: object
+      required:
+      - results
+      properties:
+        results:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Organization::FinancialYears::ExtendedDto"
+    Organization::FinancialYears::ShowDto:
+      type: object
+      required:
+      - result
+      properties:
+        result:
+          "$ref": "#/components/schemas/Organization::FinancialYears::ExtendedDto"
     Organization::Invoices::ExtendedDto:
       type: object
       required:
@@ -3181,7 +3357,8 @@ components:
           type: string
           nullable: true
         quantity:
-          type: integer
+          type: string
+          format: decimal
         unit:
           type: string
         unit_price_amount:
@@ -3333,7 +3510,8 @@ components:
           type: string
           nullable: true
         quantity:
-          type: integer
+          type: string
+          format: decimal
         unit:
           type: string
         unit_price_amount:
@@ -3446,7 +3624,8 @@ components:
           type: string
           nullable: true
         quantity:
-          type: integer
+          type: string
+          format: decimal
         unit:
           type: string
         unit_price_amount:

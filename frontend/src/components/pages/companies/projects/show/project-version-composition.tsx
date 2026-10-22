@@ -50,11 +50,11 @@ const ProjectVersionComposition = ({
     }
 
     const computeItemSum = (
-      items: { unit_price_amount: string; quantity: number }[]
+      items: { unit_price_amount: string; quantity: string }[]
     ) => {
       return items.reduce(
         (prev, current) =>
-          prev + Number(current.unit_price_amount) * current.quantity,
+          prev + Number(current.unit_price_amount) * Number(current.quantity),
         0
       );
     };
@@ -105,6 +105,7 @@ const ProjectVersionComposition = ({
                   description={item_group.name}
                   items={item_group.grouped_items.map((item) => ({
                     ...item,
+                    quantity: Number(item.quantity),
                     unit_price_amount: Number(item.unit_price_amount),
                     tax_rate: Number(item.tax_rate),
                   }))}
@@ -114,6 +115,7 @@ const ProjectVersionComposition = ({
                 <ItemSummary
                   key={ungrouped_item.id}
                   {...ungrouped_item}
+                  quantity={Number(ungrouped_item.quantity)}
                   unit_price={Number(ungrouped_item.unit_price_amount)}
                 />
               )),

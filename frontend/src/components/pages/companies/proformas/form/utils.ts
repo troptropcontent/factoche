@@ -34,7 +34,7 @@ const buildInitialValuesFromOrder = (
 
 const computeOrderTotalAmount = (order: OrderExtended) =>
   order.last_version.items.reduce((prev, current) => {
-    return prev + current.quantity * Number(current.unit_price_amount);
+    return prev + Number(current.quantity) * Number(current.unit_price_amount);
   }, 0);
 
 const computePreviouslyInvoicedAmount = (
