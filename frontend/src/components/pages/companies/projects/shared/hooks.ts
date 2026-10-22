@@ -25,6 +25,7 @@ const useProjectTotalAmount = ({ orderId }: { orderId: number }) => {
     projectTotalAmount: computeProjectVersionTotalAmount({
       items: projectData.last_version.items.map((item) => ({
         ...item,
+        quantity: Number(item.quantity),
         unit_price_amount: Number(item.unit_price_amount),
       })),
     }),

@@ -8,7 +8,7 @@ interface FormItemGroupItemRowProps {
     id: number;
     name: string;
     description?: string | null;
-    quantity: number;
+    quantity: string;
     unit_price_amount: string;
     unit: string;
     original_item_uuid: string;
@@ -53,7 +53,7 @@ const ProformaFormItemGroupItemRow = ({
             title={item.name}
             className="truncate text-xs text-muted-foreground"
           >
-            {item.quantity} {item.unit}
+            {Number(item.quantity)} {item.unit}
             {" @ "}
             {t("common.number_in_currency", {
               amount: item.unit_price_amount,

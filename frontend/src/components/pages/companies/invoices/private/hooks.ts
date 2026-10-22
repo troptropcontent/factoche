@@ -74,10 +74,10 @@ const useInvoiceContentData = ({
     invoiceContentData: {
       items: projectData.last_version.items.map((item) => ({
         name: item.name,
-        quantity: item.quantity,
+        quantity: Number(item.quantity),
         unit: item.unit,
         unitPriceAmount: Number(item.unit_price_amount),
-        totalAmount: item.quantity * Number(item.unit_price_amount),
+        totalAmount: Number(item.quantity) * Number(item.unit_price_amount),
         previouslyInvoicedAmount: findPreviopuslyInvoicedAmount(
           item.original_item_uuid
         ),

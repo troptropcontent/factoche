@@ -12,14 +12,14 @@ const useProformaFormItemGroupItemRow = ({
     id: number;
     name: string;
     description?: string | null;
-    quantity: number;
+    quantity: string;
     unit_price_amount: string;
     unit: string;
     original_item_uuid: string;
   };
   orderId: number;
 }) => {
-  const rowTotal = item.quantity * Number(item.unit_price_amount);
+  const rowTotal = Number(item.quantity) * Number(item.unit_price_amount);
   const { data: previouslyInvoicedAmount } = Api.useQuery(
     "get",
     "/api/v1/organization/orders/{id}/invoiced_items",

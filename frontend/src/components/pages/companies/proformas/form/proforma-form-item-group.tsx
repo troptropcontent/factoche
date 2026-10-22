@@ -24,7 +24,7 @@ const ProformaFormItemGroup = ({
   items: {
     id: number;
     name: string;
-    quantity: number;
+    quantity: string;
     unit_price_amount: string;
     unit: string;
     original_item_uuid: string;

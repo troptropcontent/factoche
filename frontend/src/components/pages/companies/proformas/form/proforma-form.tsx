@@ -133,7 +133,13 @@ const ProformaForm = ({ companyId, order, proformaId }: ProformaFormProps) => {
       await createNewProforma(
         {
           params: { path: { order_id: order.id } },
-          body,
+          body: {
+            ...body,
+            invoice_amounts: body.invoice_amounts.map((amount) => ({
+              ...amount,
+              invoice_amount: Number(amount.invoice_amount),
+            })),
+          },
         },
         mutationOptions
       );
